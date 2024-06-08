@@ -281,6 +281,11 @@ export type ToHTMLOptions = {
   altQuoteAttr?: boolean;
 
   /**
+   * Keep inline style set intentionally by users with `setStyle({}, { inline: true })`
+   */
+  keepInlineStyle?: boolean;
+
+  /**
    * You can pass an object of custom attributes to replace with the current ones
    * or you can even pass a function to generate attributes dynamically.
    */

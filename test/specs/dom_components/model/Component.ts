@@ -19,7 +19,9 @@ let em: Editor;
 
 describe('Component', () => {
   beforeEach(() => {
-    em = new Editor({ avoidDefaults: true });
+    // FIXME: avoidInlineStyle is deprecated and when running in dev or prod, `avoidInlineStyle` is set to true
+    // The following tests ran with `avoidInlineStyle` to false (this is why I add the parameter here)
+    em = new Editor({ avoidDefaults: true, avoidInlineStyle: true });
     dcomp = em.Components;
     em.Pages.onLoad();
     compOpts = {
@@ -281,8 +283,8 @@ describe('Component', () => {
     expect(obj.getAttributes()).toEqual({
       id: 'test',
       class: 'class1 class2',
-      style: 'color:white;background:#fff;',
       'data-test': 'value',
+      style: 'color:white;background:#fff;',
     });
     expect(obj.classes.length).toEqual(2);
     expect(obj.getStyle()).toEqual({
@@ -291,14 +293,17 @@ describe('Component', () => {
     });
   });
 
-  test('set inline style with multiple values of the same key', () => {
+  test('set style with multiple values of the same key', () => {
     obj.setAttributes({ style: CSS_BG_STR });
     expect(obj.getStyle()).toEqual(CSS_BG_OBJ);
   });
 
-  test('get proper style from inline style with multiple values of the same key', () => {
+  test('get proper style from style with multiple values of the same key', () => {
     obj.setAttributes({ style: CSS_BG_STR });
-    expect(obj.getAttributes()).toEqual({
+    const attrToCheck = obj.getAttributes();
+    expect(attrToCheck.id).toBeDefined();
+    delete attrToCheck.id;
+    expect(attrToCheck).toEqual({
       style: CSS_BG_STR.split('\n').join(''),
     });
   });
