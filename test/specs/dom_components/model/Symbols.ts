@@ -62,24 +62,17 @@ describe('Symbols', () => {
     expect(toHTML(cFrom)).toBe(toHTML(cTo));
   };
 
-  beforeAll(() => {
+  beforeEach(() => {
     editor = new Editor();
     editor.Components.postLoad();
     editor.Pages.onLoad();
     wrapper = editor.getWrapper()!;
     cmps = editor.Components;
     um = editor.UndoManager;
-  });
-
-  beforeEach(() => {
     editor.UndoManager.clear();
   });
 
   afterEach(() => {
-    wrapper.components().reset();
-  });
-
-  afterAll(() => {
     editor.destroy();
   });
 
@@ -92,6 +85,7 @@ describe('Symbols', () => {
   });
 
   test('Create symbol from a component', () => {
+    expect(cmps.getSymbols()).toEqual([]);
     const comp = wrapper.append(simpleComp)[0];
 
     expect(getSymbolInfo(comp)).toEqual({
@@ -123,10 +117,8 @@ describe('Symbols', () => {
     });
 
     expect(toHTML(comp)).toBe(toHTML(symbol));
+    expect(cmps.getSymbols()).toEqual([symbol]);
   });
-
-  test.todo('Symbols are properly stored in project data');
-  test.todo('Symbols are properly loaded from project data');
 
   test('Create 1 symbol and clone the instance for another one', () => {
     const comp = wrapper.append(simpleComp)[0];
@@ -257,6 +249,77 @@ describe('Symbols', () => {
     expect(symbol.get(keySymbols)[0]).toBe(comp);
     basicSymbUpdate(comp, symbol);
     basicSymbUpdate(symbol, comp);
+  });
+
+  test('Symbols are properly stored in project data', () => {
+    expect(editor.getProjectData().symbols).toEqual([]);
+    const comp = wrapper.append(simpleComp)[0];
+    const symbol = createSymbol(comp);
+    const symbolsJSON = [JSON.parse(JSON.stringify(symbol))];
+    expect(editor.getProjectData().symbols).toEqual(symbolsJSON);
+    // Check post remove
+    symbol.remove();
+    expect(editor.getProjectData().symbols).toEqual([]);
+  });
+
+  test('Symbols are properly loaded from project data', () => {
+    const idComp = 'c1';
+    const idSymb = 's1';
+    const projectData = {
+      symbols: [
+        {
+          ...simpleCompDef,
+          [keySymbols]: [idComp],
+          attributes: { id: idSymb },
+        },
+      ],
+      pages: [
+        {
+          id: 'page-1',
+          frames: [
+            {
+              component: {
+                type: 'wrapper',
+                components: [
+                  {
+                    ...simpleCompDef,
+                    [keySymbol]: idSymb,
+                    attributes: { id: idComp },
+                  },
+                ],
+              },
+              id: 'wrap-1',
+            },
+          ],
+        },
+      ],
+    };
+    editor.loadProjectData(projectData);
+    const symbols = cmps.getSymbols();
+    const symbol = symbols[0];
+    const comp = cmps.getWrapper()!.components().at(0);
+
+    const commonInfo = {
+      isSymbol: true,
+      main: symbol,
+      instances: [comp],
+    };
+
+    expect(getSymbolInfo(symbol)).toEqual({
+      ...commonInfo,
+      isMain: true,
+      isInstance: false,
+      relatives: commonInfo.instances,
+    });
+    expect(getSymbolInfo(comp)).toEqual({
+      ...commonInfo,
+      isMain: false,
+      isInstance: true,
+      relatives: [symbol],
+    });
+
+    const symbolsJSON = JSON.parse(JSON.stringify(symbols));
+    expect(editor.getProjectData().symbols).toEqual(symbolsJSON);
   });
 
   test("Removing one instance doesn't affect others", () => {

@@ -292,6 +292,7 @@ export default class ComponentManager extends ItemManagerModule<DomComponentsCon
   //name = "DomComponents";
 
   storageKey = 'components';
+  keySymbols = 'symbols';
 
   shallow?: Component;
   symbols: Components;
@@ -339,7 +340,7 @@ export default class ComponentManager extends ItemManagerModule<DomComponentsCon
   }
 
   load(data: any) {
-    return this.loadProjectData(data, {
+    const result = this.loadProjectData(data, {
       onResult: (result: Component) => {
         let wrapper = this.getWrapper()!;
 
@@ -358,10 +359,16 @@ export default class ComponentManager extends ItemManagerModule<DomComponentsCon
         }
       },
     });
+
+    this.symbols.reset(data[this.keySymbols] || []);
+
+    return result;
   }
 
   store() {
-    return {};
+    return {
+      [this.keySymbols]: this.symbols,
+    };
   }
 
   /**
