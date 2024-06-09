@@ -734,17 +734,21 @@ describe('Symbols', () => {
   });
 
   describe('Nested symbols', () => {
+    let comp2: Component;
+    let comp3: Component;
+
     beforeEach(() => {
       comp = wrapper.append(compMultipleNodes)[0];
       compInitChild = comp.components().length;
-      symbol = createSymbolOld(comp);
-      const comp2 = createSymbolOld(comp);
-      const comp3 = createSymbolOld(comp);
+      symbol = createSymbol(comp);
+      comp2 = createSymbol(comp);
+      comp3 = createSymbol(comp);
       allInst = [comp, comp2, comp3];
-      all = [...allInst, symbol];
+      all = [symbol, ...allInst];
+      wrapper.append([comp2, comp3]);
       // Second symbol
       secComp = wrapper.append(simpleComp2)[0];
-      secSymbol = createSymbolOld(secComp);
+      secSymbol = createSymbol(secComp);
     });
 
     afterEach(() => {
@@ -752,51 +756,79 @@ describe('Symbols', () => {
     });
 
     test('Second symbol created properly', () => {
-      const symbs = secSymbol.__getSymbols()!;
-      expect(secSymbol.__isSymbol()).toBe(true);
-      expect(secComp.__getSymbol()).toBe(secSymbol);
-      expect(symbs.length).toBe(1);
-      expect(symbs[0]).toBe(secComp);
+      expect(getSymbolInfo(secSymbol)).toEqual({
+        isSymbol: true,
+        isMain: true,
+        isInstance: false,
+        main: secSymbol,
+        instances: [secComp],
+        relatives: [secComp],
+      });
       expect(toHTML(secComp)).toBe(toHTML(secSymbol));
     });
 
     test('Adding the instance, of the second symbol, inside the first symbol, propagates correctly to all first instances', () => {
       const added = symbol.append(secComp)[0];
-      expect(added.__isSymbolNested()).toBe(true);
-      // The added component is still the second instance
       expect(added).toBe(secComp);
-      // The added component still has the reference to the second symbol
-      expect(added.__getSymbol()).toBe(secSymbol);
-      // The main second symbol now has the reference to all its instances
-      const secInstans = secSymbol.__getSymbols()!;
-      expect(secInstans.length).toBe(all.length);
+
+      const allAdded = all.map(s => s.components().last());
+      expect(getSymbolInfo(secComp)).toEqual({
+        isSymbol: true,
+        isMain: false,
+        isInstance: true,
+        main: secSymbol,
+        instances: allAdded,
+        relatives: [secSymbol, ...allAdded.filter(s => s !== secComp)],
+      });
+
+      expect(added.__isSymbolNested()).toBe(true);
       // All instances still refer to the second symbol
-      secInstans.forEach(secInst => expect(secInst.__getSymbol()).toBe(secSymbol));
+      allAdded.forEach(secInst => expect(getSymbolInfo(secInst).main).toBe(secSymbol));
     });
 
     test('Adding the instance, of the second symbol, inside one of the first instances, propagates correctly to all first symbols', () => {
       const added = comp.append(secComp)[0];
-      // The added component is still the second instance
       expect(added).toBe(secComp);
-      // The added component still has the reference to the second symbol
-      expect(added.__getSymbol()).toBe(secSymbol);
-      // The main second symbol now has the reference to all its instances
-      const secInstans = secSymbol.__getSymbols()!;
-      expect(secInstans.length).toBe(all.length);
+
+      const allAdded = [comp, symbol, comp2, comp3].map(s => s.components().last());
+      expect(getSymbolInfo(secComp)).toEqual({
+        isSymbol: true,
+        isMain: false,
+        isInstance: true,
+        main: secSymbol,
+        instances: allAdded,
+        relatives: [secSymbol, ...allAdded.filter(s => s !== secComp)],
+      });
+
       // All instances still refer to the second symbol
-      secInstans.forEach(secInst => expect(secInst.__getSymbol()).toBe(secSymbol));
+      allAdded.forEach(s => expect(getSymbolInfo(s).main).toBe(secSymbol));
     });
 
     test('Adding the instance, of the second symbol, inside one of the first instances, and then removing it, will not affect second instances outside', () => {
-      const secComp2 = createSymbolOld(secComp);
+      const secComp2 = createSymbol(secComp);
       const added = comp.append(secComp)[0];
+      const allAdded = [comp, symbol, comp2, comp3].map(s => s.components().last());
+      allAdded.splice(1, 0, secComp2);
+      expect(getSymbolInfo(secComp2)).toEqual({
+        isSymbol: true,
+        isMain: false,
+        isInstance: true,
+        main: secSymbol,
+        instances: allAdded,
+        relatives: [secSymbol, ...allAdded.filter(s => s !== secComp2)],
+      });
       expect(secComp2.__isSymbolNested()).toBe(false);
-      const secInstans = secSymbol.__getSymbols()!;
-      expect(secInstans.length).toBe(all.length + 1); // + 1 is secComp2
       // Remove the second instance, added in one of the first instances
       added.remove();
-      // All first symbols will remove their copy and only the secComp2 will remain
-      expect(secSymbol.__getSymbols()?.length).toBe(1);
+      // Only the secComp2 will remain
+      expect(getSymbolInfo(secSymbol)).toEqual({
+        isSymbol: true,
+        isMain: true,
+        isInstance: false,
+        main: secSymbol,
+        instances: [secComp2],
+        relatives: [secComp2],
+      });
       // First symbols has the previous number of components inside
       all.forEach(s => expect(s.components().length).toBe(compInitChild));
     });
@@ -805,14 +837,24 @@ describe('Symbols', () => {
       const added = comp.append(secComp)[0];
       expect(added.parent()).toBe(comp); // extra checks
       expect(added.index()).toBe(compInitChild);
-      const secInstansArr = secSymbol.__getSymbols()?.map(i => i.cid) || [];
+      const secInstansArr = getSymbolInfo(secSymbol).instances.map(i => i.cid);
       expect(secInstansArr.length).toBe(all.length);
       added.move(comp, { at: 0 });
       // After the move, the symbol still have the same references
-      const secInstansArr2 = secSymbol.__getSymbols()?.map(i => i.cid);
+      const secInstansArr2 = getSymbolInfo(secSymbol).instances.map(i => i.cid);
       expect(secInstansArr2).toEqual(secInstansArr);
       // All second instances refer to the same second symbol
       all.forEach(c => expect(getFirstInnSymbol(c)).toBe(secSymbol));
+
+      const allAdded = [comp, symbol, comp2, comp3].map(s => s.components().first());
+      expect(getSymbolInfo(secSymbol)).toEqual({
+        isSymbol: true,
+        isMain: true,
+        isInstance: false,
+        main: secSymbol,
+        instances: allAdded,
+        relatives: allAdded,
+      });
     });
   });
 });
