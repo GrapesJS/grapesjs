@@ -1,6 +1,8 @@
-import { isArray, isString } from 'underscore';
+import { isArray, isString, keys } from 'underscore';
 import Component, { keySymbol, keySymbolOvrd, keySymbols } from './Component';
 import { SymbolToUpOptions } from './types';
+import { isEmptyObj } from '../../utils/mixins';
+import Components from './Components';
 
 export const isSymbolMain = (cmp: Component) => isArray(cmp.get(keySymbols));
 
@@ -19,6 +21,12 @@ export const isSymbolNested = (symbol: Component) => {
   const symbTop = getSymbolTop(symbol);
   const symbTopMain = isSymbolMain(symbTop) ? symbTop : getSymbol(symbTop);
   return symbTopMain !== symbTopSelf;
+};
+
+export const initSymbol = (symbol: Component) => {
+  if (symbol.__symbReady) return;
+  symbol.on('change', symbol.__upSymbProps);
+  symbol.__symbReady = true;
 };
 
 export const getSymbol = (symbol: Component): Component | undefined => {
@@ -52,8 +60,8 @@ export const getSymbols = (symbol?: Component): Component[] | undefined => {
   return symbs;
 };
 
-export const isSymbolOverride = (symbol: Component, prop = '') => {
-  const ovrd = symbol.get(keySymbolOvrd);
+export const isSymbolOverride = (symbol?: Component, prop = '') => {
+  const ovrd = symbol?.get(keySymbolOvrd);
   const [prp] = prop.split(':');
   const props = prop !== prp ? [prop, prp] : [prop];
   return ovrd === true || (isArray(ovrd) && props.some(p => ovrd.indexOf(p) >= 0));
@@ -106,4 +114,145 @@ export const logSymbol = (symb: Component, type: string, toUp: Component[], opts
   }
 
   symb.em.log(type, { model: symb, toUp, context: 'symbols', opts });
+};
+
+export const updateSymbolProps = (symbol: Component, opts: SymbolToUpOptions = {}) => {
+  const changed = symbol.changedAttributes() || {};
+  const attrs = changed.attributes || {};
+  delete changed.status;
+  delete changed.open;
+  delete changed[keySymbols];
+  delete changed[keySymbol];
+  delete changed[keySymbolOvrd];
+  delete changed.attributes;
+  delete attrs.id;
+
+  if (!isEmptyObj(attrs)) {
+    changed.attributes = attrs;
+  }
+
+  if (!isEmptyObj(changed)) {
+    const toUp = getSymbolsToUpdate(symbol, opts);
+    // Avoid propagating overrides to other symbols
+    keys(changed).map(prop => {
+      if (isSymbolOverride(symbol, prop)) delete changed[prop];
+    });
+
+    logSymbol(symbol, 'props', toUp, { opts, changed });
+    toUp.forEach(child => {
+      const propsChanged = { ...changed };
+      // Avoid updating those with override
+      keys(propsChanged).map(prop => {
+        if (isSymbolOverride(child, prop)) delete propsChanged[prop];
+      });
+      child.set(propsChanged, { fromInstance: symbol, ...opts });
+    });
+  }
+};
+
+export const updateSymbolCls = (symbol: Component, opts: any = {}) => {
+  const toUp = getSymbolsToUpdate(symbol, opts);
+  logSymbol(symbol, 'classes', toUp, { opts });
+  toUp.forEach(child => {
+    // @ts-ignore This will propagate the change up to __upSymbProps
+    child.set('classes', symbol.get('classes'), { fromInstance: symbol });
+  });
+  symbol.__changesUp(opts);
+};
+
+export const updateSymbolComps = (symbol: Component, m: Component, c: Components, o: any) => {
+  const optUp = o || c || {};
+  const { fromInstance, fromUndo } = optUp;
+  const toUpOpts = { fromInstance, fromUndo };
+  const isTemp = m.opt.temporary;
+
+  // Reset
+  if (!o) {
+    const toUp = getSymbolsToUpdate(symbol, {
+      ...toUpOpts,
+      changed: 'components:reset',
+    });
+    // @ts-ignore
+    const cmps = m.models as Component[];
+    logSymbol(symbol, 'reset', toUp, { components: cmps });
+    toUp.forEach(symb => {
+      const newMods = cmps.map(mod => mod.clone({ symbol: true }));
+      // @ts-ignore
+      symb.components().reset(newMods, { fromInstance: symbol, ...c });
+    });
+    // Add
+  } else if (o.add) {
+    let addedInstances: Component[] = [];
+    const isMainSymb = !!getSymbols(symbol);
+    const toUp = getSymbolsToUpdate(symbol, {
+      ...toUpOpts,
+      changed: 'components:add',
+    });
+    if (toUp.length) {
+      const addSymb = getSymbol(m);
+      addedInstances = (addSymb ? getSymbols(addSymb) : getSymbols(m)) || [];
+      addedInstances = [...addedInstances];
+      addedInstances.push(addSymb ? addSymb : m);
+    }
+    !isTemp &&
+      logSymbol(symbol, 'add', toUp, {
+        opts: o,
+        addedInstances: addedInstances.map(c => c.cid),
+        added: m.cid,
+      });
+    // Here, before appending a new symbol, I have to ensure there are no previously
+    // created symbols (eg. used mainly when drag components around)
+    toUp.forEach(symb => {
+      const symbTop = getSymbolTop(symb);
+      const symbPrev = addedInstances.filter(addedInst => {
+        const addedTop = getSymbolTop(addedInst, { prev: 1 });
+        return symbTop && addedTop && addedTop === symbTop;
+      })[0];
+      const toAppend = symbPrev || m.clone({ symbol: true, symbolInv: isMainSymb });
+      symb.append(toAppend, { fromInstance: symbol, ...o });
+    });
+    // Remove
+  } else {
+    // Remove instance reference from the symbol
+    const symb = getSymbol(m);
+    symb &&
+      !o.temporary &&
+      symb.set(
+        keySymbols,
+        getSymbols(symb)!.filter(i => i !== m)
+      );
+
+    // Propagate remove only if the component is an inner symbol
+    if (!isSymbolTop(m)) {
+      const changed = 'components:remove';
+      const { index } = o;
+      const parent = m.parent();
+      const opts = { fromInstance: m, ...o };
+      const isSymbNested = isSymbolTop(m);
+      let toUpFn = (symb: Component) => {
+        const symbPrnt = symb.parent();
+        symbPrnt && !isSymbolOverride(symbPrnt, changed) && symb.remove(opts);
+      };
+      // Check if the parent allows the removing
+      let toUp = !isSymbolOverride(parent, changed) ? getSymbolsToUpdate(m, toUpOpts) : [];
+
+      if (isSymbNested) {
+        toUp = parent! && getSymbolsToUpdate(parent, { ...toUpOpts, changed })!;
+        toUpFn = symb => {
+          const toRemove = symb.components().at(index);
+          toRemove && toRemove.remove({ fromInstance: parent, ...opts });
+        };
+      }
+
+      !isTemp &&
+        logSymbol(symbol, 'remove', toUp, {
+          opts: o,
+          removed: m.cid,
+          isSymbNested,
+        });
+      toUp.forEach(toUpFn);
+    }
+  }
+
+  symbol.__changesUp(optUp);
 };
