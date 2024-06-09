@@ -1,17 +1,12 @@
 import Editor from '../../../../src/editor';
-import Component, { keySymbol, keySymbols, keySymbolOvrd } from '../../../../src/dom_components/model/Component';
+import Component, { keySymbol, keySymbols } from '../../../../src/dom_components/model/Component';
+import { isSymbolNested } from '../../../../src/dom_components/model/SymbolUtils';
 
 describe('Symbols', () => {
   let editor: Editor;
   let wrapper: NonNullable<ReturnType<Editor['getWrapper']>>;
   let cmps: Editor['Components'];
   let um: Editor['UndoManager'];
-
-  const createSymbolOld = (comp: Component): Component => {
-    const symbol = comp.clone({ symbol: true });
-    comp.parent()?.append(symbol, { at: comp.index() + 1 });
-    return symbol;
-  };
 
   const createSymbol = (comp: Component) => cmps.createSymbol(comp);
 
@@ -54,8 +49,8 @@ describe('Symbols', () => {
       },
     });
   const getInnerComp = (cmp: Component, i = 0) => cmp.components().at(i);
-  const getFirstInnSymbol = (cmp: Component) => getInnerComp(cmp).__getSymbol();
-  const getInnSymbol = (cmp: Component, i = 0) => getInnerComp(cmp, i).__getSymbol();
+  const getFirstInnSymbol = (cmp: Component) => getSymbolInfo(getInnerComp(cmp)).main;
+  const getInnSymbol = (cmp: Component, i = 0) => getSymbolInfo(getInnerComp(cmp, i)).main;
   const basicSymbUpdate = (cFrom: Component, cTo: Component) => {
     const rand = (Math.random() + 1).toString(36).slice(-7);
     const newAttr = { class: `cls-${rand}`, [`myattr-${rand}`]: `val-${rand}` };
@@ -92,8 +87,7 @@ describe('Symbols', () => {
     const comp = wrapper.append(simpleComp)[0];
     const cloned = comp.clone();
     [comp, cloned].forEach(item => {
-      expect(item.__getSymbol()).toBeFalsy();
-      expect(item.__getSymbols()).toBeFalsy();
+      expect(getSymbolInfo(item).isSymbol).toBeFalsy();
     });
   });
 
@@ -781,7 +775,7 @@ describe('Symbols', () => {
         relatives: [secSymbol, ...allAdded.filter(s => s !== secComp)],
       });
 
-      expect(added.__isSymbolNested()).toBe(true);
+      expect(isSymbolNested(added)).toBe(true);
       // All instances still refer to the second symbol
       allAdded.forEach(secInst => expect(getSymbolInfo(secInst).main).toBe(secSymbol));
     });
@@ -817,7 +811,7 @@ describe('Symbols', () => {
         instances: allAdded,
         relatives: [secSymbol, ...allAdded.filter(s => s !== secComp2)],
       });
-      expect(secComp2.__isSymbolNested()).toBe(false);
+      expect(isSymbolNested(secComp2)).toBe(false);
       // Remove the second instance, added in one of the first instances
       added.remove();
       // Only the secComp2 will remain
