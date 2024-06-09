@@ -59,7 +59,7 @@ import { AddOptions, ObjectAny } from '../common';
 import EditorModel from '../editor/model/Editor';
 import { isComponent } from '../utils/mixins';
 import defaults, { DomComponentsConfig } from './config/config';
-import Component, { IComponent, keyUpdate, keyUpdateInside } from './model/Component';
+import Component, { IComponent, keySymbolOvrd, keyUpdate, keyUpdateInside } from './model/Component';
 import ComponentComment from './model/ComponentComment';
 import ComponentFrame from './model/ComponentFrame';
 import ComponentImage from './model/ComponentImage';
@@ -704,17 +704,17 @@ export default class ComponentManager extends ItemManagerModule<DomComponentsCon
   }
 
   /**
-   *
-   * @param cmp
+   * Get info from a symbol.
+   * @param {[Component]} cmp Component symbol from which to get the info.
    * @returns
    */
-  getSymbolInfo(cmp: Component) {
+  getSymbolInfo(cmp: Component, opts: { withChanges?: string } = {}) {
     const isMain = cmp.__isSymbol();
     const mainRef = cmp.__getSymbol();
     const isInstance = !!mainRef;
     const instances = (isMain ? cmp.__getSymbols() : mainRef?.__getSymbols()) || [];
     const main = mainRef || (isMain ? cmp : undefined);
-    const relatives = isMain ? instances : [main, ...instances].filter(s => s && s !== cmp);
+    const relatives = cmp.__getSymbToUp({ changed: opts.withChanges });
 
     return {
       isSymbol: isMain || isInstance,
@@ -724,6 +724,26 @@ export default class ComponentManager extends ItemManagerModule<DomComponentsCon
       instances: instances,
       relatives: relatives || [],
     };
+  }
+
+  /**
+   * Update symbol override.
+   * By setting override to true, none of its properties will be propagated to its relative symbols.
+   * By setting override to specific properties, changes to those properties will be skipped from propagation.
+   * @param {[Component]} symbol
+   * @param {Boolean|String|Array<String>} value
+   */
+  setSymbolOverride(symbol: Component, value: boolean | string | string[]) {
+    symbol.set(keySymbolOvrd, isString(value) ? [value] : value);
+  }
+
+  /**
+   * Get symbol override value.
+   * @param {[Component]} symbol
+   * @returns {Boolean|Array<String>}
+   */
+  getSymbolOverride(symbol: Component): boolean | string[] | undefined {
+    return symbol.get(keySymbolOvrd);
   }
 
   /**

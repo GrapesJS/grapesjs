@@ -7,11 +7,19 @@ describe('Symbols', () => {
   let cmps: Editor['Components'];
   let um: Editor['UndoManager'];
 
-  const createSymbol = (comp: Component): Component => {
+  const createSymbolOld = (comp: Component): Component => {
     const symbol = comp.clone({ symbol: true });
     comp.parent()?.append(symbol, { at: comp.index() + 1 });
     return symbol;
   };
+
+  const createSymbol = (comp: Component) => cmps.createSymbol(comp);
+
+  const getSymbolInfo = ((comp, opts) => cmps.getSymbolInfo(comp, opts)) as Editor['Components']['getSymbolInfo'];
+
+  const setSymbolOverride = ((comp, value) => {
+    return cmps.setSymbolOverride(comp, value);
+  }) as Editor['Components']['setSymbolOverride'];
 
   const duplicate = (comp: Component): Component => {
     const cloned = comp.clone({});
@@ -92,7 +100,7 @@ describe('Symbols', () => {
   test('Create symbol from a component', () => {
     const comp = wrapper.append(simpleComp)[0];
 
-    expect(cmps.getSymbolInfo(comp)).toEqual({
+    expect(getSymbolInfo(comp)).toEqual({
       isSymbol: false,
       isMain: false,
       isInstance: false,
@@ -101,9 +109,9 @@ describe('Symbols', () => {
       relatives: [],
     });
 
-    const symbol = cmps.createSymbol(comp);
+    const symbol = createSymbol(comp);
 
-    expect(cmps.getSymbolInfo(symbol)).toEqual({
+    expect(getSymbolInfo(symbol)).toEqual({
       isSymbol: true,
       isMain: true,
       isInstance: false,
@@ -111,7 +119,7 @@ describe('Symbols', () => {
       instances: [comp],
       relatives: [comp],
     });
-    expect(cmps.getSymbolInfo(comp)).toEqual({
+    expect(getSymbolInfo(comp)).toEqual({
       isSymbol: true,
       isMain: false,
       isInstance: true,
@@ -128,8 +136,8 @@ describe('Symbols', () => {
 
   test('Create 1 symbol and clone the instance for another one', () => {
     const comp = wrapper.append(simpleComp)[0];
-    const symbol = cmps.createSymbol(comp);
-    const comp2 = cmps.createSymbol(comp);
+    const symbol = createSymbol(comp);
+    const comp2 = createSymbol(comp);
 
     const commonInfo = {
       isSymbol: true,
@@ -137,19 +145,19 @@ describe('Symbols', () => {
       instances: [comp, comp2],
     };
 
-    expect(cmps.getSymbolInfo(symbol)).toEqual({
+    expect(getSymbolInfo(symbol)).toEqual({
       ...commonInfo,
       isMain: true,
       isInstance: false,
       relatives: commonInfo.instances,
     });
-    expect(cmps.getSymbolInfo(comp)).toEqual({
+    expect(getSymbolInfo(comp)).toEqual({
       ...commonInfo,
       isMain: false,
       isInstance: true,
       relatives: [symbol, comp2],
     });
-    expect(cmps.getSymbolInfo(comp2)).toEqual({
+    expect(getSymbolInfo(comp2)).toEqual({
       ...commonInfo,
       isMain: false,
       isInstance: true,
@@ -161,8 +169,8 @@ describe('Symbols', () => {
 
   test('Create 1 symbol and clone it to have another instance', () => {
     const comp = wrapper.append(simpleComp)[0];
-    const symbol = cmps.createSymbol(comp);
-    const comp2 = cmps.createSymbol(symbol);
+    const symbol = createSymbol(comp);
+    const comp2 = createSymbol(symbol);
 
     const commonInfo = {
       isSymbol: true,
@@ -170,19 +178,19 @@ describe('Symbols', () => {
       instances: [comp, comp2],
     };
 
-    expect(cmps.getSymbolInfo(symbol)).toEqual({
+    expect(getSymbolInfo(symbol)).toEqual({
       ...commonInfo,
       isMain: true,
       isInstance: false,
       relatives: commonInfo.instances,
     });
-    expect(cmps.getSymbolInfo(comp)).toEqual({
+    expect(getSymbolInfo(comp)).toEqual({
       ...commonInfo,
       isMain: false,
       isInstance: true,
       relatives: [symbol, comp2],
     });
-    expect(cmps.getSymbolInfo(comp2)).toEqual({
+    expect(getSymbolInfo(comp2)).toEqual({
       ...commonInfo,
       isMain: false,
       isInstance: true,
@@ -194,7 +202,7 @@ describe('Symbols', () => {
 
   test('Symbols and instances are correctly serialized', () => {
     const comp = wrapper.append(simpleComp)[0];
-    const symbol = cmps.createSymbol(comp);
+    const symbol = createSymbol(comp);
     const idComp = comp.getId();
     const idSymb = symbol.getId();
     const jsonComp = JSON.parse(JSON.stringify(comp));
@@ -205,7 +213,7 @@ describe('Symbols', () => {
 
   test('Serialized symbol references are always recovered', () => {
     const comp = wrapper.append(simpleComp)[0];
-    const symbol = cmps.createSymbol(comp);
+    const symbol = createSymbol(comp);
     const idComp = comp.getId();
     const idSymb = symbol.getId();
     // Serialize symbols
@@ -238,13 +246,13 @@ describe('Symbols', () => {
       instances: [comp],
     };
 
-    expect(cmps.getSymbolInfo(symbol)).toEqual({
+    expect(getSymbolInfo(symbol)).toEqual({
       ...commonInfo,
       isMain: true,
       isInstance: false,
       relatives: commonInfo.instances,
     });
-    expect(cmps.getSymbolInfo(comp)).toEqual({
+    expect(getSymbolInfo(comp)).toEqual({
       ...commonInfo,
       isMain: false,
       isInstance: true,
@@ -259,8 +267,8 @@ describe('Symbols', () => {
 
   test("Removing one instance doesn't affect others", () => {
     const comp = wrapper.append(simpleComp)[0];
-    const symbol = cmps.createSymbol(comp);
-    const comp2 = cmps.createSymbol(comp);
+    const symbol = createSymbol(comp);
+    const comp2 = createSymbol(comp);
     wrapper.append(comp2);
 
     expect(wrapper.components().length).toBe(2);
@@ -273,13 +281,13 @@ describe('Symbols', () => {
       instances: [comp2],
     };
 
-    expect(cmps.getSymbolInfo(symbol)).toEqual({
+    expect(getSymbolInfo(symbol)).toEqual({
       ...commonInfo,
       isMain: true,
       isInstance: false,
       relatives: [comp2],
     });
-    expect(cmps.getSymbolInfo(comp2)).toEqual({
+    expect(getSymbolInfo(comp2)).toEqual({
       ...commonInfo,
       isMain: false,
       isInstance: true,
@@ -290,10 +298,10 @@ describe('Symbols', () => {
   test('New component added to an instance is correctly propogated to all others', () => {
     const comp = wrapper.append(compMultipleNodes)[0];
     const compLen = comp.components().length;
-    const symbol = cmps.createSymbol(comp);
+    const symbol = createSymbol(comp);
     // Create and add 2 instances
-    const comp2 = cmps.createSymbol(comp);
-    const comp3 = cmps.createSymbol(comp2);
+    const comp2 = createSymbol(comp);
+    const comp3 = createSymbol(comp2);
     const allInst = [comp, comp2, comp3];
     const all = [...allInst, symbol];
     all.forEach(cmp => expect(cmp.components().length).toBe(compLen));
@@ -312,25 +320,25 @@ describe('Symbols', () => {
       main: symbAdded,
       instances: [comp3Added, compAdded, comp2Added], // comp3 was edited first
     };
-    expect(cmps.getSymbolInfo(symbAdded)).toEqual({
+    expect(getSymbolInfo(symbAdded)).toEqual({
       ...commonInfo,
       isMain: true,
       isInstance: false,
       relatives: commonInfo.instances,
     });
-    expect(cmps.getSymbolInfo(compAdded)).toEqual({
+    expect(getSymbolInfo(compAdded)).toEqual({
       ...commonInfo,
       isMain: false,
       isInstance: true,
       relatives: [symbAdded, comp3Added, comp2Added],
     });
-    expect(cmps.getSymbolInfo(comp2Added)).toEqual({
+    expect(getSymbolInfo(comp2Added)).toEqual({
       ...commonInfo,
       isMain: false,
       isInstance: true,
       relatives: [symbAdded, comp3Added, compAdded],
     });
-    expect(cmps.getSymbolInfo(comp3Added)).toEqual({
+    expect(getSymbolInfo(comp3Added)).toEqual({
       ...commonInfo,
       isMain: false,
       isInstance: true,
@@ -338,13 +346,13 @@ describe('Symbols', () => {
     });
   });
 
-  describe('Creating 3 symbols in the wrapper', () => {
+  describe('Creating multiple symbols', () => {
     beforeEach(() => {
       comp = wrapper.append(compMultipleNodes)[0];
       compInitChild = comp.components().length;
-      symbol = cmps.createSymbol(comp);
-      const comp2 = cmps.createSymbol(comp);
-      const comp3 = cmps.createSymbol(comp);
+      symbol = createSymbol(comp);
+      const comp2 = createSymbol(comp);
+      const comp3 = createSymbol(comp);
       allInst = [comp, comp2, comp3];
       all = [...allInst, symbol];
       wrapper.append([comp2, comp3]);
@@ -364,9 +372,9 @@ describe('Symbols', () => {
     });
 
     test('Removing one instance, will remove the reference from the symbol', () => {
-      expect(cmps.getSymbolInfo(symbol).instances.length).toBe(allInst.length);
+      expect(getSymbolInfo(symbol).instances.length).toBe(allInst.length);
       allInst[2].remove();
-      expect(cmps.getSymbolInfo(symbol).instances.length).toBe(allInst.length - 1);
+      expect(getSymbolInfo(symbol).instances.length).toBe(allInst.length - 1);
     });
 
     test('Removing one instance, works with UndoManager', done => {
@@ -375,7 +383,7 @@ describe('Symbols', () => {
         allInst[0].remove();
         um.undo();
         expect(wrapper.components().length).toBe(allInst.length);
-        expect(cmps.getSymbolInfo(symbol).instances.length).toBe(allInst.length);
+        expect(getSymbolInfo(symbol).instances.length).toBe(allInst.length);
         done();
       });
     });
@@ -385,7 +393,7 @@ describe('Symbols', () => {
       all.forEach(cmp => expect(cmp.components().length).toBe(compInitChild + 1));
       // Check symbol references
       const addedInstances = allInst.map(cmp => cmp.components().at(0));
-      expect(cmps.getSymbolInfo(added)).toEqual({
+      expect(getSymbolInfo(added)).toEqual({
         isSymbol: true,
         isMain: true,
         isInstance: false,
@@ -402,7 +410,7 @@ describe('Symbols', () => {
       // Check symbol references
       const addSymb = symbol.components().at(0);
       const addedInstances = allInst.map(cmp => cmp.components().at(0));
-      expect(cmps.getSymbolInfo(added)).toEqual({
+      expect(getSymbolInfo(added)).toEqual({
         isSymbol: true,
         isMain: false,
         isInstance: true,
@@ -424,7 +432,7 @@ describe('Symbols', () => {
       // Check symbol references
       const addSymb = symbol.components().at(0);
       const addedInstances = allInst.map(cmp => cmp.components().at(0));
-      expect(cmps.getSymbolInfo(added)).toEqual({
+      expect(getSymbolInfo(added)).toEqual({
         isSymbol: true,
         isMain: false,
         isInstance: true,
@@ -449,13 +457,13 @@ describe('Symbols', () => {
         main: addSymb,
         instances: addedInstances,
       };
-      expect(cmps.getSymbolInfo(added)).toEqual({
+      expect(getSymbolInfo(added)).toEqual({
         ...commonInfo,
         isMain: false,
         isInstance: true,
         relatives: [addSymb, ...addedInstances.filter(s => s !== added)],
       });
-      expect(cmps.getSymbolInfo(addSymb)).toEqual({
+      expect(getSymbolInfo(addSymb)).toEqual({
         ...commonInfo,
         isMain: true,
         isInstance: false,
@@ -478,7 +486,7 @@ describe('Symbols', () => {
       allInst.forEach(cmp => expect(getFirstInnSymbol(cmp)).toBe(addSymb));
       // The moved symbol contains all its instances
       const addedInstances = allInst.map(cmp => cmp.components().at(0));
-      expect(cmps.getSymbolInfo(addSymb)).toEqual({
+      expect(getSymbolInfo(addSymb)).toEqual({
         isSymbol: true,
         isMain: true,
         isInstance: false,
@@ -552,13 +560,13 @@ describe('Symbols', () => {
         main: clonedSymb,
         instances: allInst.map(cmp => cmp.components().at(1)),
       };
-      expect(cmps.getSymbolInfo(cloned)).toEqual({
+      expect(getSymbolInfo(cloned)).toEqual({
         ...commonInfo,
         isMain: false,
         isInstance: true,
         relatives: [clonedSymb, ...commonInfo.instances.filter(i => i !== cloned)],
       });
-      expect(cmps.getSymbolInfo(clonedSymb)).toEqual({
+      expect(getSymbolInfo(clonedSymb)).toEqual({
         ...commonInfo,
         isMain: true,
         isInstance: false,
@@ -580,13 +588,13 @@ describe('Symbols', () => {
         main: clonedSymb,
         instances: allInst.map(cmp => cmp.components().at(1)),
       };
-      expect(cmps.getSymbolInfo(cloned)).toEqual({
+      expect(getSymbolInfo(cloned)).toEqual({
         ...commonInfo,
         isMain: false,
         isInstance: true,
         relatives: [clonedSymb, ...commonInfo.instances.filter(i => i !== cloned)],
       });
-      expect(cmps.getSymbolInfo(clonedSymb)).toEqual({
+      expect(getSymbolInfo(clonedSymb)).toEqual({
         ...commonInfo,
         isMain: true,
         isInstance: false,
@@ -595,27 +603,28 @@ describe('Symbols', () => {
     });
 
     describe('Symbols override', () => {
-      test('Symbol with override returns correctly instances to update', () => {
-        expect(symbol.__getSymbToUp().length).toBe(allInst.length);
+      test('Symbol with override returns correctly relatives to update', () => {
+        expect(getSymbolInfo(symbol).relatives).toEqual(allInst);
         // With override as `true`, it will return empty array with any 'changed'
-        symbol.set(keySymbolOvrd, true);
-        expect(symbol.__getSymbToUp({ changed: 'anything' }).length).toBe(0);
+        setSymbolOverride(symbol, true);
+        expect(getSymbolInfo(symbol, { withChanges: 'anything' }).relatives).toEqual([]);
         // With override as an array with props, changed option will count
-        symbol.set(keySymbolOvrd, ['components']);
-        expect(symbol.__getSymbToUp({ changed: 'anything' }).length).toBe(allInst.length);
-        symbol.set(keySymbolOvrd, ['components']);
-        expect(symbol.__getSymbToUp({ changed: 'components' }).length).toBe(0);
-        expect(symbol.__getSymbToUp({ changed: 'components:reset' }).length).toBe(0);
+        setSymbolOverride(symbol, ['components']);
+        expect(getSymbolInfo(symbol, { withChanges: 'anything' }).relatives).toEqual(allInst);
+        expect(getSymbolInfo(symbol, { withChanges: 'components' }).relatives).toEqual([]);
+        expect(getSymbolInfo(symbol, { withChanges: 'components:reset' }).relatives).toEqual([]);
         // Support also overrides with type of actions
-        symbol.set(keySymbolOvrd, ['components:change']); // specific change
-        expect(symbol.__getSymbToUp({ changed: 'components' }).length).toBe(allInst.length);
-        expect(symbol.__getSymbToUp({ changed: 'components:change' }).length).toBe(0);
+        // symbol.set(keySymbolOvrd, ['components:change']); // specific change
+        setSymbolOverride(symbol, 'components:change');
+        expect(getSymbolInfo(symbol, { withChanges: 'components' }).relatives).toEqual(allInst);
+        expect(getSymbolInfo(symbol, { withChanges: 'components:change' }).relatives).toEqual([]);
+        expect(getSymbolInfo(symbol, { withChanges: 'components:reset' }).relatives).toEqual(allInst);
       });
 
-      test('Symbol is not propagating props data if override is set', () => {
+      test('Symbol is not propagating props changes if override is set', () => {
         const propKey = 'someprop';
         const propValue = 'somevalue';
-        symbol.set(keySymbolOvrd, true);
+        setSymbolOverride(symbol, true);
         // Single prop update
         symbol.set(propKey, propValue);
         allInst.forEach(cmp => expect(cmp.get(propKey)).toBeFalsy());
@@ -625,8 +634,11 @@ describe('Symbols', () => {
           expect(cmp.get('prop1')).toBeFalsy();
           expect(cmp.get('prop2')).toBeFalsy();
         });
+      });
+
+      test('Symbol is propagating properly props changes not indicated in override', () => {
         // Override applied on specific properties
-        symbol.set(keySymbolOvrd, ['prop1']);
+        setSymbolOverride(symbol, 'prop1');
         symbol.set({ prop1: 'value1-2', prop2: 'value2-2' });
         allInst.forEach(cmp => {
           expect(cmp.get('prop1')).toBeFalsy();
@@ -634,10 +646,10 @@ describe('Symbols', () => {
         });
       });
 
-      test('On symbol props update, those having override are ignored', () => {
+      test('On symbol update propagation, those having override are ignored', () => {
         const propKey = 'someprop';
         const propValue = 'somevalue';
-        comp.set(keySymbolOvrd, true);
+        setSymbolOverride(comp, true);
         symbol.set(propKey, propValue);
         // All symbols are updated except the one with override
         all.forEach(cmp => {
@@ -647,7 +659,7 @@ describe('Symbols', () => {
             expect(cmp.get(propKey)).toBe(propValue);
           }
         });
-        comp.set(keySymbolOvrd, ['prop1']);
+        setSymbolOverride(comp, ['prop1']);
         symbol.set({ prop1: 'value1', prop2: 'value2' });
         // Only the overrided property is ignored
         all.forEach(cmp => {
@@ -662,7 +674,7 @@ describe('Symbols', () => {
       });
 
       test('Symbol is not propagating components data if override is set', () => {
-        symbol.set(keySymbolOvrd, ['components']);
+        setSymbolOverride(symbol, ['components']);
         const innCompsLen = symbol.components().length;
         all.forEach(cmp => expect(cmp.components().length).toBe(innCompsLen));
         symbol.components('Test text');
@@ -677,7 +689,7 @@ describe('Symbols', () => {
       });
 
       test('Symbol is not removing components data if override is set', () => {
-        symbol.set(keySymbolOvrd, ['components']);
+        setSymbolOverride(symbol, ['components']);
         const innCompsLen = symbol.components().length;
         symbol.components().at(0).remove();
         expect(symbol.components().length).toBe(innCompsLen - 1);
@@ -685,14 +697,14 @@ describe('Symbols', () => {
       });
 
       test('Symbol is not propagating remove on instances with ovverride', () => {
-        comp.set(keySymbolOvrd, ['components']);
+        setSymbolOverride(comp, ['components']);
         const innCompsLen = symbol.components().length;
         symbol.components().at(0).remove();
         all.forEach(cmp => expect(cmp.components().length).toBe(cmp === comp ? innCompsLen : innCompsLen - 1));
       });
 
       test('On symbol components update, those having override are ignored', () => {
-        comp.set(keySymbolOvrd, ['components']);
+        setSymbolOverride(comp, ['components']);
         const innCompsLen = comp.components().length;
         // Check reset action
         symbol.components('Test text');
@@ -725,14 +737,14 @@ describe('Symbols', () => {
     beforeEach(() => {
       comp = wrapper.append(compMultipleNodes)[0];
       compInitChild = comp.components().length;
-      symbol = createSymbol(comp);
-      const comp2 = createSymbol(comp);
-      const comp3 = createSymbol(comp);
+      symbol = createSymbolOld(comp);
+      const comp2 = createSymbolOld(comp);
+      const comp3 = createSymbolOld(comp);
       allInst = [comp, comp2, comp3];
       all = [...allInst, symbol];
       // Second symbol
       secComp = wrapper.append(simpleComp2)[0];
-      secSymbol = createSymbol(secComp);
+      secSymbol = createSymbolOld(secComp);
     });
 
     afterEach(() => {
@@ -776,7 +788,7 @@ describe('Symbols', () => {
     });
 
     test('Adding the instance, of the second symbol, inside one of the first instances, and then removing it, will not affect second instances outside', () => {
-      const secComp2 = createSymbol(secComp);
+      const secComp2 = createSymbolOld(secComp);
       const added = comp.append(secComp)[0];
       expect(secComp2.__isSymbolNested()).toBe(false);
       const secInstans = secSymbol.__getSymbols()!;
