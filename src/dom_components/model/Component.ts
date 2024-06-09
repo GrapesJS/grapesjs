@@ -41,6 +41,7 @@ import { ToolbarButtonProps } from './ToolbarButton';
 import { TraitProperties } from '../../trait_manager/types';
 import { ActionLabelComponents, ComponentsEvents } from '../types';
 import ItemView from '../../navigator/view/ItemView';
+import { logSymbol } from './SymbolUtils';
 
 export interface IComponent extends ExtractMethods<Component> {}
 
@@ -787,13 +788,6 @@ export default class Component extends StyleableModel<ComponentProperties> {
     return classStr ? classStr.split(' ') : [];
   }
 
-  __logSymbol(type: string, toUp: Component[], opts: any = {}) {
-    const symbol = this.__getSymbol();
-    const symbols = this.__getSymbols();
-    if (!symbol && !symbols) return;
-    this.em.log(type, { model: this, toUp, context: 'symbols', opts });
-  }
-
   __initSymb() {
     if (this.__symbReady) return;
     this.on('change', this.__upSymbProps);
@@ -916,7 +910,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
         if (this.__isSymbOvrd(prop)) delete changed[prop];
       });
 
-      this.__logSymbol('props', toUp, { opts, changed });
+      logSymbol(this, 'props', toUp, { opts, changed });
       toUp.forEach(child => {
         const propsChanged = { ...changed };
         // Avoid updating those with override
@@ -930,7 +924,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
 
   __upSymbCls(m: any, c: any, opts = {}) {
     const toUp = this.__getSymbToUp(opts);
-    this.__logSymbol('classes', toUp, { opts });
+    logSymbol(this, 'classes', toUp, { opts });
     toUp.forEach(child => {
       // @ts-ignore This will propagate the change up to __upSymbProps
       child.set('classes', this.get('classes'), { fromInstance: this });
@@ -952,7 +946,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
       });
       // @ts-ignore
       const cmps = m.models as Component[];
-      this.__logSymbol('reset', toUp, { components: cmps });
+      logSymbol(this, 'reset', toUp, { components: cmps });
       toUp.forEach(symb => {
         const newMods = cmps.map(mod => mod.clone({ symbol: true }));
         // @ts-ignore
@@ -973,7 +967,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
         addedInstances.push(addSymb ? addSymb : m);
       }
       !isTemp &&
-        this.__logSymbol('add', toUp, {
+        logSymbol(this, 'add', toUp, {
           opts: o,
           addedInstances: addedInstances.map(c => c.cid),
           added: m.cid,
@@ -1023,7 +1017,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
         }
 
         !isTemp &&
-          this.__logSymbol('remove', toUp, {
+          logSymbol(this, 'remove', toUp, {
             opts: o,
             removed: m.cid,
             isSymbNested,
