@@ -102,6 +102,7 @@ import ComponentView, { IComponentView } from './view/ComponentView';
 import ComponentWrapperView from './view/ComponentWrapperView';
 import ComponentsView from './view/ComponentsView';
 import ComponentHead, { type as typeHead } from './model/ComponentHead';
+import { getSymbol, getSymbols, getSymbolsToUpdate, isSymbolMain } from './model/SymbolUtils';
 
 export type ComponentEvent =
   | 'component:create'
@@ -716,12 +717,12 @@ export default class ComponentManager extends ItemManagerModule<DomComponentsCon
    * @returns
    */
   getSymbolInfo(cmp: Component, opts: { withChanges?: string } = {}) {
-    const isMain = cmp.__isSymbol();
-    const mainRef = cmp.__getSymbol();
+    const isMain = isSymbolMain(cmp);
+    const mainRef = getSymbol(cmp);
     const isInstance = !!mainRef;
-    const instances = (isMain ? cmp.__getSymbols() : mainRef?.__getSymbols()) || [];
+    const instances = (isMain ? getSymbols(cmp) : getSymbols(mainRef)) || [];
     const main = mainRef || (isMain ? cmp : undefined);
-    const relatives = cmp.__getSymbToUp({ changed: opts.withChanges });
+    const relatives = getSymbolsToUpdate(cmp, { changed: opts.withChanges });
 
     return {
       isSymbol: isMain || isInstance,

@@ -37,13 +37,13 @@ export const getSymbol = (symbol: Component): Component | undefined => {
   return result || undefined;
 };
 
-export const getSymbols = (symbol: Component): Component[] | undefined => {
-  let symbs = symbol.get(keySymbols);
+export const getSymbols = (symbol?: Component): Component[] | undefined => {
+  let symbs = symbol?.get(keySymbols);
 
   if (symbs && isArray(symbs)) {
     symbs.forEach((symb, idx) => {
       if (symb && isString(symb)) {
-        symbs[idx] = symbol.__getAllById()[symb];
+        symbs[idx] = symbol!.__getAllById()[symb];
       }
     });
     symbs = symbs.filter(symb => symb && !isString(symb));
@@ -77,7 +77,7 @@ export const getSymbolsToUpdate = (symb: Component, opts: SymbolToUpOptions = {}
   const symbol = getSymbol(symb);
   const all = symbol ? [symbol, ...(getSymbols(symbol) || [])] : symbols;
   result = all
-    .filter(s => s !== this)
+    .filter(s => s !== symb)
     // Avoid updating those with override
     .filter(s => !(changed && isSymbolOverride(s, changed)));
 
@@ -105,5 +105,5 @@ export const logSymbol = (symb: Component, type: string, toUp: Component[], opts
     return;
   }
 
-  symb.em.log(type, { model: this, toUp, context: 'symbols', opts });
+  symb.em.log(type, { model: symb, toUp, context: 'symbols', opts });
 };
