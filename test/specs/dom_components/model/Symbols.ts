@@ -118,6 +118,9 @@ describe('Symbols', () => {
 
     expect(toHTML(comp)).toBe(toHTML(symbol));
     expect(cmps.getSymbols()).toEqual([symbol]);
+    // Symbols should have an id
+    expect(symbol.getAttributes().id).toEqual(symbol.getId());
+    expect(comp.getAttributes().id).toEqual(comp.getId());
   });
 
   test('Create 1 symbol and clone the instance for another one', () => {

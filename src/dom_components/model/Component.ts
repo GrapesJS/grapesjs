@@ -713,8 +713,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
 
       if (
         // Symbols should always have an id
-        getSymbolMain(this) ||
-        getSymbolInstances(this) ||
+        isSymbol(this) ||
         // Components with script should always have an id
         this.get('script-export') ||
         this.get('script')
