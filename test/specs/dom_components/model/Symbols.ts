@@ -189,6 +189,27 @@ describe('Symbols', () => {
     expect(toHTML(comp2)).toBe(toHTML(symbol));
   });
 
+  test('When symbol is removed, all instances are detached', () => {
+    const comp = wrapper.append(compMultipleNodes)[0];
+    const symbol = createSymbol(comp);
+
+    [comp, ...comp.components().models].forEach(i => {
+      expect(getSymbolInfo(i).isInstance).toBe(true);
+    });
+
+    symbol.remove();
+
+    [comp, ...comp.components().models].forEach(i => {
+      expect(getSymbolInfo(i)).toEqual({
+        isSymbol: false,
+        isMain: false,
+        isInstance: false,
+        instances: [],
+        relatives: [],
+      });
+    });
+  });
+
   test('Symbols and instances are correctly serialized', () => {
     const comp = wrapper.append(simpleComp)[0];
     const symbol = createSymbol(comp);

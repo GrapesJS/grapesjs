@@ -104,6 +104,7 @@ import ComponentsView from './view/ComponentsView';
 import ComponentHead, { type as typeHead } from './model/ComponentHead';
 import { getSymbolMain, getSymbolInstances, getSymbolsToUpdate, isSymbolMain } from './model/SymbolUtils';
 import { SymbolInfo } from './types';
+import Symbols from './model/Symbols';
 
 export type ComponentEvent =
   | 'component:create'
@@ -297,7 +298,7 @@ export default class ComponentManager extends ItemManagerModule<DomComponentsCon
   keySymbols = 'symbols';
 
   shallow?: Component;
-  symbols: Components;
+  symbols: Symbols;
 
   /**
    * Initialize module. Called on a new instance of the editor with configurations passed
@@ -308,7 +309,7 @@ export default class ComponentManager extends ItemManagerModule<DomComponentsCon
   constructor(em: EditorModel) {
     super(em, 'DomComponents', new Components(undefined, { em }));
     const { config } = this;
-    this.symbols = new Components([], { em, config });
+    this.symbols = new Symbols([], { em, config });
 
     if (em) {
       //@ts-ignore

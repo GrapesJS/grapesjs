@@ -57,7 +57,7 @@ export const getSymbolInstances = (symbol?: Component): Component[] | undefined 
     symbs = symbs.filter(symb => symb && !isString(symb));
   }
 
-  return symbs;
+  return symbs || undefined;
 };
 
 export const isSymbolOverride = (symbol?: Component, prop = '') => {
@@ -103,6 +103,19 @@ export const getSymbolTop = (symbol: Component, opts?: any) => {
   }
 
   return result;
+};
+
+export const detachSymbolInstance = (symbol: Component, opts: { skipRefs?: boolean } = {}) => {
+  const symbolMain = getSymbolMain(symbol);
+  const symbs = symbolMain && getSymbolInstances(symbolMain);
+  !opts.skipRefs &&
+    symbs &&
+    symbolMain.set(
+      keySymbols,
+      symbs.filter(s => s !== symbol)
+    );
+  symbol.set(keySymbol, 0);
+  symbol.components().forEach(s => detachSymbolInstance(s, opts));
 };
 
 export const logSymbol = (symb: Component, type: string, toUp: Component[], opts: any = {}) => {
