@@ -1,7 +1,18 @@
+import Component from './model/Component';
+
 export enum ActionLabelComponents {
   remove = 'component:remove',
   add = 'component:add',
   move = 'component:move',
+}
+
+export interface SymbolInfo {
+  isSymbol: boolean;
+  isMain: boolean;
+  isInstance: boolean;
+  main?: Component;
+  instances: Component[];
+  relatives: Component[];
 }
 
 export enum ComponentsEvents {

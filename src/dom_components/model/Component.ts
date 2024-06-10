@@ -41,8 +41,8 @@ import { TraitProperties } from '../../trait_manager/types';
 import { ActionLabelComponents, ComponentsEvents } from '../types';
 import ItemView from '../../navigator/view/ItemView';
 import {
-  getSymbol,
-  getSymbols,
+  getSymbolMain,
+  getSymbolInstances,
   initSymbol,
   isSymbol,
   isSymbolMain,
@@ -713,8 +713,8 @@ export default class Component extends StyleableModel<ComponentProperties> {
 
       if (
         // Symbols should always have an id
-        getSymbol(this) ||
-        getSymbols(this) ||
+        getSymbolMain(this) ||
+        getSymbolInstances(this) ||
         // Components with script should always have an id
         this.get('script-export') ||
         this.get('script')
@@ -1258,15 +1258,15 @@ export default class Component extends StyleableModel<ComponentProperties> {
     // Symbols
     // If I clone an inner symbol, I have to reset it
     cloned.set(keySymbols, 0);
-    const symbol = getSymbol(this);
-    const symbols = getSymbols(this);
+    const symbol = getSymbolMain(this);
+    const symbols = getSymbolInstances(this);
 
     if (!opt.symbol && (symbol || symbols)) {
       cloned.set(keySymbol, 0);
       cloned.set(keySymbols, 0);
     } else if (symbol) {
       // Contains already a reference to a symbol
-      symbol.set(keySymbols, [...getSymbols(symbol)!, cloned]);
+      symbol.set(keySymbols, [...getSymbolInstances(symbol)!, cloned]);
       initSymbol(cloned);
     } else if (opt.symbol) {
       // Request to create a symbol

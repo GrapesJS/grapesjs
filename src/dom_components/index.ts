@@ -102,7 +102,8 @@ import ComponentView, { IComponentView } from './view/ComponentView';
 import ComponentWrapperView from './view/ComponentWrapperView';
 import ComponentsView from './view/ComponentsView';
 import ComponentHead, { type as typeHead } from './model/ComponentHead';
-import { getSymbol, getSymbols, getSymbolsToUpdate, isSymbolMain } from './model/SymbolUtils';
+import { getSymbolMain, getSymbolInstances, getSymbolsToUpdate, isSymbolMain } from './model/SymbolUtils';
+import { SymbolInfo } from './types';
 
 export type ComponentEvent =
   | 'component:create'
@@ -704,7 +705,7 @@ export default class ComponentManager extends ItemManagerModule<DomComponentsCon
   }
 
   /**
-   * Get the array of all available symbols.
+   * Get the array of available symbols.
    * @returns {Array<[Component]>}
    */
   getSymbols() {
@@ -716,11 +717,11 @@ export default class ComponentManager extends ItemManagerModule<DomComponentsCon
    * @param {[Component]} cmp Component symbol from which to get the info.
    * @returns
    */
-  getSymbolInfo(cmp: Component, opts: { withChanges?: string } = {}) {
+  getSymbolInfo(cmp: Component, opts: { withChanges?: string } = {}): SymbolInfo {
     const isMain = isSymbolMain(cmp);
-    const mainRef = getSymbol(cmp);
+    const mainRef = getSymbolMain(cmp);
     const isInstance = !!mainRef;
-    const instances = (isMain ? getSymbols(cmp) : getSymbols(mainRef)) || [];
+    const instances = (isMain ? getSymbolInstances(cmp) : getSymbolInstances(mainRef)) || [];
     const main = mainRef || (isMain ? cmp : undefined);
     const relatives = getSymbolsToUpdate(cmp, { changed: opts.withChanges });
 

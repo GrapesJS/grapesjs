@@ -17,9 +17,9 @@ export const isSymbolTop = (symbol: Component) => {
 
 export const isSymbolNested = (symbol: Component) => {
   if (!isSymbol(symbol)) return false;
-  const symbTopSelf = getSymbolTop(isSymbolMain(symbol) ? symbol : getSymbol(symbol)!);
+  const symbTopSelf = getSymbolTop(isSymbolMain(symbol) ? symbol : getSymbolMain(symbol)!);
   const symbTop = getSymbolTop(symbol);
-  const symbTopMain = isSymbolMain(symbTop) ? symbTop : getSymbol(symbTop);
+  const symbTopMain = isSymbolMain(symbTop) ? symbTop : getSymbolMain(symbTop);
   return symbTopMain !== symbTopSelf;
 };
 
@@ -29,7 +29,7 @@ export const initSymbol = (symbol: Component) => {
   symbol.__symbReady = true;
 };
 
-export const getSymbol = (symbol: Component): Component | undefined => {
+export const getSymbolMain = (symbol: Component): Component | undefined => {
   let result = symbol.get(keySymbol);
 
   if (result && isString(result)) {
@@ -45,7 +45,7 @@ export const getSymbol = (symbol: Component): Component | undefined => {
   return result || undefined;
 };
 
-export const getSymbols = (symbol?: Component): Component[] | undefined => {
+export const getSymbolInstances = (symbol?: Component): Component[] | undefined => {
   let symbs = symbol?.get(keySymbols);
 
   if (symbs && isArray(symbs)) {
@@ -81,9 +81,9 @@ export const getSymbolsToUpdate = (symb: Component, opts: SymbolToUpOptions = {}
     return result;
   }
 
-  const symbols = getSymbols(symb) || [];
-  const symbol = getSymbol(symb);
-  const all = symbol ? [symbol, ...(getSymbols(symbol) || [])] : symbols;
+  const symbols = getSymbolInstances(symb) || [];
+  const symbol = getSymbolMain(symb);
+  const all = symbol ? [symbol, ...(getSymbolInstances(symbol) || [])] : symbols;
   result = all
     .filter(s => s !== symb)
     // Avoid updating those with override
@@ -106,8 +106,8 @@ export const getSymbolTop = (symbol: Component, opts?: any) => {
 };
 
 export const logSymbol = (symb: Component, type: string, toUp: Component[], opts: any = {}) => {
-  const symbol = getSymbol(symb);
-  const symbols = getSymbols(symb);
+  const symbol = getSymbolMain(symb);
+  const symbols = getSymbolInstances(symb);
 
   if (!symbol && !symbols) {
     return;
@@ -183,14 +183,14 @@ export const updateSymbolComps = (symbol: Component, m: Component, c: Components
     // Add
   } else if (o.add) {
     let addedInstances: Component[] = [];
-    const isMainSymb = !!getSymbols(symbol);
+    const isMainSymb = !!getSymbolInstances(symbol);
     const toUp = getSymbolsToUpdate(symbol, {
       ...toUpOpts,
       changed: 'components:add',
     });
     if (toUp.length) {
-      const addSymb = getSymbol(m);
-      addedInstances = (addSymb ? getSymbols(addSymb) : getSymbols(m)) || [];
+      const addSymb = getSymbolMain(m);
+      addedInstances = (addSymb ? getSymbolInstances(addSymb) : getSymbolInstances(m)) || [];
       addedInstances = [...addedInstances];
       addedInstances.push(addSymb ? addSymb : m);
     }
@@ -214,12 +214,12 @@ export const updateSymbolComps = (symbol: Component, m: Component, c: Components
     // Remove
   } else {
     // Remove instance reference from the symbol
-    const symb = getSymbol(m);
+    const symb = getSymbolMain(m);
     symb &&
       !o.temporary &&
       symb.set(
         keySymbols,
-        getSymbols(symb)!.filter(i => i !== m)
+        getSymbolInstances(symb)!.filter(i => i !== m)
       );
 
     // Propagate remove only if the component is an inner symbol
