@@ -733,6 +733,7 @@ export default class ComponentManager extends ItemManagerModule<DomComponentsCon
    * Detach symbol instance from the main one.
    * The passed symbol instance will become a regular component.
    * @param {[Component]} component The component symbol to detach.
+   * @example
    * const cmpInstance = editor.getSelected();
    * // cmp.getSymbolInfo(cmpInstance).isInstance === true;
    * cmp.detachSymbol(cmpInstance);
