@@ -8,7 +8,13 @@ describe('Symbols', () => {
   let cmps: Editor['Components'];
   let um: Editor['UndoManager'];
 
-  const createSymbol = (comp: Component) => cmps.createSymbol(comp);
+  const createSymbol = (component: Component) => {
+    return editor.runCommand(cmps.commands.symbolAdd, { component }) as Component;
+  };
+
+  const detachSymbol = (component: Component) => {
+    editor.runCommand(cmps.commands.symbolDetach, { component });
+  };
 
   const getSymbolInfo = ((comp, opts) => cmps.getSymbolInfo(comp, opts)) as Editor['Components']['getSymbolInfo'];
 
@@ -154,6 +160,7 @@ describe('Symbols', () => {
     });
 
     expect(toHTML(comp2)).toBe(toHTML(symbol));
+    expect(cmps.getSymbols()).toEqual([symbol]);
   });
 
   test('Create 1 symbol and clone it to have another instance', () => {
@@ -207,6 +214,33 @@ describe('Symbols', () => {
         instances: [],
         relatives: [],
       });
+    });
+  });
+
+  test('Detach symbol instance', () => {
+    const comp = wrapper.append(compMultipleNodes)[0];
+    const symbol = createSymbol(comp);
+    const comp2 = createSymbol(comp);
+
+    detachSymbol(comp);
+
+    [comp, ...comp.components().models].forEach(i => {
+      expect(getSymbolInfo(i)).toEqual({
+        isSymbol: false,
+        isMain: false,
+        isInstance: false,
+        instances: [],
+        relatives: [],
+      });
+    });
+
+    expect(getSymbolInfo(comp2)).toEqual({
+      isSymbol: true,
+      isMain: false,
+      isInstance: true,
+      main: symbol,
+      instances: [comp2],
+      relatives: [symbol],
     });
   });
 

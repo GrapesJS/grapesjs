@@ -15,6 +15,11 @@ export interface SymbolInfo {
   relatives: Component[];
 }
 
+export enum ComponentsCommands {
+  symbolAdd = 'core:symbol-add',
+  symbolDetach = 'core:symbol-detach',
+}
+
 export enum ComponentsEvents {
   /**
    * @event `component:add` New component added.

@@ -103,8 +103,10 @@ import ComponentWrapperView from './view/ComponentWrapperView';
 import ComponentsView from './view/ComponentsView';
 import ComponentHead, { type as typeHead } from './model/ComponentHead';
 import { getSymbolMain, getSymbolInstances, getSymbolsToUpdate, isSymbolMain } from './model/SymbolUtils';
-import { SymbolInfo } from './types';
+import { ComponentsCommands, SymbolInfo } from './types';
 import Symbols from './model/Symbols';
+import SymbolAdd from './commands/SymbolAdd';
+import SymbolDetach from './commands/SymbolDetach';
 
 export type ComponentEvent =
   | 'component:create'
@@ -299,6 +301,7 @@ export default class ComponentManager extends ItemManagerModule<DomComponentsCon
 
   shallow?: Component;
   symbols: Symbols;
+  commands = ComponentsCommands;
 
   /**
    * Initialize module. Called on a new instance of the editor with configurations passed
@@ -338,8 +341,11 @@ export default class ComponentManager extends ItemManagerModule<DomComponentsCon
   }
 
   postLoad() {
-    const um = this.em.UndoManager;
-    um.add(this.symbols);
+    const { em, symbols, commands } = this;
+    const { UndoManager, Commands } = em;
+    UndoManager.add(symbols);
+    Commands.add(commands.symbolAdd, SymbolAdd);
+    Commands.add(commands.symbolDetach, SymbolDetach);
   }
 
   load(data: any) {
@@ -688,21 +694,6 @@ export default class ComponentManager extends ItemManagerModule<DomComponentsCon
    */
   isComponent(obj?: ObjectAny): obj is Component {
     return isComponent(obj);
-  }
-
-  /**
-   * Create a new symbol from component.
-   * If the passed component is not a symbol, it will be converted to an instance and the menthod will
-   * return the main symbol.
-   * If the passed component is already an instance, a new instance will be created and returned.
-   * If the passed component is the main symbol, a new instance will be created and returned.
-   * @param {[Component]} cmp Component from which to create a symbol.
-   * @returns {[Component]}
-   */
-  createSymbol(cmp: Component) {
-    const symbol = cmp.clone({ symbol: true });
-    this.symbols.add(symbol);
-    return symbol;
   }
 
   /**
