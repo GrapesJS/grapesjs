@@ -597,6 +597,8 @@ export default class StyleManager extends ItemManagerModule<
       const cmp = target.toHTML ? target : target.getComponent();
       const optsSel = { array: true } as const;
       let cmpRules: CssRule[] = [];
+      let tagNameRules: CssRule[] = [];
+      let invisibleAndOtherRules: CssRule[] = [];
       let otherRules: CssRule[] = [];
       let rules: CssRule[] = [];
 
@@ -605,19 +607,41 @@ export default class StyleManager extends ItemManagerModule<
           ? []
           : cssC.getRules().filter(rule => {
               const rSels = rule.getSelectors().map(s => s.getFullName());
-              return !!rSels.length && rSels.every(rSel => values.indexOf(rSel) >= 0);
+
+              // rSels is equal to 0 when rule selectors contain tagName like : p {}, .logo path {}, ul li {}
+              if (rSels.length === 0) {
+                return false;
+              }
+
+              return rSels.every(rSel => values.indexOf(rSel) >= 0);
             });
+      };
+
+      const rulesByTagName = (tagName: string) => {
+        return !tagName ? [] : cssC.getRules().filter(rule => rule.selectorsToString() === tagName);
       };
 
       // Componente related rule
       if (cmp) {
         cmpRules = cssC.getRules(`#${cmp.getId()}`);
+        tagNameRules = rulesByTagName(cmp.get('tagName'));
         otherRules = sel ? rulesBySelectors(sel.getSelectors().getFullName(optsSel)) : [];
-        rules = otherRules.concat(cmpRules);
+        rules = otherRules.concat(tagNameRules).concat(cmpRules);
       } else {
         cmpRules = sel ? cssC.getRules(`#${sel.getId()}`) : [];
-        otherRules = rulesBySelectors(target.getSelectors().getFullName(optsSel));
-        rules = cmpRules.concat(otherRules);
+        tagNameRules = rulesByTagName(sel?.get('tagName') || '');
+        // Get rules set on invisible selectors like private one
+        const allCmpClasses = sel?.getSelectors().getFullName(optsSel) || [];
+        const invisibleSel = allCmpClasses.filter(
+          (item: string) =>
+            target
+              .getSelectors()
+              .getFullName(optsSel)
+              .findIndex(sel => sel === item) === -1
+        );
+        // Get rules set on active and visible selectors
+        invisibleAndOtherRules = rulesBySelectors(invisibleSel.concat(target.getSelectors().getFullName(optsSel)));
+        rules = tagNameRules.concat(cmpRules).concat(invisibleAndOtherRules);
       }
 
       const all = rules
