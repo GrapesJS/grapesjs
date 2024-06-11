@@ -704,6 +704,7 @@ export default class ComponentManager extends ItemManagerModule<DomComponentsCon
    * If the passed component is already an instance, a new instance will be created and returned.
    * If the passed component is the main symbol, a new instance will be created and returned.
    * @param {[Component]} component Component from which create a symbol.
+   * @returns {[Component]}
    * @example
    * const symbol = cmp.isComponent(editor.getSelected());
    * // cmp.getSymbolInfo(symbol).isSymbol === true;
