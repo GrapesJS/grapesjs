@@ -379,6 +379,23 @@ export default class Component extends StyleableModel<ComponentProperties> {
     this.emitUpdate('toolbar');
   }
 
+  __getAllById() {
+    const { em } = this;
+    return em ? em.Components.allById() : {};
+  }
+
+  __upSymbProps(m: any, opts: SymbolToUpOptions = {}) {
+    updateSymbolProps(this, opts);
+  }
+
+  __upSymbCls(m: any, c: any, opts = {}) {
+    updateSymbolCls(this, opts);
+  }
+
+  __upSymbComps(m: Component, c: Components, o: any) {
+    updateSymbolComps(this, m, c, o);
+  }
+
   /**
    * Check component's type
    * @param  {string}  type Component type
@@ -424,6 +441,26 @@ export default class Component extends StyleableModel<ComponentProperties> {
    */
   getDragMode(): DragMode {
     return this.get('dmode') || '';
+  }
+
+  /**
+   * Set symbol override.
+   * By setting override to `true`, none of its property changes will be propagated to relative symbols.
+   * By setting override to specific properties, changes of those properties will be skipped from propagation.
+   * @param {Boolean|String|Array<String>} value
+   * @example
+   * component.setSymbolOverride(['children', 'classes']);
+   */
+  setSymbolOverride(value?: boolean | string | string[]) {
+    this.set(keySymbolOvrd, (isString(value) ? [value] : value) ?? 0);
+  }
+
+  /**
+   * Get symbol override value.
+   * @returns {Boolean|Array<String>}
+   */
+  getSymbolOverride(): boolean | string[] | undefined {
+    return this.get(keySymbolOvrd);
   }
 
   /**
@@ -794,23 +831,6 @@ export default class Component extends StyleableModel<ComponentProperties> {
     const attr = this.getAttributes();
     const classStr = attr.class;
     return classStr ? classStr.split(' ') : [];
-  }
-
-  __getAllById() {
-    const { em } = this;
-    return em ? em.Components.allById() : {};
-  }
-
-  __upSymbProps(m: any, opts: SymbolToUpOptions = {}) {
-    updateSymbolProps(this, opts);
-  }
-
-  __upSymbCls(m: any, c: any, opts = {}) {
-    updateSymbolCls(this, opts);
-  }
-
-  __upSymbComps(m: Component, c: Components, o: any) {
-    updateSymbolComps(this, m, c, o);
   }
 
   initClasses(m?: any, c?: any, opts: any = {}) {

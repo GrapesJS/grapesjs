@@ -16,7 +16,13 @@ export interface SymbolInfo {
 }
 
 export enum ComponentsCommands {
+  /**
+   * Add a new symbol from a component.
+   */
   symbolAdd = 'core:symbol-add',
+  /**
+   * Detach symbol instance from the main one.
+   */
   symbolDetach = 'core:symbol-detach',
 }
 

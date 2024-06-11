@@ -18,9 +18,9 @@ describe('Symbols', () => {
 
   const getSymbolInfo = ((comp, opts) => cmps.getSymbolInfo(comp, opts)) as Editor['Components']['getSymbolInfo'];
 
-  const setSymbolOverride = ((comp, value) => {
-    return cmps.setSymbolOverride(comp, value);
-  }) as Editor['Components']['setSymbolOverride'];
+  const setSymbolOverride = (comp: Component, value: Parameters<Component['setSymbolOverride']>[0]) => {
+    comp.setSymbolOverride(value);
+  };
 
   const duplicate = (comp: Component): Component => {
     const cloned = comp.clone({});

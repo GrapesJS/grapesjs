@@ -59,7 +59,7 @@ import { AddOptions, ObjectAny } from '../common';
 import EditorModel from '../editor/model/Editor';
 import { isComponent } from '../utils/mixins';
 import defaults, { DomComponentsConfig } from './config/config';
-import Component, { IComponent, keySymbolOvrd, keyUpdate, keyUpdateInside } from './model/Component';
+import Component, { IComponent, keyUpdate, keyUpdateInside } from './model/Component';
 import ComponentComment from './model/ComponentComment';
 import ComponentFrame from './model/ComponentFrame';
 import ComponentImage from './model/ComponentImage';
@@ -705,9 +705,12 @@ export default class ComponentManager extends ItemManagerModule<DomComponentsCon
   }
 
   /**
-   * Get info from a symbol.
+   * Get info about the symbol.
    * @param {[Component]} cmp Component symbol from which to get the info.
-   * @returns
+   * @returns {Object} Object containing symbol info.
+   * @example
+   * cmp.getSymbolInfo(editor.getSelected());
+   * // > { isSymbol: true, isMain: false, isInstance: true, ... }
    */
   getSymbolInfo(cmp: Component, opts: { withChanges?: string } = {}): SymbolInfo {
     const isMain = isSymbolMain(cmp);
@@ -725,26 +728,6 @@ export default class ComponentManager extends ItemManagerModule<DomComponentsCon
       instances: instances,
       relatives: relatives || [],
     };
-  }
-
-  /**
-   * Update symbol override.
-   * By setting override to true, none of its properties will be propagated to its relative symbols.
-   * By setting override to specific properties, changes to those properties will be skipped from propagation.
-   * @param {[Component]} symbol
-   * @param {Boolean|String|Array<String>} value
-   */
-  setSymbolOverride(symbol: Component, value: boolean | string | string[]) {
-    symbol.set(keySymbolOvrd, isString(value) ? [value] : value);
-  }
-
-  /**
-   * Get symbol override value.
-   * @param {[Component]} symbol
-   * @returns {Boolean|Array<String>}
-   */
-  getSymbolOverride(symbol: Component): boolean | string[] | undefined {
-    return symbol.get(keySymbolOvrd);
   }
 
   /**
