@@ -8,13 +8,11 @@ describe('Symbols', () => {
   let cmps: Editor['Components'];
   let um: Editor['UndoManager'];
 
-  const createSymbol = (component: Component) => {
-    return editor.runCommand(cmps.commands.symbolAdd, { component }) as Component;
-  };
+  const getSymbols = () => cmps.getSymbols();
 
-  const detachSymbol = (component: Component) => {
-    editor.runCommand(cmps.commands.symbolDetach, { component });
-  };
+  const createSymbol = (component: Component) => cmps.addSymbol(component);
+
+  const detachSymbol = (component: Component) => cmps.detachSymbol(component);
 
   const getSymbolInfo = ((comp, opts) => cmps.getSymbolInfo(comp, opts)) as Editor['Components']['getSymbolInfo'];
 
@@ -91,7 +89,7 @@ describe('Symbols', () => {
   });
 
   test('Create symbol from a component', () => {
-    expect(cmps.getSymbols()).toEqual([]);
+    expect(getSymbols()).toEqual([]);
     const comp = wrapper.append(simpleComp)[0];
 
     expect(getSymbolInfo(comp)).toEqual({
@@ -123,7 +121,7 @@ describe('Symbols', () => {
     });
 
     expect(toHTML(comp)).toBe(toHTML(symbol));
-    expect(cmps.getSymbols()).toEqual([symbol]);
+    expect(getSymbols()).toEqual([symbol]);
     // Symbols should have an id
     expect(symbol.getAttributes().id).toEqual(symbol.getId());
     expect(comp.getAttributes().id).toEqual(comp.getId());
@@ -160,7 +158,7 @@ describe('Symbols', () => {
     });
 
     expect(toHTML(comp2)).toBe(toHTML(symbol));
-    expect(cmps.getSymbols()).toEqual([symbol]);
+    expect(getSymbols()).toEqual([symbol]);
   });
 
   test('Create 1 symbol and clone it to have another instance', () => {
@@ -353,7 +351,7 @@ describe('Symbols', () => {
       ],
     };
     editor.loadProjectData(projectData);
-    const symbols = cmps.getSymbols();
+    const symbols = getSymbols();
     const symbol = symbols[0];
     const comp = cmps.getWrapper()!.components().at(0);
 

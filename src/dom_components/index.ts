@@ -53,7 +53,7 @@
  *
  * @module Components
  */
-import { debounce, isArray, isEmpty, isFunction, isString, result } from 'underscore';
+import { debounce, isArray, isEmpty, isFunction, isString, isSymbol, result } from 'underscore';
 import { ItemManagerModule } from '../abstract/Module';
 import { AddOptions, ObjectAny } from '../common';
 import EditorModel from '../editor/model/Editor';
@@ -102,11 +102,16 @@ import ComponentView, { IComponentView } from './view/ComponentView';
 import ComponentWrapperView from './view/ComponentWrapperView';
 import ComponentsView from './view/ComponentsView';
 import ComponentHead, { type as typeHead } from './model/ComponentHead';
-import { getSymbolMain, getSymbolInstances, getSymbolsToUpdate, isSymbolMain } from './model/SymbolUtils';
-import { ComponentsCommands, SymbolInfo } from './types';
+import {
+  getSymbolMain,
+  getSymbolInstances,
+  getSymbolsToUpdate,
+  isSymbolMain,
+  isSymbolInstance,
+  detachSymbolInstance,
+} from './model/SymbolUtils';
+import { SymbolInfo } from './types';
 import Symbols from './model/Symbols';
-import SymbolAdd from './commands/SymbolAdd';
-import SymbolDetach from './commands/SymbolDetach';
 
 export type ComponentEvent =
   | 'component:create'
@@ -301,7 +306,6 @@ export default class ComponentManager extends ItemManagerModule<DomComponentsCon
 
   shallow?: Component;
   symbols: Symbols;
-  commands = ComponentsCommands;
 
   /**
    * Initialize module. Called on a new instance of the editor with configurations passed
@@ -341,11 +345,9 @@ export default class ComponentManager extends ItemManagerModule<DomComponentsCon
   }
 
   postLoad() {
-    const { em, symbols, commands } = this;
-    const { UndoManager, Commands } = em;
+    const { em, symbols } = this;
+    const { UndoManager } = em;
     UndoManager.add(symbols);
-    Commands.add(commands.symbolAdd, SymbolAdd);
-    Commands.add(commands.symbolDetach, SymbolDetach);
   }
 
   load(data: any) {
@@ -697,28 +699,65 @@ export default class ComponentManager extends ItemManagerModule<DomComponentsCon
   }
 
   /**
-   * Get the array of available symbols.
+   * Add a new symbol from a component.
+   * If the passed component is not a symbol, it will be converted to an instance and will return the main symbol.
+   * If the passed component is already an instance, a new instance will be created and returned.
+   * If the passed component is the main symbol, a new instance will be created and returned.
+   * @param {[Component]} component Component from which create a symbol.
+   * @example
+   * const symbol = cmp.isComponent(editor.getSelected());
+   * // cmp.getSymbolInfo(symbol).isSymbol === true;
+   */
+  addSymbol(component: Component) {
+    const symbol = component.clone({ symbol: true });
+    isSymbolMain(symbol) && this.symbols.add(symbol);
+
+    return symbol;
+  }
+
+  /**
+   * Get the array of main symbols.
    * @returns {Array<[Component]>}
+   * @example
+   * const symbols = cmp.getSymbols();
+   * // [Component, Component, ...]
+   * // Removing the main symbol will detach all the relative instances.
+   * symbols[0].remove();
    */
   getSymbols() {
     return [...this.symbols.models];
   }
 
   /**
+   * Detach symbol instance from the main one.
+   * The passed symbol instance will become a regular component.
+   * @param {[Component]} component The component symbol to detach.
+   * const cmpInstance = editor.getSelected();
+   * // cmp.getSymbolInfo(cmpInstance).isInstance === true;
+   * cmp.detachSymbol(cmpInstance);
+   * // cmp.getSymbolInfo(cmpInstance).isInstance === false;
+   */
+  detachSymbol(component: Component) {
+    if (isSymbolInstance(component)) {
+      detachSymbolInstance(component);
+    }
+  }
+
+  /**
    * Get info about the symbol.
-   * @param {[Component]} cmp Component symbol from which to get the info.
+   * @param {[Component]} component Component symbol from which to get the info.
    * @returns {Object} Object containing symbol info.
    * @example
    * cmp.getSymbolInfo(editor.getSelected());
    * // > { isSymbol: true, isMain: false, isInstance: true, ... }
    */
-  getSymbolInfo(cmp: Component, opts: { withChanges?: string } = {}): SymbolInfo {
-    const isMain = isSymbolMain(cmp);
-    const mainRef = getSymbolMain(cmp);
+  getSymbolInfo(component: Component, opts: { withChanges?: string } = {}): SymbolInfo {
+    const isMain = isSymbolMain(component);
+    const mainRef = getSymbolMain(component);
     const isInstance = !!mainRef;
-    const instances = (isMain ? getSymbolInstances(cmp) : getSymbolInstances(mainRef)) || [];
-    const main = mainRef || (isMain ? cmp : undefined);
-    const relatives = getSymbolsToUpdate(cmp, { changed: opts.withChanges });
+    const instances = (isMain ? getSymbolInstances(component) : getSymbolInstances(mainRef)) || [];
+    const main = mainRef || (isMain ? component : undefined);
+    const relatives = getSymbolsToUpdate(component, { changed: opts.withChanges });
 
     return {
       isSymbol: isMain || isInstance,
