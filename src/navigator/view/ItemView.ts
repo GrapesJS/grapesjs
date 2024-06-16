@@ -20,12 +20,13 @@ export type ItemViewProps = ViewOptions & {
 };
 
 const inputProp = 'contentEditable';
+const dataToggleMove = 'data-toggle-move';
 
 export default class ItemView extends View {
   events() {
     return {
-      'mousedown [data-toggle-move]': 'startSort',
-      'touchstart [data-toggle-move]': 'startSort',
+      [`mousedown [${dataToggleMove}]`]: 'startSort',
+      [`touchstart [${dataToggleMove}]`]: 'startSort',
       'click [data-toggle-visible]': 'toggleVisibility',
       'click [data-toggle-open]': 'toggleOpening',
       'click [data-toggle-select]': 'handleSelect',
@@ -76,7 +77,7 @@ export default class ItemView extends View {
         </div>
         <div class="${pfx}layer-item-right">
           <div class="${this.clsCount}" data-count>${count || ''}</div>
-          <div class="${this.clsMove}" data-toggle-move>${move || ''}</div>
+          <div class="${this.clsMove}" ${dataToggleMove}>${move || ''}</div>
         </div>
       </div>
       <div class="${this.clsChildren}"></div>
@@ -151,6 +152,7 @@ export default class ItemView extends View {
       ['change:open', this.updateOpening],
       ['change:layerable', this.updateLayerable],
       ['change:style:display', this.updateVisibility],
+      ['change:draggable', this.updateMove],
       ['rerender:layer', this.render],
       ['change:name change:custom-name', this.updateName],
       // @ts-ignore
@@ -181,6 +183,15 @@ export default class ItemView extends View {
     const method = hidden ? 'addClass' : 'removeClass';
     this.$el[method](hClass);
     this.getVisibilityEl()[method](`${pfx}layer-off`);
+  }
+
+  updateMove() {
+    const { model, config } = this;
+    const el = this.getItemContainer().find(`[${dataToggleMove}]`)[0];
+    if (el) {
+      const isDraggable = model.get('draggable') && config.sortable;
+      el.style.display = isDraggable ? '' : 'none';
+    }
   }
 
   /**
@@ -421,16 +432,13 @@ export default class ItemView extends View {
       el.find(`.${this.clsChildren}`).append(children);
     }
 
-    if (!model.get('draggable') || !config.sortable) {
-      el.children(`.${this.clsMove}`).remove();
-    }
-
     !module.isVisible(model) && (this.className += ` ${pfx}hide`);
     hidden && (this.className += ` ${ppfx}hidden`);
     el.attr('class', this.className!);
     this.updateStatus();
     this.updateOpening();
     this.updateVisibility();
+    this.updateMove();
     this.__render();
     this._rendered = true;
     return this;
