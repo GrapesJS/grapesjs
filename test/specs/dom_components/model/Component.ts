@@ -19,7 +19,9 @@ let em: Editor;
 
 describe('Component', () => {
   beforeEach(() => {
-    em = new Editor({ avoidDefaults: true });
+    // FIXME: avoidInlineStyle is deprecated and when running in dev or prod, `avoidInlineStyle` is set to true
+    // The following tests ran with `avoidInlineStyle` to false (this is why I add the parameter here)
+    em = new Editor({ avoidDefaults: true, avoidInlineStyle: true });
     dcomp = em.Components;
     em.Pages.onLoad();
     compOpts = {
@@ -278,10 +280,10 @@ describe('Component', () => {
       class: 'class1 class2',
       style: 'color: white; background: #fff',
     });
+    // Style is not in attributes because it has not been set as inline
     expect(obj.getAttributes()).toEqual({
       id: 'test',
       class: 'class1 class2',
-      style: 'color:white;background:#fff;',
       'data-test': 'value',
     });
     expect(obj.classes.length).toEqual(2);
@@ -291,13 +293,25 @@ describe('Component', () => {
     });
   });
 
-  test('set inline style with multiple values of the same key', () => {
+  test('set style with multiple values of the same key', () => {
     obj.setAttributes({ style: CSS_BG_STR });
     expect(obj.getStyle()).toEqual(CSS_BG_OBJ);
   });
 
-  test('get proper style from inline style with multiple values of the same key', () => {
-    obj.setAttributes({ style: CSS_BG_STR });
+  test('set style on id and inline style', () => {
+    obj.setStyle({ color: 'red' }); // Should be set on id
+    obj.setStyle({ display: 'flex' }, { inline: true }); // Should be set as inline
+
+    expect(obj.getStyle()).toEqual({
+      color: 'red',
+    });
+    expect(obj.getStyle({ inline: true })).toEqual({
+      display: 'flex',
+    });
+  });
+
+  test('get proper style from style with multiple values of the same key', () => {
+    obj.setAttributes({ style: CSS_BG_STR }, { inline: true });
     expect(obj.getAttributes()).toEqual({
       style: CSS_BG_STR.split('\n').join(''),
     });
