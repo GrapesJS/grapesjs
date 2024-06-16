@@ -1,14 +1,16 @@
 import { isArray, isString, keys } from 'underscore';
-import { Model, ObjectAny, ObjectHash } from '../../common';
+import { Model, ObjectAny, ObjectHash, SetOptions } from '../../common';
 import ParserHtml from '../../parser/model/ParserHtml';
 import Selectors from '../../selector_manager/model/Selectors';
 import { shallowDiff } from '../../utils/mixins';
 
 export type StyleProps = Record<string, string | string[]>;
 
-export type UpdateStyleOptions = ObjectAny & {
+export type UpdateStyleOptions = SetOptions & {
   partial?: boolean;
   addStyle?: StyleProps;
+  inline?: boolean;
+  noEvent?: boolean;
 };
 
 const parserHtml = ParserHtml();

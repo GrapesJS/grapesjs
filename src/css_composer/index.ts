@@ -39,6 +39,7 @@ import { ItemManagerModule } from '../abstract/Module';
 import EditorModel from '../editor/model/Editor';
 import Component from '../dom_components/model/Component';
 import { ObjectAny, PrevToNewIdMap } from '../common';
+import { UpdateStyleOptions } from '../domain_abstract/model/StyleableModel';
 
 /** @private */
 interface RuleOptions {
@@ -53,7 +54,7 @@ interface RuleOptions {
 }
 
 /** @private */
-interface SetRuleOptions extends RuleOptions {
+interface SetRuleOptions extends RuleOptions, UpdateStyleOptions {
   /**
    * If the rule exists already, merge passed styles instead of replacing them.
    */
@@ -61,7 +62,7 @@ interface SetRuleOptions extends RuleOptions {
 }
 
 /** @private */
-export interface GetSetRuleOptions {
+export interface GetSetRuleOptions extends UpdateStyleOptions {
   state?: string;
   mediaText?: string;
   addOpts?: ObjectAny;
