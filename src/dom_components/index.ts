@@ -718,6 +718,7 @@ export default class ComponentManager extends ItemManagerModule<DomComponentsCon
 
     const symbol = component.clone({ symbol: true });
     isSymbolMain(symbol) && this.symbols.add(symbol);
+    this.em.trigger('component:toggled');
 
     return symbol;
   }
