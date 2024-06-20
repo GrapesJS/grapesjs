@@ -4,12 +4,21 @@ import Component from './Component';
 import Components from './Components';
 import { detachSymbolInstance, getSymbolInstances } from './SymbolUtils';
 
+interface PropsComponentUpdate {
+  component: Component;
+  changed: ObjectAny;
+  options: ObjectAny;
+}
+
 export default class Symbols extends Components {
   refreshDbn: Debounced;
 
   constructor(...args: ConstructorParameters<typeof Components>) {
     super(...args);
     this.refreshDbn = debounce(() => this.refresh(), 0);
+    const { events } = this;
+    this.on(events.update, this.onUpdate);
+    this.on(events.updateInside, this.onUpdateDeep);
   }
 
   removeChildren(component: Component, coll?: Components, opts: any = {}) {
@@ -22,6 +31,14 @@ export default class Symbols extends Components {
     super.onAdd(...args);
     const [component] = args;
     this.__trgEvent(this.events.symbolMainAdd, { component });
+  }
+
+  onUpdate(props: PropsComponentUpdate) {
+    this.__trgEvent(this.events.symbolMainUpdate, props);
+  }
+
+  onUpdateDeep(props: PropsComponentUpdate) {
+    this.__trgEvent(this.events.symbolMainUpdateDeep, props);
   }
 
   refresh() {

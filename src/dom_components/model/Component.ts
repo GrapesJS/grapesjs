@@ -67,7 +67,7 @@ export const keySymbols = '__symbols';
 export const keySymbol = '__symbol';
 export const keySymbolOvrd = '__symbol_ovrd';
 export const keyUpdate = ComponentsEvents.update;
-export const keyUpdateInside = `${keyUpdate}-inside`;
+export const keyUpdateInside = ComponentsEvents.updateInside;
 
 /**
  * The Component object represents a single node of our template structure, so when you update its properties the changes are

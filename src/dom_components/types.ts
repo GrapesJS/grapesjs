@@ -45,6 +45,7 @@ export enum ComponentsEvents {
    * editor.on('component:update', (component) => { ... });
    */
   update = 'component:update',
+  updateInside = 'component:update-inside',
 
   /**
    * @event `symbol:main:add` Added new main symbol.
@@ -52,6 +53,14 @@ export enum ComponentsEvents {
    * editor.on('symbol:main:add', ({ component }) => { ... });
    */
   symbolMainAdd = 'symbol:main:add',
+
+  /**
+   * @event `symbol:main:update` Main symbol updated.
+   * @example
+   * editor.on('symbol:main:update', ({ component }) => { ... });
+   */
+  symbolMainUpdate = 'symbol:main:update',
+  symbolMainUpdateDeep = 'symbol:main:update-deep',
 
   /**
    * @event `symbol:main:remove` Main symbol removed.
