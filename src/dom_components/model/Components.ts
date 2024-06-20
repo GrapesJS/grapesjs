@@ -110,6 +110,10 @@ Component> {
     this.domc = opt.domc || em?.Components;
   }
 
+  get events() {
+    return this.domc?.events!;
+  }
+
   resetChildren(models: Components, opts: { previousModels?: Component[]; keepIds?: string[] } = {}) {
     const coll = this;
     const prev = opts.previousModels || [];

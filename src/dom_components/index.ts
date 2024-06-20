@@ -111,7 +111,7 @@ import {
   detachSymbolInstance,
   isSymbolRoot,
 } from './model/SymbolUtils';
-import { SymbolInfo } from './types';
+import { ComponentsEvents, SymbolInfo } from './types';
 import Symbols from './model/Symbols';
 
 export type ComponentEvent =
@@ -307,6 +307,7 @@ export default class ComponentManager extends ItemManagerModule<DomComponentsCon
 
   shallow?: Component;
   symbols: Symbols;
+  events = ComponentsEvents;
 
   /**
    * Initialize module. Called on a new instance of the editor with configurations passed
@@ -317,7 +318,7 @@ export default class ComponentManager extends ItemManagerModule<DomComponentsCon
   constructor(em: EditorModel) {
     super(em, 'DomComponents', new Components(undefined, { em }));
     const { config } = this;
-    this.symbols = new Symbols([], { em, config });
+    this.symbols = new Symbols([], { em, config, domc: this });
 
     if (em) {
       //@ts-ignore

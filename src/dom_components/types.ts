@@ -38,4 +38,32 @@ export enum ComponentsEvents {
    * editor.on('component:create', (component) => { ... });
    */
   create = 'component:create',
+
+  /**
+   * @event `symbol:main:add` Added new main symbol.
+   * @example
+   * editor.on('symbol:main:add', ({ component }) => { ... });
+   */
+  symbolMainAdd = 'symbol:main:add',
+
+  /**
+   * @event `symbol:main:remove` Main symbol removed.
+   * @example
+   * editor.on('symbol:main:remove', ({ component }) => { ... });
+   */
+  symbolMainRemove = 'symbol:main:remove',
+
+  /**
+   * @event `symbol:main` Catch-all event related to main symbol updates.
+   * @example
+   * editor.on('symbol:main', ({ event, component }) => { ... });
+   */
+  symbolMain = 'symbol:main',
+
+  /**
+   * @event `symbol` Catch-all event for any symbol update (main or instance).
+   * @example
+   * editor.on('symbol', () => { ... });
+   */
+  symbol = 'symbol',
 }
