@@ -16,6 +16,7 @@ import {
 import ComponentText from './ComponentText';
 import ComponentWrapper from './ComponentWrapper';
 import { ComponentsEvents } from '../types';
+import { isSymbolInstance, isSymbolRoot } from './SymbolUtils';
 
 export const getComponentIds = (cmp?: Component | Component[] | Components, res: string[] = []) => {
   if (!cmp) return [];
@@ -193,12 +194,14 @@ Component> {
       sels.remove(rulesRemoved.map(rule => rule.getSelectors().at(0)));
 
       if (!removed.opt.temporary) {
-        em.Commands.run('core:component-style-clear', {
-          target: removed,
-        });
+        em.Commands.run('core:component-style-clear', { target: removed });
         removed.removed();
         removed.trigger('removed');
         em.trigger(ComponentsEvents.remove, removed);
+
+        if (domc && isSymbolInstance(removed) && isSymbolRoot(removed)) {
+          domc.symbols.__trgEvent(domc.events.symbolInstanceRemove, { component: removed }, true);
+        }
       }
 
       const inner = removed.components();
@@ -384,6 +387,10 @@ Component> {
         model.components().forEach(comp => triggerAdd(comp));
       };
       triggerAdd(model);
+
+      if (domc && isSymbolInstance(model) && isSymbolRoot(model)) {
+        domc.symbols.__trgEvent(domc.events.symbolInstanceAdd, { component: model }, true);
+      }
     }
   }
 }

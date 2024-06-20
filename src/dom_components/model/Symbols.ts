@@ -46,9 +46,11 @@ export default class Symbols extends Components {
     em.trigger(events.symbol);
   }
 
-  __trgEvent(event: string, props: ObjectAny) {
-    this.em.trigger(event, props);
-    this.em.trigger(this.events.symbolMain, { ...props, event });
+  __trgEvent(event: string, props: ObjectAny, isInstance = false) {
+    const { em, events } = this;
+    const eventType = isInstance ? events.symbolInstance : events.symbolMain;
+    em.trigger(event, props);
+    em.trigger(eventType, { ...props, event });
     this.refreshDbn();
   }
 }

@@ -77,6 +77,27 @@ export enum ComponentsEvents {
   symbolMain = 'symbol:main',
 
   /**
+   * @event `symbol:instance:add` Added new root instance symbol.
+   * @example
+   * editor.on('symbol:instance:add', ({ component }) => { ... });
+   */
+  symbolInstanceAdd = 'symbol:instance:add',
+
+  /**
+   * @event `symbol:instance:remove` Root instance symbol removed.
+   * @example
+   * editor.on('symbol:instance:remove', ({ component }) => { ... });
+   */
+  symbolInstanceRemove = 'symbol:instance:remove',
+
+  /**
+   * @event `symbol:instance` Catch-all event related to instance symbol updates.
+   * @example
+   * editor.on('symbol:instance', ({ event, component }) => { ... });
+   */
+  symbolInstance = 'symbol:instance',
+
+  /**
    * @event `symbol` Catch-all event for any symbol update (main or instance).
    * @example
    * editor.on('symbol', () => { ... });
