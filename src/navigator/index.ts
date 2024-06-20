@@ -195,7 +195,7 @@ export default class LayerManager extends Module<LayerManagerConfig> {
       style.display = 'none';
     }
 
-    component.setStyle(style, styleOpts);
+    component.setStyle(style, styleOpts as any);
     this.updateLayer(component);
     this.em.trigger('component:toggled'); // Updates Style Manager #2938
   }

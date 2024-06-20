@@ -12,7 +12,7 @@ import {
   keys,
 } from 'underscore';
 import { shallowDiff, capitalize, isEmptyObj, isObject, toLowerCase } from '../../utils/mixins';
-import StyleableModel, { StyleProps } from '../../domain_abstract/model/StyleableModel';
+import StyleableModel, { StyleProps, UpdateStyleOptions } from '../../domain_abstract/model/StyleableModel';
 import { Model } from 'backbone';
 import Components from './Components';
 import Selector from '../../selector_manager/model/Selector';
@@ -53,6 +53,8 @@ import {
 } from './SymbolUtils';
 
 export interface IComponent extends ExtractMethods<Component> {}
+
+export interface SetAttrOptions extends SetOptions, UpdateStyleOptions {}
 
 const escapeRegExp = (str: string) => {
   return str.replace(/[|\\{}()[\]^$+*?.]/g, '\\$&');
@@ -588,7 +590,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
    * Emit changes for each updated attribute
    * @private
    */
-  attrUpdated(m: any, v: any, opts: any = {}) {
+  attrUpdated(m: any, v: any, opts: SetAttrOptions = {}) {
     const attrs = this.get('attributes')!;
     // Handle classes
     const classes = attrs.class;
@@ -597,7 +599,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
 
     // Handle style
     const style = attrs.style;
-    style && this.setStyle(style);
+    style && this.setStyle(style, opts);
     delete attrs.style;
 
     const attrPrev = { ...this.previous('attributes') };
@@ -617,7 +619,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
    * @example
    * component.setAttributes({ id: 'test', 'data-key': 'value' });
    */
-  setAttributes(attrs: ObjectAny, opts: SetOptions = {}) {
+  setAttributes(attrs: ObjectAny, opts: SetAttrOptions = {}) {
     this.set('attributes', { ...attrs }, opts);
     return this;
   }
@@ -630,7 +632,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
    * @example
    * component.addAttributes({ 'data-key': 'value' });
    */
-  addAttributes(attrs: ObjectAny, opts: SetOptions = {}) {
+  addAttributes(attrs: ObjectAny, opts: SetAttrOptions = {}) {
     return this.setAttributes(
       {
         ...this.getAttributes({ noClass: true }),
@@ -674,6 +676,10 @@ export default class Component extends StyleableModel<ComponentProperties> {
       if (rule) {
         return rule.getStyle(prop);
       }
+
+      // Return empty style if not rule have been found. We cannot return inline style with the next return
+      // because else on load inline style is set a #id or .class style
+      return {};
     }
 
     return super.getStyle.call(this, prop);
@@ -686,7 +692,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
    * @example
    * component.setStyle({ color: 'red' });
    */
-  setStyle(prop: StyleProps = {}, opts: any = {}) {
+  setStyle(prop: StyleProps = {}, opts: UpdateStyleOptions = {}) {
     const { opt, em } = this;
 
     if (avoidInline(em) && !opt.temporary && !opts.inline) {
@@ -732,9 +738,9 @@ export default class Component extends StyleableModel<ComponentProperties> {
 
     // Add style
     if (!opts.noStyle) {
-      const style = this.get('style');
+      const style = this.getStyle({ inline: true });
       if (isObject(style) && !isEmptyObj(style)) {
-        attributes.style = this.styleToString({ inline: 1 });
+        attributes.style = this.styleToString({ inline: true });
       }
     }
 
@@ -1388,7 +1394,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
     const tag = customTag || model.get('tagName');
     const sTag = model.get('void');
     const customAttr = opts.attributes;
-    let attributes = this.getAttrToHTML();
+    let attributes = this.getAttrToHTML(opts);
     delete opts.tag;
 
     // Get custom attributes if requested
@@ -1459,10 +1465,10 @@ export default class Component extends StyleableModel<ComponentProperties> {
    * @return {Object}
    * @private
    */
-  getAttrToHTML() {
+  getAttrToHTML(opts?: ToHTMLOptions) {
     const attrs = this.getAttributes();
 
-    if (avoidInline(this.em)) {
+    if (avoidInline(this.em) && opts?.keepInlineStyle !== true) {
       delete attrs.style;
     }
 
