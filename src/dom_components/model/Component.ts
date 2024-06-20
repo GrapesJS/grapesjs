@@ -46,7 +46,7 @@ import {
   initSymbol,
   isSymbol,
   isSymbolMain,
-  isSymbolTop,
+  isSymbolRoot,
   updateSymbolCls,
   updateSymbolComps,
   updateSymbolProps,
@@ -1247,7 +1247,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
     // @ts-ignore
     attr.traits = [];
 
-    if (isSymbolTop(this)) {
+    if (isSymbolRoot(this)) {
       opt.symbol = true;
     }
 

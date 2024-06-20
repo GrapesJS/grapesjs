@@ -10,6 +10,7 @@ export interface SymbolInfo {
   isSymbol: boolean;
   isMain: boolean;
   isInstance: boolean;
+  isRoot: boolean;
   main?: Component;
   instances: Component[];
   relatives: Component[];

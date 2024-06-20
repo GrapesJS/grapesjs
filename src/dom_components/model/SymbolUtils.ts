@@ -10,7 +10,7 @@ export const isSymbolInstance = (cmp: Component) => !!cmp.get(keySymbol);
 
 export const isSymbol = (cmp: Component) => !!(isSymbolMain(cmp) || isSymbolInstance(cmp));
 
-export const isSymbolTop = (symbol: Component) => {
+export const isSymbolRoot = (symbol: Component) => {
   const parent = symbol.parent();
   return isSymbol(symbol) && (!parent || !isSymbol(parent));
 };
@@ -236,12 +236,12 @@ export const updateSymbolComps = (symbol: Component, m: Component, c: Components
       );
 
     // Propagate remove only if the component is an inner symbol
-    if (!isSymbolTop(m)) {
+    if (!isSymbolRoot(m)) {
       const changed = 'components:remove';
       const { index } = o;
       const parent = m.parent();
       const opts = { fromInstance: m, ...o };
-      const isSymbNested = isSymbolTop(m);
+      const isSymbNested = isSymbolRoot(m);
       let toUpFn = (symb: Component) => {
         const symbPrnt = symb.parent();
         symbPrnt && !isSymbolOverride(symbPrnt, changed) && symb.remove(opts);

@@ -109,6 +109,7 @@ import {
   isSymbolMain,
   isSymbolInstance,
   detachSymbolInstance,
+  isSymbolRoot,
 } from './model/SymbolUtils';
 import { SymbolInfo } from './types';
 import Symbols from './model/Symbols';
@@ -710,6 +711,10 @@ export default class ComponentManager extends ItemManagerModule<DomComponentsCon
    * // cmp.getSymbolInfo(symbol).isSymbol === true;
    */
   addSymbol(component: Component) {
+    if (isSymbol(component) && !isSymbolRoot(component)) {
+      return;
+    }
+
     const symbol = component.clone({ symbol: true });
     isSymbolMain(symbol) && this.symbols.add(symbol);
 
@@ -760,11 +765,14 @@ export default class ComponentManager extends ItemManagerModule<DomComponentsCon
     const instances = (isMain ? getSymbolInstances(component) : getSymbolInstances(mainRef)) || [];
     const main = mainRef || (isMain ? component : undefined);
     const relatives = getSymbolsToUpdate(component, { changed: opts.withChanges });
+    const isSymbol = isMain || isInstance;
+    const isRoot = isSymbol && isSymbolRoot(component);
 
     return {
-      isSymbol: isMain || isInstance,
+      isSymbol,
       isMain,
       isInstance,
+      isRoot,
       main,
       instances: instances,
       relatives: relatives || [],

@@ -10,11 +10,16 @@ describe('Symbols', () => {
 
   const getSymbols = () => cmps.getSymbols();
 
-  const createSymbol = (component: Component) => cmps.addSymbol(component);
+  const createSymbol = (component: Component) => cmps.addSymbol(component)!;
 
   const detachSymbol = (component: Component) => cmps.detachSymbol(component);
 
-  const getSymbolInfo = ((comp, opts) => cmps.getSymbolInfo(comp, opts)) as Editor['Components']['getSymbolInfo'];
+  const getSymbolInfo = ((comp, opts) => {
+    const result = cmps.getSymbolInfo(comp, opts);
+    // @ts-ignore skip for now from check
+    delete result.isRoot;
+    return result;
+  }) as Editor['Components']['getSymbolInfo'];
 
   const setSymbolOverride = (comp: Component, value: Parameters<Component['setSymbolOverride']>[0]) => {
     comp.setSymbolOverride(value);
