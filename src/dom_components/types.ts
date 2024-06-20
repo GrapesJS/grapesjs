@@ -40,6 +40,13 @@ export enum ComponentsEvents {
   create = 'component:create',
 
   /**
+   * @event `component:update` Component is updated, the component is passed as an argument to the callback.
+   * @example
+   * editor.on('component:update', (component) => { ... });
+   */
+  update = 'component:update',
+
+  /**
    * @event `symbol:main:add` Added new main symbol.
    * @example
    * editor.on('symbol:main:add', ({ component }) => { ... });

@@ -83,6 +83,7 @@ import { PropertySelectProps } from './model/PropertySelect';
 import { PropertyNumberProps } from './model/PropertyNumber';
 import PropertyStack, { PropertyStackProps } from './model/PropertyStack';
 import PropertyComposite from './model/PropertyComposite';
+import { ComponentsEvents } from '../dom_components/types';
 
 export type PropertyTypes = PropertyStackProps | PropertySelectProps | PropertyNumberProps;
 
@@ -168,7 +169,8 @@ export default class StyleManager extends ItemManagerModule<
     this.model = model;
 
     // Triggers for the selection refresh and properties
-    const ev = 'component:toggled component:update:classes change:state change:device frame:resized selector:type';
+    const eventCmpUpdate = ComponentsEvents.update;
+    const ev = `component:toggled ${eventCmpUpdate}:classes change:state change:device frame:resized selector:type`;
     this.upAll = debounce(() => this.__upSel(), 0);
     model.listenTo(em, ev, this.upAll as any);
     // Clear state target on any component selection change, without debounce (#4208)

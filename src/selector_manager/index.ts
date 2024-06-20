@@ -87,6 +87,7 @@ import { ItemManagerModule } from '../abstract/Module';
 import { StyleModuleParam } from '../style_manager';
 import StyleableModel from '../domain_abstract/model/StyleableModel';
 import CssRule from '../css_composer/model/CssRule';
+import { ComponentsEvents } from '../dom_components/types';
 
 export type SelectorEvent = 'selector:add' | 'selector:remove' | 'selector:update' | 'selector:state' | 'selector';
 
@@ -158,9 +159,9 @@ export default class SelectorManager extends ItemManagerModule<SelectorManagerCo
     });
     em.on('change:state', (m, value) => em.trigger(evState, value));
     this.model.on('change:cFirst', (m, value) => em.trigger('selector:type', value));
-    em.on('component:toggled component:update:classes', this.__updateSelectedByComponents);
-    const listenTo =
-      'component:toggled component:update:classes change:device styleManager:update selector:state selector:type style:target';
+    const eventCmpUpdateCls = `${ComponentsEvents.update}:classes`;
+    em.on(`component:toggled ${eventCmpUpdateCls}`, this.__updateSelectedByComponents);
+    const listenTo = `component:toggled ${eventCmpUpdateCls} change:device styleManager:update selector:state selector:type style:target`;
     this.model.listenTo(em, listenTo, () => this.__update());
   }
 

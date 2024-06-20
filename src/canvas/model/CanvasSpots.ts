@@ -4,6 +4,7 @@ import { ModuleCollection } from '../../abstract';
 import { Debounced, ObjectAny } from '../../common';
 import EditorModel from '../../editor/model/Editor';
 import CanvasSpot, { CanvasSpotProps } from './CanvasSpot';
+import { ComponentsEvents } from '../../dom_components/types';
 
 export default class CanvasSpots extends ModuleCollection<CanvasSpot> {
   refreshDbn: Debounced;
@@ -15,7 +16,8 @@ export default class CanvasSpots extends ModuleCollection<CanvasSpot> {
     this.on('remove', this.onRemove);
     const { em } = this;
     this.refreshDbn = debounce(() => this.refresh(), 0);
-    const evToRefreshDbn = 'component:resize styleable:change component:input component:update frame:updated undo redo';
+
+    const evToRefreshDbn = `component:resize styleable:change component:input ${ComponentsEvents.update} frame:updated undo redo`;
     this.listenTo(em, evToRefreshDbn, () => this.refreshDbn());
   }
 

@@ -66,7 +66,7 @@ export const eventDrag = 'component:drag';
 export const keySymbols = '__symbols';
 export const keySymbol = '__symbol';
 export const keySymbolOvrd = '__symbol_ovrd';
-export const keyUpdate = 'component:update';
+export const keyUpdate = ComponentsEvents.update;
 export const keyUpdateInside = `${keyUpdate}-inside`;
 
 /**

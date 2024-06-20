@@ -7,6 +7,7 @@ import { getComponentModel, getComponentView, getUnitFromValue, getViewEl, hasWi
 import { CommandObject } from './CommandAbstract';
 import { CanvasSpotBuiltInTypes } from '../../canvas/model/CanvasSpot';
 import { ResizerOptions } from '../../utils/Resizer';
+import { ComponentsEvents } from '../../dom_components/types';
 
 let showOffsets: boolean;
 /**
@@ -79,6 +80,7 @@ export default {
     const { parentNode } = em.getContainer()!;
     const method = enable ? 'on' : 'off';
     const methods = { on, off };
+    const eventCmpUpdate = ComponentsEvents.update;
     !listenToEl.length && parentNode && listenToEl.push(parentNode as HTMLElement);
     const trigger = (win: Window, body: HTMLBodyElement) => {
       methods[method](body, 'mouseover', this.onHover);
@@ -89,10 +91,10 @@ export default {
     };
     methods[method](window, 'resize', this.onFrameUpdated);
     methods[method](listenToEl, 'scroll', this.onContainerChange);
-    em[method]('component:toggled component:update undo redo', this.onSelect, this);
+    em[method](`component:toggled ${eventCmpUpdate} undo redo`, this.onSelect, this);
     em[method]('change:componentHovered', this.onHovered, this);
     em[method]('component:resize styleable:change component:input', this.updateGlobalPos, this);
-    em[method]('component:update:toolbar', this._upToolbar, this);
+    em[method](`${eventCmpUpdate}:toolbar`, this._upToolbar, this);
     em[method]('frame:updated', this.onFrameUpdated, this);
     em[method]('canvas:updateTools', this.onFrameUpdated, this);
     em[method](em.Canvas.events.refresh, this.updateAttached, this);
