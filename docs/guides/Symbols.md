@@ -23,7 +23,7 @@ When you reuse the Symbol elsewhere, it creates new Instance Symbols. Any update
 
 Below is a simple representation of the connection between Main and Instance Symbols.
 
-[IMAGE]
+<img :src="$withBase('/symbols-model.svg')">
 
 ::: warning Note
 This feature operates at a low level, meaning there is no built-in UI for creating and managing symbols. Developers need to implement their own UI to interact with this feature. Below you'll find an example of implementation.
