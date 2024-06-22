@@ -708,7 +708,7 @@ export default class ComponentManager extends ItemManagerModule<DomComponentsCon
    * @param {[Component]} component Component from which create a symbol.
    * @returns {[Component]}
    * @example
-   * const symbol = cmp.isComponent(editor.getSelected());
+   * const symbol = cmp.addSymbol(editor.getSelected());
    * // cmp.getSymbolInfo(symbol).isSymbol === true;
    */
   addSymbol(component: Component) {
