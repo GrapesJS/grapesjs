@@ -192,7 +192,113 @@ editor.on('symbol', () => { ... });
 Below is a basic UI implementation leveraging the Symbols API:
 
 
-<demo-viewer value="zdetbjsg" height="500" darkcode/>
+<demo-viewer value="ta19s6go" height="500" darkcode show/>
+
+<!-- Demo template, here for reference
+<style>
+.app-wrapper {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+.vue-app {
+  padding: 10px;
+  display: flex;
+  gap: 10px;
+}
+.symbols-wrp {
+  display: flex;
+  gap: 10px;
+  width: 100%;
+  padding: 10px;
+  flex-direction: column;
+  border-radius: 3px;
+}
+.symbols {
+  display: flex;
+  gap: 10px;
+  width: 100%;
+}
+.symbol {
+  cursor: pointer;
+  flex-basis: 100px;
+  text-align: left;
+  margin: 0;
+}
+</style>
+
+<div class="app-wrapper">
+  <div class="vue-app">
+    <button @click="createSymbol">Create Symbol</button>
+    <div class="symbols-wrp gjs-one-bg gjs-two-color">
+      <div v-if="symbols.length">Click on symbol to append</div>
+      <div class="symbols">
+        <div
+          v-for="symbol in symbols"
+          class="gjs-block symbol"
+          @click="createInstance(symbol)"
+          :key="symbol.getId()"
+        >
+          Name: {{ symbol.getName() }}
+          Instances: {{ getInstancesLength(symbol) }}
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="gjs"></div>
+</div>
+
+<script>
+const editor = grapesjs.init({
+  container: '#gjs',
+  height: '100%',
+  storageManager: false,
+  components: `<div style="display: flex">
+    <article class="card" style="max-width: 300px; padding: 20px">
+      <img src="https://placehold.co/600x400/000000/FFF" style="max-width: 100%"/>
+      <h1>Title</h1>
+      <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua</p>
+    </article>
+  </div>`,
+  plugins: ['gjs-blocks-basic'],
+  selectorManager: { componentFirst: true },
+});
+
+const { Components } = editor;
+
+const app = new Vue({
+  el: '.vue-app',
+  data: { symbols: [] },
+  mounted() {
+		editor.on('symbol', this.updateMainSymbolsList);
+  },
+  destroyed() {
+    editor.off('symbol', this.updateMainSymbolsList);
+  },
+  methods: {
+    updateMainSymbolsList() {
+      this.symbols = Components.getSymbols();
+    },
+    createSymbol() {
+      const selected = editor.getSelected();
+      if (!selected) return alert('Select a component first!');
+
+      const info = Components.getSymbolInfo(selected);
+      if (info.isSymbol) return alert('Selected component is already a symbol!');
+
+      Components.addSymbol(selected);
+    },
+    getInstancesLength(symbolMain) {
+      return Components.getSymbolInfo(symbolMain).instances.length;
+    },
+    createInstance(symbolMain) {
+      const instance = Components.addSymbol(symbolMain);
+      editor.getWrapper().append(instance, { at: 0 });
+    }
+  }
+});
+</script>
+-->
 
 
 [Component]: </modules/Components.html>
