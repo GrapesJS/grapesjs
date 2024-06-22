@@ -9,6 +9,7 @@ import Component from '../../dom_components/model/Component';
 import Selector from '../model/Selector';
 import Selectors from '../model/Selectors';
 import CssRule from '../../css_composer/model/CssRule';
+import { ComponentsEvents } from '../../dom_components/types';
 
 export default class ClassTagsView extends View<Selector> {
   template({ labelInfo, labelHead, iconSync, iconAdd, pfx, ppfx }: any) {
@@ -83,9 +84,10 @@ export default class ClassTagsView extends View<Selector> {
     this.em = em;
     this.componentChanged = debounce(this.componentChanged.bind(this), 0);
     this.checkSync = debounce(this.checkSync.bind(this), 0);
-    const evClsUp = 'component:update:classes';
+    const eventCmpUpdate = ComponentsEvents.update;
+    const evClsUp = `${eventCmpUpdate}:classes`;
     const toList = `component:toggled ${evClsUp}`;
-    const toListCls = `${evClsUp} component:update:attributes:id change:state`;
+    const toListCls = `${evClsUp} ${eventCmpUpdate}:attributes:id change:state`;
     this.listenTo(em, toList, this.componentChanged);
     this.listenTo(em, 'styleManager:update', this.componentChanged);
     this.listenTo(em, toListCls, this.__handleStateChange);

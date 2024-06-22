@@ -293,8 +293,9 @@ TComp> {
     const { model, em } = this;
 
     if (avoidInline(em) && !opts.inline) {
+      // Move inline styles to CSSRule
       const styleOpts = this.__cmpStyleOpts;
-      const style = model.getStyle(styleOpts);
+      const style = model.getStyle({ inline: true, ...styleOpts });
       !isEmpty(style) && model.setStyle(style, styleOpts);
     } else {
       this.setAttribute('style', model.styleToString(opts));

@@ -50,7 +50,7 @@ describe('Component', () => {
   test('Clones correctly with traits', () => {
     obj.traits.at(0).set('value', 'testTitle');
     var cloned = obj.clone();
-    cloned.set('stylable', 0);
+    cloned.set('stylable', false);
     cloned.traits.at(0).set('value', 'testTitle2');
     expect(obj.traits.at(0).get('value')).toEqual('testTitle');
     expect(obj.get('stylable')).toEqual(true);

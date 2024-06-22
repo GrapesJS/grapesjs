@@ -40,6 +40,17 @@ import { ToolbarButtonProps } from './ToolbarButton';
 import { TraitProperties } from '../../trait_manager/types';
 import { ActionLabelComponents, ComponentsEvents } from '../types';
 import ItemView from '../../navigator/view/ItemView';
+import {
+  getSymbolMain,
+  getSymbolInstances,
+  initSymbol,
+  isSymbol,
+  isSymbolMain,
+  isSymbolRoot,
+  updateSymbolCls,
+  updateSymbolComps,
+  updateSymbolProps,
+} from './SymbolUtils';
 
 export interface IComponent extends ExtractMethods<Component> {}
 
@@ -55,8 +66,8 @@ export const eventDrag = 'component:drag';
 export const keySymbols = '__symbols';
 export const keySymbol = '__symbol';
 export const keySymbolOvrd = '__symbol_ovrd';
-export const keyUpdate = 'component:update';
-export const keyUpdateInside = `${keyUpdate}-inside`;
+export const keyUpdate = ComponentsEvents.update;
+export const keyUpdateInside = ComponentsEvents.updateInside;
 
 /**
  * The Component object represents a single node of our template structure, so when you update its properties the changes are
@@ -301,7 +312,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
 
       this.__postAdd();
       this.init();
-      this.__isSymbolOrInst() && this.__initSymb();
+      isSymbol(this) && initSymbol(this);
       em?.trigger(ComponentsEvents.create, this, opt);
     }
   }
@@ -370,6 +381,23 @@ export default class Component extends StyleableModel<ComponentProperties> {
     this.emitUpdate('toolbar');
   }
 
+  __getAllById() {
+    const { em } = this;
+    return em ? em.Components.allById() : {};
+  }
+
+  __upSymbProps(m: any, opts: SymbolToUpOptions = {}) {
+    updateSymbolProps(this, opts);
+  }
+
+  __upSymbCls(m: any, c: any, opts = {}) {
+    updateSymbolCls(this, opts);
+  }
+
+  __upSymbComps(m: Component, c: Components, o: any) {
+    updateSymbolComps(this, m, c, o);
+  }
+
   /**
    * Check component's type
    * @param  {string}  type Component type
@@ -415,6 +443,26 @@ export default class Component extends StyleableModel<ComponentProperties> {
    */
   getDragMode(): DragMode {
     return this.get('dmode') || '';
+  }
+
+  /**
+   * Set symbol override.
+   * By setting override to `true`, none of its property changes will be propagated to relative symbols.
+   * By setting override to specific properties, changes of those properties will be skipped from propagation.
+   * @param {Boolean|String|Array<String>} value
+   * @example
+   * component.setSymbolOverride(['children', 'classes']);
+   */
+  setSymbolOverride(value?: boolean | string | string[]) {
+    this.set(keySymbolOvrd, (isString(value) ? [value] : value) ?? 0);
+  }
+
+  /**
+   * Get symbol override value.
+   * @returns {Boolean|Array<String>}
+   */
+  getSymbolOverride(): boolean | string[] | undefined {
+    return this.get(keySymbolOvrd);
   }
 
   /**
@@ -708,8 +756,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
 
       if (
         // Symbols should always have an id
-        this.__getSymbol() ||
-        this.__getSymbols() ||
+        isSymbol(this) ||
         // Components with script should always have an id
         this.get('script-export') ||
         this.get('script')
@@ -790,254 +837,6 @@ export default class Component extends StyleableModel<ComponentProperties> {
     const attr = this.getAttributes();
     const classStr = attr.class;
     return classStr ? classStr.split(' ') : [];
-  }
-
-  __logSymbol(type: string, toUp: Component[], opts: any = {}) {
-    const symbol = this.__getSymbol();
-    const symbols = this.__getSymbols();
-    if (!symbol && !symbols) return;
-    this.em.log(type, { model: this, toUp, context: 'symbols', opts });
-  }
-
-  __initSymb() {
-    if (this.__symbReady) return;
-    this.on('change', this.__upSymbProps);
-    this.__symbReady = true;
-  }
-
-  __isSymbol() {
-    return isArray(this.get(keySymbols));
-  }
-
-  __isSymbolOrInst() {
-    return !!(this.__isSymbol() || this.get(keySymbol));
-  }
-
-  __isSymbolTop() {
-    const parent = this.parent();
-    const symb = this.__isSymbolOrInst();
-    return symb && (!parent || (parent && !parent.__isSymbol() && !parent.__getSymbol()));
-  }
-
-  __isSymbolNested() {
-    if (!this.__isSymbolOrInst() || this.__isSymbolTop()) return false;
-    const symbTopSelf = (this.__isSymbol() ? this : this.__getSymbol())!.__getSymbTop();
-    const symbTop = this.__getSymbTop();
-    const symbTopMain = symbTop.__isSymbol() ? symbTop : symbTop.__getSymbol();
-    return symbTopMain !== symbTopSelf;
-  }
-
-  __getAllById() {
-    const { em } = this;
-    return em ? em.Components.allById() : {};
-  }
-
-  __getSymbol(): Component | undefined {
-    let symb = this.get(keySymbol);
-    if (symb && isString(symb)) {
-      const ref = this.__getAllById()[symb];
-      if (ref) {
-        symb = ref;
-        this.set(keySymbol, ref);
-      } else {
-        symb = 0;
-      }
-    }
-    return symb;
-  }
-
-  __getSymbols(): Component[] | undefined {
-    let symbs = this.get(keySymbols);
-    if (symbs && isArray(symbs)) {
-      symbs.forEach((symb, idx) => {
-        if (symb && isString(symb)) {
-          symbs[idx] = this.__getAllById()[symb];
-        }
-      });
-      symbs = symbs.filter(symb => symb && !isString(symb));
-    }
-    return symbs;
-  }
-
-  __isSymbOvrd(prop = '') {
-    const ovrd = this.get(keySymbolOvrd);
-    const [prp] = prop.split(':');
-    const props = prop !== prp ? [prop, prp] : [prop];
-    return ovrd === true || (isArray(ovrd) && props.some(p => ovrd.indexOf(p) >= 0));
-  }
-
-  __getSymbToUp(opts: SymbolToUpOptions = {}) {
-    let result: Component[] = [];
-    const { changed } = opts;
-
-    if (
-      opts.fromInstance ||
-      opts.noPropagate ||
-      opts.fromUndo ||
-      // Avoid updating others if the current component has override
-      (changed && this.__isSymbOvrd(changed))
-    ) {
-      return result;
-    }
-
-    const symbols = this.__getSymbols() || [];
-    const symbol = this.__getSymbol();
-    const all = symbol ? [symbol, ...(symbol.__getSymbols() || [])] : symbols;
-    result = all
-      .filter(s => s !== this)
-      // Avoid updating those with override
-      .filter(s => !(changed && s.__isSymbOvrd(changed)));
-
-    return result;
-  }
-
-  __getSymbTop(opts?: any) {
-    let result: Component = this;
-    let parent = this.parent(opts);
-
-    while (parent && (parent.__isSymbol() || parent.__getSymbol())) {
-      result = parent;
-      parent = parent.parent(opts);
-    }
-
-    return result;
-  }
-
-  __upSymbProps(m: any, opts: SymbolToUpOptions = {}) {
-    const changed = this.changedAttributes() || {};
-    const attrs = changed.attributes || {};
-    delete changed.status;
-    delete changed.open;
-    delete changed[keySymbols];
-    delete changed[keySymbol];
-    delete changed[keySymbolOvrd];
-    delete changed.attributes;
-    delete attrs.id;
-    if (!isEmptyObj(attrs)) changed.attributes = attrs;
-    if (!isEmptyObj(changed)) {
-      const toUp = this.__getSymbToUp(opts);
-      // Avoid propagating overrides to other symbols
-      keys(changed).map(prop => {
-        if (this.__isSymbOvrd(prop)) delete changed[prop];
-      });
-
-      this.__logSymbol('props', toUp, { opts, changed });
-      toUp.forEach(child => {
-        const propsChanged = { ...changed };
-        // Avoid updating those with override
-        keys(propsChanged).map(prop => {
-          if (child.__isSymbOvrd(prop)) delete propsChanged[prop];
-        });
-        child.set(propsChanged, { fromInstance: this, ...opts });
-      });
-    }
-  }
-
-  __upSymbCls(m: any, c: any, opts = {}) {
-    const toUp = this.__getSymbToUp(opts);
-    this.__logSymbol('classes', toUp, { opts });
-    toUp.forEach(child => {
-      // @ts-ignore This will propagate the change up to __upSymbProps
-      child.set('classes', this.get('classes'), { fromInstance: this });
-    });
-    this.__changesUp(opts);
-  }
-
-  __upSymbComps(m: Component, c: Components, o: any) {
-    const optUp = o || c || {};
-    const { fromInstance, fromUndo } = optUp;
-    const toUpOpts = { fromInstance, fromUndo };
-    const isTemp = m.opt.temporary;
-
-    // Reset
-    if (!o) {
-      const toUp = this.__getSymbToUp({
-        ...toUpOpts,
-        changed: 'components:reset',
-      });
-      // @ts-ignore
-      const cmps = m.models as Component[];
-      this.__logSymbol('reset', toUp, { components: cmps });
-      toUp.forEach(symb => {
-        const newMods = cmps.map(mod => mod.clone({ symbol: true }));
-        // @ts-ignore
-        symb.components().reset(newMods, { fromInstance: this, ...c });
-      });
-      // Add
-    } else if (o.add) {
-      let addedInstances: Component[] = [];
-      const isMainSymb = !!this.__getSymbols();
-      const toUp = this.__getSymbToUp({
-        ...toUpOpts,
-        changed: 'components:add',
-      });
-      if (toUp.length) {
-        const addSymb = m.__getSymbol();
-        addedInstances = (addSymb ? addSymb.__getSymbols() : m.__getSymbols()) || [];
-        addedInstances = [...addedInstances];
-        addedInstances.push(addSymb ? addSymb : m);
-      }
-      !isTemp &&
-        this.__logSymbol('add', toUp, {
-          opts: o,
-          addedInstances: addedInstances.map(c => c.cid),
-          added: m.cid,
-        });
-      // Here, before appending a new symbol, I have to ensure there are no previously
-      // created symbols (eg. used mainly when drag components around)
-      toUp.forEach(symb => {
-        const symbTop = symb.__getSymbTop();
-        const symbPrev = addedInstances.filter(addedInst => {
-          const addedTop = addedInst.__getSymbTop({ prev: 1 });
-          return symbTop && addedTop && addedTop === symbTop;
-        })[0];
-        const toAppend = symbPrev || m.clone({ symbol: true, symbolInv: isMainSymb });
-        symb.append(toAppend, { fromInstance: this, ...o });
-      });
-      // Remove
-    } else {
-      // Remove instance reference from the symbol
-      const symb = m.__getSymbol();
-      symb &&
-        !o.temporary &&
-        symb.set(
-          keySymbols,
-          symb.__getSymbols()!.filter(i => i !== m)
-        );
-
-      // Propagate remove only if the component is an inner symbol
-      if (!m.__isSymbolTop()) {
-        const changed = 'components:remove';
-        const { index } = o;
-        const parent = m.parent();
-        const opts = { fromInstance: m, ...o };
-        const isSymbNested = m.__isSymbolNested();
-        let toUpFn = (symb: Component) => {
-          const symbPrnt = symb.parent();
-          symbPrnt && !symbPrnt.__isSymbOvrd(changed) && symb.remove(opts);
-        };
-        // Check if the parent allows the removing
-        let toUp = !parent?.__isSymbOvrd(changed) ? m.__getSymbToUp(toUpOpts) : [];
-
-        if (isSymbNested) {
-          toUp = parent?.__getSymbToUp({ ...toUpOpts, changed })!;
-          toUpFn = symb => {
-            const toRemove = symb.components().at(index);
-            toRemove && toRemove.remove({ fromInstance: parent, ...opts });
-          };
-        }
-
-        !isTemp &&
-          this.__logSymbol('remove', toUp, {
-            opts: o,
-            removed: m.cid,
-            isSymbNested,
-          });
-        toUp.forEach(toUpFn);
-      }
-    }
-
-    this.__changesUp(optUp);
   }
 
   initClasses(m?: any, c?: any, opts: any = {}) {
@@ -1432,7 +1231,8 @@ export default class Component extends StyleableModel<ComponentProperties> {
    * Override original clone method
    * @private
    */
-  clone(opt: { symbol?: boolean; symbolInv?: boolean } = {}) {
+  /** @ts-ignore */
+  clone(opt: { symbol?: boolean; symbolInv?: boolean } = {}): this {
     const em = this.em;
     const attr = { ...this.attributes };
     const opts = { ...this.opt };
@@ -1447,7 +1247,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
     // @ts-ignore
     attr.traits = [];
 
-    if (this.__isSymbolTop()) {
+    if (isSymbolRoot(this)) {
       opt.symbol = true;
     }
 
@@ -1483,32 +1283,32 @@ export default class Component extends StyleableModel<ComponentProperties> {
     // Symbols
     // If I clone an inner symbol, I have to reset it
     cloned.set(keySymbols, 0);
-    const symbol = this.__getSymbol();
-    const symbols = this.__getSymbols();
+    const symbol = getSymbolMain(this);
+    const symbols = getSymbolInstances(this);
 
     if (!opt.symbol && (symbol || symbols)) {
       cloned.set(keySymbol, 0);
       cloned.set(keySymbols, 0);
     } else if (symbol) {
       // Contains already a reference to a symbol
-      symbol.set(keySymbols, [...symbol.__getSymbols()!, cloned]);
-      cloned.__initSymb();
+      symbol.set(keySymbols, [...getSymbolInstances(symbol)!, cloned]);
+      initSymbol(cloned);
     } else if (opt.symbol) {
       // Request to create a symbol
-      if (this.__isSymbol()) {
+      if (isSymbolMain(this)) {
         // Already a symbol, cloned should be an instance
         this.set(keySymbols, [...symbols!, cloned]);
         cloned.set(keySymbol, this);
-        cloned.__initSymb();
+        initSymbol(cloned);
       } else if (opt.symbolInv) {
         // Inverted, cloned is the instance, the origin is the main symbol
         this.set(keySymbols, [cloned]);
         cloned.set(keySymbol, this);
-        [this, cloned].map(i => i.__initSymb());
+        [this, cloned].map(i => initSymbol(i));
       } else {
         // Cloned becomes the main symbol
         cloned.set(keySymbols, [this]);
-        [this, cloned].map(i => i.__initSymb());
+        [this, cloned].map(i => initSymbol(i));
         this.set(keySymbol, cloned);
       }
     }
