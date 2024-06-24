@@ -36,6 +36,12 @@ editor.on('trait:select', ({ traits, component }) => { ... });
 editor.on('trait:value', ({ trait, component, value }) => { ... });
 ```
 
+* `trait:category:update` Trait category updated.
+
+```javascript
+editor.on('trait:category:update', ({ category, changes }) => { ... });
+```
+
 * `trait:custom` Event to use in case of [custom Trait Manager UI](https://grapesjs.com/docs/modules/Traits.html#custom-trait-manager).
 
 ```javascript

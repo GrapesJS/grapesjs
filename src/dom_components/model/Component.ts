@@ -1230,8 +1230,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
   /**
    * Override original clone method
    * @private
-   */
-  /** @ts-ignore */
+   * @ts-ignore */
   clone(opt: { symbol?: boolean; symbolInv?: boolean } = {}): this {
     const em = this.em;
     const attr = { ...this.attributes };

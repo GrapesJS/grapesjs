@@ -218,6 +218,77 @@ cmp.isComponent({}); // false
 
 Returns **[Boolean][13]** 
 
+## addSymbol
+
+Add a new symbol from a component.
+If the passed component is not a symbol, it will be converted to an instance and will return the main symbol.
+If the passed component is already an instance, a new instance will be created and returned.
+If the passed component is the main symbol, a new instance will be created and returned.
+
+### Parameters
+
+*   `component` **[Component]** Component from which create a symbol.
+
+### Examples
+
+```javascript
+const symbol = cmp.addSymbol(editor.getSelected());
+// cmp.getSymbolInfo(symbol).isSymbol === true;
+```
+
+Returns **[Component]** 
+
+## getSymbols
+
+Get the array of main symbols.
+
+### Examples
+
+```javascript
+const symbols = cmp.getSymbols();
+// [Component, Component, ...]
+// Removing the main symbol will detach all the relative instances.
+symbols[0].remove();
+```
+
+Returns **[Array][11]<[Component]>** 
+
+## detachSymbol
+
+Detach symbol instance from the main one.
+The passed symbol instance will become a regular component.
+
+### Parameters
+
+*   `component` **[Component]** The component symbol to detach.
+
+### Examples
+
+```javascript
+const cmpInstance = editor.getSelected();
+// cmp.getSymbolInfo(cmpInstance).isInstance === true;
+cmp.detachSymbol(cmpInstance);
+// cmp.getSymbolInfo(cmpInstance).isInstance === false;
+```
+
+## getSymbolInfo
+
+Get info about the symbol.
+
+### Parameters
+
+*   `component` **[Component]** Component symbol from which to get the info.
+*   `opts` **{withChanges: [string][12]?}**  (optional, default `{}`)
+
+### Examples
+
+```javascript
+cmp.getSymbolInfo(editor.getSelected());
+// > { isSymbol: true, isMain: false, isInstance: true, ... }
+```
+
+Returns **[Object][10]** Object containing symbol info.
+
 ## canMove
 
 Check if a component can be moved inside another one.
