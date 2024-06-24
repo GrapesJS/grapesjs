@@ -11,8 +11,8 @@ module.exports = {
   serviceWorker: false, // Enable Service Worker for offline usage
   head: [
     ['link', { rel: 'icon', href: '/logo-icon.png' }],
-    ['link', { rel: 'stylesheet', href: isDev ? `${devPath}/dist/css/grapes.min.css` : `${baseUrl}/stylesheets/grapes.min.css?v${version}` }],
-    ['script', { src: isDev ? `${devPath}/grapes.min.js` : `${baseUrl}/js/grapes.min.js?v${version}` }],
+    ['link', { rel: 'stylesheet', href: isDev ? `${devPath}/dist/css/grapes.min.css` : `${baseUrl}/assets/styles/grapesjs/grapes.min.css?${version}` }],
+    ['script', { src: isDev ? `${devPath}/grapes.min.js` : `${baseUrl}/assets/scripts/grapesjs/grapes.min.js?${version}` }],
   ],
   localesSKIP: {
     '/': {

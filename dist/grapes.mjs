@@ -5,7 +5,7 @@
 
 var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
  * Backbone.Undo.js v0.2
- * 
+ *
  * Copyright (c)2013 Oliver Sartun
  * Released under the MIT License
  *
@@ -28,8 +28,8 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
 	/**
 	 * As call is faster than apply, this is a faster version of apply as it uses call.
-	 * 
-	 * @param  {Function} fn 	The function to execute 
+	 *
+	 * @param  {Function} fn 	The function to execute
 	 * @param  {Object}   ctx 	The context the function should be called in
 	 * @param  {Array}    args 	The array of arguments that should be applied to the function
 	 * @return Forwards whatever the called function returns
@@ -42,7 +42,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
 	/**
 	 * Uses slice on an array or an array-like object.
-	 * 
+	 *
 	 * @param  {Array|Object} 	arr 	The array or array-like object.
 	 * @param  {Number} 		[index]	The index from where the array should be sliced. Default is 0.
 	 * @return {Array} The sliced array
@@ -52,13 +52,13 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 	}
 
 	/**
-	 * Checks if an object has one or more specific keys. The keys 
+	 * Checks if an object has one or more specific keys. The keys
 	 * don't have to be an owned property.
 	 * You can call this function either this way:
 	 * hasKeys(obj, ["a", "b", "c"])
 	 * or this way:
 	 * hasKeys(obj, "a", "b", "c")
-	 * 
+	 *
 	 * @param  {Object}  	obj 	The object to check on
 	 * @param  {Array}  	keys 	The keys to check for
 	 * @return {Boolean} True, if the object has all those keys
@@ -74,9 +74,9 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 	}
 
 	/**
-	 * Returns a number that is unique per call stack. The number gets 
+	 * Returns a number that is unique per call stack. The number gets
 	 * changed after the call stack has been completely processed.
-	 * 
+	 *
 	 * @return {number} MagicFusionIndex
 	 */
 	var getMagicFusionIndex = (function () {
@@ -88,9 +88,9 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 		// would be removed from the collection or the last set
 		// attribute would be changed back to its previous value.
 		// To prevent that we have to figure out a way to combine
-		// all those actions that happened "at the same time". 
-		// Timestamps aren't exact enough. A complex routine could 
-		// run several milliseconds and in that time produce a lot 
+		// all those actions that happened "at the same time".
+		// Timestamps aren't exact enough. A complex routine could
+		// run several milliseconds and in that time produce a lot
 		// of actions with different timestamps.
 		// Instead we take advantage of the single-threadedness of
 		// JavaScript:
@@ -100,7 +100,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 			magicFusionIndex++;
 			callstackWasIndexed = true;
 			_.defer(function () {
-				// Here comes the magic. With a Timeout of 0 
+				// Here comes the magic. With a Timeout of 0
 				// milliseconds this function gets called whenever
 				// the current callstack is completed
 				callstackWasIndexed = false;
@@ -115,7 +115,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 	})();
 
 	/**
-	 * To prevent binding a listener several times to one 
+	 * To prevent binding a listener several times to one
 	 * object, we register the objects in an ObjectRegistry
 	 *
 	 * @constructor
@@ -125,39 +125,39 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 		// objects: In case the object has a cid
 		// (which Backbone objects typically have)
 		// it uses this cid as an index. That way
-		// the Array's length attribute doesn't 
-		// change and the object isn't an item 
+		// the Array's length attribute doesn't
+		// change and the object isn't an item
 		// in the array, but an object-property.
 		// Otherwise it's added to the Array as an
 		// item.
 		// That way we can use the fast property-
-		// lookup and only have to fall back to 
-		// iterating over the array in case 
+		// lookup and only have to fall back to
+		// iterating over the array in case
 		// non-Backbone-objects are registered.
 		this.registeredObjects = [];
-		// To return a list of all registered 
+		// To return a list of all registered
 		// objects in the 'get' method we have to
 		// store the objects that have a cid in
-		// an additional array. 
+		// an additional array.
 		this.cidIndexes = [];
 	}
 	ObjectRegistry.prototype = {
 		/**
 		 * Returns whether the object is already registered in this ObjectRegistry or not.
-		 * 
+		 *
 		 * @this 	{ObjectRegistry}
 		 * @param  	{Object} 		 obj 	The object to check
 		 * @return 	{Boolean} True if the object is already registered
 		 */
 		isRegistered: function (obj) {
-			// This is where we get a performance boost 
-			// by using the two different ways of storing 
+			// This is where we get a performance boost
+			// by using the two different ways of storing
 			// objects.
 			return obj && obj.cid ? this.registeredObjects[obj.cid] : _.contains(this.registeredObjects, obj);
 		},
 		/**
 		 * Registers an object in this ObjectRegistry.
-		 * 
+		 *
 		 * @this 	{ObjectRegistry}
 		 * @param  	{Object} 		 obj 	The object to register
 		 * @return 	{undefined}
@@ -176,7 +176,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 		},
 		/**
 		 * Unregisters an object from this ObjectRegistry.
-		 * 
+		 *
 		 * @this {ObjectRegistry}
 		 * @param  {Object} obj The object to unregister
 		 * @return {undefined}
@@ -196,7 +196,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 		},
 		/**
 		 * Returns an array of all objects that are currently in this ObjectRegistry.
-		 * 
+		 *
 		 * @return {Array} An array of all the objects which are currently in the ObjectRegistry
 		 */
 		get: function () {
@@ -206,7 +206,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
 	/**
 	 * Binds or unbinds the "all"-listener for one or more objects.
-	 * 
+	 *
 	 * @param  {String}   which 	Either "on" or "off"
 	 * @param  {Object[]} objects 	Array of the objects on which the "all"-listener should be bound / unbound to
 	 * @param  {Function} [fn] 		The function that should be bound / unbound. Optional in case of "off"
@@ -236,7 +236,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
 	/**
 	 * Calls the undo/redo-function for a specific action.
-	 * 
+	 *
 	 * @param  {String} which 	Either "undo" or "redo"
 	 * @param  {Object} action 	The Action's attributes
 	 * @return {undefined}
@@ -259,10 +259,10 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 	 * @return {undefined}
 	 */
 	function managerUndoRedo (which, manager, stack, magic, everything) {
-		if (stack.isCurrentlyUndoRedoing || 
+		if (stack.isCurrentlyUndoRedoing ||
 			(which === "undo" && stack.pointer === -1) ||
 			(which === "redo" && stack.pointer === stack.length - 1)) {
-			// We're either currently in an undo- / redo-process or 
+			// We're either currently in an undo- / redo-process or
 			// we reached the end of the stack
 			return;
 		}
@@ -279,7 +279,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 			action = stack.at(isUndo ? stack.pointer : stack.pointer + 1);
 			actions = magic ? stack.where({"magicFusionIndex": action.get("magicFusionIndex")}) : [action];
 		}
-		
+
 		stack.pointer += (isUndo ? -1 : 1) * actions.length;
 		while (action = isUndo ? actions.pop() : actions.shift()) {
 			// Here we're calling the Action's undo / redo method
@@ -294,9 +294,9 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 	 * Checks whether an UndoAction should be created or not. Therefore it checks
 	 * whether a "condition" property is set in the undoTypes-object of the specific
 	 * event type. If not, it returns true. If it's set and a boolean, it returns it.
-	 * If it's a function, it returns its result, converting it into a boolean. 
+	 * If it's a function, it returns its result, converting it into a boolean.
 	 * Otherwise it returns true.
-	 * 
+	 *
 	 * @param  {Object} 	undoTypesType 	The object within the UndoTypes that holds the function for this event type (i.e. "change")
 	 * @param  {Arguments} 	args       		The arguments the "condition" function is called with
 	 * @return {Boolean} 	True, if an UndoAction should be created
@@ -309,7 +309,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
 	/**
 	 * Adds an Undo-Action to the stack.
-	 * 
+	 *
 	 * @param {UndoStack} 		stack 		The undostack the action should be added to.
 	 * @param {String} 			type 		The event type (i.e. "change")
 	 * @param {Arguments} 		args 		The arguments passed to the undoTypes' "on"-handler
@@ -468,10 +468,10 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
 	/**
 	 * Every UndoManager instance has an own undoTypes object
-	 * which is an instance of OwnedUndoTypes. OwnedUndoTypes' 
-	 * prototype is the global UndoTypes object. Changes to the 
+	 * which is an instance of OwnedUndoTypes. OwnedUndoTypes'
+	 * prototype is the global UndoTypes object. Changes to the
 	 * global UndoTypes object take effect on every instance of
-	 * UndoManager as the object is its prototype. And yet every 
+	 * UndoManager as the object is its prototype. And yet every
 	 * local UndoTypes object can be changed individually.
 	 *
 	 * @constructor
@@ -488,7 +488,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 	 * In case of removing undo-types you can pass an Array for performing
 	 * bulk actions:
 	 * manipulateUndoType(2, ["reset", "change"], undoTypes)
-	 * 
+	 *
 	 * @param  {Number} 				  manipType 		Indicates the kind of action to execute: 0 for add, 1 for change, 2 for remove
 	 * @param  {String|Object|Array} 	  undoType 			The type of undoType that should be added/changed/removed. Can be an object / array to perform bulk actions
 	 * @param  {Object} 				  [fns] 			Object with the functions to add / change. Is optional in case you passed an object as undoType that contains these functions
@@ -517,7 +517,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 			case 0: // add
 				if (hasKeys(fns, "undo", "redo", "on") && _.all(_.pick(fns, "undo", "redo", "on"), _.isFunction)) {
 					undoTypesInstance[undoType] = fns;
-				} 
+				}
 			break;
 			case 1: // change
 				if (undoTypesInstance[undoType] && _.isObject(fns)) {
@@ -528,19 +528,19 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 					// Instead we just want to manipulate this instance. That's why
 					// we're doing this:
 					undoTypesInstance[undoType] = _.extend({}, undoTypesInstance[undoType], fns);
-				} 
+				}
 			break;
 			case 2: // remove
-				delete undoTypesInstance[undoType]; 
+				delete undoTypesInstance[undoType];
 			break;
 		}
 		return this;
 	}
 
 	/**
-	 * Instantiating "Action" creates the UndoActions that 
-	 * are collected in an UndoStack. It holds all relevant 
-	 * data to undo / redo an action and has an undo / redo 
+	 * Instantiating "Action" creates the UndoActions that
+	 * are collected in an UndoStack. It holds all relevant
+	 * data to undo / redo an action and has an undo / redo
 	 * method.
 	 */
 	var Action = Backbone.Model.extend({
@@ -549,7 +549,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 			object: null, // The object on which the action occurred
 			before: null, // The previous values which were changed with this action
 			after: null, // The values after this action
-			magicFusionIndex: null // The magicFusionIndex helps to combine 
+			magicFusionIndex: null // The magicFusionIndex helps to combine
 			// all actions that occurred "at the same time" to undo/redo them altogether
 		},
 		/**
@@ -570,7 +570,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 		}
 	}),
 	/**
-	 * An UndoStack is a collection of UndoActions in 
+	 * An UndoStack is a collection of UndoActions in
 	 * chronological order.
 	 */
 	UndoStack = Backbone.Collection.extend({
@@ -584,7 +584,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 		}
 	}),
 	/**
-	 * An instance of UndoManager can keep track of 
+	 * An instance of UndoManager can keep track of
 	 * changes to objects and helps to undo them.
 	 */
 	UndoManager = Backbone.Model.extend({
@@ -648,10 +648,10 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 			return this.get("track");
 		},
 		/**
-		 * This is the "all"-handler which is bound to registered 
-		 * objects. It creates an UndoAction from the event and adds 
+		 * This is the "all"-handler which is bound to registered
+		 * objects. It creates an UndoAction from the event and adds
 		 * it to the stack.
-		 * 
+		 *
 		 * @param  {String} 	type 	The event type
 		 * @return {undefined}
 		 */
@@ -734,15 +734,15 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 		 * @return {undefined}
 		 */
 		merge: function (undoManager) {
-			// This sets the stack-reference to the stack of another 
-			// undoManager so that the stack of this other undoManager 
+			// This sets the stack-reference to the stack of another
+			// undoManager so that the stack of this other undoManager
 			// is used by two different managers.
 			// This enables to set up a main-undoManager and besides it
 			// several others for special, exceptional cases (by using
-			// instance-based custom UndoTypes). Models / collections 
-			// which need this special treatment are only registered at 
-			// those special undoManagers. Those special ones are then 
-			// merged into the main-undoManager to write on its stack. 
+			// instance-based custom UndoTypes). Models / collections
+			// which need this special treatment are only registered at
+			// those special undoManagers. Those special ones are then
+			// merged into the main-undoManager to write on its stack.
 			// That way it's easier to manage exceptional cases.
 			var args = _.isArray(undoManager) ? undoManager : slice(arguments), manager;
 			while (manager = args.pop()) {
@@ -17632,6 +17632,8 @@ var dom = __webpack_require__(491);
 var mixins = __webpack_require__(163);
 // EXTERNAL MODULE: ./src/canvas/model/CanvasSpot.ts
 var CanvasSpot = __webpack_require__(675);
+// EXTERNAL MODULE: ./src/dom_components/types.ts
+var types = __webpack_require__(184);
 ;// CONCATENATED MODULE: ./src/commands/view/SelectComponent.ts
 var SelectComponent_assign = (undefined && undefined.__assign) || function () {
     SelectComponent_assign = Object.assign || function(t) {
@@ -17655,6 +17657,7 @@ var __rest = (undefined && undefined.__rest) || function (s, e) {
         }
     return t;
 };
+
 
 
 
@@ -17719,6 +17722,7 @@ var showOffsets;
         var parentNode = em.getContainer().parentNode;
         var method = enable ? 'on' : 'off';
         var methods = { on: dom.on, off: dom/* off */.S1 };
+        var eventCmpUpdate = types/* ComponentsEvents */.g.update;
         !listenToEl.length && parentNode && listenToEl.push(parentNode);
         var trigger = function (win, body) {
             methods[method](body, 'mouseover', _this.onHover);
@@ -17729,10 +17733,10 @@ var showOffsets;
         };
         methods[method](window, 'resize', this.onFrameUpdated);
         methods[method](listenToEl, 'scroll', this.onContainerChange);
-        em[method]('component:toggled component:update undo redo', this.onSelect, this);
+        em[method]("component:toggled ".concat(eventCmpUpdate, " undo redo"), this.onSelect, this);
         em[method]('change:componentHovered', this.onHovered, this);
         em[method]('component:resize styleable:change component:input', this.updateGlobalPos, this);
-        em[method]('component:update:toolbar', this._upToolbar, this);
+        em[method]("".concat(eventCmpUpdate, ":toolbar"), this._upToolbar, this);
         em[method]('frame:updated', this.onFrameUpdated, this);
         em[method]('canvas:updateTools', this.onFrameUpdated, this);
         em[method](em.Canvas.events.refresh, this.updateAttached, this);
@@ -18457,9 +18461,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
 /* harmony import */ var underscore__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(50);
-/* harmony import */ var _canvas_model_CanvasSpot__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(675);
-/* harmony import */ var _common__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(895);
-/* harmony import */ var _utils_dom__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(491);
+/* harmony import */ var _canvas_model_CanvasSpot__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(675);
+/* harmony import */ var _common__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(895);
 var __assign = (undefined && undefined.__assign) || function () {
     __assign = Object.assign || function(t) {
         for (var s, i = 1, n = arguments.length; i < n; i++) {
@@ -18471,7 +18474,6 @@ var __assign = (undefined && undefined.__assign) || function () {
     };
     return __assign.apply(this, arguments);
 };
-
 
 
 
@@ -18487,11 +18489,11 @@ var __assign = (undefined && undefined.__assign) || function () {
         var config = editor.getConfig();
         var zoom = this.em.getZoomDecimal();
         var el = opt.el;
-        if (!config.showOffsets || !el || (0,_utils_dom__WEBPACK_IMPORTED_MODULE_1__/* .isTextNode */ .BM)(el) || (!config.showOffsetsSelected && state == 'Fixed')) {
+        if (!config.showOffsets || !(el instanceof HTMLElement) || (!config.showOffsetsSelected && state == 'Fixed')) {
             editor.stopCommand("".concat(this.id), opts);
             return;
         }
-        if (canvas.hasCustomSpot(_canvas_model_CanvasSpot__WEBPACK_IMPORTED_MODULE_2__/* .CanvasSpotBuiltInTypes */ .q.Spacing)) {
+        if (canvas.hasCustomSpot(_canvas_model_CanvasSpot__WEBPACK_IMPORTED_MODULE_1__/* .CanvasSpotBuiltInTypes */ .q.Spacing)) {
             return;
         }
         var pos = __assign({}, (opt.elPos || canvas.getElementPos(el)));
@@ -18531,20 +18533,20 @@ var __assign = (undefined && undefined.__assign) || function () {
             var stateLow = state.toLowerCase();
             var marginName = stateLow + 'margin-v';
             var paddingName = stateLow + 'padding-v';
-            var marginV = (0,_common__WEBPACK_IMPORTED_MODULE_3__["default"])("<div class=\"".concat(ppfx, "marginName\">")).get(0);
-            var paddingV = (0,_common__WEBPACK_IMPORTED_MODULE_3__["default"])("<div class=\"".concat(ppfx, "paddingName\">")).get(0);
+            var marginV = (0,_common__WEBPACK_IMPORTED_MODULE_2__["default"])("<div class=\"".concat(ppfx, "marginName\">")).get(0);
+            var paddingV = (0,_common__WEBPACK_IMPORTED_MODULE_2__["default"])("<div class=\"".concat(ppfx, "paddingName\">")).get(0);
             var marginEls = ppfx + marginName + '-el';
             var paddingEls = ppfx + paddingName + '-el';
             var fullMargName = "".concat(marginEls, " ").concat(ppfx + marginName);
             var fullPadName = "".concat(paddingEls, " ").concat(ppfx + paddingName);
-            marginT = (0,_common__WEBPACK_IMPORTED_MODULE_3__["default"])("<div class=\"".concat(fullMargName, "-top\"></div>")).get(0);
-            marginB = (0,_common__WEBPACK_IMPORTED_MODULE_3__["default"])("<div class=\"".concat(fullMargName, "-bottom\"></div>")).get(0);
-            marginL = (0,_common__WEBPACK_IMPORTED_MODULE_3__["default"])("<div class=\"".concat(fullMargName, "-left\"></div>")).get(0);
-            marginR = (0,_common__WEBPACK_IMPORTED_MODULE_3__["default"])("<div class=\"".concat(fullMargName, "-right\"></div>")).get(0);
-            padT = (0,_common__WEBPACK_IMPORTED_MODULE_3__["default"])("<div class=\"".concat(fullPadName, "-top\"></div>")).get(0);
-            padB = (0,_common__WEBPACK_IMPORTED_MODULE_3__["default"])("<div class=\"".concat(fullPadName, "-bottom\"></div>")).get(0);
-            padL = (0,_common__WEBPACK_IMPORTED_MODULE_3__["default"])("<div class=\"".concat(fullPadName, "-left\"></div>")).get(0);
-            padR = (0,_common__WEBPACK_IMPORTED_MODULE_3__["default"])("<div class=\"".concat(fullPadName, "-right\"></div>")).get(0);
+            marginT = (0,_common__WEBPACK_IMPORTED_MODULE_2__["default"])("<div class=\"".concat(fullMargName, "-top\"></div>")).get(0);
+            marginB = (0,_common__WEBPACK_IMPORTED_MODULE_2__["default"])("<div class=\"".concat(fullMargName, "-bottom\"></div>")).get(0);
+            marginL = (0,_common__WEBPACK_IMPORTED_MODULE_2__["default"])("<div class=\"".concat(fullMargName, "-left\"></div>")).get(0);
+            marginR = (0,_common__WEBPACK_IMPORTED_MODULE_2__["default"])("<div class=\"".concat(fullMargName, "-right\"></div>")).get(0);
+            padT = (0,_common__WEBPACK_IMPORTED_MODULE_2__["default"])("<div class=\"".concat(fullPadName, "-top\"></div>")).get(0);
+            padB = (0,_common__WEBPACK_IMPORTED_MODULE_2__["default"])("<div class=\"".concat(fullPadName, "-bottom\"></div>")).get(0);
+            padL = (0,_common__WEBPACK_IMPORTED_MODULE_2__["default"])("<div class=\"".concat(fullPadName, "-left\"></div>")).get(0);
+            padR = (0,_common__WEBPACK_IMPORTED_MODULE_2__["default"])("<div class=\"".concat(fullPadName, "-right\"></div>")).get(0);
             this['marginT' + state] = marginT;
             this['marginB' + state] = marginB;
             this['marginL' + state] = marginL;
@@ -18773,6 +18775,101 @@ var DEFAULT_COORDS = {
     y: 0,
 };
 var DEFAULT_BOXRECT = __assign(__assign({}, DEFAULT_COORDS), { width: 0, height: 0 });
+
+
+/***/ }),
+
+/***/ 184:
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   W: () => (/* binding */ ActionLabelComponents),
+/* harmony export */   g: () => (/* binding */ ComponentsEvents)
+/* harmony export */ });
+var ActionLabelComponents;
+(function (ActionLabelComponents) {
+    ActionLabelComponents["remove"] = "component:remove";
+    ActionLabelComponents["add"] = "component:add";
+    ActionLabelComponents["move"] = "component:move";
+})(ActionLabelComponents || (ActionLabelComponents = {}));
+var ComponentsEvents;
+(function (ComponentsEvents) {
+    /**
+     * @event `component:add` New component added.
+     * @example
+     * editor.on('component:add', (component) => { ... });
+     */
+    ComponentsEvents["add"] = "component:add";
+    /**
+     * @event `component:remove` Component removed.
+     * @example
+     * editor.on('component:remove', (component) => { ... });
+     */
+    ComponentsEvents["remove"] = "component:remove";
+    ComponentsEvents["removeBefore"] = "component:remove:before";
+    /**
+     * @event `component:create` Component created.
+     * @example
+     * editor.on('component:create', (component) => { ... });
+     */
+    ComponentsEvents["create"] = "component:create";
+    /**
+     * @event `component:update` Component is updated, the component is passed as an argument to the callback.
+     * @example
+     * editor.on('component:update', (component) => { ... });
+     */
+    ComponentsEvents["update"] = "component:update";
+    ComponentsEvents["updateInside"] = "component:update-inside";
+    /**
+     * @event `symbol:main:add` Added new main symbol.
+     * @example
+     * editor.on('symbol:main:add', ({ component }) => { ... });
+     */
+    ComponentsEvents["symbolMainAdd"] = "symbol:main:add";
+    /**
+     * @event `symbol:main:update` Main symbol updated.
+     * @example
+     * editor.on('symbol:main:update', ({ component }) => { ... });
+     */
+    ComponentsEvents["symbolMainUpdate"] = "symbol:main:update";
+    ComponentsEvents["symbolMainUpdateDeep"] = "symbol:main:update-deep";
+    /**
+     * @event `symbol:main:remove` Main symbol removed.
+     * @example
+     * editor.on('symbol:main:remove', ({ component }) => { ... });
+     */
+    ComponentsEvents["symbolMainRemove"] = "symbol:main:remove";
+    /**
+     * @event `symbol:main` Catch-all event related to main symbol updates.
+     * @example
+     * editor.on('symbol:main', ({ event, component }) => { ... });
+     */
+    ComponentsEvents["symbolMain"] = "symbol:main";
+    /**
+     * @event `symbol:instance:add` Added new root instance symbol.
+     * @example
+     * editor.on('symbol:instance:add', ({ component }) => { ... });
+     */
+    ComponentsEvents["symbolInstanceAdd"] = "symbol:instance:add";
+    /**
+     * @event `symbol:instance:remove` Root instance symbol removed.
+     * @example
+     * editor.on('symbol:instance:remove', ({ component }) => { ... });
+     */
+    ComponentsEvents["symbolInstanceRemove"] = "symbol:instance:remove";
+    /**
+     * @event `symbol:instance` Catch-all event related to instance symbol updates.
+     * @example
+     * editor.on('symbol:instance', ({ event, component }) => { ... });
+     */
+    ComponentsEvents["symbolInstance"] = "symbol:instance";
+    /**
+     * @event `symbol` Catch-all event for any symbol update (main or instance).
+     * @example
+     * editor.on('symbol', () => { ... });
+     */
+    ComponentsEvents["symbol"] = "symbol";
+})(ComponentsEvents || (ComponentsEvents = {}));
 
 
 /***/ }),
@@ -20506,7 +20603,9 @@ fn.siblings = function () {
 /* harmony export */   Vb: () => (/* binding */ hasModifierKey),
 /* harmony export */   cx: () => (/* binding */ cx),
 /* harmony export */   dL: () => (/* binding */ replaceWith),
+/* harmony export */   hy: () => (/* binding */ doctypeToString),
 /* harmony export */   kl: () => (/* binding */ isEscKey),
+/* harmony export */   nB: () => (/* binding */ attrToString),
 /* harmony export */   o5: () => (/* binding */ isTaggableNode),
 /* harmony export */   on: () => (/* binding */ on),
 /* harmony export */   pn: () => (/* binding */ isVisible),
@@ -20700,6 +20799,21 @@ var isEscKey = function (ev) { return getKeyCode(ev) === 27; };
 var isEnterKey = function (ev) { return getKeyCode(ev) === 13; };
 var hasCtrlKey = function (ev) { return ev.ctrlKey; };
 var hasModifierKey = function (ev) { return hasCtrlKey(ev) || ev.metaKey; };
+// Ref: https://stackoverflow.com/a/10162353
+var doctypeToString = function (dt) {
+    if (!dt)
+        return '';
+    var name = dt.name, publicId = dt.publicId, systemId = dt.systemId;
+    var pubId = publicId ? " PUBLIC \"".concat(publicId, "\"") : '';
+    var sysId = !publicId && systemId ? " SYSTEM \"".concat(systemId, "\"") : '';
+    return "<!DOCTYPE ".concat(name).concat(pubId).concat(sysId, ">");
+};
+var attrToString = function (attrs) {
+    if (attrs === void 0) { attrs = {}; }
+    var res = [];
+    (0,underscore__WEBPACK_IMPORTED_MODULE_0__.each)(attrs, function (value, key) { return res.push("".concat(key, "=\"").concat(value, "\"")); });
+    return res.join(' ');
+};
 var on = function (el, ev, fn, opts) {
     var evs = ev.split(/\s+/);
     var els = (0,underscore__WEBPACK_IMPORTED_MODULE_0__.isArray)(el) ? el : [el];
@@ -25737,6 +25851,8 @@ var Canvas = /** @class */ (function (_super) {
 
 // EXTERNAL MODULE: ./src/canvas/model/CanvasSpot.ts
 var CanvasSpot = __webpack_require__(675);
+// EXTERNAL MODULE: ./src/dom_components/types.ts
+var dom_components_types = __webpack_require__(184);
 ;// CONCATENATED MODULE: ./src/canvas/model/CanvasSpots.ts
 var CanvasSpots_extends = (undefined && undefined.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -25756,6 +25872,7 @@ var CanvasSpots_extends = (undefined && undefined.__extends) || (function () {
 
 
 
+
 var CanvasSpots = /** @class */ (function (_super) {
     CanvasSpots_extends(CanvasSpots, _super);
     function CanvasSpots(module, models) {
@@ -25766,7 +25883,7 @@ var CanvasSpots = /** @class */ (function (_super) {
         _this.on('remove', _this.onRemove);
         var em = _this.em;
         _this.refreshDbn = (0,index_all.debounce)(function () { return _this.refresh(); }, 0);
-        var evToRefreshDbn = 'component:resize styleable:change component:input component:update frame:updated undo redo';
+        var evToRefreshDbn = "component:resize styleable:change component:input ".concat(dom_components_types/* ComponentsEvents */.g.update, " frame:updated undo redo");
         _this.listenTo(em, evToRefreshDbn, function () { return _this.refreshDbn(); });
         return _this;
     }
@@ -26321,6 +26438,4168 @@ var CssRulesView = /** @class */ (function (_super) {
 }(common/* View */.G7));
 /* harmony default export */ const view_CssRulesView = (CssRulesView);
 
+;// CONCATENATED MODULE: ./src/parser/model/BrowserParserHtml.ts
+
+var htmlType = 'text/html';
+var defaultType = htmlType; // 'application/xml';
+/* harmony default export */ const BrowserParserHtml = (function (str, config) {
+    if (config === void 0) { config = {}; }
+    var parser = new DOMParser();
+    var mimeType = config.htmlType || defaultType;
+    var toHTML = mimeType === htmlType;
+    var strF = toHTML ? str : "<div>".concat(str, "</div>");
+    var doc = parser.parseFromString(strF, mimeType);
+    var res;
+    if (toHTML) {
+        if (config.asDocument)
+            return doc;
+        // Replicate the old parser in order to avoid breaking changes
+        var head = doc.head, body_1 = doc.body;
+        // Move all scripts at the bottom of the page
+        var scripts = head.querySelectorAll('script');
+        (0,index_all.each)(scripts, function (node) { return body_1.appendChild(node); });
+        // Move inside body all head children
+        var hEls_1 = [];
+        (0,index_all.each)(head.children, function (n) { return hEls_1.push(n); });
+        (0,index_all.each)(hEls_1, function (node, i) { return body_1.insertBefore(node, body_1.children[i]); });
+        res = body_1;
+    }
+    else {
+        res = doc.firstChild;
+    }
+    return res;
+});
+/**
+ * POC, custom html parser specs
+ * Parse an HTML string to an array of nodes
+ * example
+ * parse(`<div class="mycls" data-test>Hello</div><span>World <b>example</b></span>`)
+ * // result
+ * [
+ *  {
+ *      tagName: 'div',
+ *      attributes: { class: 'mycls', 'data-test': '' },
+ *      childNodes: ['Hello'],
+ *  },{
+ *      tagName: 'span',
+ *      childNodes: [
+ *          'World ',
+ *          {
+ *              tagName: 'b',
+ *              childNodes: ['example'],
+ *          }
+ *       ],
+ *  }
+ * ]
+ *
+
+export const parseNodes = nodes => {
+  const result = [];
+
+  for (let i = 0; i < nodes.length; i++) {
+    result.push(parseNode(nodes[i]));
+  }
+
+  return result;
+};
+
+export const parseAttributes = attrs => {
+  const result = {};
+
+  for (let j = 0; j < attrs.length; j++) {
+    const attr = attrs[j];
+    const nodeName = attr.nodeName;
+    const nodeValue = attr.nodeValue;
+    result[nodeName] = nodeValue;
+  }
+
+  return result;
+};
+
+export const parseNode = el => {
+  // Return the string of the textnode element
+  if (el.nodeType === 3) {
+    return el.nodeValue;
+  }
+
+  const tagName = node.tagName ? node.tagName.toLowerCase() : '';
+  const attrs = el.attributes || [];
+  const nodes = el.childNodes || [];
+
+  return {
+    ...(tagName && { tagName }),
+    ...(attrs.length && {
+      attributes: parseAttributes(attrs)
+    }),
+    ...(nodes.length && {
+      childNodes: parseNodes(nodes)
+    })
+  };
+};
+
+export default (str, config = {}) => {
+  const result = [];
+  const el = document.createElement('div');
+  el.innerHTML = str;
+  const nodes = el.childNodes;
+  const len = nodes.length;
+
+  for (let i = 0; i < len; i++) {
+    result.push(parseNode(nodes[i]));
+  }
+
+  return result;
+};
+ */
+
+;// CONCATENATED MODULE: ./src/parser/model/ParserHtml.ts
+var ParserHtml_assign = (undefined && undefined.__assign) || function () {
+    ParserHtml_assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return ParserHtml_assign.apply(this, arguments);
+};
+
+
+
+var modelAttrStart = 'data-gjs-';
+var ParserHtml_event = 'parse:html';
+var ParserHtml = function (em, config) {
+    if (config === void 0) { config = {}; }
+    return {
+        compTypes: [],
+        modelAttrStart: modelAttrStart,
+        getPropAttribute: function (attrName, attrValue) {
+            var name = attrName.replace(this.modelAttrStart, '');
+            var valueLen = (attrValue === null || attrValue === void 0 ? void 0 : attrValue.length) || 0;
+            var firstChar = attrValue === null || attrValue === void 0 ? void 0 : attrValue.substring(0, 1);
+            var lastChar = attrValue === null || attrValue === void 0 ? void 0 : attrValue.substring(valueLen - 1);
+            var value = attrValue === 'true' ? true : attrValue === 'false' ? false : attrValue;
+            // Try to parse JSON where it's possible
+            // I can get false positive here (eg. a selector '[data-attr]')
+            // so put it under try/catch and let fail silently
+            try {
+                value =
+                    (firstChar == '{' && lastChar == '}') || (firstChar == '[' && lastChar == ']') ? JSON.parse(value) : value;
+            }
+            catch (e) { }
+            return {
+                name: name,
+                value: value,
+            };
+        },
+        /**
+         * Extract component props from an attribute object
+         * @param {Object} attr
+         * @returns {Object} An object containing props and attributes without them
+         */
+        splitPropsFromAttr: function (attr) {
+            var _this = this;
+            if (attr === void 0) { attr = {}; }
+            var props = {};
+            var attrs = {};
+            (0,index_all.each)(attr, function (value, key) {
+                if (key.indexOf(_this.modelAttrStart) === 0) {
+                    var propsResult = _this.getPropAttribute(key, value);
+                    props[propsResult.name] = propsResult.value;
+                }
+                else {
+                    attrs[key] = value;
+                }
+            });
+            return {
+                props: props,
+                attrs: attrs,
+            };
+        },
+        /**
+         * Parse style string to object
+         * @param {string} str
+         * @return {Object}
+         * @example
+         * var stl = ParserHtml.parseStyle('color:black; width:100px; test:value;');
+         * console.log(stl);
+         * // {color: 'black', width: '100px', test: 'value'}
+         */
+        parseStyle: function (str) {
+            var result = {};
+            while (str.indexOf('/*') >= 0) {
+                var start = str.indexOf('/*');
+                var end = str.indexOf('*/') + 2;
+                str = str.replace(str.slice(start, end), '');
+            }
+            var decls = str.split(';');
+            for (var i = 0, len = decls.length; i < len; i++) {
+                var decl = decls[i].trim();
+                if (!decl)
+                    continue;
+                var prop = decl.split(':');
+                var key = prop[0].trim();
+                var value = prop.slice(1).join(':').trim();
+                // Support multiple values for the same key
+                if (result[key]) {
+                    if (!(0,index_all.isArray)(result[key])) {
+                        result[key] = [result[key]];
+                    }
+                    result[key].push(value);
+                }
+                else {
+                    result[key] = value;
+                }
+            }
+            return result;
+        },
+        /**
+         * Parse class string to array
+         * @param {string} str
+         * @return {Array<string>}
+         * @example
+         * var res = ParserHtml.parseClass('test1 test2 test3');
+         * console.log(res);
+         * // ['test1', 'test2', 'test3']
+         */
+        parseClass: function (str) {
+            var result = [];
+            var cls = str.split(' ');
+            for (var i = 0, len = cls.length; i < len; i++) {
+                var cl = cls[i].trim();
+                if (!cl)
+                    continue;
+                result.push(cl);
+            }
+            return result;
+        },
+        parseNodeAttr: function (node, result) {
+            var model = result || {};
+            var attrs = node.attributes || [];
+            var attrsLen = attrs.length;
+            for (var i = 0; i < attrsLen; i++) {
+                var nodeName = attrs[i].nodeName;
+                var nodeValue = attrs[i].nodeValue;
+                if (nodeName == 'style') {
+                    model.style = this.parseStyle(nodeValue);
+                }
+                else if (nodeName == 'class') {
+                    model.classes = this.parseClass(nodeValue);
+                }
+                else if (nodeName == 'contenteditable') {
+                    continue;
+                }
+                else if (nodeName.indexOf(this.modelAttrStart) === 0) {
+                    var propsResult = this.getPropAttribute(nodeName, nodeValue);
+                    model[propsResult.name] = propsResult.value;
+                }
+                else {
+                    // @ts-ignore Check for attributes from props (eg. required, disabled)
+                    if (nodeValue === '' && node[nodeName] === true) {
+                        nodeValue = true;
+                    }
+                    if (!model.attributes) {
+                        model.attributes = {};
+                    }
+                    model.attributes[nodeName] = nodeValue;
+                }
+            }
+            return model;
+        },
+        detectNode: function (node, opts) {
+            var _a;
+            if (opts === void 0) { opts = {}; }
+            var compTypes = this.compTypes;
+            var result = {};
+            if (compTypes) {
+                var type = (_a = node.getAttribute) === null || _a === void 0 ? void 0 : _a.call(node, "".concat(this.modelAttrStart, "type"));
+                // If the type is already defined, use it
+                if (type) {
+                    result = { type: type };
+                }
+                else {
+                    // Find the component type
+                    for (var i = 0; i < compTypes.length; i++) {
+                        var compType = compTypes[i];
+                        var obj = compType.model.isComponent(node, opts);
+                        if (obj) {
+                            if (typeof obj !== 'object') {
+                                obj = { type: compType.id };
+                            }
+                            result = obj;
+                            break;
+                        }
+                    }
+                }
+            }
+            return result;
+        },
+        parseNode: function (node, opts) {
+            var _a;
+            if (opts === void 0) { opts = {}; }
+            var nodes = ((_a = node.content) === null || _a === void 0 ? void 0 : _a.childNodes) || node.childNodes;
+            var nodesLen = nodes.length;
+            var model = this.detectNode(node, opts);
+            if (!model.tagName) {
+                var tag = node.tagName || '';
+                var ns = node.namespaceURI || '';
+                model.tagName = tag && ns === 'http://www.w3.org/1999/xhtml' ? tag.toLowerCase() : tag;
+            }
+            model = this.parseNodeAttr(node, model);
+            // Check for custom void elements (valid in XML)
+            if (!nodesLen && "".concat(node.outerHTML).slice(-2) === '/>') {
+                model.void = true;
+            }
+            // Check for nested elements but avoid it if already provided
+            if (nodesLen && !model.components && !opts.skipChildren) {
+                // Avoid infinite nested text nodes
+                var firstChild = nodes[0];
+                // If there is only one child and it's a TEXTNODE
+                // just make it content of the current node
+                if (nodesLen === 1 && firstChild.nodeType === 3) {
+                    !model.type && (model.type = 'text');
+                    model.components = {
+                        type: 'textnode',
+                        content: firstChild.nodeValue,
+                    };
+                }
+                else {
+                    model.components = this.parseNodes(node, ParserHtml_assign(ParserHtml_assign({}, opts), { inSvg: opts.inSvg || model.type === 'svg' }));
+                }
+            }
+            // If all children are texts and there is any textnode inside, the parent should
+            // be text too otherwise it won't be possible to edit texnodes.
+            var comps = model.components;
+            if (!model.type && (comps === null || comps === void 0 ? void 0 : comps.length)) {
+                var _b = config.textTypes, textTypes = _b === void 0 ? [] : _b, _c = config.textTags, textTags = _c === void 0 ? [] : _c;
+                var allTxt = true;
+                var foundTextNode = false;
+                for (var i = 0; i < comps.length; i++) {
+                    var comp = comps[i];
+                    var cType = comp.type;
+                    if (!textTypes.includes(cType) && !textTags.includes(comp.tagName)) {
+                        allTxt = false;
+                        break;
+                    }
+                    if (cType === 'textnode') {
+                        foundTextNode = true;
+                    }
+                }
+                if (allTxt && foundTextNode) {
+                    model.type = 'text';
+                }
+            }
+            return model;
+        },
+        /**
+         * Get data from the node element
+         * @param  {HTMLElement} el DOM element to traverse
+         * @return {Array<Object>}
+         */
+        parseNodes: function (el, opts) {
+            var _a;
+            if (opts === void 0) { opts = {}; }
+            var result = [];
+            var nodes = ((_a = el.content) === null || _a === void 0 ? void 0 : _a.childNodes) || el.childNodes;
+            var nodesLen = nodes.length;
+            for (var i = 0; i < nodesLen; i++) {
+                var node = nodes[i];
+                var nodePrev = result[result.length - 1];
+                var model = this.parseNode(node, opts);
+                // Check if it's a text node and if it could be moved to the prevous one
+                if (model.type === 'textnode') {
+                    if ((nodePrev === null || nodePrev === void 0 ? void 0 : nodePrev.type) === 'textnode') {
+                        nodePrev.content += model.content;
+                        continue;
+                    }
+                    // Throw away empty nodes (keep spaces)
+                    if (!opts.keepEmptyTextNodes) {
+                        var content = node.nodeValue;
+                        if (content != ' ' && !content.trim()) {
+                            continue;
+                        }
+                    }
+                }
+                // If the tagName is empty and it's not a textnode, skip it
+                if (!model.tagName && (0,index_all.isUndefined)(model.content)) {
+                    continue;
+                }
+                result.push(model);
+            }
+            return result;
+        },
+        /**
+         * Parse HTML string to a desired model object
+         * @param  {string} str HTML string
+         * @param  {ParserCss} parserCss In case there is style tags inside HTML
+         * @return {Object}
+         */
+        parse: function (str, parserCss, opts) {
+            var _a, _b, _c;
+            if (opts === void 0) { opts = {}; }
+            var conf = (em === null || em === void 0 ? void 0 : em.get('Config')) || {};
+            var res = { html: [] };
+            var cf = ParserHtml_assign(ParserHtml_assign({}, config), opts);
+            var options = ParserHtml_assign(ParserHtml_assign(ParserHtml_assign({}, config.optionsHtml), { 
+                // @ts-ignore Support previous `configParser.htmlType` option
+                htmlType: ((_a = config.optionsHtml) === null || _a === void 0 ? void 0 : _a.htmlType) || config.htmlType }), opts);
+            var preParser = options.preParser, asDocument = options.asDocument;
+            var input = (0,index_all.isFunction)(preParser) ? preParser(str, { editor: em === null || em === void 0 ? void 0 : em.getEditor() }) : str;
+            var parseRes = (0,index_all.isFunction)(cf.parserHtml) ? cf.parserHtml(input, options) : BrowserParserHtml(input, options);
+            var root = parseRes;
+            var docEl = parseRes;
+            if (asDocument) {
+                root = docEl.documentElement;
+                res.doctype = (0,dom/* doctypeToString */.hy)(docEl.doctype);
+            }
+            var scripts = root.querySelectorAll('script');
+            var i = scripts.length;
+            // Support previous `configMain.allowScripts` option
+            var allowScripts = !(0,index_all.isUndefined)(conf.allowScripts) ? conf.allowScripts : options.allowScripts;
+            // Remove script tags
+            if (!allowScripts) {
+                while (i--)
+                    (_b = scripts[i].parentNode) === null || _b === void 0 ? void 0 : _b.removeChild(scripts[i]);
+            }
+            // Remove unsafe attributes
+            if (!options.allowUnsafeAttr || !options.allowUnsafeAttrValue) {
+                this.__sanitizeNode(root, options);
+            }
+            // Detach style tags and parse them
+            if (parserCss) {
+                var styles = root.querySelectorAll('style');
+                var j = styles.length;
+                var styleStr = '';
+                while (j--) {
+                    styleStr = styles[j].innerHTML + styleStr;
+                    (_c = styles[j].parentNode) === null || _c === void 0 ? void 0 : _c.removeChild(styles[j]);
+                }
+                if (styleStr)
+                    res.css = parserCss.parse(styleStr);
+            }
+            em === null || em === void 0 ? void 0 : em.trigger("".concat(ParserHtml_event, ":root"), { input: input, root: root });
+            var resHtml = [];
+            if (asDocument) {
+                res.head = this.parseNode(docEl.head, cf);
+                res.root = this.parseNodeAttr(root);
+                resHtml = this.parseNode(docEl.body, cf);
+            }
+            else {
+                var result = this.parseNodes(root, cf);
+                // I have to keep it otherwise it breaks the DomComponents.addComponent (returns always array)
+                resHtml = result.length === 1 && !cf.returnArray ? result[0] : result;
+            }
+            res.html = resHtml;
+            em === null || em === void 0 ? void 0 : em.trigger(ParserHtml_event, { input: input, output: res });
+            return res;
+        },
+        __sanitizeNode: function (node, opts) {
+            var _this = this;
+            var attrs = node.attributes || [];
+            var nodes = node.childNodes || [];
+            var toRemove = [];
+            (0,index_all.each)(attrs, function (attr) {
+                var name = attr.nodeName || '';
+                var value = attr.nodeValue || '';
+                !opts.allowUnsafeAttr && name.startsWith('on') && toRemove.push(name);
+                !opts.allowUnsafeAttrValue && value.startsWith('javascript:') && toRemove.push(name);
+            });
+            toRemove.map(function (name) { return node.removeAttribute(name); });
+            (0,index_all.each)(nodes, function (node) { return _this.__sanitizeNode(node, opts); });
+        },
+    };
+};
+/* harmony default export */ const model_ParserHtml = (ParserHtml);
+
+;// CONCATENATED MODULE: ./src/domain_abstract/model/StyleableModel.ts
+var StyleableModel_extends = (undefined && undefined.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+var StyleableModel_assign = (undefined && undefined.__assign) || function () {
+    StyleableModel_assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return StyleableModel_assign.apply(this, arguments);
+};
+
+
+
+
+var parserHtml = model_ParserHtml();
+var getLastStyleValue = function (value) {
+    return (0,index_all.isArray)(value) ? value[value.length - 1] : value;
+};
+var StyleableModel = /** @class */ (function (_super) {
+    StyleableModel_extends(StyleableModel, _super);
+    function StyleableModel() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    /**
+     * Forward style string to `parseStyle` to be parse to an object
+     * @param  {string} str
+     * @returns
+     */
+    StyleableModel.prototype.parseStyle = function (str) {
+        return parserHtml.parseStyle(str);
+    };
+    /**
+     * To trigger the style change event on models I have to
+     * pass a new object instance
+     * @param {Object} prop
+     * @return {Object}
+     */
+    StyleableModel.prototype.extendStyle = function (prop) {
+        return StyleableModel_assign(StyleableModel_assign({}, this.getStyle()), prop);
+    };
+    /**
+     * Get style object
+     * @return {Object}
+     */
+    StyleableModel.prototype.getStyle = function (prop) {
+        var style = this.get('style') || {};
+        var result = StyleableModel_assign({}, style);
+        return prop && (0,index_all.isString)(prop) ? result[prop] : result;
+    };
+    /**
+     * Set new style object
+     * @param {Object|string} prop
+     * @param {Object} opts
+     * @return {Object} Applied properties
+     */
+    StyleableModel.prototype.setStyle = function (prop, opts) {
+        var _this = this;
+        if (prop === void 0) { prop = {}; }
+        if (opts === void 0) { opts = {}; }
+        if ((0,index_all.isString)(prop)) {
+            prop = this.parseStyle(prop);
+        }
+        var propOrig = this.getStyle(opts);
+        if (opts.partial || opts.avoidStore) {
+            opts.avoidStore = true;
+            prop.__p = true;
+        }
+        else {
+            delete prop.__p;
+        }
+        var propNew = StyleableModel_assign({}, prop);
+        var newStyle = StyleableModel_assign({}, propNew);
+        // Remove empty style properties
+        (0,index_all.keys)(newStyle).forEach(function (prop) {
+            if (newStyle[prop] === '') {
+                delete newStyle[prop];
+            }
+        });
+        this.set('style', newStyle, opts);
+        var diff = (0,mixins.shallowDiff)(propOrig, propNew);
+        // Delete the property used for partial updates
+        delete diff.__p;
+        (0,index_all.keys)(diff).forEach(function (pr) {
+            // @ts-ignore
+            var em = _this.em;
+            if (opts.noEvent)
+                return;
+            _this.trigger("change:style:".concat(pr));
+            if (em) {
+                em.trigger('styleable:change', _this, pr, opts);
+                em.trigger("styleable:change:".concat(pr), _this, pr, opts);
+            }
+        });
+        return propNew;
+    };
+    /**
+     * Add style property
+     * @param {Object|string} prop
+     * @param {string} value
+     * @example
+     * this.addStyle({color: 'red'});
+     * this.addStyle('color', 'blue');
+     */
+    StyleableModel.prototype.addStyle = function (prop, value, opts) {
+        var _a;
+        if (value === void 0) { value = ''; }
+        if (opts === void 0) { opts = {}; }
+        if (typeof prop == 'string') {
+            prop = (_a = {},
+                _a[prop] = value,
+                _a);
+        }
+        else {
+            opts = value || {};
+        }
+        opts.addStyle = prop;
+        prop = this.extendStyle(prop);
+        this.setStyle(prop, opts);
+    };
+    /**
+     * Remove style property
+     * @param {string} prop
+     */
+    StyleableModel.prototype.removeStyle = function (prop) {
+        var style = this.getStyle();
+        delete style[prop];
+        this.setStyle(style);
+    };
+    /**
+     * Returns string of style properties
+     * @param {Object} [opts={}] Options
+     * @return {String}
+     */
+    StyleableModel.prototype.styleToString = function (opts) {
+        if (opts === void 0) { opts = {}; }
+        var result = [];
+        var style = this.getStyle(opts);
+        var imp = opts.important;
+        var _loop_1 = function (prop) {
+            var important = (0,index_all.isArray)(imp) ? imp.indexOf(prop) >= 0 : imp;
+            var firstChars = prop.substring(0, 2);
+            var isPrivate = firstChars === '__';
+            if (isPrivate)
+                return "continue";
+            var value = style[prop];
+            var values = (0,index_all.isArray)(value) ? value : [value];
+            values.forEach(function (val) {
+                var value = "".concat(val).concat(important ? ' !important' : '');
+                value && result.push("".concat(prop, ":").concat(value, ";"));
+            });
+        };
+        for (var prop in style) {
+            _loop_1(prop);
+        }
+        return result.join('');
+    };
+    StyleableModel.prototype.getSelectors = function () {
+        return (this.get('selectors') || this.get('classes'));
+    };
+    StyleableModel.prototype.getSelectorsString = function (opts) {
+        // @ts-ignore
+        return this.selectorsToString ? this.selectorsToString(opts) : this.getSelectors().getFullString();
+    };
+    return StyleableModel;
+}(common/* Model */.Hn));
+/* harmony default export */ const model_StyleableModel = (StyleableModel);
+
+;// CONCATENATED MODULE: ./src/dom_components/model/SymbolUtils.ts
+var SymbolUtils_assign = (undefined && undefined.__assign) || function () {
+    SymbolUtils_assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return SymbolUtils_assign.apply(this, arguments);
+};
+var SymbolUtils_spreadArray = (undefined && undefined.__spreadArray) || function (to, from, pack) {
+    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
+        if (ar || !(i in from)) {
+            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
+            ar[i] = from[i];
+        }
+    }
+    return to.concat(ar || Array.prototype.slice.call(from));
+};
+
+
+
+var isSymbolMain = function (cmp) { return (0,index_all.isArray)(cmp.get(keySymbols)); };
+var isSymbolInstance = function (cmp) { return !!cmp.get(keySymbol); };
+var isSymbol = function (cmp) { return !!(isSymbolMain(cmp) || isSymbolInstance(cmp)); };
+var isSymbolRoot = function (symbol) {
+    var parent = symbol.parent();
+    return isSymbol(symbol) && (!parent || !isSymbol(parent));
+};
+var isSymbolNested = function (symbol) {
+    if (!isSymbol(symbol))
+        return false;
+    var symbTopSelf = getSymbolTop(isSymbolMain(symbol) ? symbol : getSymbolMain(symbol));
+    var symbTop = getSymbolTop(symbol);
+    var symbTopMain = isSymbolMain(symbTop) ? symbTop : getSymbolMain(symbTop);
+    return symbTopMain !== symbTopSelf;
+};
+var initSymbol = function (symbol) {
+    if (symbol.__symbReady)
+        return;
+    symbol.on('change', symbol.__upSymbProps);
+    symbol.__symbReady = true;
+};
+var getSymbolMain = function (symbol) {
+    var result = symbol.get(keySymbol);
+    if (result && (0,index_all.isString)(result)) {
+        var ref = symbol.__getAllById()[result];
+        if (ref) {
+            result = ref;
+            symbol.set(keySymbol, ref);
+        }
+        else {
+            result = 0;
+        }
+    }
+    return result || undefined;
+};
+var getSymbolInstances = function (symbol) {
+    var symbs = symbol === null || symbol === void 0 ? void 0 : symbol.get(keySymbols);
+    if (symbs && (0,index_all.isArray)(symbs)) {
+        symbs.forEach(function (symb, idx) {
+            if (symb && (0,index_all.isString)(symb)) {
+                symbs[idx] = symbol.__getAllById()[symb];
+            }
+        });
+        symbs = symbs.filter(function (symb) { return symb && !(0,index_all.isString)(symb); });
+    }
+    return symbs || undefined;
+};
+var isSymbolOverride = function (symbol, prop) {
+    if (prop === void 0) { prop = ''; }
+    var ovrd = symbol === null || symbol === void 0 ? void 0 : symbol.get(keySymbolOvrd);
+    var prp = prop.split(':')[0];
+    var props = prop !== prp ? [prop, prp] : [prop];
+    return ovrd === true || ((0,index_all.isArray)(ovrd) && props.some(function (p) { return ovrd.indexOf(p) >= 0; }));
+};
+var getSymbolsToUpdate = function (symb, opts) {
+    if (opts === void 0) { opts = {}; }
+    var result = [];
+    var changed = opts.changed;
+    if (opts.fromInstance ||
+        opts.noPropagate ||
+        opts.fromUndo ||
+        // Avoid updating others if the current component has override
+        (changed && isSymbolOverride(symb, changed))) {
+        return result;
+    }
+    var symbols = getSymbolInstances(symb) || [];
+    var symbol = getSymbolMain(symb);
+    var all = symbol ? SymbolUtils_spreadArray([symbol], (getSymbolInstances(symbol) || []), true) : symbols;
+    result = all
+        .filter(function (s) { return s !== symb; })
+        // Avoid updating those with override
+        .filter(function (s) { return !(changed && isSymbolOverride(s, changed)); });
+    return result;
+};
+var getSymbolTop = function (symbol, opts) {
+    var result = symbol;
+    var parent = symbol.parent(opts);
+    // while (parent && (isSymbolMain(parent) || getSymbol(parent))) {
+    while (parent && isSymbol(parent)) {
+        result = parent;
+        parent = parent.parent(opts);
+    }
+    return result;
+};
+var detachSymbolInstance = function (symbol, opts) {
+    if (opts === void 0) { opts = {}; }
+    var symbolMain = getSymbolMain(symbol);
+    var symbs = symbolMain && getSymbolInstances(symbolMain);
+    !opts.skipRefs &&
+        symbs &&
+        symbolMain.set(keySymbols, symbs.filter(function (s) { return s !== symbol; }));
+    symbol.set(keySymbol, 0);
+    symbol.components().forEach(function (s) { return detachSymbolInstance(s, opts); });
+};
+var logSymbol = function (symb, type, toUp, opts) {
+    if (opts === void 0) { opts = {}; }
+    var symbol = getSymbolMain(symb);
+    var symbols = getSymbolInstances(symb);
+    if (!symbol && !symbols) {
+        return;
+    }
+    symb.em.log(type, { model: symb, toUp: toUp, context: 'symbols', opts: opts });
+};
+var updateSymbolProps = function (symbol, opts) {
+    if (opts === void 0) { opts = {}; }
+    var changed = symbol.changedAttributes() || {};
+    var attrs = changed.attributes || {};
+    delete changed.status;
+    delete changed.open;
+    delete changed[keySymbols];
+    delete changed[keySymbol];
+    delete changed[keySymbolOvrd];
+    delete changed.attributes;
+    delete attrs.id;
+    if (!(0,mixins.isEmptyObj)(attrs)) {
+        changed.attributes = attrs;
+    }
+    if (!(0,mixins.isEmptyObj)(changed)) {
+        var toUp = getSymbolsToUpdate(symbol, opts);
+        // Avoid propagating overrides to other symbols
+        (0,index_all.keys)(changed).map(function (prop) {
+            if (isSymbolOverride(symbol, prop))
+                delete changed[prop];
+        });
+        logSymbol(symbol, 'props', toUp, { opts: opts, changed: changed });
+        toUp.forEach(function (child) {
+            var propsChanged = SymbolUtils_assign({}, changed);
+            // Avoid updating those with override
+            (0,index_all.keys)(propsChanged).map(function (prop) {
+                if (isSymbolOverride(child, prop))
+                    delete propsChanged[prop];
+            });
+            child.set(propsChanged, SymbolUtils_assign({ fromInstance: symbol }, opts));
+        });
+    }
+};
+var updateSymbolCls = function (symbol, opts) {
+    if (opts === void 0) { opts = {}; }
+    var toUp = getSymbolsToUpdate(symbol, opts);
+    logSymbol(symbol, 'classes', toUp, { opts: opts });
+    toUp.forEach(function (child) {
+        // @ts-ignore This will propagate the change up to __upSymbProps
+        child.set('classes', symbol.get('classes'), { fromInstance: symbol });
+    });
+    symbol.__changesUp(opts);
+};
+var updateSymbolComps = function (symbol, m, c, o) {
+    var optUp = o || c || {};
+    var fromInstance = optUp.fromInstance, fromUndo = optUp.fromUndo;
+    var toUpOpts = { fromInstance: fromInstance, fromUndo: fromUndo };
+    var isTemp = m.opt.temporary;
+    // Reset
+    if (!o) {
+        var toUp = getSymbolsToUpdate(symbol, SymbolUtils_assign(SymbolUtils_assign({}, toUpOpts), { changed: 'components:reset' }));
+        // @ts-ignore
+        var cmps_1 = m.models;
+        logSymbol(symbol, 'reset', toUp, { components: cmps_1 });
+        toUp.forEach(function (symb) {
+            var newMods = cmps_1.map(function (mod) { return mod.clone({ symbol: true }); });
+            // @ts-ignore
+            symb.components().reset(newMods, SymbolUtils_assign({ fromInstance: symbol }, c));
+        });
+        // Add
+    }
+    else if (o.add) {
+        var addedInstances_1 = [];
+        var isMainSymb_1 = !!getSymbolInstances(symbol);
+        var toUp = getSymbolsToUpdate(symbol, SymbolUtils_assign(SymbolUtils_assign({}, toUpOpts), { changed: 'components:add' }));
+        if (toUp.length) {
+            var addSymb = getSymbolMain(m);
+            addedInstances_1 = (addSymb ? getSymbolInstances(addSymb) : getSymbolInstances(m)) || [];
+            addedInstances_1 = SymbolUtils_spreadArray([], addedInstances_1, true);
+            addedInstances_1.push(addSymb ? addSymb : m);
+        }
+        !isTemp &&
+            logSymbol(symbol, 'add', toUp, {
+                opts: o,
+                addedInstances: addedInstances_1.map(function (c) { return c.cid; }),
+                added: m.cid,
+            });
+        // Here, before appending a new symbol, I have to ensure there are no previously
+        // created symbols (eg. used mainly when drag components around)
+        toUp.forEach(function (symb) {
+            var symbTop = getSymbolTop(symb);
+            var symbPrev = addedInstances_1.filter(function (addedInst) {
+                var addedTop = getSymbolTop(addedInst, { prev: 1 });
+                return symbTop && addedTop && addedTop === symbTop;
+            })[0];
+            var toAppend = symbPrev || m.clone({ symbol: true, symbolInv: isMainSymb_1 });
+            symb.append(toAppend, SymbolUtils_assign({ fromInstance: symbol }, o));
+        });
+        // Remove
+    }
+    else {
+        // Remove instance reference from the symbol
+        var symb = getSymbolMain(m);
+        symb &&
+            !o.temporary &&
+            symb.set(keySymbols, getSymbolInstances(symb).filter(function (i) { return i !== m; }));
+        // Propagate remove only if the component is an inner symbol
+        if (!isSymbolRoot(m)) {
+            var changed_1 = 'components:remove';
+            var index_1 = o.index;
+            var parent_1 = m.parent();
+            var opts_1 = SymbolUtils_assign({ fromInstance: m }, o);
+            var isSymbNested = isSymbolRoot(m);
+            var toUpFn = function (symb) {
+                var symbPrnt = symb.parent();
+                symbPrnt && !isSymbolOverride(symbPrnt, changed_1) && symb.remove(opts_1);
+            };
+            // Check if the parent allows the removing
+            var toUp = !isSymbolOverride(parent_1, changed_1) ? getSymbolsToUpdate(m, toUpOpts) : [];
+            if (isSymbNested) {
+                toUp = parent_1 && getSymbolsToUpdate(parent_1, SymbolUtils_assign(SymbolUtils_assign({}, toUpOpts), { changed: changed_1 }));
+                toUpFn = function (symb) {
+                    var toRemove = symb.components().at(index_1);
+                    toRemove && toRemove.remove(SymbolUtils_assign({ fromInstance: parent_1 }, opts_1));
+                };
+            }
+            !isTemp &&
+                logSymbol(symbol, 'remove', toUp, {
+                    opts: o,
+                    removed: m.cid,
+                    isSymbNested: isSymbNested,
+                });
+            toUp.forEach(toUpFn);
+        }
+    }
+    symbol.__changesUp(optUp);
+};
+
+;// CONCATENATED MODULE: ./src/dom_components/model/Components.ts
+var Components_extends = (undefined && undefined.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+var Components_assign = (undefined && undefined.__assign) || function () {
+    Components_assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return Components_assign.apply(this, arguments);
+};
+var __rest = (undefined && undefined.__rest) || function (s, e) {
+    var t = {};
+    for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
+        t[p] = s[p];
+    if (s != null && typeof Object.getOwnPropertySymbols === "function")
+        for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
+            if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i]))
+                t[p[i]] = s[p[i]];
+        }
+    return t;
+};
+var Components_spreadArray = (undefined && undefined.__spreadArray) || function (to, from, pack) {
+    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
+        if (ar || !(i in from)) {
+            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
+            ar[i] = from[i];
+        }
+    }
+    return to.concat(ar || Array.prototype.slice.call(from));
+};
+
+
+
+
+
+var getComponentIds = function (cmp, res) {
+    if (res === void 0) { res = []; }
+    if (!cmp)
+        return [];
+    var cmps = ((0,index_all.isArray)(cmp) || (0,index_all.isFunction)(cmp.map) ? cmp : [cmp]);
+    cmps.map(function (cmp) {
+        res.push(cmp.getId());
+        getComponentIds(cmp.components().models, res);
+    });
+    return res;
+};
+var getComponentsFromDefs = function (items, all, opts) {
+    if (all === void 0) { all = {}; }
+    if (opts === void 0) { opts = {}; }
+    opts.visitedCmps = opts.visitedCmps || {};
+    var visitedCmps = opts.visitedCmps;
+    var itms = (0,index_all.isArray)(items) ? items : [items];
+    return itms.map(function (item) {
+        var _a = item.attributes, attributes = _a === void 0 ? {} : _a, components = item.components, tagName = item.tagName, style = item.style;
+        var id = attributes.id, draggable = attributes.draggable, restAttr = __rest(attributes, ["id", "draggable"]);
+        var result = item;
+        if (id) {
+            // Detect components with the same ID
+            if (!visitedCmps[id]) {
+                visitedCmps[id] = [];
+                // Update the component if exists already
+                if (all[id]) {
+                    result = all[id];
+                    var cmp = result;
+                    tagName && cmp.set({ tagName: tagName }, Components_assign(Components_assign({}, opts), { silent: true }));
+                    (0,index_all.keys)(restAttr).length && cmp.addAttributes(restAttr, Components_assign({}, opts));
+                    (0,index_all.keys)(style).length && cmp.addStyle(style, opts);
+                }
+            }
+            else {
+                // Found another component with the same ID, treat it as a new component
+                visitedCmps[id].push(result);
+                id = model_Component.getNewId(all);
+                result.attributes.id = id;
+            }
+        }
+        if (components) {
+            var newComponents = getComponentsFromDefs(components, all);
+            if ((0,index_all.isFunction)(result.components)) {
+                var cmps = result.components();
+                cmps.length > 0 && cmps.reset(newComponents, opts);
+            }
+            else {
+                result.components = newComponents;
+            }
+        }
+        return result;
+    });
+};
+var Components = /** @class */ (function (_super) {
+    Components_extends(Components, _super);
+    function Components(models, opt) {
+        var _this = _super.call(this, models, opt) || this;
+        _this.opt = opt;
+        _this.listenTo(_this, 'add', _this.onAdd);
+        _this.listenTo(_this, 'remove', _this.removeChildren);
+        _this.listenTo(_this, 'reset', _this.resetChildren);
+        var em = opt.em, config = opt.config;
+        _this.config = config;
+        _this.em = em;
+        _this.domc = opt.domc || (em === null || em === void 0 ? void 0 : em.Components);
+        return _this;
+    }
+    Object.defineProperty(Components.prototype, "events", {
+        get: function () {
+            var _a;
+            return (_a = this.domc) === null || _a === void 0 ? void 0 : _a.events;
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Components.prototype.resetChildren = function (models, opts) {
+        var _this = this;
+        if (opts === void 0) { opts = {}; }
+        var coll = this;
+        var prev = opts.previousModels || [];
+        var toRemove = prev.filter(function (prev) { return !models.get(prev.cid); });
+        var newIds = getComponentIds(models);
+        var idsToKeep = getComponentIds(prev).filter(function (pr) { return newIds.indexOf(pr) >= 0; });
+        opts.keepIds = (opts.keepIds || []).concat(idsToKeep);
+        toRemove.forEach(function (md) { return _this.removeChildren(md, coll, opts); });
+        models.each(function (model) { return _this.onAdd(model); });
+    };
+    Components.prototype.resetFromString = function (input, opts) {
+        var _a, _b;
+        if (input === void 0) { input = ''; }
+        if (opts === void 0) { opts = {}; }
+        opts.keepIds = getComponentIds(this);
+        var _c = this, domc = _c.domc, em = _c.em, parent = _c.parent;
+        var cssc = em === null || em === void 0 ? void 0 : em.Css;
+        var allByID = (domc === null || domc === void 0 ? void 0 : domc.allById()) || {};
+        var parsed = this.parseString(input, opts);
+        var newCmps = getComponentsFromDefs(parsed, allByID, opts);
+        var _d = opts.visitedCmps, visitedCmps = _d === void 0 ? {} : _d;
+        // Clone styles for duplicated components
+        Object.keys(visitedCmps).forEach(function (id) {
+            var cmps = visitedCmps[id];
+            if (cmps.length) {
+                // Get all available rules of the component
+                var rulesToClone_1 = (cssc === null || cssc === void 0 ? void 0 : cssc.getRules("#".concat(id))) || [];
+                if (rulesToClone_1.length) {
+                    cmps.forEach(function (cmp) {
+                        rulesToClone_1.forEach(function (rule) {
+                            var newRule = rule.clone();
+                            // @ts-ignore
+                            newRule.set('selectors', ["#".concat(cmp.attributes.id)]);
+                            cssc.getAll().add(newRule);
+                        });
+                    });
+                }
+            }
+        });
+        this.reset(newCmps, opts);
+        em === null || em === void 0 ? void 0 : em.trigger('component:content', parent, opts, input);
+        (_b = (_a = parent).__checkInnerChilds) === null || _b === void 0 ? void 0 : _b.call(_a);
+    };
+    Components.prototype.removeChildren = function (removed, coll, opts) {
+        var _this = this;
+        if (opts === void 0) { opts = {}; }
+        // Removing a parent component can cause this function
+        // to be called with an already removed child element
+        if (!removed) {
+            return;
+        }
+        var _a = this, domc = _a.domc, em = _a.em;
+        var isTemp = opts.temporary || opts.fromUndo;
+        removed.prevColl = this; // This one is required for symbols
+        if (!isTemp) {
+            // Remove the component from the global list
+            var id_1 = removed.getId();
+            var sels = em.Selectors.getAll();
+            var rules = em.Css.getAll();
+            var canRemoveStyle = (opts.keepIds || []).indexOf(id_1) < 0;
+            var allByID = domc ? domc.allById() : {};
+            delete allByID[id_1];
+            // Remove all component related styles
+            var rulesRemoved = (canRemoveStyle
+                ? rules.remove(rules.filter(function (r) { return r.getSelectors().getFullString() === "#".concat(id_1); }), opts)
+                : []);
+            // Clean selectors
+            sels.remove(rulesRemoved.map(function (rule) { return rule.getSelectors().at(0); }));
+            if (!removed.opt.temporary) {
+                em.Commands.run('core:component-style-clear', { target: removed });
+                removed.removed();
+                removed.trigger('removed');
+                em.trigger(dom_components_types/* ComponentsEvents */.g.remove, removed);
+                if (domc && isSymbolInstance(removed) && isSymbolRoot(removed)) {
+                    domc.symbols.__trgEvent(domc.events.symbolInstanceRemove, { component: removed }, true);
+                }
+            }
+            var inner_1 = removed.components();
+            inner_1.forEach(function (it) { return _this.removeChildren(it, coll, opts); });
+        }
+        // Remove stuff registered in DomComponents.handleChanges
+        var inner = removed.components();
+        em.stopListening(inner);
+        em.stopListening(removed);
+        em.stopListening(removed.get('classes'));
+        removed.__postRemove();
+    };
+    /** @ts-ignore */
+    Components.prototype.model = function (attrs, options) {
+        var opt = options.collection.opt;
+        var em = opt.em;
+        var model;
+        var df = em.Components.componentTypes;
+        options.em = em;
+        options.config = opt.config;
+        options.componentTypes = df;
+        options.domc = opt.domc;
+        for (var it_1 = 0; it_1 < df.length; it_1++) {
+            var dfId = df[it_1].id;
+            if (dfId == attrs.type) {
+                model = df[it_1].model;
+                break;
+            }
+        }
+        // If no model found, get the default one
+        if (!model) {
+            model = df[df.length - 1].model;
+            em &&
+                attrs.type &&
+                em.logWarning("Component type '".concat(attrs.type, "' not found"), {
+                    attrs: attrs,
+                    options: options,
+                });
+        }
+        return new model(attrs, options);
+    };
+    Components.prototype.parseString = function (value, opt) {
+        if (opt === void 0) { opt = {}; }
+        var _a = this, em = _a.em, domc = _a.domc, parent = _a.parent;
+        var asDocument = opt.asDocument && (parent === null || parent === void 0 ? void 0 : parent.is('wrapper'));
+        var cssc = em.Css;
+        var parsed = em.Parser.parseHtml(value, { asDocument: asDocument });
+        var components = parsed.html;
+        if (asDocument) {
+            var root = parent;
+            var _b = parsed.html || {}, bodyCmps = _b.components, restBody = __rest(_b, ["components"]);
+            var _c = parsed.head || {}, headCmps = _c.components, restHead = __rest(_c, ["components"]);
+            components = bodyCmps;
+            root.set(restBody, opt);
+            root.head.set(restHead, opt);
+            root.head.components(headCmps, opt);
+            root.docEl.set(parsed.root, opt);
+            root.set({ doctype: parsed.doctype });
+        }
+        // We need this to avoid duplicate IDs
+        model_Component.checkId(components, parsed.css, domc.componentsById, opt);
+        if (parsed.css && cssc && !opt.temporary) {
+            var at = opt.at, optsToPass = __rest(opt, ["at"]);
+            cssc.addCollection(parsed.css, Components_assign(Components_assign({}, optsToPass), { extend: 1 }));
+        }
+        return components;
+    };
+    Components.prototype.add = function (models, opt) {
+        var _this = this;
+        if (opt === void 0) { opt = {}; }
+        if (models == undefined)
+            return;
+        opt.keepIds = Components_spreadArray(Components_spreadArray([], (opt.keepIds || []), true), getComponentIds(opt.previousModels), true);
+        if ((0,index_all.isString)(models)) {
+            models = this.parseString(models, opt);
+        }
+        else if ((0,index_all.isArray)(models)) {
+            models.forEach(function (item, index) {
+                if ((0,index_all.isString)(item)) {
+                    var nodes = _this.parseString(item, opt);
+                    models[index] = (0,index_all.isArray)(nodes) && !nodes.length ? null : nodes;
+                }
+            });
+        }
+        var processedModels = ((0,index_all.isArray)(models) ? models : [models])
+            .filter(Boolean)
+            .map(function (model) { return _this.processDef(model); });
+        models = (0,index_all.isArray)(models) ? (0,index_all.flatten)(processedModels, 1) : processedModels[0];
+        return _super.prototype.add.call(this, models, opt);
+    };
+    /**
+     * Process component definition.
+     */
+    Components.prototype.processDef = function (mdl) {
+        // Avoid processing Models
+        if (mdl.cid && mdl.ccid)
+            return mdl;
+        var _a = this, em = _a.em, _b = _a.config, config = _b === void 0 ? {} : _b;
+        var processor = config.processor;
+        var model = mdl;
+        if (processor) {
+            model = Components_assign({}, model); // Avoid 'Cannot delete property ...'
+            var modelPr = processor(model);
+            if (modelPr) {
+                //@ts-ignore
+                (0,index_all.each)(model, function (val, key) { return delete model[key]; });
+                (0,index_all.extend)(model, modelPr);
+            }
+        }
+        // React JSX preset
+        //@ts-ignore
+        if (model.$$typeof && typeof model.props == 'object') {
+            model = Components_assign({}, model);
+            model.props = Components_assign({}, model.props);
+            var domc = em.Components;
+            var parser = em.Parser;
+            var parserHtml = parser.parserHtml;
+            (0,index_all.each)(model, function (value, key) {
+                //@ts-ignore
+                if (!(0,index_all.includes)(['props', 'type'], key))
+                    delete model[key];
+            });
+            var props = model.props;
+            var comps = props.children;
+            delete props.children;
+            delete model.props;
+            var res = parserHtml.splitPropsFromAttr(props);
+            model.attributes = res.attrs;
+            if (comps) {
+                model.components = comps;
+            }
+            if (!model.type) {
+                model.type = 'textnode';
+            }
+            else if (!domc.getType(model.type)) {
+                model.tagName = model.type;
+                delete model.type;
+            }
+            (0,index_all.extend)(model, res.props);
+        }
+        return model;
+    };
+    Components.prototype.onAdd = function (model, c, opts) {
+        if (opts === void 0) { opts = {}; }
+        var _a = this, domc = _a.domc, em = _a.em;
+        var style = model.getStyle();
+        var avoidInline = em && em.getConfig().avoidInlineStyle;
+        domc && domc.Component.ensureInList(model);
+        if (!(0,index_all.isEmpty)(style) && !avoidInline && em && em.getConfig().forceClass && !opts.temporary) {
+            var name_1 = model.cid;
+            em.Css.setClassRule(name_1, style);
+            model.setStyle({});
+            model.addClass(name_1);
+        }
+        model.__postAdd({ recursive: true });
+        if (em && !opts.temporary) {
+            var triggerAdd_1 = function (model) {
+                em.trigger(dom_components_types/* ComponentsEvents */.g.add, model, opts);
+                model.components().forEach(function (comp) { return triggerAdd_1(comp); });
+            };
+            triggerAdd_1(model);
+            if (domc && isSymbolInstance(model) && isSymbolRoot(model)) {
+                domc.symbols.__trgEvent(domc.events.symbolInstanceAdd, { component: model }, true);
+            }
+        }
+    };
+    return Components;
+}(common/* Collection */.FE));
+/* harmony default export */ const model_Components = (Components);
+
+;// CONCATENATED MODULE: ./src/selector_manager/model/Selector.ts
+var Selector_extends = (undefined && undefined.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+
+
+var TYPE_CLASS = 1;
+var TYPE_ID = 2;
+/**
+ * @typedef Selector
+ * @property {String} name Selector name, eg. `my-class`
+ * @property {String} label Selector label, eg. `My Class`
+ * @property {Number} [type=1] Type of the selector. 1 (class) | 2 (id)
+ * @property {Boolean} [active=true] If not active, it's not selectable by the Style Manager.
+ * @property {Boolean} [private=false] If true, it can't be seen by the Style Manager, but it will be rendered in the canvas and in export code.
+ * @property {Boolean} [protected=false] If true, it can't be removed from the attached component.
+ */
+var Selector = /** @class */ (function (_super) {
+    Selector_extends(Selector, _super);
+    /**
+     * @hideconstructor
+     */
+    function Selector(props, opts) {
+        if (opts === void 0) { opts = {}; }
+        var _this = _super.call(this, props, opts) || this;
+        var _a = opts.config, config = _a === void 0 ? {} : _a;
+        var name = _this.get('name');
+        var label = _this.get('label');
+        if (!name) {
+            _this.set('name', label);
+        }
+        else if (!label) {
+            _this.set('label', name);
+        }
+        var namePreEsc = _this.get('name');
+        var escapeName = config.escapeName;
+        var nameEsc = escapeName ? escapeName(namePreEsc) : Selector.escapeName(namePreEsc);
+        _this.set('name', nameEsc);
+        _this.em = opts.em;
+        return _this;
+    }
+    Selector.prototype.defaults = function () {
+        return {
+            name: '',
+            label: '',
+            type: TYPE_CLASS,
+            active: true,
+            private: false,
+            protected: false,
+            _undo: true,
+        };
+    };
+    Selector.prototype.isId = function () {
+        return this.get('type') === TYPE_ID;
+    };
+    Selector.prototype.isClass = function () {
+        return this.get('type') === TYPE_CLASS;
+    };
+    Selector.prototype.getFullName = function (opts) {
+        if (opts === void 0) { opts = {}; }
+        var escape = opts.escape;
+        var name = this.get('name');
+        var pfx = '';
+        switch (this.get('type')) {
+            case TYPE_CLASS:
+                pfx = '.';
+                break;
+            case TYPE_ID:
+                pfx = '#';
+                break;
+        }
+        return pfx + (escape ? escape(name) : name);
+    };
+    /**
+     * Get selector as a string.
+     * @returns {String}
+     * @example
+     * // Given such selector: { name: 'my-selector', type: 2 }
+     * console.log(selector.toString());
+     * // -> `#my-selector`
+     */
+    Selector.prototype.toString = function () {
+        return this.getFullName();
+    };
+    /**
+     * Get selector name.
+     * @returns {String}
+     * @example
+     * // Given such selector: { name: 'my-selector', label: 'My selector' }
+     * console.log(selector.getName());
+     * // -> `my-selector`
+     */
+    Selector.prototype.getName = function () {
+        return this.get('name') || '';
+    };
+    /**
+     * Get selector label.
+     * @returns {String}
+     * @example
+     * // Given such selector: { name: 'my-selector', label: 'My selector' }
+     * console.log(selector.getLabel());
+     * // -> `My selector`
+     */
+    Selector.prototype.getLabel = function () {
+        return this.get('label') || '';
+    };
+    /**
+     * Update selector label.
+     * @param {String} label New label
+     * @example
+     * // Given such selector: { name: 'my-selector', label: 'My selector' }
+     * selector.setLabel('New Label')
+     * console.log(selector.getLabel());
+     * // -> `New Label`
+     */
+    Selector.prototype.setLabel = function (label) {
+        return this.set('label', label);
+    };
+    /**
+     * Get selector active state.
+     * @returns {Boolean}
+     */
+    Selector.prototype.getActive = function () {
+        return !!this.get('active');
+    };
+    /**
+     * Update selector active state.
+     * @param {Boolean} value New active state
+     */
+    Selector.prototype.setActive = function (value) {
+        return this.set('active', value);
+    };
+    Selector.prototype.toJSON = function (opts) {
+        if (opts === void 0) { opts = {}; }
+        var em = this.em;
+        var obj = common/* Model */.Hn.prototype.toJSON.call(this, [opts]);
+        var defaults = (0,index_all.result)(this, 'defaults');
+        if (em && em.getConfig().avoidDefaults) {
+            (0,index_all.forEach)(defaults, function (value, key) {
+                if (obj[key] === value) {
+                    delete obj[key];
+                }
+            });
+            if (obj.label === obj.name) {
+                delete obj.label;
+            }
+            var objLen = (0,index_all.keys)(obj).length;
+            if (objLen === 1 && obj.name) {
+                obj = obj.name;
+            }
+            if (objLen === 2 && obj.name && obj.type) {
+                obj = this.getFullName();
+            }
+        }
+        return obj;
+    };
+    /**
+     * Escape string
+     * @param {string} name
+     * @return {string}
+     * @private
+     */
+    Selector.escapeName = function (name) {
+        return "".concat(name).trim().replace(/([^a-z0-9\w\-\\:@\\/#()\.%\+\[\]]+)/gi, '-');
+    };
+    // Type selectors: https://developer.mozilla.org/it/docs/Web/CSS/CSS_Selectors
+    Selector.TYPE_CLASS = TYPE_CLASS;
+    Selector.TYPE_ID = TYPE_ID;
+    return Selector;
+}(common/* Model */.Hn));
+/* harmony default export */ const model_Selector = (Selector);
+Selector.prototype.idAttribute = 'name';
+
+;// CONCATENATED MODULE: ./src/selector_manager/model/Selectors.ts
+var Selectors_extends = (undefined && undefined.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+
+
+
+var combine = function (tail, curr) {
+    return tail.reduce(function (acc, item, n) {
+        return acc.concat(combine(tail.slice(n + 1), "".concat(curr).concat(item)));
+    }, [curr]);
+};
+var Selectors = /** @class */ (function (_super) {
+    Selectors_extends(Selectors, _super);
+    function Selectors() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    Selectors.prototype.modelId = function (attr) {
+        return "".concat(attr.name, "_").concat(attr.type || model_Selector.TYPE_CLASS);
+    };
+    Selectors.prototype.getStyleable = function () {
+        return (0,index_all.filter)(this.models, function (item) { return item.getActive() && !item.get('private'); });
+    };
+    Selectors.prototype.getValid = function (_a) {
+        var _b = _a === void 0 ? {} : _a, noDisabled = _b.noDisabled;
+        return (0,index_all.filter)(this.models, function (item) { return !item.get('private'); }).filter(function (item) { return (noDisabled ? item.get('active') : 1); });
+    };
+    Selectors.prototype.getFullString = function (collection, opts) {
+        if (opts === void 0) { opts = {}; }
+        var result = [];
+        var coll = collection || this;
+        coll.forEach(function (selector) { return result.push(selector.getFullName(opts)); });
+        opts.sort && result.sort();
+        return result.join('').trim();
+    };
+    Selectors.prototype.getFullName = function (opts) {
+        if (opts === void 0) { opts = {}; }
+        var combination = opts.combination, array = opts.array;
+        var result = [];
+        var sels = this.map(function (s) { return s.getFullName(opts); }).sort();
+        if (combination) {
+            sels.forEach(function (sel, n) {
+                result = result.concat(combine(sels.slice(n + 1), sel));
+            });
+        }
+        else {
+            result = sels;
+        }
+        return (array ? result : combination ? result.join(',') : result.join(''));
+    };
+    return Selectors;
+}(common/* Collection */.FE));
+/* harmony default export */ const model_Selectors = (Selectors);
+Selectors.prototype.model = model_Selector;
+
+;// CONCATENATED MODULE: ./src/abstract/ModuleCategory.ts
+var ModuleCategory_extends = (undefined && undefined.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+var ModuleCategory_spreadArray = (undefined && undefined.__spreadArray) || function (to, from, pack) {
+    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
+        if (ar || !(i in from)) {
+            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
+            ar[i] = from[i];
+        }
+    }
+    return to.concat(ar || Array.prototype.slice.call(from));
+};
+
+var Category = /** @class */ (function (_super) {
+    ModuleCategory_extends(Category, _super);
+    function Category() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    Category.prototype.defaults = function () {
+        return {
+            id: '',
+            label: '',
+            open: true,
+            attributes: {},
+        };
+    };
+    Category.prototype.getId = function () {
+        return this.get('id');
+    };
+    Category.prototype.getLabel = function () {
+        return this.get('label');
+    };
+    return Category;
+}(common/* Model */.Hn));
+/* harmony default export */ const ModuleCategory = (Category);
+function getItemsByCategory(allItems) {
+    var categorySet = new Set();
+    var categoryMap = new Map();
+    var emptyItem = { items: [] };
+    allItems.forEach(function (item) {
+        var category = item.category;
+        if (category) {
+            categorySet.add(category);
+            var categoryItems = categoryMap.get(category);
+            if (categoryItems) {
+                categoryItems.push(item);
+            }
+            else {
+                categoryMap.set(category, [item]);
+            }
+        }
+        else {
+            emptyItem.items.push(item);
+        }
+    });
+    var categoryWithItems = Array.from(categorySet).map(function (category) { return ({
+        category: category,
+        items: categoryMap.get(category) || [],
+    }); });
+    return ModuleCategory_spreadArray(ModuleCategory_spreadArray([], categoryWithItems, true), [emptyItem], false);
+}
+
+;// CONCATENATED MODULE: ./src/abstract/CollectionWithCategories.ts
+var CollectionWithCategories_extends = (undefined && undefined.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+
+
+
+
+var CATEGORY_KEY = 'category';
+var CollectionWithCategories = /** @class */ (function (_super) {
+    CollectionWithCategories_extends(CollectionWithCategories, _super);
+    function CollectionWithCategories() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    CollectionWithCategories.prototype.initCategory = function (model) {
+        var category = model.get(CATEGORY_KEY);
+        var isDefined = category instanceof ModuleCategory;
+        // Ensure the category exists and it's not already initialized
+        if (category && !isDefined) {
+            if ((0,index_all.isString)(category)) {
+                category = { id: category, label: category };
+            }
+            else if ((0,mixins.isObject)(category) && !category.id) {
+                category.id = category.label;
+            }
+            var catModel = this.getCategories().add(category);
+            model.set(CATEGORY_KEY, catModel, { silent: true });
+            return catModel;
+        }
+        else if (isDefined) {
+            var catModel = category;
+            this.getCategories().add(catModel);
+            return catModel;
+        }
+    };
+    return CollectionWithCategories;
+}(common/* Collection */.FE));
+
+
+;// CONCATENATED MODULE: ./src/abstract/ModuleCategories.ts
+var ModuleCategories_extends = (undefined && undefined.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+
+
+
+
+var Categories = /** @class */ (function (_super) {
+    ModuleCategories_extends(Categories, _super);
+    function Categories(models, opts) {
+        if (opts === void 0) { opts = {}; }
+        var _this = _super.call(this, models, opts) || this;
+        var events = opts.events, em = opts.em;
+        var evUpdate = events === null || events === void 0 ? void 0 : events.update;
+        if (em) {
+            evUpdate &&
+                _this.on('change', function (category, options) {
+                    return em.trigger(evUpdate, { category: category, changes: category.changedAttributes(), options: options });
+                });
+        }
+        return _this;
+    }
+    /** @ts-ignore */
+    Categories.prototype.add = function (model, opts) {
+        var models = (0,index_all.isArray)(model) ? model : [model];
+        models.forEach(function (md) { return md && (md.id = (0,mixins.normalizeKey)("".concat(md.id))); });
+        return _super.prototype.add.call(this, model, opts);
+    };
+    Categories.prototype.get = function (id) {
+        return _super.prototype.get.call(this, (0,index_all.isString)(id) ? (0,mixins.normalizeKey)(id) : id);
+    };
+    return Categories;
+}(common/* Collection */.FE));
+/* harmony default export */ const ModuleCategories = (Categories);
+Categories.prototype.model = ModuleCategory;
+
+;// CONCATENATED MODULE: ./src/trait_manager/types.ts
+/**{START_EVENTS}*/
+var TraitsEvents;
+(function (TraitsEvents) {
+    /**
+     * @event `trait:select` New traits selected (eg. by changing a component).
+     * @example
+     * editor.on('trait:select', ({ traits, component }) => { ... });
+     */
+    TraitsEvents["select"] = "trait:select";
+    /**
+     * @event `trait:value` Trait value updated.
+     * @example
+     * editor.on('trait:value', ({ trait, component, value }) => { ... });
+     */
+    TraitsEvents["value"] = "trait:value";
+    /**
+     * @event `trait:category:update` Trait category updated.
+     * @example
+     * editor.on('trait:category:update', ({ category, changes }) => { ... });
+     */
+    TraitsEvents["categoryUpdate"] = "trait:category:update";
+    /**
+     * @event `trait:custom` Event to use in case of [custom Trait Manager UI](https://grapesjs.com/docs/modules/Traits.html#custom-trait-manager).
+     * @example
+     * editor.on('trait:custom', ({ container }) => { ... });
+     */
+    TraitsEvents["custom"] = "trait:custom";
+    /**
+     * @event `trait` Catch-all event for all the events mentioned above. An object containing all the available data about the triggered event is passed as an argument to the callback.
+     * @example
+     * editor.on('trait', ({ event, model, ... }) => { ... });
+     */
+    TraitsEvents["all"] = "trait";
+})(TraitsEvents || (TraitsEvents = {}));
+/**{END_EVENTS}*/
+// need this to avoid the TS documentation generator to break
+/* harmony default export */ const trait_manager_types = (TraitsEvents);
+
+;// CONCATENATED MODULE: ./src/trait_manager/model/Trait.ts
+var Trait_extends = (undefined && undefined.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+var Trait_assign = (undefined && undefined.__assign) || function () {
+    Trait_assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return Trait_assign.apply(this, arguments);
+};
+
+
+
+
+
+/**
+ * @property {String} id Trait id, eg. `my-trait-id`.
+ * @property {String} type Trait type, defines how the trait should be rendered. Possible values: `text` (default), `number`, `select`, `checkbox`, `color`, `button`
+ * @property {String} label The trait label to show for the rendered trait.
+ * @property {String} name The name of the trait used as a key for the attribute/property. By default, the name is used as attribute name or property in case `changeProp` in enabled.
+ * @property {String} default Default value to use in case the value is not defined on the component.
+ * @property {String} placeholder Placeholder to show inside the default input (if the UI type allows it).
+ * @property {String} [category=''] Trait category.
+ * @property {Boolean} changeProp If `true`, the trait value is applied on the component property, otherwise, on component attributes.
+ *
+ * @module docsjs.Trait
+ *
+ */
+var Trait = /** @class */ (function (_super) {
+    Trait_extends(Trait, _super);
+    function Trait(prop, em) {
+        var _this = _super.call(this, prop) || this;
+        var _a = _this.attributes, target = _a.target, name = _a.name;
+        !_this.get('id') && _this.set('id', name);
+        if (target) {
+            _this.setTarget(target);
+        }
+        _this.em = em;
+        return _this;
+    }
+    Trait.prototype.defaults = function () {
+        return {
+            type: 'text',
+            label: '',
+            name: '',
+            unit: '',
+            step: 1,
+            value: '',
+            default: '',
+            placeholder: '',
+            category: '',
+            changeProp: false,
+            options: [],
+        };
+    };
+    Object.defineProperty(Trait.prototype, "parent", {
+        get: function () {
+            return this.collection;
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(Trait.prototype, "category", {
+        get: function () {
+            var cat = this.get('category');
+            return cat instanceof ModuleCategory ? cat : undefined;
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(Trait.prototype, "component", {
+        get: function () {
+            return this.target;
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(Trait.prototype, "changeProp", {
+        get: function () {
+            return !!this.get('changeProp');
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Trait.prototype.setTarget = function (component) {
+        if (component) {
+            var _a = this.attributes, name_1 = _a.name, changeProp = _a.changeProp, initValue = _a.value, getValue = _a.getValue;
+            this.target = component;
+            this.unset('target');
+            var targetEvent = changeProp ? "change:".concat(name_1) : "change:attributes:".concat(name_1);
+            this.listenTo(component, targetEvent, this.targetUpdated);
+            var value = initValue ||
+                // Avoid the risk of loops in case the trait has a custom getValue
+                (!getValue ? this.getValue() : undefined);
+            !(0,index_all.isUndefined)(value) && this.set({ value: value }, { silent: true });
+        }
+    };
+    /**
+     * Get the trait id.
+     * @returns {String}
+     */
+    Trait.prototype.getId = function () {
+        return this.get('id');
+    };
+    /**
+     * Get the trait type.
+     * @returns {String}
+     */
+    Trait.prototype.getType = function () {
+        return this.get('type');
+    };
+    /**
+     * Get the trait name.
+     * @returns {String}
+     */
+    Trait.prototype.getName = function () {
+        return this.get('name');
+    };
+    /**
+     * Get the trait label.
+     * @param {Object} [opts={}] Options.
+     * @param {Boolean} [opts.locale=true] Use the locale string from i18n module.
+     * @returns {String}
+     */
+    Trait.prototype.getLabel = function (opts) {
+        var _a;
+        if (opts === void 0) { opts = {}; }
+        var _b = opts.locale, locale = _b === void 0 ? true : _b;
+        var id = this.getId();
+        var name = this.get('label') || this.getName();
+        return (locale && ((_a = this.em) === null || _a === void 0 ? void 0 : _a.t("traitManager.traits.labels.".concat(id)))) || name;
+    };
+    /**
+     * Get the trait value.
+     * The value is taken from component attributes by default or from properties if the trait has the `changeProp` enabled.
+     * @param {Object} [opts={}] Options.
+     * @param {Boolean} [opts.useType=false] Get the value based on type (eg. the checkbox will always return a boolean).
+     * @returns {any}
+     */
+    Trait.prototype.getValue = function (opts) {
+        return this.getTargetValue(opts);
+    };
+    /**
+     * Update the trait value.
+     * The value is applied on component attributes by default or on properties if the trait has the `changeProp` enabled.
+     * @param {any} value Value of the trait.
+     * @param {Object} [opts={}] Options.
+     * @param {Boolean} [opts.partial] If `true` the update won't be considered complete (not stored in UndoManager).
+     */
+    Trait.prototype.setValue = function (value, opts) {
+        var _this = this;
+        if (opts === void 0) { opts = {}; }
+        var _a = this, component = _a.component, em = _a.em;
+        var partial = opts.partial;
+        var valueOpts = {};
+        var setValue = this.attributes.setValue;
+        if (setValue) {
+            setValue({
+                value: value,
+                component: component,
+                editor: em === null || em === void 0 ? void 0 : em.getEditor(),
+                trait: this,
+                partial: !!partial,
+                options: opts,
+                emitUpdate: function () { return _this.targetUpdated(); },
+            });
+            return;
+        }
+        if (partial) {
+            valueOpts.avoidStore = true;
+        }
+        this.setTargetValue(value, valueOpts);
+    };
+    /**
+     * Get default value.
+     */
+    Trait.prototype.getDefault = function () {
+        return this.get('default');
+    };
+    /**
+     * Get trait options.
+     */
+    Trait.prototype.getOptions = function () {
+        return this.get('options') || [];
+    };
+    /**
+     * Get current selected option or by id.
+     * @param {String} [id] Option id.
+     * @returns {Object | null}
+     */
+    Trait.prototype.getOption = function (id) {
+        var _this = this;
+        var idSel = (0,mixins.isDef)(id) ? id : this.getValue();
+        return this.getOptions().filter(function (o) { return _this.getOptionId(o) === idSel; })[0];
+    };
+    /**
+     * Get the option id from the option object.
+     * @param {Object} option Option object
+     * @returns {String} Option id
+     */
+    Trait.prototype.getOptionId = function (option) {
+        return option.id || option.value;
+    };
+    /**
+     * Get option label.
+     * @param {String|Object} id Option id or the option object
+     * @param {Object} [opts={}] Options
+     * @param {Boolean} [opts.locale=true] Use the locale string from i18n module
+     * @returns {String} Option label
+     */
+    Trait.prototype.getOptionLabel = function (id, opts) {
+        var _a;
+        if (opts === void 0) { opts = {}; }
+        var _b = opts.locale, locale = _b === void 0 ? true : _b;
+        var option = ((0,index_all.isString)(id) ? this.getOption(id) : id);
+        var optId = this.getOptionId(option);
+        var label = option.label || option.name || optId;
+        var propName = this.getName();
+        return (locale && ((_a = this.em) === null || _a === void 0 ? void 0 : _a.t("traitManager.traits.options.".concat(propName, ".").concat(optId)))) || label;
+    };
+    /**
+     * Get category label.
+     * @param {Object} [opts={}] Options.
+     * @param {Boolean} [opts.locale=true] Use the locale string from i18n module.
+     * @returns {String}
+     */
+    Trait.prototype.getCategoryLabel = function (opts) {
+        if (opts === void 0) { opts = {}; }
+        var _a = this, em = _a.em, category = _a.category;
+        var _b = opts.locale, locale = _b === void 0 ? true : _b;
+        var catId = category === null || category === void 0 ? void 0 : category.getId();
+        var catLabel = category === null || category === void 0 ? void 0 : category.getLabel();
+        return (locale && (em === null || em === void 0 ? void 0 : em.t("traitManager.categories.".concat(catId)))) || catLabel || '';
+    };
+    /**
+     * Run the trait command (used on the button trait type).
+     */
+    Trait.prototype.runCommand = function () {
+        var em = this.em;
+        var command = this.attributes.command;
+        if (command && em) {
+            if ((0,index_all.isString)(command)) {
+                return em.Commands.run(command);
+            }
+            else {
+                return command(em.Editor, this);
+            }
+        }
+    };
+    Trait.prototype.props = function () {
+        return this.attributes;
+    };
+    Trait.prototype.targetUpdated = function () {
+        var _a = this, component = _a.component, em = _a.em;
+        var value = this.getTargetValue({ useType: true });
+        this.set({ value: value }, { fromTarget: 1 });
+        var props = { trait: this, component: component, value: value };
+        component.trigger(trait_manager_types.value, props);
+        em === null || em === void 0 ? void 0 : em.trigger(trait_manager_types.value, props);
+        // This should be triggered for any trait prop change
+        em === null || em === void 0 ? void 0 : em.trigger('trait:update', props);
+    };
+    Trait.prototype.getTargetValue = function (opts) {
+        if (opts === void 0) { opts = {}; }
+        var _a = this, component = _a.component, em = _a.em;
+        var name = this.getName();
+        var getValue = this.get('getValue');
+        var value;
+        if (getValue) {
+            value = getValue({
+                editor: em === null || em === void 0 ? void 0 : em.getEditor(),
+                trait: this,
+                component: component,
+            });
+        }
+        else if (this.changeProp) {
+            value = component.get(name);
+        }
+        else {
+            value = component.getAttributes()[name];
+        }
+        if (opts.useType) {
+            var type = this.getType();
+            if (type === 'checkbox') {
+                var _b = this.attributes, valueTrue = _b.valueTrue, valueFalse = _b.valueFalse;
+                if (!(0,index_all.isUndefined)(valueTrue) && valueTrue === value) {
+                    value = true;
+                }
+                else if (!(0,index_all.isUndefined)(valueFalse) && valueFalse === value) {
+                    value = false;
+                }
+            }
+        }
+        return !(0,index_all.isUndefined)(value) ? value : '';
+    };
+    Trait.prototype.setTargetValue = function (value, opts) {
+        var _a;
+        if (opts === void 0) { opts = {}; }
+        var _b = this, component = _b.component, attributes = _b.attributes;
+        var name = this.getName();
+        if ((0,index_all.isUndefined)(value))
+            return;
+        var valueToSet = value;
+        if (value === 'false') {
+            valueToSet = false;
+        }
+        else if (value === 'true') {
+            valueToSet = true;
+        }
+        if (this.getType() === 'checkbox') {
+            var valueTrue = attributes.valueTrue, valueFalse = attributes.valueFalse;
+            if (valueToSet && !(0,index_all.isUndefined)(valueTrue)) {
+                valueToSet = valueTrue;
+            }
+            if (!valueToSet && !(0,index_all.isUndefined)(valueFalse)) {
+                valueToSet = valueFalse;
+            }
+        }
+        var props = (_a = {}, _a[name] = valueToSet, _a);
+        // This is required for the UndoManager to properly detect changes
+        props.__p = opts.avoidStore ? null : undefined;
+        if (this.changeProp) {
+            component.set(props, opts);
+        }
+        else {
+            component.addAttributes(props, opts);
+        }
+    };
+    Trait.prototype.setValueFromInput = function (value, final, opts) {
+        if (final === void 0) { final = true; }
+        if (opts === void 0) { opts = {}; }
+        var toSet = { value: value };
+        this.set(toSet, Trait_assign(Trait_assign({}, opts), { avoidStore: 1 }));
+        // Have to trigger the change
+        if (final) {
+            this.set('value', '', opts);
+            this.set(toSet, opts);
+        }
+    };
+    Trait.prototype.getInitValue = function () {
+        var component = this.component;
+        var name = this.getName();
+        var value;
+        if (component) {
+            var attrs = component.get('attributes');
+            value = this.changeProp ? component.get(name) : attrs[name];
+        }
+        return value || this.get('value') || this.get('default');
+    };
+    return Trait;
+}(common/* Model */.Hn));
+/* harmony default export */ const model_Trait = (Trait);
+
+;// CONCATENATED MODULE: ./src/trait_manager/model/TraitFactory.ts
+
+
+var TraitFactory = /** @class */ (function () {
+    function TraitFactory(config) {
+        if (config === void 0) { config = {}; }
+        this.config = config;
+    }
+    /**
+     * Build props object by their name
+     */
+    TraitFactory.prototype.build = function (prop, em) {
+        return (0,index_all.isString)(prop) ? this.buildFromString(prop, em) : new model_Trait(prop, em);
+    };
+    TraitFactory.prototype.buildFromString = function (name, em) {
+        var obj = {
+            name: name,
+            type: 'text',
+        };
+        switch (name) {
+            case 'target':
+                obj.type = 'select';
+                obj.default = false;
+                obj.options = this.config.optionsTarget;
+                break;
+        }
+        return new model_Trait(obj, em);
+    };
+    return TraitFactory;
+}());
+/* harmony default export */ const model_TraitFactory = (TraitFactory);
+
+;// CONCATENATED MODULE: ./src/trait_manager/model/Traits.ts
+var Traits_extends = (undefined && undefined.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+
+
+
+
+
+
+var Traits = /** @class */ (function (_super) {
+    Traits_extends(Traits, _super);
+    function Traits(coll, options) {
+        var _this = _super.call(this, coll) || this;
+        _this.categories = new ModuleCategories();
+        var em = options.em;
+        _this.em = em;
+        _this.categories = new ModuleCategories([], {
+            em: em,
+            events: { update: trait_manager_types.categoryUpdate },
+        });
+        _this.on('add', _this.handleAdd);
+        _this.on('reset', _this.handleReset);
+        var tm = _this.module;
+        var tmOpts = tm === null || tm === void 0 ? void 0 : tm.getConfig();
+        _this.tf = new model_TraitFactory(tmOpts);
+        return _this;
+    }
+    Object.defineProperty(Traits.prototype, "module", {
+        get: function () {
+            return this.em.Traits;
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Traits.prototype.getCategories = function () {
+        return this.categories;
+    };
+    Traits.prototype.handleReset = function (coll, _a) {
+        var _b = _a === void 0 ? {} : _a, _c = _b.previousModels, previousModels = _c === void 0 ? [] : _c;
+        previousModels.forEach(function (model) { return model.trigger('remove'); });
+    };
+    Traits.prototype.handleAdd = function (model) {
+        model.em = this.em;
+        var target = this.target;
+        if (target) {
+            model.target = target;
+        }
+        this.initCategory(model);
+    };
+    Traits.prototype.setTarget = function (target) {
+        this.target = target;
+        this.models.forEach(function (trait) { return trait.setTarget(target); });
+    };
+    Traits.prototype.add = function (models, opt) {
+        if (models == undefined) {
+            return undefined;
+        }
+        var _a = this, target = _a.target, em = _a.em;
+        if ((0,index_all.isArray)(models)) {
+            var traits = [];
+            for (var i = 0, len = models.length; i < len; i++) {
+                var trait_1 = models[i];
+                traits[i] = trait_1 instanceof model_Trait ? trait_1 : this.tf.build(trait_1, em);
+                traits[i].setTarget(target);
+            }
+            return _super.prototype.add.call(this, traits, opt);
+        }
+        var trait = models instanceof model_Trait ? models : this.tf.build(models, em);
+        trait.setTarget(target);
+        return _super.prototype.add.call(this, trait, opt);
+    };
+    return Traits;
+}(CollectionWithCategories));
+/* harmony default export */ const model_Traits = (Traits);
+
+;// CONCATENATED MODULE: ./src/dom_components/model/Component.ts
+var Component_extends = (undefined && undefined.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+var Component_assign = (undefined && undefined.__assign) || function () {
+    Component_assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return Component_assign.apply(this, arguments);
+};
+var Component_rest = (undefined && undefined.__rest) || function (s, e) {
+    var t = {};
+    for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
+        t[p] = s[p];
+    if (s != null && typeof Object.getOwnPropertySymbols === "function")
+        for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
+            if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i]))
+                t[p[i]] = s[p[i]];
+        }
+    return t;
+};
+var Component_spreadArray = (undefined && undefined.__spreadArray) || function (to, from, pack) {
+    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
+        if (ar || !(i in from)) {
+            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
+            ar[i] = from[i];
+        }
+    }
+    return to.concat(ar || Array.prototype.slice.call(from));
+};
+
+
+
+
+
+
+
+
+
+
+var escapeRegExp = function (str) {
+    return str.replace(/[|\\{}()[\]^$+*?.]/g, '\\$&');
+};
+var avoidInline = function (em) { return !!(em === null || em === void 0 ? void 0 : em.getConfig().avoidInlineStyle); };
+var eventDrag = 'component:drag';
+var keySymbols = '__symbols';
+var keySymbol = '__symbol';
+var keySymbolOvrd = '__symbol_ovrd';
+var keyUpdate = dom_components_types/* ComponentsEvents */.g.update;
+var keyUpdateInside = dom_components_types/* ComponentsEvents */.g.updateInside;
+/**
+ * The Component object represents a single node of our template structure, so when you update its properties the changes are
+ * immediately reflected on the canvas and in the code to export (indeed, when you ask to export the code we just go through all
+ * the tree of nodes).
+ * An example on how to update properties:
+ * ```js
+ * component.set({
+ *  tagName: 'span',
+ *  attributes: { ... },
+ *  removable: false,
+ * });
+ * component.get('tagName');
+ * // -> 'span'
+ * ```
+ *
+ * [Component]: component.html
+ *
+ * @property {String} [type=''] Component type, eg. `text`, `image`, `video`, etc.
+ * @property {String} [tagName='div'] HTML tag of the component, eg. `span`. Default: `div`
+ * @property {Object} [attributes={}] Key-value object of the component's attributes, eg. `{ title: 'Hello' }` Default: `{}`
+ * @property {String} [name=''] Name of the component. Will be used, for example, in Layers and badges
+ * @property {Boolean} [removable=true] When `true` the component is removable from the canvas, default: `true`
+ * @property {Boolean|String|Function} [draggable=true] Indicates if it's possible to drag the component inside others.
+ *  You can also specify a query string to indentify elements,
+ *  eg. `'.some-class[title=Hello], [data-gjs-type=column]'` means you can drag the component only inside elements
+ *  containing `some-class` class and `Hello` title, and `column` components. In the case of a function, target and destination components are passed as arguments, return a Boolean to indicate if the drag is possible. Default: `true`
+ * @property {Boolean|String|Function} [droppable=true] Indicates if it's possible to drop other components inside. You can use
+ * a query string as with `draggable`. In the case of a function, target and destination components are passed as arguments, return a Boolean to indicate if the drop is possible. Default: `true`
+ * @property {Boolean} [badgable=true] Set to false if you don't want to see the badge (with the name) over the component. Default: `true`
+ * @property {Boolean|Array<String>} [stylable=true] True if it's possible to style the component.
+ * You can also indicate an array of CSS properties which is possible to style, eg. `['color', 'width']`, all other properties
+ * will be hidden from the style manager. Default: `true`
+ * @property {Array<String>} [stylable-require=[]] Indicate an array of style properties to show up which has been marked as `toRequire`. Default: `[]`
+ * @property {Array<String>} [unstylable=[]] Indicate an array of style properties which should be hidden from the style manager. Default: `[]`
+ * @property {Boolean} [highlightable=true] It can be highlighted with 'dotted' borders if true. Default: `true`
+ * @property {Boolean} [copyable=true] True if it's possible to clone the component. Default: `true`
+ * @property {Boolean} [resizable=false] Indicates if it's possible to resize the component. It's also possible to pass an object as [options for the Resizer](https://github.com/GrapesJS/grapesjs/blob/master/src/utils/Resizer.ts). Default: `false`
+ * @property {Boolean} [editable=false] Allow to edit the content of the component (used on Text components). Default: `false`
+ * @property {Boolean} [layerable=true] Set to `false` if you need to hide the component inside Layers. Default: `true`
+ * @property {Boolean} [selectable=true] Allow component to be selected when clicked. Default: `true`
+ * @property {Boolean} [hoverable=true] Shows a highlight outline when hovering on the element if `true`. Default: `true`
+ * @property {Boolean} [locked] Disable the selection of the component and its children in the canvas. You can unlock a children by setting its locked property to `false`. Default: `undefined`
+ * @property {Boolean} [void=false] This property is used by the HTML exporter as void elements don't have closing tags, eg. `<br/>`, `<hr/>`, etc. Default: `false`
+ * @property {Object} [style={}] Component default style, eg. `{ width: '100px', height: '100px', 'background-color': 'red' }`
+ * @property {String} [styles=''] Component related styles, eg. `.my-component-class { color: red }`
+ * @property {String} [content=''] Content of the component (not escaped) which will be appended before children rendering. Default: `''`
+ * @property {String} [icon=''] Component's icon, this string will be inserted before the name (in Layers and badge), eg. it can be an HTML string '<i class="fa fa-square-o"></i>'. Default: `''`
+ * @property {String|Function} [script=''] Component's javascript. More about it [here](/modules/Components-js.html). Default: `''`
+ * @property {String|Function} [script-export=''] You can specify javascript available only in export functions (eg. when you get the HTML).
+ * If this property is defined it will overwrite the `script` one (in export functions). Default: `''`
+ * @property {Array<Object|String>} [traits=''] Component's traits. More about it [here](/modules/Traits.html). Default: `['id', 'title']`
+ * @property {Array<String>} [propagate=[]] Indicates an array of properties which will be inhereted by all NEW appended children.
+ *  For example if you create a component likes this: `{ removable: false, draggable: false, propagate: ['removable', 'draggable'] }`
+ *  and append some new component inside, the new added component will get the exact same properties indicated in the `propagate` array (and the `propagate` property itself). Default: `[]`
+ * @property {Array<Object>} [toolbar=null] Set an array of items to show up inside the toolbar when the component is selected (move, clone, delete).
+ * Eg. `toolbar: [ { attributes: {class: 'fa fa-arrows'}, command: 'tlb-move' }, ... ]`.
+ * By default, when `toolbar` property is falsy the editor will add automatically commands `core:component-exit` (select parent component, added if there is one), `tlb-move` (added if `draggable`) , `tlb-clone` (added if `copyable`), `tlb-delete` (added if `removable`).
+ * @property {Collection<Component>} [components=null] Children components. Default: `null`
+ * @property {Object} [delegate=null] Delegate commands to other components. Available commands `remove` | `move` | `copy` | `select`. eg. `{ remove: (cmp) => cmp.closestType('other-type') }`
+ *
+ * @module docsjs.Component
+ */
+var Component = /** @class */ (function (_super) {
+    Component_extends(Component, _super);
+    function Component(props, opt) {
+        if (props === void 0) { props = {}; }
+        var _this = _super.call(this, props, opt) || this;
+        (0,index_all.bindAll)(_this, '__upSymbProps', '__upSymbCls', '__upSymbComps');
+        var em = opt.em;
+        // Propagate properties from parent if indicated
+        var parent = _this.parent();
+        var parentAttr = parent === null || parent === void 0 ? void 0 : parent.attributes;
+        var propagate = _this.get('propagate');
+        propagate && _this.set('propagate', (0,index_all.isArray)(propagate) ? propagate : [propagate]);
+        if (parentAttr && parentAttr.propagate && !propagate) {
+            var newAttr_1 = {};
+            var toPropagate = parentAttr.propagate;
+            toPropagate.forEach(function (prop) { return (newAttr_1[prop] = parent.get(prop)); });
+            newAttr_1.propagate = toPropagate;
+            _this.set(Component_assign(Component_assign({}, newAttr_1), props));
+        }
+        // Check void elements
+        if (opt && opt.config && opt.config.voidElements.indexOf(_this.get('tagName')) >= 0) {
+            _this.set('void', true);
+        }
+        opt.em = em;
+        _this.opt = opt;
+        _this.em = em;
+        _this.frame = opt.frame;
+        _this.config = opt.config || {};
+        _this.set('attributes', Component_assign(Component_assign({}, ((0,index_all.result)(_this, 'defaults').attributes || {})), (_this.get('attributes') || {})));
+        _this.ccid = Component.createId(_this, opt);
+        _this.initClasses();
+        _this.initComponents();
+        _this.initTraits();
+        _this.initToolbar();
+        _this.initScriptProps();
+        _this.listenTo(_this, 'change:script', _this.scriptUpdated);
+        _this.listenTo(_this, 'change:tagName', _this.tagUpdated);
+        _this.listenTo(_this, 'change:attributes', _this.attrUpdated);
+        _this.listenTo(_this, 'change:attributes:id', _this._idUpdated);
+        _this.on('change:toolbar', _this.__emitUpdateTlb);
+        _this.on('change', _this.__onChange);
+        _this.on(keyUpdateInside, _this.__propToParent);
+        _this.set('status', '');
+        _this.views = [];
+        // Register global updates for collection properties
+        ['classes', 'traits', 'components'].forEach(function (name) {
+            var events = "add remove ".concat(name !== 'components' ? 'change' : '');
+            _this.listenTo(_this.get(name), events.trim(), function () {
+                var args = [];
+                for (var _i = 0; _i < arguments.length; _i++) {
+                    args[_i] = arguments[_i];
+                }
+                return _this.emitUpdate.apply(_this, Component_spreadArray([name], args, false));
+            });
+        });
+        if (!opt.temporary) {
+            // Add component styles
+            var cssc = em && em.Css;
+            var _a = _this.attributes, styles = _a.styles, type = _a.type;
+            if (styles && cssc) {
+                cssc.addCollection(styles, { avoidUpdateStyle: true }, { group: "cmp:".concat(type) });
+            }
+            _this.__postAdd();
+            _this.init();
+            isSymbol(_this) && initSymbol(_this);
+            em === null || em === void 0 ? void 0 : em.trigger(dom_components_types/* ComponentsEvents */.g.create, _this, opt);
+        }
+        return _this;
+    }
+    Object.defineProperty(Component.prototype, "defaults", {
+        /**
+         * @private
+         * @ts-ignore */
+        get: function () {
+            var _a;
+            return _a = {
+                    tagName: 'div',
+                    type: '',
+                    name: '',
+                    removable: true,
+                    draggable: true,
+                    droppable: true,
+                    badgable: true,
+                    stylable: true,
+                    'stylable-require': '',
+                    'style-signature': '',
+                    unstylable: '',
+                    highlightable: true,
+                    copyable: true,
+                    resizable: false,
+                    editable: false,
+                    layerable: true,
+                    selectable: true,
+                    hoverable: true,
+                    void: false,
+                    state: '',
+                    status: '',
+                    content: '',
+                    icon: '',
+                    style: '',
+                    styles: '',
+                    classes: '',
+                    script: '',
+                    'script-props': '',
+                    'script-export': '',
+                    attributes: {},
+                    traits: ['id', 'title'],
+                    propagate: '',
+                    dmode: '',
+                    toolbar: null,
+                    delegate: null
+                },
+                _a[keySymbol] = 0,
+                _a[keySymbols] = 0,
+                _a[keySymbolOvrd] = 0,
+                _a._undo = true,
+                _a._undoexc = ['status', 'open'],
+                _a;
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(Component.prototype, "tagName", {
+        get: function () {
+            return this.get('tagName');
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(Component.prototype, "classes", {
+        get: function () {
+            return this.get('classes');
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(Component.prototype, "traits", {
+        get: function () {
+            return this.get('traits');
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(Component.prototype, "content", {
+        get: function () {
+            var _a;
+            return (_a = this.get('content')) !== null && _a !== void 0 ? _a : '';
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(Component.prototype, "toolbar", {
+        get: function () {
+            return this.get('toolbar') || [];
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(Component.prototype, "resizable", {
+        get: function () {
+            return this.get('resizable');
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(Component.prototype, "delegate", {
+        get: function () {
+            return this.get('delegate');
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(Component.prototype, "locked", {
+        get: function () {
+            return this.get('locked');
+        },
+        enumerable: false,
+        configurable: true
+    });
+    /**
+     * Hook method, called once the model is created
+     */
+    Component.prototype.init = function () { };
+    /**
+     * Hook method, called when the model has been updated (eg. updated some model's property)
+     * @param {String} property Property name, if triggered after some property update
+     * @param {*} value Property value, if triggered after some property update
+     * @param {*} previous Property previous value, if triggered after some property update
+     */
+    Component.prototype.updated = function (property, value, previous) { };
+    /**
+     * Hook method, called once the model has been removed
+     */
+    Component.prototype.removed = function () { };
+    Component.prototype.__postAdd = function (opts) {
+        if (opts === void 0) { opts = {}; }
+        var em = this.em;
+        var um = em === null || em === void 0 ? void 0 : em.UndoManager;
+        var comps = this.components();
+        if (um && !this.__hasUm) {
+            um.add(comps);
+            um.add(this.getSelectors());
+            this.__hasUm = true;
+        }
+        opts.recursive && comps.map(function (c) { return c.__postAdd(opts); });
+    };
+    Component.prototype.__postRemove = function () {
+        var em = this.em;
+        var um = em === null || em === void 0 ? void 0 : em.get('UndoManager');
+        if (um) {
+            um.remove(this.components());
+            um.remove(this.getSelectors());
+            delete this.__hasUm;
+        }
+    };
+    Component.prototype.__onChange = function (m, opts) {
+        var _this = this;
+        var changed = this.changedAttributes() || {};
+        (0,index_all.keys)(changed).forEach(function (prop) { return _this.emitUpdate(prop); });
+        ['status', 'open', 'toolbar', 'traits'].forEach(function (name) { return delete changed[name]; });
+        // Propagate component prop changes
+        if (!(0,mixins.isEmptyObj)(changed)) {
+            this.__changesUp(opts);
+            this.__propSelfToParent({ component: this, changed: changed, options: opts });
+        }
+    };
+    Component.prototype.__onStyleChange = function (newStyles) {
+        var _this = this;
+        var em = this.em;
+        if (!em)
+            return;
+        var event = 'component:styleUpdate';
+        var styleKeys = (0,index_all.keys)(newStyles);
+        var pros = { style: newStyles };
+        em.trigger(event, this, pros);
+        styleKeys.forEach(function (key) { return em.trigger("".concat(event, ":").concat(key), _this, pros); });
+    };
+    Component.prototype.__changesUp = function (opts) {
+        var _a = this, em = _a.em, frame = _a.frame;
+        [frame, em].forEach(function (md) { return md && md.changesUp(opts); });
+    };
+    Component.prototype.__propSelfToParent = function (props) {
+        this.trigger(keyUpdate, props);
+        this.__propToParent(props);
+    };
+    Component.prototype.__propToParent = function (props) {
+        var parent = this.parent();
+        parent && parent.trigger(keyUpdateInside, props);
+    };
+    Component.prototype.__emitUpdateTlb = function () {
+        this.emitUpdate('toolbar');
+    };
+    Component.prototype.__getAllById = function () {
+        var em = this.em;
+        return em ? em.Components.allById() : {};
+    };
+    Component.prototype.__upSymbProps = function (m, opts) {
+        if (opts === void 0) { opts = {}; }
+        updateSymbolProps(this, opts);
+    };
+    Component.prototype.__upSymbCls = function (m, c, opts) {
+        if (opts === void 0) { opts = {}; }
+        updateSymbolCls(this, opts);
+    };
+    Component.prototype.__upSymbComps = function (m, c, o) {
+        updateSymbolComps(this, m, c, o);
+    };
+    /**
+     * Check component's type
+     * @param  {string}  type Component type
+     * @return {Boolean}
+     * @example
+     * component.is('image')
+     * // -> false
+     */
+    Component.prototype.is = function (type) {
+        return !!(this.get('type') == type);
+    };
+    /**
+     * Return all the propeties
+     * @returns {Object}
+     */
+    Component.prototype.props = function () {
+        return this.attributes;
+    };
+    /**
+     * Get the index of the component in the parent collection.
+     * @return {Number}
+     */
+    Component.prototype.index = function () {
+        var collection = this.collection;
+        return collection ? collection.indexOf(this) : 0;
+    };
+    /**
+     * Change the drag mode of the component.
+     * To get more about this feature read: https://github.com/GrapesJS/grapesjs/issues/1936
+     * @param {String} value Drag mode, options: `'absolute'` | `'translate'` | `''`
+     * @returns {this}
+     */
+    Component.prototype.setDragMode = function (value) {
+        return this.set('dmode', value);
+    };
+    /**
+     * Get the drag mode of the component.
+     * @returns {String} Drag mode value, options: `'absolute'` | `'translate'` | `''`
+     */
+    Component.prototype.getDragMode = function () {
+        return this.get('dmode') || '';
+    };
+    /**
+     * Set symbol override.
+     * By setting override to `true`, none of its property changes will be propagated to relative symbols.
+     * By setting override to specific properties, changes of those properties will be skipped from propagation.
+     * @param {Boolean|String|Array<String>} value
+     * @example
+     * component.setSymbolOverride(['children', 'classes']);
+     */
+    Component.prototype.setSymbolOverride = function (value) {
+        var _a;
+        this.set(keySymbolOvrd, (_a = ((0,index_all.isString)(value) ? [value] : value)) !== null && _a !== void 0 ? _a : 0);
+    };
+    /**
+     * Get symbol override value.
+     * @returns {Boolean|Array<String>}
+     */
+    Component.prototype.getSymbolOverride = function () {
+        return this.get(keySymbolOvrd);
+    };
+    /**
+     * Find inner components by query string.
+     * **ATTENTION**: this method works only with already rendered component
+     * @param  {String} query Query string
+     * @return {Array} Array of components
+     * @example
+     * component.find('div > .class');
+     * // -> [Component, Component, ...]
+     */
+    Component.prototype.find = function (query) {
+        var _a;
+        var result = [];
+        var $els = (_a = this.view) === null || _a === void 0 ? void 0 : _a.$el.find(query);
+        $els === null || $els === void 0 ? void 0 : $els.each(function (i) {
+            var $el = $els.eq(i);
+            var model = $el.data('model');
+            model && result.push(model);
+        });
+        return result;
+    };
+    /**
+     * Find all inner components by component type.
+     * The advantage of this method over `find` is that you can use it
+     * also before rendering the component
+     * @param {String} type Component type
+     * @returns {Array<Component>}
+     * @example
+     * const allImages = component.findType('image');
+     * console.log(allImages[0]) // prints the first found component
+     */
+    Component.prototype.findType = function (type) {
+        var result = [];
+        var find = function (components) {
+            return components.forEach(function (item) {
+                item.is(type) && result.push(item);
+                find(item.components());
+            });
+        };
+        find(this.components());
+        return result;
+    };
+    /**
+     * Find the closest parent component by query string.
+     * **ATTENTION**: this method works only with already rendered component
+     * @param  {string} query Query string
+     * @return {Component}
+     * @example
+     * component.closest('div.some-class');
+     * // -> Component
+     */
+    Component.prototype.closest = function (query) {
+        var _a;
+        var result = (_a = this.view) === null || _a === void 0 ? void 0 : _a.$el.closest(query);
+        return (result === null || result === void 0 ? void 0 : result.length) ? result.data('model') : undefined;
+    };
+    /**
+     * Find the closest parent component by its type.
+     * The advantage of this method over `closest` is that you can use it
+     * also before rendering the component
+     * @param {String} type Component type
+     * @returns {Component} Found component, otherwise `undefined`
+     * @example
+     * const Section = component.closestType('section');
+     * console.log(Section);
+     */
+    Component.prototype.closestType = function (type) {
+        var parent = this.parent();
+        while (parent && !parent.is(type)) {
+            parent = parent.parent();
+        }
+        return parent;
+    };
+    /**
+     * The method returns a Boolean value indicating whether the passed
+     * component is a descendant of a given component
+     * @param {Component} component Component to check
+     * @returns {Boolean}
+     */
+    Component.prototype.contains = function (component) {
+        var result = !1;
+        if (!component)
+            return result;
+        var contains = function (components) {
+            !result &&
+                components.forEach(function (item) {
+                    if (item === component)
+                        result = !0;
+                    !result && contains(item.components());
+                });
+        };
+        contains(this.components());
+        return result;
+    };
+    /**
+     * Once the tag is updated I have to rerender the element
+     * @private
+     */
+    Component.prototype.tagUpdated = function () {
+        this.trigger('rerender');
+    };
+    /**
+     * Replace a component with another one
+     * @param {String|Component} el Component or HTML string
+     * @param {Object} [opts={}] Options for the append action
+     * @returns {Array<Component>} New replaced components
+     * @example
+     * const result = component.replaceWith('<div>Some new content</div>');
+     * // result -> [Component]
+     */
+    Component.prototype.replaceWith = function (el, opts) {
+        if (opts === void 0) { opts = {}; }
+        var coll = this.collection;
+        var at = coll.indexOf(this);
+        coll.remove(this);
+        var result = coll.add(el, Component_assign(Component_assign({}, opts), { at: at }));
+        return (0,index_all.isArray)(result) ? result : [result];
+    };
+    /**
+     * Emit changes for each updated attribute
+     * @private
+     */
+    Component.prototype.attrUpdated = function (m, v, opts) {
+        var _this = this;
+        if (opts === void 0) { opts = {}; }
+        var attrs = this.get('attributes');
+        // Handle classes
+        var classes = attrs.class;
+        classes && this.setClass(classes);
+        delete attrs.class;
+        // Handle style
+        var style = attrs.style;
+        style && this.setStyle(style, opts);
+        delete attrs.style;
+        var attrPrev = Component_assign({}, this.previous('attributes'));
+        var diff = (0,mixins.shallowDiff)(attrPrev, this.get('attributes'));
+        (0,index_all.keys)(diff).forEach(function (pr) {
+            var _a;
+            var attrKey = "attributes:".concat(pr);
+            _this.trigger("change:".concat(attrKey), _this, diff[pr], opts);
+            (_a = _this.em) === null || _a === void 0 ? void 0 : _a.trigger("".concat(keyUpdate, ":").concat(attrKey), _this, diff[pr], opts);
+        });
+    };
+    /**
+     * Update attributes of the component
+     * @param {Object} attrs Key value attributes
+     * @param {Object} options Options for the model update
+     * @return {this}
+     * @example
+     * component.setAttributes({ id: 'test', 'data-key': 'value' });
+     */
+    Component.prototype.setAttributes = function (attrs, opts) {
+        if (opts === void 0) { opts = {}; }
+        this.set('attributes', Component_assign({}, attrs), opts);
+        return this;
+    };
+    /**
+     * Add attributes to the component
+     * @param {Object} attrs Key value attributes
+     * @param {Object} options Options for the model update
+     * @return {this}
+     * @example
+     * component.addAttributes({ 'data-key': 'value' });
+     */
+    Component.prototype.addAttributes = function (attrs, opts) {
+        if (opts === void 0) { opts = {}; }
+        return this.setAttributes(Component_assign(Component_assign({}, this.getAttributes({ noClass: true })), attrs), opts);
+    };
+    /**
+     * Remove attributes from the component
+     * @param {String|Array<String>} attrs Array of attributes to remove
+     * @param {Object} options Options for the model update
+     * @return {this}
+     * @example
+     * component.removeAttributes('some-attr');
+     * component.removeAttributes(['some-attr1', 'some-attr2']);
+     */
+    Component.prototype.removeAttributes = function (attrs, opts) {
+        if (attrs === void 0) { attrs = []; }
+        if (opts === void 0) { opts = {}; }
+        var attrArr = Array.isArray(attrs) ? attrs : [attrs];
+        var compAttr = this.getAttributes();
+        attrArr.map(function (i) { return delete compAttr[i]; });
+        return this.setAttributes(compAttr, opts);
+    };
+    /**
+     * Get the style of the component
+     * @return {Object}
+     */
+    Component.prototype.getStyle = function (options, optsAdd) {
+        if (options === void 0) { options = {}; }
+        if (optsAdd === void 0) { optsAdd = {}; }
+        var em = this.em;
+        var prop = (0,index_all.isString)(options) ? options : '';
+        var opts = prop ? optsAdd : options;
+        if (avoidInline(em) && !opts.inline) {
+            var state = em.get('state');
+            var cc = em.Css;
+            var rule = cc.getIdRule(this.getId(), Component_assign({ state: state }, opts));
+            this.rule = rule;
+            if (rule) {
+                return rule.getStyle(prop);
+            }
+            // Return empty style if not rule have been found. We cannot return inline style with the next return
+            // because else on load inline style is set a #id or .class style
+            return {};
+        }
+        return _super.prototype.getStyle.call(this, prop);
+    };
+    /**
+     * Set the style on the component
+     * @param {Object} prop Key value style object
+     * @return {Object}
+     * @example
+     * component.setStyle({ color: 'red' });
+     */
+    Component.prototype.setStyle = function (prop, opts) {
+        var _this = this;
+        if (prop === void 0) { prop = {}; }
+        if (opts === void 0) { opts = {}; }
+        var _a = this, opt = _a.opt, em = _a.em;
+        if (avoidInline(em) && !opt.temporary && !opts.inline) {
+            var style = this.get('style') || {};
+            prop = (0,index_all.isString)(prop) ? this.parseStyle(prop) : prop;
+            prop = Component_assign(Component_assign({}, prop), style);
+            var state = em.get('state');
+            var cc = em.Css;
+            var propOrig = this.getStyle(opts);
+            this.rule = cc.setIdRule(this.getId(), prop, Component_assign({ state: state }, opts));
+            var diff = (0,mixins.shallowDiff)(propOrig, prop);
+            this.set('style', '', { silent: true });
+            (0,index_all.keys)(diff).forEach(function (pr) { return _this.trigger("change:style:".concat(pr)); });
+        }
+        else {
+            prop = _super.prototype.setStyle.apply(this, arguments);
+        }
+        if (!opt.temporary) {
+            this.__onStyleChange(opts.addStyle || prop);
+        }
+        return prop;
+    };
+    /**
+     * Return all component's attributes
+     * @return {Object}
+     */
+    Component.prototype.getAttributes = function (opts) {
+        if (opts === void 0) { opts = {}; }
+        var em = this.em;
+        var classes = [];
+        var attributes = Component_assign({}, this.get('attributes'));
+        var sm = em === null || em === void 0 ? void 0 : em.Selectors;
+        var id = this.getId();
+        // Add classes
+        if (opts.noClass) {
+            delete attributes.class;
+        }
+        else {
+            this.classes.forEach(function (cls) { return classes.push((0,index_all.isString)(cls) ? cls : cls.getName()); });
+            classes.length && (attributes.class = classes.join(' '));
+        }
+        // Add style
+        if (!opts.noStyle) {
+            var style = this.getStyle({ inline: true });
+            if ((0,mixins.isObject)(style) && !(0,mixins.isEmptyObj)(style)) {
+                attributes.style = this.styleToString({ inline: true });
+            }
+        }
+        // Check if we need an ID on the component
+        if (!(0,index_all.has)(attributes, 'id')) {
+            var addId = false;
+            // If we don't rely on inline styling we have to check
+            // for the ID selector
+            if (avoidInline(em) || !(0,index_all.isEmpty)(this.getStyle())) {
+                addId = !!(sm === null || sm === void 0 ? void 0 : sm.get(id, sm.Selector.TYPE_ID));
+            }
+            if (
+            // Symbols should always have an id
+            isSymbol(this) ||
+                // Components with script should always have an id
+                this.get('script-export') ||
+                this.get('script')) {
+                addId = true;
+            }
+            if (addId) {
+                attributes.id = id;
+            }
+        }
+        return attributes;
+    };
+    /**
+     * Add classes
+     * @param {Array<String>|String} classes Array or string of classes
+     * @return {Array} Array of added selectors
+     * @example
+     * model.addClass('class1');
+     * model.addClass('class1 class2');
+     * model.addClass(['class1', 'class2']);
+     * // -> [SelectorObject, ...]
+     */
+    Component.prototype.addClass = function (classes) {
+        var added = this.em.Selectors.addClass(classes);
+        return this.classes.add(added);
+    };
+    /**
+     * Set classes (resets current collection)
+     * @param {Array<String>|String} classes Array or string of classes
+     * @return {Array} Array of added selectors
+     * @example
+     * model.setClass('class1');
+     * model.setClass('class1 class2');
+     * model.setClass(['class1', 'class2']);
+     * // -> [SelectorObject, ...]
+     */
+    Component.prototype.setClass = function (classes) {
+        this.classes.reset();
+        return this.addClass(classes);
+    };
+    /**
+     * Remove classes
+     * @param {Array<String>|String} classes Array or string of classes
+     * @return {Array} Array of removed selectors
+     * @example
+     * model.removeClass('class1');
+     * model.removeClass('class1 class2');
+     * model.removeClass(['class1', 'class2']);
+     * // -> [SelectorObject, ...]
+     */
+    Component.prototype.removeClass = function (classes) {
+        var removed = [];
+        classes = (0,index_all.isArray)(classes) ? classes : [classes];
+        var selectors = this.classes;
+        var type = model_Selector.TYPE_CLASS;
+        classes.forEach(function (classe) {
+            var classes = classe.split(' ');
+            classes.forEach(function (name) {
+                var selector = selectors.where({ name: name, type: type })[0];
+                selector && removed.push(selectors.remove(selector));
+            });
+        });
+        return removed;
+    };
+    /**
+     * Returns component's classes as an array of strings
+     * @return {Array}
+     */
+    Component.prototype.getClasses = function () {
+        var attr = this.getAttributes();
+        var classStr = attr.class;
+        return classStr ? classStr.split(' ') : [];
+    };
+    Component.prototype.initClasses = function (m, c, opts) {
+        if (opts === void 0) { opts = {}; }
+        var event = 'change:classes';
+        var _a = this.get('attributes') || {}, attrCls = _a.class, restAttr = Component_rest(_a, ["class"]);
+        var toListen = [this, event, this.initClasses];
+        var cls = this.get('classes') || attrCls || [];
+        var clsArr = (0,index_all.isString)(cls) ? cls.split(' ') : cls;
+        this.stopListening.apply(this, toListen);
+        var classes = this.normalizeClasses(clsArr);
+        var selectors = new model_Selectors([]);
+        this.set('classes', selectors, opts);
+        selectors.add(classes);
+        selectors.on('add remove reset', this.__upSymbCls);
+        // Clear attributes from classes
+        attrCls && classes.length && this.set('attributes', restAttr);
+        // @ts-ignore
+        this.listenTo.apply(this, toListen);
+        return this;
+    };
+    Component.prototype.initComponents = function () {
+        var event = 'change:components';
+        var toListen = [this, event, this.initComponents];
+        this.stopListening.apply(this, toListen);
+        // Have to add components after the init, otherwise the parent
+        // is not visible
+        var comps = new model_Components([], this.opt);
+        comps.parent = this;
+        var components = this.get('components');
+        var addChild = !this.opt.avoidChildren;
+        this.set('components', comps);
+        addChild && components && comps.add((0,index_all.isFunction)(components) ? components(this) : components, this.opt);
+        comps.on('add remove reset', this.__upSymbComps);
+        // @ts-ignore
+        this.listenTo.apply(this, toListen);
+        return this;
+    };
+    Component.prototype.initTraits = function (changed) {
+        var em = this.em;
+        var event = 'change:traits';
+        this.off(event, this.initTraits);
+        this.__loadTraits();
+        var attrs = Component_assign({}, this.get('attributes'));
+        var traits = this.traits;
+        traits.each(function (trait) {
+            if (!trait.changeProp) {
+                var name_1 = trait.getName();
+                var value = trait.getInitValue();
+                if (name_1 && value)
+                    attrs[name_1] = value;
+            }
+        });
+        traits.length && this.set('attributes', attrs);
+        this.on(event, this.initTraits);
+        changed && em && em.trigger('component:toggled');
+        return this;
+    };
+    Component.prototype.initScriptProps = function () {
+        if (this.opt.temporary)
+            return;
+        var prop = 'script-props';
+        var toListen = ["change:".concat(prop), this.initScriptProps];
+        this.off.apply(this, toListen);
+        var prevProps = this.previous(prop) || [];
+        var newProps = this.get(prop) || [];
+        var prevPropsEv = prevProps.map(function (e) { return "change:".concat(e); }).join(' ');
+        var newPropsEv = newProps.map(function (e) { return "change:".concat(e); }).join(' ');
+        prevPropsEv && this.off(prevPropsEv, this.__scriptPropsChange);
+        newPropsEv && this.on(newPropsEv, this.__scriptPropsChange);
+        // @ts-ignore
+        this.on.apply(this, toListen);
+    };
+    Component.prototype.__scriptPropsChange = function (m, v, opts) {
+        if (opts === void 0) { opts = {}; }
+        if (opts.avoidStore)
+            return;
+        this.trigger('rerender');
+    };
+    /**
+     * Add new component children
+     * @param  {Component|String} components Component to add
+     * @param {Object} [opts={}] Options for the append action
+     * @return {Array} Array of appended components
+     * @example
+     * someComponent.get('components').length // -> 0
+     * const videoComponent = someComponent.append('<video></video><div></div>')[0];
+     * // This will add 2 components (`video` and `div`) to your `someComponent`
+     * someComponent.get('components').length // -> 2
+     * // You can pass components directly
+     * otherComponent.append(otherComponent2);
+     * otherComponent.append([otherComponent3, otherComponent4]);
+     * // append at specific index (eg. at the beginning)
+     * someComponent.append(otherComponent, { at: 0 });
+     */
+    Component.prototype.append = function (components, opts) {
+        if (opts === void 0) { opts = {}; }
+        var compArr = (0,index_all.isArray)(components) ? Component_spreadArray([], components, true) : [components];
+        var toAppend = compArr.map(function (comp) {
+            if ((0,index_all.isString)(comp)) {
+                return comp;
+            }
+            else {
+                // I have to remove components from the old container before adding them to a new one
+                comp.collection && comp.collection.remove(comp, { temporary: true });
+                return comp;
+            }
+        });
+        var result = this.components().add(toAppend, Component_assign({ action: dom_components_types/* ActionLabelComponents */.W.add }, opts));
+        return (0,index_all.isArray)(result) ? result : [result];
+    };
+    /**
+     * Set new collection if `components` are provided, otherwise the
+     * current collection is returned
+     * @param  {Component|Component[]|String} [components] Component Definitions or HTML string
+     * @param {Object} [opts={}] Options, same as in `Component.append()`
+     * @returns {Collection|Array<[Component]>}
+     * @example
+     * // Set new collection
+     * component.components('<span></span><div></div>');
+     * // Get current collection
+     * const collection = component.components();
+     * console.log(collection.length);
+     * // -> 2
+     */
+    Component.prototype.components = function (components, opts) {
+        if (opts === void 0) { opts = {}; }
+        var coll = this.get('components');
+        if ((0,index_all.isUndefined)(components)) {
+            return coll;
+        }
+        else {
+            coll.reset(undefined, opts);
+            return components ? this.append(components, opts) : [];
+        }
+    };
+    /**
+     * If exists, returns the child component at specific index.
+     * @param {Number} index Index of the component to return
+     * @returns {[Component]|null}
+     * @example
+     * // Return first child
+     * component.getChildAt(0);
+     * // Return second child
+     * component.getChildAt(1);
+     */
+    Component.prototype.getChildAt = function (index) {
+        return this.components().at(index || 0) || undefined;
+    };
+    /**
+     * If exists, returns the last child component.
+     * @returns {[Component]|null}
+     * @example
+     * const lastChild = component.getLastChild();
+     */
+    Component.prototype.getLastChild = function () {
+        var children = this.components();
+        return children.at(children.length - 1) || null;
+    };
+    /**
+     * Remove all inner components
+     * * @return {this}
+     */
+    Component.prototype.empty = function (opts) {
+        if (opts === void 0) { opts = {}; }
+        this.components().reset(undefined, opts);
+        return this;
+    };
+    /**
+     * Get the parent component, if exists
+     * @return {Component|null}
+     * @example
+     * component.parent();
+     * // -> Component
+     */
+    Component.prototype.parent = function (opts) {
+        if (opts === void 0) { opts = {}; }
+        var coll = this.collection || (opts.prev && this.prevColl);
+        return coll ? coll.parent : undefined;
+    };
+    /**
+     * Return all parents of the component.
+     * @returns {Array<Component>}
+     */
+    Component.prototype.parents = function () {
+        var parent = this.parent();
+        return parent ? [parent].concat(parent.parents()) : [];
+    };
+    /**
+     * Script updated
+     * @private
+     */
+    Component.prototype.scriptUpdated = function () {
+        this.set('scriptUpdated', 1);
+    };
+    /**
+     * Init toolbar
+     * @private
+     */
+    Component.prototype.initToolbar = function () {
+        var em = this.em;
+        var model = this;
+        var ppfx = (em && em.getConfig().stylePrefix) || '';
+        if (!model.get('toolbar') && em) {
+            var tb = [];
+            model.collection &&
+                tb.push({
+                    label: em.getIcon('arrowUp'),
+                    command: function (ed) { return ed.runCommand('core:component-exit', { force: 1 }); },
+                });
+            model.get('draggable') &&
+                tb.push({
+                    attributes: { class: "".concat(ppfx, "no-touch-actions"), draggable: true },
+                    label: em.getIcon('move'),
+                    command: 'tlb-move',
+                });
+            model.get('copyable') &&
+                tb.push({
+                    label: em.getIcon('copy'),
+                    command: 'tlb-clone',
+                });
+            model.get('removable') &&
+                tb.push({
+                    label: em.getIcon('delete'),
+                    command: 'tlb-delete',
+                });
+            model.set('toolbar', tb);
+        }
+    };
+    Component.prototype.__loadTraits = function (tr, opts) {
+        if (opts === void 0) { opts = {}; }
+        var traitsI = tr || this.traits;
+        if (!(traitsI instanceof model_Traits)) {
+            traitsI = ((0,index_all.isFunction)(traitsI) ? traitsI(this) : traitsI);
+            var traits = new model_Traits([], this.opt);
+            traits.setTarget(this);
+            if (traitsI.length) {
+                traitsI.forEach(function (tr) { return tr.attributes && delete tr.attributes.value; });
+                traits.add(traitsI);
+            }
+            this.set({ traits: traits }, opts);
+        }
+        return this;
+    };
+    /**
+     * Get traits.
+     * @returns {Array<Trait>}
+     * @example
+     * const traits = component.getTraits();
+     * console.log(traits);
+     * // [Trait, Trait, Trait, ...]
+     */
+    Component.prototype.getTraits = function () {
+        this.__loadTraits();
+        return Component_spreadArray([], this.traits.models, true);
+    };
+    /**
+     * Replace current collection of traits with a new one.
+     * @param {Array<Object>} traits Array of trait definitions
+     * @returns {Array<Trait>}
+     * @example
+     * const traits = component.setTraits([{ type: 'checkbox', name: 'disabled'}, ...]);
+     * console.log(traits);
+     * // [Trait, ...]
+     */
+    Component.prototype.setTraits = function (traits) {
+        var tr = (0,index_all.isArray)(traits) ? traits : [traits];
+        // @ts-ignore
+        this.set({ traits: tr });
+        return this.getTraits();
+    };
+    /**
+     * Get the trait by id/name.
+     * @param  {String} id The `id` or `name` of the trait
+     * @return {Trait|null} Trait getModelToStyle
+     * @example
+     * const traitTitle = component.getTrait('title');
+     * traitTitle && traitTitle.set('label', 'New label');
+     */
+    Component.prototype.getTrait = function (id) {
+        return (this.getTraits().filter(function (trait) {
+            return trait.get('id') === id || trait.get('name') === id;
+        })[0] || null);
+    };
+    /**
+     * Update a trait.
+     * @param  {String} id The `id` or `name` of the trait
+     * @param  {Object} props Object with the props to update
+     * @return {this}
+     * @example
+     * component.updateTrait('title', {
+     *  type: 'select',
+     *  options: [ 'Option 1', 'Option 2' ],
+     * });
+     */
+    Component.prototype.updateTrait = function (id, props) {
+        var _a;
+        var trait = this.getTrait(id);
+        trait && trait.set(props);
+        (_a = this.em) === null || _a === void 0 ? void 0 : _a.trigger('component:toggled');
+        return this;
+    };
+    /**
+     * Get the trait position index by id/name. Useful in case you want to
+     * replace some trait, at runtime, with something else.
+     * @param  {String} id The `id` or `name` of the trait
+     * @return {Number} Index position of the current trait
+     * @example
+     * const traitTitle = component.getTraitIndex('title');
+     * console.log(traitTitle); // 1
+     */
+    Component.prototype.getTraitIndex = function (id) {
+        var trait = this.getTrait(id);
+        return trait ? this.traits.indexOf(trait) : -1;
+    };
+    /**
+     * Remove trait/s by id/s.
+     * @param  {String|Array<String>} id The `id`/`name` of the trait (or an array)
+     * @return {Array<Trait>} Array of removed traits
+     * @example
+     * component.removeTrait('title');
+     * component.removeTrait(['title', 'id']);
+     */
+    Component.prototype.removeTrait = function (id) {
+        var _this = this;
+        var _a;
+        var ids = (0,index_all.isArray)(id) ? id : [id];
+        var toRemove = ids.map(function (id) { return _this.getTrait(id); });
+        var traits = this.traits;
+        var removed = toRemove.length ? traits.remove(toRemove) : [];
+        (_a = this.em) === null || _a === void 0 ? void 0 : _a.trigger('component:toggled');
+        return (0,index_all.isArray)(removed) ? removed : [removed];
+    };
+    /**
+     * Add new trait/s.
+     * @param  {String|Object|Array<String|Object>} trait Trait to add (or an array of traits)
+     * @param  {Options} opts Options for the add
+     * @return {Array<Trait>} Array of added traits
+     * @example
+     * component.addTrait('title', { at: 1 }); // Add title trait (`at` option is the position index)
+     * component.addTrait({
+     *  type: 'checkbox',
+     *  name: 'disabled',
+     * });
+     * component.addTrait(['title', {...}, ...]);
+     */
+    Component.prototype.addTrait = function (trait, opts) {
+        var _a;
+        if (opts === void 0) { opts = {}; }
+        this.__loadTraits();
+        var added = this.traits.add(trait, opts);
+        (_a = this.em) === null || _a === void 0 ? void 0 : _a.trigger('component:toggled');
+        return (0,index_all.isArray)(added) ? added : [added];
+    };
+    /**
+     * Normalize input classes from array to array of objects
+     * @param {Array} arr
+     * @return {Array}
+     * @private
+     */
+    Component.prototype.normalizeClasses = function (arr) {
+        var res = [];
+        var em = this.em;
+        var clm = em === null || em === void 0 ? void 0 : em.Selectors;
+        if (!clm)
+            return [];
+        // @ts-ignore
+        if (arr.models)
+            return Component_spreadArray([], arr.models, true);
+        arr.forEach(function (val) { return res.push(clm.add(val)); });
+        return res;
+    };
+    /**
+     * Override original clone method
+     * @private
+     */
+    /** @ts-ignore */
+    Component.prototype.clone = function (opt) {
+        if (opt === void 0) { opt = {}; }
+        var em = this.em;
+        var attr = Component_assign({}, this.attributes);
+        var opts = Component_assign({}, this.opt);
+        var id = this.getId();
+        var cssc = em === null || em === void 0 ? void 0 : em.Css;
+        attr.attributes = Component_assign({}, attr.attributes);
+        delete attr.attributes.id;
+        // @ts-ignore
+        attr.components = [];
+        // @ts-ignore
+        attr.classes = [];
+        // @ts-ignore
+        attr.traits = [];
+        if (isSymbolRoot(this)) {
+            opt.symbol = true;
+        }
+        this.get('components').each(function (md, i) {
+            // @ts-ignore
+            attr.components[i] = md.clone(Component_assign(Component_assign({}, opt), { _inner: 1 }));
+        });
+        this.get('traits').each(function (md, i) {
+            // @ts-ignore
+            attr.traits[i] = md.clone();
+        });
+        this.get('classes').each(function (md, i) {
+            // @ts-ignore
+            attr.classes[i] = md.get('name');
+        });
+        attr.status = '';
+        // @ts-ignore
+        opts.collection = null;
+        // @ts-ignore
+        var cloned = new this.constructor(attr, opts);
+        // Clone component specific rules
+        var newId = "#".concat(cloned.getId());
+        var rulesToClone = cssc ? cssc.getRules("#".concat(id)) : [];
+        rulesToClone.forEach(function (rule) {
+            var newRule = rule.clone();
+            // @ts-ignore
+            newRule.set('selectors', [newId]);
+            cssc.getAll().add(newRule);
+        });
+        // Symbols
+        // If I clone an inner symbol, I have to reset it
+        cloned.set(keySymbols, 0);
+        var symbol = getSymbolMain(this);
+        var symbols = getSymbolInstances(this);
+        if (!opt.symbol && (symbol || symbols)) {
+            cloned.set(keySymbol, 0);
+            cloned.set(keySymbols, 0);
+        }
+        else if (symbol) {
+            // Contains already a reference to a symbol
+            symbol.set(keySymbols, Component_spreadArray(Component_spreadArray([], getSymbolInstances(symbol), true), [cloned], false));
+            initSymbol(cloned);
+        }
+        else if (opt.symbol) {
+            // Request to create a symbol
+            if (isSymbolMain(this)) {
+                // Already a symbol, cloned should be an instance
+                this.set(keySymbols, Component_spreadArray(Component_spreadArray([], symbols, true), [cloned], false));
+                cloned.set(keySymbol, this);
+                initSymbol(cloned);
+            }
+            else if (opt.symbolInv) {
+                // Inverted, cloned is the instance, the origin is the main symbol
+                this.set(keySymbols, [cloned]);
+                cloned.set(keySymbol, this);
+                [this, cloned].map(function (i) { return initSymbol(i); });
+            }
+            else {
+                // Cloned becomes the main symbol
+                cloned.set(keySymbols, [this]);
+                [this, cloned].map(function (i) { return initSymbol(i); });
+                this.set(keySymbol, cloned);
+            }
+        }
+        var event = 'component:clone';
+        em && em.trigger(event, cloned);
+        this.trigger(event, cloned);
+        return cloned;
+    };
+    /**
+     * Get the name of the component.
+     * @param {Object} [opts={}] Options
+     * @param {Boolean} [opts.noCustom] Avoid custom name assigned to the component.
+     * @returns {String}
+     * */
+    Component.prototype.getName = function (opts) {
+        if (opts === void 0) { opts = {}; }
+        var em = this.em;
+        var _a = this.attributes, type = _a.type, tagName = _a.tagName, name = _a.name;
+        var defName = type || tagName;
+        var nameTag = !type ? tagName : '';
+        var i18nPfx = 'domComponents.names.';
+        var i18nName = name && (em === null || em === void 0 ? void 0 : em.t("".concat(i18nPfx).concat(name)));
+        var i18nNameTag = nameTag && (em === null || em === void 0 ? void 0 : em.t("".concat(i18nPfx).concat(nameTag)));
+        var i18nDefName = em && (em.t("".concat(i18nPfx).concat(type)) || em.t("".concat(i18nPfx).concat(tagName)));
+        var customName = this.get('custom-name');
+        return ((!opts.noCustom ? customName : '') || // Used in Layers (when the user changes the name)
+            i18nName || // Use local component `name` key (eg. `domComponents.names.myComponentName`)
+            name || // Use component `name` key
+            i18nNameTag || // Use local component `tagName` key (eg. `domComponents.names.div`)
+            (0,mixins.capitalize)(nameTag) || // Use component `tagName` key
+            i18nDefName || // Use local component `type` key (eg. `domComponents.names.image`)
+            (0,mixins.capitalize)(defName) // Use component `type` key
+        );
+    };
+    /**
+     * Get the icon string
+     * @return {String}
+     */
+    Component.prototype.getIcon = function () {
+        var icon = this.get('icon');
+        return icon ? icon + ' ' : '';
+    };
+    /**
+     * Return HTML string of the component
+     * @param {Object} [opts={}] Options
+     * @param {String} [opts.tag] Custom tagName
+     * @param {Object|Function} [opts.attributes=null] You can pass an object of custom attributes to replace with the current ones or you can even pass a function to generate attributes dynamically.
+     * @param {Boolean} [opts.withProps] Include component properties as `data-gjs-*` attributes. This allows you to have re-importable HTML.
+     * @param {Boolean} [opts.altQuoteAttr] In case the attribute value contains a `"` char, instead of escaping it (`attr="value &quot;"`), the attribute will be quoted using single quotes (`attr='value "'`).
+     * @return {String} HTML string
+     * @example
+     * // Simple HTML return
+     * component.set({ tagName: 'span' });
+     * component.setAttributes({ title: 'Hello' });
+     * component.toHTML();
+     * // -> <span title="Hello"></span>
+     *
+     * // Custom attributes
+     * component.toHTML({ attributes: { 'data-test': 'Hello' } });
+     * // -> <span data-test="Hello"></span>
+     *
+     * // Custom dynamic attributes
+     * component.toHTML({
+     *  attributes(component, attributes) {
+     *    if (component.get('tagName') == 'span') {
+     *      attributes.title = 'Custom attribute';
+     *    }
+     *    return attributes;
+     *  },
+     * });
+     * // -> <span title="Custom attribute"></span>
+     */
+    Component.prototype.toHTML = function (opts) {
+        if (opts === void 0) { opts = {}; }
+        var model = this;
+        var attrs = [];
+        var customTag = opts.tag;
+        var tag = customTag || model.get('tagName');
+        var sTag = model.get('void');
+        var customAttr = opts.attributes;
+        var attributes = this.getAttrToHTML(opts);
+        delete opts.tag;
+        // Get custom attributes if requested
+        if (customAttr) {
+            if ((0,index_all.isFunction)(customAttr)) {
+                attributes = customAttr(model, attributes) || {};
+            }
+            else if ((0,mixins.isObject)(customAttr)) {
+                attributes = customAttr;
+            }
+        }
+        if (opts.withProps) {
+            var props = this.toJSON();
+            (0,index_all.forEach)(props, function (value, key) {
+                var skipProps = ['classes', 'attributes', 'components'];
+                if (key[0] !== '_' && skipProps.indexOf(key) < 0) {
+                    attributes["data-gjs-".concat(key)] =
+                        (0,index_all.isArray)(value) || (0,mixins.isObject)(value) ? JSON.stringify(value) : (0,index_all.isBoolean)(value) ? "".concat(value) : value;
+                }
+            });
+        }
+        for (var attr in attributes) {
+            var val = attributes[attr];
+            if (!(0,index_all.isUndefined)(val) && val !== null) {
+                if ((0,index_all.isBoolean)(val)) {
+                    val && attrs.push(attr);
+                }
+                else {
+                    var valueRes = '';
+                    if (opts.altQuoteAttr && (0,index_all.isString)(val) && val.indexOf('"') >= 0) {
+                        valueRes = "'".concat(val.replace(/'/g, '&apos;'), "'");
+                    }
+                    else {
+                        var value = (0,index_all.isString)(val) ? val.replace(/"/g, '&quot;') : val;
+                        valueRes = "\"".concat(value, "\"");
+                    }
+                    attrs.push("".concat(attr, "=").concat(valueRes));
+                }
+            }
+        }
+        var attrString = attrs.length ? " ".concat(attrs.join(' ')) : '';
+        var inner = model.getInnerHTML(opts);
+        var code = "<".concat(tag).concat(attrString).concat(sTag ? '/' : '', ">").concat(inner);
+        !sTag && (code += "</".concat(tag, ">"));
+        return code;
+    };
+    /**
+     * Get inner HTML of the component
+     * @param {Object} [opts={}] Same options of `toHTML`
+     * @returns {String} HTML string
+     */
+    Component.prototype.getInnerHTML = function (opts) {
+        return this.__innerHTML(opts);
+    };
+    Component.prototype.__innerHTML = function (opts) {
+        if (opts === void 0) { opts = {}; }
+        var cmps = this.components();
+        return !cmps.length ? this.content : cmps.map(function (c) { return c.toHTML(opts); }).join('');
+    };
+    /**
+     * Returns object of attributes for HTML
+     * @return {Object}
+     * @private
+     */
+    Component.prototype.getAttrToHTML = function (opts) {
+        var attrs = this.getAttributes();
+        if (avoidInline(this.em) && (opts === null || opts === void 0 ? void 0 : opts.keepInlineStyle) !== true) {
+            delete attrs.style;
+        }
+        return attrs;
+    };
+    /**
+     * Return a shallow copy of the model's attributes for JSON
+     * stringification.
+     * @return {Object}
+     * @private
+     */
+    Component.prototype.toJSON = function (opts) {
+        if (opts === void 0) { opts = {}; }
+        var obj = backbone.Model.prototype.toJSON.call(this, opts);
+        obj.attributes = this.getAttributes();
+        delete obj.attributes.class;
+        delete obj.toolbar;
+        delete obj.traits;
+        delete obj.status;
+        delete obj.open; // used in Layers
+        delete obj._undoexc;
+        delete obj.delegate;
+        if (!opts.fromUndo) {
+            var symbol = obj[keySymbol];
+            var symbols = obj[keySymbols];
+            if (symbols && (0,index_all.isArray)(symbols)) {
+                obj[keySymbols] = symbols.filter(function (i) { return i; }).map(function (i) { return (i.getId ? i.getId() : i); });
+            }
+            if (symbol && !(0,index_all.isString)(symbol)) {
+                obj[keySymbol] = symbol.getId();
+            }
+        }
+        if (this.em.getConfig().avoidDefaults) {
+            this.getChangedProps(obj);
+        }
+        return obj;
+    };
+    /**
+     * Return an object containing only changed props
+     */
+    Component.prototype.getChangedProps = function (res) {
+        var obj = res || backbone.Model.prototype.toJSON.apply(this);
+        var defaults = (0,index_all.result)(this, 'defaults');
+        (0,index_all.forEach)(defaults, function (value, key) {
+            if (['type'].indexOf(key) === -1 && obj[key] === value) {
+                delete obj[key];
+            }
+        });
+        if ((0,index_all.isEmpty)(obj.type)) {
+            delete obj.type;
+        }
+        (0,index_all.forEach)(['attributes', 'style'], function (prop) {
+            if ((0,index_all.isEmpty)(defaults[prop]) && (0,index_all.isEmpty)(obj[prop])) {
+                delete obj[prop];
+            }
+        });
+        (0,index_all.forEach)(['classes', 'components'], function (prop) {
+            if (!obj[prop] || ((0,index_all.isEmpty)(defaults[prop]) && !obj[prop].length)) {
+                delete obj[prop];
+            }
+        });
+        return obj;
+    };
+    /**
+     * Return the component id
+     * @return {String}
+     */
+    Component.prototype.getId = function () {
+        var attrs = this.get('attributes') || {};
+        return attrs.id || this.ccid || this.cid;
+    };
+    /**
+     * Set new id on the component
+     * @param {String} id
+     * @return {this}
+     */
+    Component.prototype.setId = function (id, opts) {
+        var attrs = Component_assign({}, this.get('attributes'));
+        attrs.id = id;
+        this.set('attributes', attrs, opts);
+        return this;
+    };
+    /**
+     * Get the DOM element of the component.
+     * This works only if the component is already rendered
+     * @param {Frame} frame Specific frame from which taking the element
+     * @return {HTMLElement}
+     */
+    Component.prototype.getEl = function (frame) {
+        var view = this.getView(frame);
+        return view && view.el;
+    };
+    /**
+     * Get the View of the component.
+     * This works only if the component is already rendered
+     * @param {Frame} frame Get View of a specific frame
+     * @return {ComponentView}
+     */
+    Component.prototype.getView = function (frame) {
+        var _a = this, view = _a.view, views = _a.views, em = _a.em;
+        var frm = frame || (em === null || em === void 0 ? void 0 : em.getCurrentFrameModel());
+        if (frm) {
+            view = views.filter(function (view) { return view.frameView === frm.view; })[0];
+        }
+        return view;
+    };
+    Component.prototype.getCurrentView = function () {
+        var frameView = this.em.getCurrentFrame();
+        var frame = frameView === null || frameView === void 0 ? void 0 : frameView.model;
+        return this.getView(frame);
+    };
+    Component.prototype.__getScriptProps = function () {
+        var modelProps = this.props();
+        var scrProps = this.get('script-props') || [];
+        return scrProps.reduce(function (acc, prop) {
+            acc[prop] = modelProps[prop];
+            return acc;
+        }, {});
+    };
+    /**
+     * Return script in string format, cleans 'function() {..' from scripts
+     * if it's a function
+     * @param {string|Function} script
+     * @return {string}
+     * @private
+     */
+    Component.prototype.getScriptString = function (script) {
+        var _this = this;
+        var scr = script || this.get('script') || '';
+        if (!scr) {
+            return scr;
+        }
+        if (this.get('script-props')) {
+            scr = scr.toString().trim();
+        }
+        else {
+            // Deprecated
+            // Need to convert script functions to strings
+            if ((0,index_all.isFunction)(scr)) {
+                var scrStr = scr.toString().trim();
+                scrStr = scrStr.slice(scrStr.indexOf('{') + 1, scrStr.lastIndexOf('}'));
+                scr = scrStr.trim();
+            }
+            var config = this.em.getConfig();
+            var tagVarStart = escapeRegExp(config.tagVarStart || '{[ ');
+            var tagVarEnd = escapeRegExp(config.tagVarEnd || ' ]}');
+            var reg = new RegExp("".concat(tagVarStart, "([\\w\\d-]*)").concat(tagVarEnd), 'g');
+            scr = scr.replace(reg, function (match, v) {
+                // If at least one match is found I have to track this change for a
+                // better optimization inside JS generator
+                _this.scriptUpdated();
+                var result = _this.attributes[v] || '';
+                return (0,index_all.isArray)(result) || typeof result == 'object' ? JSON.stringify(result) : result;
+            });
+        }
+        return scr;
+    };
+    Component.prototype.emitUpdate = function (property) {
+        var _a;
+        var args = [];
+        for (var _i = 1; _i < arguments.length; _i++) {
+            args[_i - 1] = arguments[_i];
+        }
+        var em = this.em;
+        var event = keyUpdate + (property ? ":".concat(property) : '');
+        var item = property && this.get(property);
+        // @ts-ignore
+        property && this.updated.apply(this, Component_spreadArray([property, item, property && this.previous(property)], args, false));
+        this.trigger.apply(this, Component_spreadArray([event], args, false));
+        em && em.trigger.apply(em, Component_spreadArray([event, this], args, false));
+        ['components', 'classes'].indexOf(property) >= 0 &&
+            this.__propSelfToParent({
+                component: this,
+                changed: (_a = {}, _a[property] = item, _a),
+                options: args[2] || args[1] || {},
+            });
+    };
+    /**
+     * Execute callback function on itself and all inner components
+     * @param  {Function} clb Callback function, the model is passed as an argument
+     * @return {this}
+     * @example
+     * component.onAll(component => {
+     *  // do something with component
+     * })
+     */
+    Component.prototype.onAll = function (clb) {
+        if ((0,index_all.isFunction)(clb)) {
+            clb(this);
+            this.components().forEach(function (model) { return model.onAll(clb); });
+        }
+        return this;
+    };
+    /**
+     * Execute a callback function on all inner child components.
+     * @param  {Function} clb Callback function, the child component is passed as an argument
+     * @example
+     * component.forEachChild(child => {
+     *  console.log(child)
+     * })
+     */
+    Component.prototype.forEachChild = function (clb) {
+        if ((0,index_all.isFunction)(clb)) {
+            this.components().forEach(function (child) {
+                clb(child);
+                child.forEachChild(clb);
+            });
+        }
+    };
+    /**
+     * Remove the component
+     * @return {this}
+     */
+    Component.prototype.remove = function (opts) {
+        var _this = this;
+        if (opts === void 0) { opts = {}; }
+        var em = this.em;
+        var coll = this.collection;
+        var remove = function () {
+            coll && coll.remove(_this, Component_assign({ action: dom_components_types/* ActionLabelComponents */.W.remove }, opts));
+            // Component without parent
+            if (!coll) {
+                _this.components('', opts);
+                _this.components().removeChildren(_this, undefined, opts);
+            }
+        };
+        var rmOpts = Component_assign({}, opts);
+        [this, em].map(function (i) { return i.trigger(dom_components_types/* ComponentsEvents */.g.removeBefore, _this, remove, rmOpts); });
+        !rmOpts.abort && remove();
+        return this;
+    };
+    /**
+     * Move the component to another destination component
+     * @param {Component} component Destination component (so the current one will be appended as a child)
+     * @param {Object} opts Options for the append action
+     * @returns {this}
+     * @example
+     * // Move the selected component on top of the wrapper
+     * const dest = editor.getWrapper();
+     * editor.getSelected().move(dest, { at: 0 });
+     */
+    Component.prototype.move = function (component, opts) {
+        if (opts === void 0) { opts = {}; }
+        if (component) {
+            var at = opts.at;
+            var index = this.index();
+            var sameParent = component === this.parent();
+            var sameIndex = index === at || index === at - 1;
+            if (!sameParent || !sameIndex) {
+                if (sameParent && at && at > index) {
+                    opts.at = at - 1;
+                }
+                var action = dom_components_types/* ActionLabelComponents */.W.move;
+                this.remove({ action: action, temporary: 1 });
+                component.append(this, Component_assign({ action: action }, opts));
+                this.emitUpdate();
+            }
+        }
+        return this;
+    };
+    /**
+     * Check if the component is an instance of some component type.
+     * @param {String} type Component type
+     * @returns {Boolean}
+     * @example
+     * // Add a new component type by extending an existing one
+     * editor.Components.addType('text-ext', { extend: 'text' });
+     * // Append a new component somewhere
+     * const newTextExt = editor.getSelected().append({ type: 'text-ext' })[0];
+     * newTextExt.isInstanceOf('text-ext'); // true
+     * newTextExt.isInstanceOf('text'); // true
+     */
+    Component.prototype.isInstanceOf = function (type) {
+        var _a, _b;
+        var cmp = (_b = (_a = this.em) === null || _a === void 0 ? void 0 : _a.Components.getType(type)) === null || _b === void 0 ? void 0 : _b.model;
+        if (!cmp)
+            return false;
+        return this instanceof cmp;
+    };
+    /**
+     * Check if the component is a child of some other component (or component type)
+     * @param {[Component]|String} component Component parent to check. In case a string is passed,
+     *  the check will be performed on the component type.
+     * @returns {Boolean}
+     * @example
+     * const newTextComponent = editor.getSelected().append({
+     *  type: 'text',
+     *  components: 'My text <b>here</b>',
+     * })[0];
+     * const innerComponent = newTextComponent.find('b')[0];
+     * innerComponent.isChildOf(newTextComponent); // true
+     * innerComponent.isChildOf('text'); // true
+     */
+    Component.prototype.isChildOf = function (component) {
+        var byType = (0,index_all.isString)(component);
+        var parent = this.parent();
+        while (parent) {
+            if (byType) {
+                if (parent.isInstanceOf(component)) {
+                    return true;
+                }
+            }
+            else {
+                if (parent === component) {
+                    return true;
+                }
+            }
+            parent = parent.parent();
+        }
+        return false;
+    };
+    /**
+     * Reset id of the component and any of its style rule
+     * @param {Object} [opts={}] Options
+     * @return {this}
+     * @private
+     */
+    Component.prototype.resetId = function (opts) {
+        if (opts === void 0) { opts = {}; }
+        var em = this.em;
+        var oldId = this.getId();
+        if (!oldId)
+            return this;
+        var newId = Component.createId(this);
+        this.setId(newId);
+        var rule = em === null || em === void 0 ? void 0 : em.Css.getIdRule(oldId);
+        var selector = rule === null || rule === void 0 ? void 0 : rule.get('selectors').at(0);
+        selector === null || selector === void 0 ? void 0 : selector.set('name', newId);
+        return this;
+    };
+    Component.prototype._getStyleRule = function (_a) {
+        var _b = _a === void 0 ? {} : _a, id = _b.id;
+        var em = this.em;
+        var idS = id || this.getId();
+        return em === null || em === void 0 ? void 0 : em.Css.getIdRule(idS);
+    };
+    Component.prototype._getStyleSelector = function (opts) {
+        var rule = this._getStyleRule(opts);
+        return rule === null || rule === void 0 ? void 0 : rule.get('selectors').at(0);
+    };
+    Component.prototype._idUpdated = function (m, v, opts) {
+        if (opts === void 0) { opts = {}; }
+        if (opts.idUpdate)
+            return;
+        var ccid = this.ccid;
+        var id = (this.get('attributes') || {}).id;
+        var idPrev = (this.previous('attributes') || {}).id || ccid;
+        var list = Component.getList(this);
+        // If the ID already exists I need to rollback to the old one
+        if (list[id] || (!id && idPrev)) {
+            return this.setId(idPrev, { idUpdate: true });
+        }
+        // Remove the old ID reference and add the new one
+        delete list[idPrev];
+        list[id] = this;
+        this.ccid = id;
+        // Update the style selector name
+        var selector = this._getStyleSelector({ id: idPrev });
+        selector && selector.set({ name: id, label: id });
+    };
+    Component.getDefaults = function () {
+        return (0,index_all.result)(this.prototype, 'defaults');
+    };
+    Component.isComponent = function (el, opts) {
+        return { tagName: (0,mixins.toLowerCase)(el.tagName) };
+    };
+    Component.ensureInList = function (model) {
+        var list = Component.getList(model);
+        var id = model.getId();
+        var current = list[id];
+        if (!current) {
+            // Insert in list
+            list[id] = model;
+        }
+        else if (current !== model) {
+            // Create new ID
+            var nextId = Component.getIncrementId(id, list);
+            model.setId(nextId);
+            list[nextId] = model;
+        }
+        model.components().forEach(function (i) { return Component.ensureInList(i); });
+    };
+    Component.createId = function (model, opts) {
+        if (opts === void 0) { opts = {}; }
+        var list = Component.getList(model);
+        var _a = opts.idMap, idMap = _a === void 0 ? {} : _a;
+        var id = model.get('attributes').id;
+        var nextId;
+        if (id) {
+            nextId = Component.getIncrementId(id, list, opts);
+            model.setId(nextId);
+            if (id !== nextId)
+                idMap[id] = nextId;
+        }
+        else {
+            nextId = Component.getNewId(list);
+        }
+        list[nextId] = model;
+        return nextId;
+    };
+    Component.getNewId = function (list) {
+        var count = Object.keys(list).length;
+        // Testing 1000000 components with `+ 2` returns 0 collisions
+        var ilen = count.toString().length + 2;
+        var uid = (Math.random() + 1.1).toString(36).slice(-ilen);
+        var newId = "i".concat(uid);
+        while (list[newId]) {
+            newId = Component.getNewId(list);
+        }
+        return newId;
+    };
+    Component.getIncrementId = function (id, list, opts) {
+        if (opts === void 0) { opts = {}; }
+        var _a = opts.keepIds, keepIds = _a === void 0 ? [] : _a;
+        var counter = 1;
+        var newId = id;
+        if (keepIds.indexOf(id) < 0) {
+            while (list[newId]) {
+                counter++;
+                newId = "".concat(id, "-").concat(counter);
+            }
+        }
+        return newId;
+    };
+    Component.getList = function (model) {
+        var _a;
+        var em = model.em;
+        var dm = em === null || em === void 0 ? void 0 : em.Components;
+        return (_a = dm === null || dm === void 0 ? void 0 : dm.componentsById) !== null && _a !== void 0 ? _a : {};
+    };
+    Component.checkId = function (components, styles, list, opts) {
+        if (styles === void 0) { styles = []; }
+        if (list === void 0) { list = {}; }
+        if (opts === void 0) { opts = {}; }
+        var comps = (0,index_all.isArray)(components) ? components : [components];
+        var _a = opts.keepIds, keepIds = _a === void 0 ? [] : _a, _b = opts.idMap, idMap = _b === void 0 ? {} : _b;
+        comps.forEach(function (comp) {
+            comp.attributes;
+            var _a = comp.attributes, attributes = _a === void 0 ? {} : _a, components = comp.components;
+            var id = attributes.id;
+            // Check if we have collisions with current components
+            if (id && list[id] && keepIds.indexOf(id) < 0) {
+                var newId_1 = Component.getIncrementId(id, list);
+                idMap[id] = newId_1;
+                attributes.id = newId_1;
+                // Update passed styles
+                (0,index_all.isArray)(styles) &&
+                    styles.forEach(function (style) {
+                        var selectors = style.selectors;
+                        selectors.forEach(function (sel, idx) {
+                            if (sel === "#".concat(id))
+                                selectors[idx] = "#".concat(newId_1);
+                        });
+                    });
+            }
+            components && Component.checkId(components, styles, list, opts);
+        });
+    };
+    return Component;
+}(model_StyleableModel));
+/* harmony default export */ const model_Component = (Component);
+
+;// CONCATENATED MODULE: ./src/dom_components/model/ComponentHead.ts
+var ComponentHead_extends = (undefined && undefined.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+var ComponentHead_assign = (undefined && undefined.__assign) || function () {
+    ComponentHead_assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return ComponentHead_assign.apply(this, arguments);
+};
+
+
+var type = 'head';
+var droppable = ['title', 'style', 'base', 'link', 'meta', 'script', 'noscript'];
+var ComponentHead = /** @class */ (function (_super) {
+    ComponentHead_extends(ComponentHead, _super);
+    function ComponentHead() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    Object.defineProperty(ComponentHead.prototype, "defaults", {
+        get: function () {
+            return ComponentHead_assign(ComponentHead_assign({}, _super.prototype.defaults), { type: type, tagName: type, draggable: false, highlightable: false, droppable: (function (_a) {
+                    var tagName = _a.tagName;
+                    return !tagName || droppable.includes((0,mixins.toLowerCase)(tagName));
+                }) });
+        },
+        enumerable: false,
+        configurable: true
+    });
+    ComponentHead.isComponent = function (el) {
+        return (0,mixins.toLowerCase)(el.tagName) === type;
+    };
+    return ComponentHead;
+}(model_Component));
+/* harmony default export */ const model_ComponentHead = (ComponentHead);
+
 ;// CONCATENATED MODULE: ./src/utils/Droppable.ts
 var Droppable_assign = (undefined && undefined.__assign) || function () {
     Droppable_assign = Object.assign || function(t) {
@@ -26594,6 +30873,7 @@ var FrameView_spreadArray = (undefined && undefined.__spreadArray) || function (
     }
     return to.concat(ar || Array.prototype.slice.call(from));
 };
+
 
 
 
@@ -26881,6 +31161,7 @@ var FrameView = /** @class */ (function (_super) {
             evOpts.window = _this.getWindow();
             em === null || em === void 0 ? void 0 : em.trigger("".concat(evLoad, ":before"), evOpts); // deprecated
             em === null || em === void 0 ? void 0 : em.trigger(canvas_types.frameLoad, evOpts);
+            _this.renderHead();
             appendScript(FrameView_spreadArray([], canvas.get('scripts'), true));
         };
     };
@@ -26913,6 +31194,16 @@ var FrameView = /** @class */ (function (_super) {
             (_a = el === null || el === void 0 ? void 0 : el.parentNode) === null || _a === void 0 ? void 0 : _a.removeChild(el);
         });
         (0,dom/* appendVNodes */.SJ)(head, toAdd);
+    };
+    FrameView.prototype.renderHead = function () {
+        var _a = this, model = _a.model, em = _a.em;
+        var root = model.root;
+        var HeadView = em.Components.getType(type).view;
+        this.headView = new HeadView({
+            el: this.getHead(),
+            model: root.head,
+            config: FrameView_assign(FrameView_assign({}, root.config), { frameView: this }),
+        }).render();
     };
     FrameView.prototype.renderBody = function () {
         var _this = this;
@@ -28668,3961 +32959,6 @@ var CanvasModule = /** @class */ (function (_super) {
     ],
 });
 
-;// CONCATENATED MODULE: ./src/parser/model/BrowserParserHtml.ts
-
-var htmlType = 'text/html';
-var defaultType = htmlType; // 'application/xml';
-/* harmony default export */ const BrowserParserHtml = (function (str, config) {
-    if (config === void 0) { config = {}; }
-    var parser = new DOMParser();
-    var mimeType = config.htmlType || defaultType;
-    var toHTML = mimeType === htmlType;
-    var strF = toHTML ? str : "<div>".concat(str, "</div>");
-    var doc = parser.parseFromString(strF, mimeType);
-    var res;
-    if (toHTML) {
-        // Replicate the old parser in order to avoid breaking changes
-        var head = doc.head, body_1 = doc.body;
-        // Move all scripts at the bottom of the page
-        var scripts = head.querySelectorAll('script');
-        (0,index_all.each)(scripts, function (node) { return body_1.appendChild(node); });
-        // Move inside body all head children
-        var hEls_1 = [];
-        (0,index_all.each)(head.children, function (n) { return hEls_1.push(n); });
-        (0,index_all.each)(hEls_1, function (node, i) { return body_1.insertBefore(node, body_1.children[i]); });
-        res = body_1;
-    }
-    else {
-        res = doc.firstChild;
-    }
-    return res;
-});
-/**
- * POC, custom html parser specs
- * Parse an HTML string to an array of nodes
- * example
- * parse(`<div class="mycls" data-test>Hello</div><span>World <b>example</b></span>`)
- * // result
- * [
- *  {
- *      tagName: 'div',
- *      attributes: { class: 'mycls', 'data-test': '' },
- *      childNodes: ['Hello'],
- *  },{
- *      tagName: 'span',
- *      childNodes: [
- *          'World ',
- *          {
- *              tagName: 'b',
- *              childNodes: ['example'],
- *          }
- *       ],
- *  }
- * ]
- *
-
-export const parseNodes = nodes => {
-  const result = [];
-
-  for (let i = 0; i < nodes.length; i++) {
-    result.push(parseNode(nodes[i]));
-  }
-
-  return result;
-};
-
-export const parseAttributes = attrs => {
-  const result = {};
-
-  for (let j = 0; j < attrs.length; j++) {
-    const attr = attrs[j];
-    const nodeName = attr.nodeName;
-    const nodeValue = attr.nodeValue;
-    result[nodeName] = nodeValue;
-  }
-
-  return result;
-};
-
-export const parseNode = el => {
-  // Return the string of the textnode element
-  if (el.nodeType === 3) {
-    return el.nodeValue;
-  }
-
-  const tagName = node.tagName ? node.tagName.toLowerCase() : '';
-  const attrs = el.attributes || [];
-  const nodes = el.childNodes || [];
-
-  return {
-    ...(tagName && { tagName }),
-    ...(attrs.length && {
-      attributes: parseAttributes(attrs)
-    }),
-    ...(nodes.length && {
-      childNodes: parseNodes(nodes)
-    })
-  };
-};
-
-export default (str, config = {}) => {
-  const result = [];
-  const el = document.createElement('div');
-  el.innerHTML = str;
-  const nodes = el.childNodes;
-  const len = nodes.length;
-
-  for (let i = 0; i < len; i++) {
-    result.push(parseNode(nodes[i]));
-  }
-
-  return result;
-};
- */
-
-;// CONCATENATED MODULE: ./src/parser/model/ParserHtml.ts
-var ParserHtml_assign = (undefined && undefined.__assign) || function () {
-    ParserHtml_assign = Object.assign || function(t) {
-        for (var s, i = 1, n = arguments.length; i < n; i++) {
-            s = arguments[i];
-            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
-                t[p] = s[p];
-        }
-        return t;
-    };
-    return ParserHtml_assign.apply(this, arguments);
-};
-
-
-var modelAttrStart = 'data-gjs-';
-var ParserHtml_event = 'parse:html';
-var ParserHtml = function (em, config) {
-    if (config === void 0) { config = {}; }
-    return {
-        compTypes: '',
-        modelAttrStart: modelAttrStart,
-        getPropAttribute: function (attrName, attrValue) {
-            var name = attrName.replace(this.modelAttrStart, '');
-            var valueLen = (attrValue === null || attrValue === void 0 ? void 0 : attrValue.length) || 0;
-            var firstChar = attrValue === null || attrValue === void 0 ? void 0 : attrValue.substring(0, 1);
-            var lastChar = attrValue === null || attrValue === void 0 ? void 0 : attrValue.substring(valueLen - 1);
-            var value = attrValue === 'true' ? true : attrValue === 'false' ? false : attrValue;
-            // Try to parse JSON where it's possible
-            // I can get false positive here (eg. a selector '[data-attr]')
-            // so put it under try/catch and let fail silently
-            try {
-                value =
-                    (firstChar == '{' && lastChar == '}') || (firstChar == '[' && lastChar == ']') ? JSON.parse(value) : value;
-            }
-            catch (e) { }
-            return {
-                name: name,
-                value: value,
-            };
-        },
-        /**
-         * Extract component props from an attribute object
-         * @param {Object} attr
-         * @returns {Object} An object containing props and attributes without them
-         */
-        splitPropsFromAttr: function (attr) {
-            var _this = this;
-            if (attr === void 0) { attr = {}; }
-            var props = {};
-            var attrs = {};
-            (0,index_all.each)(attr, function (value, key) {
-                if (key.indexOf(_this.modelAttrStart) === 0) {
-                    var propsResult = _this.getPropAttribute(key, value);
-                    props[propsResult.name] = propsResult.value;
-                }
-                else {
-                    attrs[key] = value;
-                }
-            });
-            return {
-                props: props,
-                attrs: attrs,
-            };
-        },
-        /**
-         * Parse style string to object
-         * @param {string} str
-         * @return {Object}
-         * @example
-         * var stl = ParserHtml.parseStyle('color:black; width:100px; test:value;');
-         * console.log(stl);
-         * // {color: 'black', width: '100px', test: 'value'}
-         */
-        parseStyle: function (str) {
-            var result = {};
-            while (str.indexOf('/*') >= 0) {
-                var start = str.indexOf('/*');
-                var end = str.indexOf('*/') + 2;
-                str = str.replace(str.slice(start, end), '');
-            }
-            var decls = str.split(';');
-            for (var i = 0, len = decls.length; i < len; i++) {
-                var decl = decls[i].trim();
-                if (!decl)
-                    continue;
-                var prop = decl.split(':');
-                var key = prop[0].trim();
-                var value = prop.slice(1).join(':').trim();
-                // Support multiple values for the same key
-                if (result[key]) {
-                    if (!(0,index_all.isArray)(result[key])) {
-                        result[key] = [result[key]];
-                    }
-                    result[key].push(value);
-                }
-                else {
-                    result[key] = value;
-                }
-            }
-            return result;
-        },
-        /**
-         * Parse class string to array
-         * @param {string} str
-         * @return {Array<string>}
-         * @example
-         * var res = ParserHtml.parseClass('test1 test2 test3');
-         * console.log(res);
-         * // ['test1', 'test2', 'test3']
-         */
-        parseClass: function (str) {
-            var result = [];
-            var cls = str.split(' ');
-            for (var i = 0, len = cls.length; i < len; i++) {
-                var cl = cls[i].trim();
-                if (!cl)
-                    continue;
-                result.push(cl);
-            }
-            return result;
-        },
-        /**
-         * Get data from the node element
-         * @param  {HTMLElement} el DOM element to traverse
-         * @return {Array<Object>}
-         */
-        parseNode: function (el, opts) {
-            if (opts === void 0) { opts = {}; }
-            var result = [];
-            var nodes = el.childNodes;
-            for (var i = 0, len = nodes.length; i < len; i++) {
-                var node = nodes[i];
-                var attrs = node.attributes || [];
-                var attrsLen = attrs.length;
-                var nodePrev = result[result.length - 1];
-                var nodeChild = node.childNodes.length;
-                var ct = this.compTypes;
-                var model = {}; // TODO use component properties
-                // Start with understanding what kind of component it is
-                if (ct) {
-                    var obj = '';
-                    var type = node.getAttribute && node.getAttribute("".concat(this.modelAttrStart, "type"));
-                    // If the type is already defined, use it
-                    if (type) {
-                        model = { type: type };
-                    }
-                    else {
-                        // Iterate over all available Component Types and
-                        // the first with a valid result will be that component
-                        for (var it_1 = 0; it_1 < ct.length; it_1++) {
-                            var compType = ct[it_1];
-                            // @ts-ignore
-                            obj = compType.model.isComponent(node, opts);
-                            if (obj) {
-                                if (typeof obj !== 'object') {
-                                    // @ts-ignore
-                                    obj = { type: compType.id };
-                                }
-                                break;
-                            }
-                        }
-                        model = obj;
-                    }
-                }
-                // Set tag name if not yet done
-                if (!model.tagName) {
-                    var tag = node.tagName || '';
-                    var ns = node.namespaceURI || '';
-                    model.tagName = tag && ns === 'http://www.w3.org/1999/xhtml' ? tag.toLowerCase() : tag;
-                }
-                if (attrsLen) {
-                    model.attributes = {};
-                }
-                // Parse attributes
-                for (var j = 0; j < attrsLen; j++) {
-                    var nodeName = attrs[j].nodeName;
-                    var nodeValue = attrs[j].nodeValue;
-                    // Isolate attributes
-                    if (nodeName == 'style') {
-                        model.style = this.parseStyle(nodeValue);
-                    }
-                    else if (nodeName == 'class') {
-                        model.classes = this.parseClass(nodeValue);
-                    }
-                    else if (nodeName == 'contenteditable') {
-                        continue;
-                    }
-                    else if (nodeName.indexOf(this.modelAttrStart) === 0) {
-                        var propsResult = this.getPropAttribute(nodeName, nodeValue);
-                        model[propsResult.name] = propsResult.value;
-                    }
-                    else {
-                        // @ts-ignore Check for attributes from props (eg. required, disabled)
-                        if (nodeValue === '' && node[nodeName] === true) {
-                            nodeValue = true;
-                        }
-                        model.attributes[nodeName] = nodeValue;
-                    }
-                }
-                // Check for nested elements but avoid it if already provided
-                if (nodeChild && !model.components) {
-                    // Avoid infinite nested text nodes
-                    var firstChild = node.childNodes[0];
-                    // If there is only one child and it's a TEXTNODE
-                    // just make it content of the current node
-                    if (nodeChild === 1 && firstChild.nodeType === 3) {
-                        !model.type && (model.type = 'text');
-                        model.components = {
-                            type: 'textnode',
-                            content: firstChild.nodeValue,
-                        };
-                    }
-                    else {
-                        model.components = this.parseNode(node, ParserHtml_assign(ParserHtml_assign({}, opts), { inSvg: opts.inSvg || model.type === 'svg' }));
-                    }
-                }
-                // Check if it's a text node and if could be moved to the prevous model
-                if (model.type == 'textnode') {
-                    if (nodePrev && nodePrev.type == 'textnode') {
-                        nodePrev.content += model.content;
-                        continue;
-                    }
-                    // Throw away empty nodes (keep spaces)
-                    if (!opts.keepEmptyTextNodes) {
-                        var content = node.nodeValue;
-                        if (content != ' ' && !content.trim()) {
-                            continue;
-                        }
-                    }
-                }
-                // Check for custom void elements (valid in XML)
-                if (!nodeChild && "".concat(node.outerHTML).slice(-2) === '/>') {
-                    model.void = true;
-                }
-                // If all children are texts and there is some textnode the parent should
-                // be text too otherwise I'm unable to edit texnodes
-                var comps = model.components;
-                if (!model.type && comps) {
-                    var _a = config.textTypes, textTypes = _a === void 0 ? [] : _a, _b = config.textTags, textTags = _b === void 0 ? [] : _b;
-                    var allTxt = 1;
-                    var foundTextNode = 0;
-                    for (var ci = 0; ci < comps.length; ci++) {
-                        var comp = comps[ci];
-                        var cType = comp.type;
-                        if (!textTypes.includes(cType) && !textTags.includes(comp.tagName)) {
-                            allTxt = 0;
-                            break;
-                        }
-                        if (cType === 'textnode') {
-                            foundTextNode = 1;
-                        }
-                    }
-                    if (allTxt && foundTextNode) {
-                        model.type = 'text';
-                    }
-                }
-                // If tagName is still empty and is not a textnode, do not push it
-                if (!model.tagName && (0,index_all.isUndefined)(model.content)) {
-                    continue;
-                }
-                result.push(model);
-            }
-            return result;
-        },
-        /**
-         * Parse HTML string to a desired model object
-         * @param  {string} str HTML string
-         * @param  {ParserCss} parserCss In case there is style tags inside HTML
-         * @return {Object}
-         */
-        parse: function (str, parserCss, opts) {
-            var _a;
-            if (opts === void 0) { opts = {}; }
-            var conf = (em === null || em === void 0 ? void 0 : em.get('Config')) || {};
-            var res = { html: [] };
-            var cf = ParserHtml_assign(ParserHtml_assign({}, config), opts);
-            var options = ParserHtml_assign(ParserHtml_assign(ParserHtml_assign({}, config.optionsHtml), { 
-                // @ts-ignore Support previous `configParser.htmlType` option
-                htmlType: ((_a = config.optionsHtml) === null || _a === void 0 ? void 0 : _a.htmlType) || config.htmlType }), opts);
-            var preParser = options.preParser;
-            var input = (0,index_all.isFunction)(preParser) ? preParser(str, { editor: em === null || em === void 0 ? void 0 : em.getEditor() }) : str;
-            var el = (0,index_all.isFunction)(cf.parserHtml) ? cf.parserHtml(input, options) : BrowserParserHtml(input, options);
-            var scripts = el.querySelectorAll('script');
-            var i = scripts.length;
-            // Support previous `configMain.allowScripts` option
-            var allowScripts = !(0,index_all.isUndefined)(conf.allowScripts) ? conf.allowScripts : options.allowScripts;
-            // Remove script tags
-            if (!allowScripts) {
-                while (i--)
-                    scripts[i].parentNode.removeChild(scripts[i]);
-            }
-            // Remove unsafe attributes
-            if (!options.allowUnsafeAttr || !options.allowUnsafeAttrValue) {
-                this.__sanitizeNode(el, options);
-            }
-            // Detach style tags and parse them
-            if (parserCss) {
-                var styles = el.querySelectorAll('style');
-                var j = styles.length;
-                var styleStr = '';
-                while (j--) {
-                    styleStr = styles[j].innerHTML + styleStr;
-                    styles[j].parentNode.removeChild(styles[j]);
-                }
-                if (styleStr)
-                    res.css = parserCss.parse(styleStr);
-            }
-            em === null || em === void 0 ? void 0 : em.trigger("".concat(ParserHtml_event, ":root"), { input: input, root: el });
-            var result = this.parseNode(el, cf);
-            // I have to keep it otherwise it breaks the DomComponents.addComponent (returns always array)
-            var resHtml = result.length === 1 && !cf.returnArray ? result[0] : result;
-            res.html = resHtml;
-            em === null || em === void 0 ? void 0 : em.trigger(ParserHtml_event, { input: input, output: res });
-            return res;
-        },
-        __sanitizeNode: function (node, opts) {
-            var _this = this;
-            var attrs = node.attributes || [];
-            var nodes = node.childNodes || [];
-            var toRemove = [];
-            (0,index_all.each)(attrs, function (attr) {
-                var name = attr.nodeName || '';
-                var value = attr.nodeValue || '';
-                !opts.allowUnsafeAttr && name.startsWith('on') && toRemove.push(name);
-                !opts.allowUnsafeAttrValue && value.startsWith('javascript:') && toRemove.push(name);
-            });
-            toRemove.map(function (name) { return node.removeAttribute(name); });
-            (0,index_all.each)(nodes, function (node) { return _this.__sanitizeNode(node, opts); });
-        },
-    };
-};
-/* harmony default export */ const model_ParserHtml = (ParserHtml);
-
-;// CONCATENATED MODULE: ./src/domain_abstract/model/StyleableModel.ts
-var StyleableModel_extends = (undefined && undefined.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        if (typeof b !== "function" && b !== null)
-            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
-var StyleableModel_assign = (undefined && undefined.__assign) || function () {
-    StyleableModel_assign = Object.assign || function(t) {
-        for (var s, i = 1, n = arguments.length; i < n; i++) {
-            s = arguments[i];
-            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
-                t[p] = s[p];
-        }
-        return t;
-    };
-    return StyleableModel_assign.apply(this, arguments);
-};
-
-
-
-
-var parserHtml = model_ParserHtml();
-var getLastStyleValue = function (value) {
-    return (0,index_all.isArray)(value) ? value[value.length - 1] : value;
-};
-var StyleableModel = /** @class */ (function (_super) {
-    StyleableModel_extends(StyleableModel, _super);
-    function StyleableModel() {
-        return _super !== null && _super.apply(this, arguments) || this;
-    }
-    /**
-     * Forward style string to `parseStyle` to be parse to an object
-     * @param  {string} str
-     * @returns
-     */
-    StyleableModel.prototype.parseStyle = function (str) {
-        return parserHtml.parseStyle(str);
-    };
-    /**
-     * To trigger the style change event on models I have to
-     * pass a new object instance
-     * @param {Object} prop
-     * @return {Object}
-     */
-    StyleableModel.prototype.extendStyle = function (prop) {
-        return StyleableModel_assign(StyleableModel_assign({}, this.getStyle()), prop);
-    };
-    /**
-     * Get style object
-     * @return {Object}
-     */
-    StyleableModel.prototype.getStyle = function (prop) {
-        var style = this.get('style') || {};
-        var result = StyleableModel_assign({}, style);
-        return prop && (0,index_all.isString)(prop) ? result[prop] : result;
-    };
-    /**
-     * Set new style object
-     * @param {Object|string} prop
-     * @param {Object} opts
-     * @return {Object} Applied properties
-     */
-    StyleableModel.prototype.setStyle = function (prop, opts) {
-        var _this = this;
-        if (prop === void 0) { prop = {}; }
-        if (opts === void 0) { opts = {}; }
-        if ((0,index_all.isString)(prop)) {
-            prop = this.parseStyle(prop);
-        }
-        var propOrig = this.getStyle(opts);
-        if (opts.partial || opts.avoidStore) {
-            opts.avoidStore = true;
-            prop.__p = true;
-        }
-        else {
-            delete prop.__p;
-        }
-        var propNew = StyleableModel_assign({}, prop);
-        var newStyle = StyleableModel_assign({}, propNew);
-        // Remove empty style properties
-        (0,index_all.keys)(newStyle).forEach(function (prop) {
-            if (newStyle[prop] === '') {
-                delete newStyle[prop];
-            }
-        });
-        this.set('style', newStyle, opts);
-        var diff = (0,mixins.shallowDiff)(propOrig, propNew);
-        // Delete the property used for partial updates
-        delete diff.__p;
-        (0,index_all.keys)(diff).forEach(function (pr) {
-            // @ts-ignore
-            var em = _this.em;
-            if (opts.noEvent)
-                return;
-            _this.trigger("change:style:".concat(pr));
-            if (em) {
-                em.trigger('styleable:change', _this, pr, opts);
-                em.trigger("styleable:change:".concat(pr), _this, pr, opts);
-            }
-        });
-        return propNew;
-    };
-    /**
-     * Add style property
-     * @param {Object|string} prop
-     * @param {string} value
-     * @example
-     * this.addStyle({color: 'red'});
-     * this.addStyle('color', 'blue');
-     */
-    StyleableModel.prototype.addStyle = function (prop, value, opts) {
-        var _a;
-        if (value === void 0) { value = ''; }
-        if (opts === void 0) { opts = {}; }
-        if (typeof prop == 'string') {
-            prop = (_a = {},
-                _a[prop] = value,
-                _a);
-        }
-        else {
-            opts = value || {};
-        }
-        opts.addStyle = prop;
-        prop = this.extendStyle(prop);
-        this.setStyle(prop, opts);
-    };
-    /**
-     * Remove style property
-     * @param {string} prop
-     */
-    StyleableModel.prototype.removeStyle = function (prop) {
-        var style = this.getStyle();
-        delete style[prop];
-        this.setStyle(style);
-    };
-    /**
-     * Returns string of style properties
-     * @param {Object} [opts={}] Options
-     * @return {String}
-     */
-    StyleableModel.prototype.styleToString = function (opts) {
-        if (opts === void 0) { opts = {}; }
-        var result = [];
-        var style = this.getStyle(opts);
-        var imp = opts.important;
-        var _loop_1 = function (prop) {
-            var important = (0,index_all.isArray)(imp) ? imp.indexOf(prop) >= 0 : imp;
-            var firstChars = prop.substring(0, 2);
-            var isPrivate = firstChars === '__';
-            if (isPrivate)
-                return "continue";
-            var value = style[prop];
-            var values = (0,index_all.isArray)(value) ? value : [value];
-            values.forEach(function (val) {
-                var value = "".concat(val).concat(important ? ' !important' : '');
-                value && result.push("".concat(prop, ":").concat(value, ";"));
-            });
-        };
-        for (var prop in style) {
-            _loop_1(prop);
-        }
-        return result.join('');
-    };
-    StyleableModel.prototype.getSelectors = function () {
-        return (this.get('selectors') || this.get('classes'));
-    };
-    StyleableModel.prototype.getSelectorsString = function (opts) {
-        // @ts-ignore
-        return this.selectorsToString ? this.selectorsToString(opts) : this.getSelectors().getFullString();
-    };
-    return StyleableModel;
-}(common/* Model */.Hn));
-/* harmony default export */ const model_StyleableModel = (StyleableModel);
-
-;// CONCATENATED MODULE: ./src/dom_components/model/Components.ts
-var Components_extends = (undefined && undefined.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        if (typeof b !== "function" && b !== null)
-            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
-var Components_assign = (undefined && undefined.__assign) || function () {
-    Components_assign = Object.assign || function(t) {
-        for (var s, i = 1, n = arguments.length; i < n; i++) {
-            s = arguments[i];
-            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
-                t[p] = s[p];
-        }
-        return t;
-    };
-    return Components_assign.apply(this, arguments);
-};
-var __rest = (undefined && undefined.__rest) || function (s, e) {
-    var t = {};
-    for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
-        t[p] = s[p];
-    if (s != null && typeof Object.getOwnPropertySymbols === "function")
-        for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
-            if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i]))
-                t[p[i]] = s[p[i]];
-        }
-    return t;
-};
-var Components_spreadArray = (undefined && undefined.__spreadArray) || function (to, from, pack) {
-    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
-        if (ar || !(i in from)) {
-            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
-            ar[i] = from[i];
-        }
-    }
-    return to.concat(ar || Array.prototype.slice.call(from));
-};
-
-
-
-var getComponentIds = function (cmp, res) {
-    if (res === void 0) { res = []; }
-    if (!cmp)
-        return [];
-    var cmps = ((0,index_all.isArray)(cmp) || (0,index_all.isFunction)(cmp.map) ? cmp : [cmp]);
-    cmps.map(function (cmp) {
-        res.push(cmp.getId());
-        getComponentIds(cmp.components().models, res);
-    });
-    return res;
-};
-var getComponentsFromDefs = function (items, all, opts) {
-    if (all === void 0) { all = {}; }
-    if (opts === void 0) { opts = {}; }
-    opts.visitedCmps = opts.visitedCmps || {};
-    var visitedCmps = opts.visitedCmps;
-    var itms = (0,index_all.isArray)(items) ? items : [items];
-    return itms.map(function (item) {
-        var _a = item.attributes, attributes = _a === void 0 ? {} : _a, components = item.components, tagName = item.tagName, style = item.style;
-        var id = attributes.id, draggable = attributes.draggable, restAttr = __rest(attributes, ["id", "draggable"]);
-        var result = item;
-        if (id) {
-            // Detect components with the same ID
-            if (!visitedCmps[id]) {
-                visitedCmps[id] = [];
-                // Update the component if exists already
-                if (all[id]) {
-                    result = all[id];
-                    var cmp = result;
-                    tagName && cmp.set({ tagName: tagName }, Components_assign(Components_assign({}, opts), { silent: true }));
-                    (0,index_all.keys)(restAttr).length && cmp.addAttributes(restAttr, Components_assign({}, opts));
-                    (0,index_all.keys)(style).length && cmp.addStyle(style, opts);
-                }
-            }
-            else {
-                // Found another component with the same ID, treat it as a new component
-                visitedCmps[id].push(result);
-                id = model_Component.getNewId(all);
-                result.attributes.id = id;
-            }
-        }
-        if (components) {
-            var newComponents = getComponentsFromDefs(components, all);
-            if ((0,index_all.isFunction)(result.components)) {
-                var cmps = result.components();
-                cmps.length > 0 && cmps.reset(newComponents, opts);
-            }
-            else {
-                result.components = newComponents;
-            }
-        }
-        return result;
-    });
-};
-var Components = /** @class */ (function (_super) {
-    Components_extends(Components, _super);
-    function Components() {
-        return _super !== null && _super.apply(this, arguments) || this;
-    }
-    Components.prototype.initialize = function (models, opt) {
-        if (opt === void 0) { opt = {}; }
-        this.opt = opt;
-        this.listenTo(this, 'add', this.onAdd);
-        this.listenTo(this, 'remove', this.removeChildren);
-        this.listenTo(this, 'reset', this.resetChildren);
-        var em = opt.em, config = opt.config;
-        this.config = config;
-        this.em = em;
-        this.domc = opt.domc || (em === null || em === void 0 ? void 0 : em.Components);
-    };
-    Components.prototype.resetChildren = function (models, opts) {
-        var _this = this;
-        if (opts === void 0) { opts = {}; }
-        var coll = this;
-        var prev = opts.previousModels || [];
-        var toRemove = prev.filter(function (prev) { return !models.get(prev.cid); });
-        var newIds = getComponentIds(models);
-        var idsToKeep = getComponentIds(prev).filter(function (pr) { return newIds.indexOf(pr) >= 0; });
-        opts.keepIds = (opts.keepIds || []).concat(idsToKeep);
-        toRemove.forEach(function (md) { return _this.removeChildren(md, coll, opts); });
-        models.each(function (model) { return _this.onAdd(model); });
-    };
-    Components.prototype.resetFromString = function (input, opts) {
-        var _a, _b;
-        if (input === void 0) { input = ''; }
-        if (opts === void 0) { opts = {}; }
-        opts.keepIds = getComponentIds(this);
-        var _c = this, domc = _c.domc, em = _c.em, parent = _c.parent;
-        var cssc = em === null || em === void 0 ? void 0 : em.Css;
-        var allByID = (domc === null || domc === void 0 ? void 0 : domc.allById()) || {};
-        var parsed = this.parseString(input, opts);
-        var newCmps = getComponentsFromDefs(parsed, allByID, opts);
-        var _d = opts.visitedCmps, visitedCmps = _d === void 0 ? {} : _d;
-        // Clone styles for duplicated components
-        Object.keys(visitedCmps).forEach(function (id) {
-            var cmps = visitedCmps[id];
-            if (cmps.length) {
-                // Get all available rules of the component
-                var rulesToClone_1 = (cssc === null || cssc === void 0 ? void 0 : cssc.getRules("#".concat(id))) || [];
-                if (rulesToClone_1.length) {
-                    cmps.forEach(function (cmp) {
-                        rulesToClone_1.forEach(function (rule) {
-                            var newRule = rule.clone();
-                            // @ts-ignore
-                            newRule.set('selectors', ["#".concat(cmp.attributes.id)]);
-                            cssc.getAll().add(newRule);
-                        });
-                    });
-                }
-            }
-        });
-        this.reset(newCmps, opts);
-        em === null || em === void 0 ? void 0 : em.trigger('component:content', parent, opts, input);
-        (_b = (_a = parent).__checkInnerChilds) === null || _b === void 0 ? void 0 : _b.call(_a);
-    };
-    Components.prototype.removeChildren = function (removed, coll, opts) {
-        var _this = this;
-        if (opts === void 0) { opts = {}; }
-        // Removing a parent component can cause this function
-        // to be called with an already removed child element
-        if (!removed) {
-            return;
-        }
-        var _a = this, domc = _a.domc, em = _a.em;
-        var isTemp = opts.temporary || opts.fromUndo;
-        removed.prevColl = this; // This one is required for symbols
-        if (!isTemp) {
-            // Remove the component from the global list
-            var id_1 = removed.getId();
-            var sels = em.Selectors.getAll();
-            var rules = em.Css.getAll();
-            var canRemoveStyle = (opts.keepIds || []).indexOf(id_1) < 0;
-            var allByID = domc ? domc.allById() : {};
-            delete allByID[id_1];
-            // Remove all component related styles
-            var rulesRemoved = (canRemoveStyle
-                ? rules.remove(rules.filter(function (r) { return r.getSelectors().getFullString() === "#".concat(id_1); }), opts)
-                : []);
-            // Clean selectors
-            sels.remove(rulesRemoved.map(function (rule) { return rule.getSelectors().at(0); }));
-            if (!removed.opt.temporary) {
-                em.Commands.run('core:component-style-clear', {
-                    target: removed,
-                });
-                removed.removed();
-                removed.trigger('removed');
-                em.trigger('component:remove', removed);
-            }
-            var inner_1 = removed.components();
-            inner_1.forEach(function (it) { return _this.removeChildren(it, coll, opts); });
-        }
-        // Remove stuff registered in DomComponents.handleChanges
-        var inner = removed.components();
-        em.stopListening(inner);
-        em.stopListening(removed);
-        em.stopListening(removed.get('classes'));
-        removed.__postRemove();
-    };
-    /** @ts-ignore */
-    Components.prototype.model = function (attrs, options) {
-        var opt = options.collection.opt;
-        var em = opt.em;
-        var model;
-        var df = em.Components.componentTypes;
-        options.em = em;
-        options.config = opt.config;
-        options.componentTypes = df;
-        options.domc = opt.domc;
-        for (var it_1 = 0; it_1 < df.length; it_1++) {
-            var dfId = df[it_1].id;
-            if (dfId == attrs.type) {
-                model = df[it_1].model;
-                break;
-            }
-        }
-        // If no model found, get the default one
-        if (!model) {
-            model = df[df.length - 1].model;
-            em &&
-                attrs.type &&
-                em.logWarning("Component type '".concat(attrs.type, "' not found"), {
-                    attrs: attrs,
-                    options: options,
-                });
-        }
-        return new model(attrs, options);
-    };
-    Components.prototype.parseString = function (value, opt) {
-        if (opt === void 0) { opt = {}; }
-        var _a = this, em = _a.em, domc = _a.domc;
-        var cssc = em.Css;
-        var parsed = em.Parser.parseHtml(value);
-        // We need this to avoid duplicate IDs
-        model_Component.checkId(parsed.html, parsed.css, domc.componentsById, opt);
-        if (parsed.css && cssc && !opt.temporary) {
-            var at = opt.at, optsToPass = __rest(opt, ["at"]);
-            cssc.addCollection(parsed.css, Components_assign(Components_assign({}, optsToPass), { extend: 1 }));
-        }
-        return parsed.html;
-    };
-    /** @ts-ignore */
-    Components.prototype.add = function (models, opt) {
-        var _this = this;
-        if (opt === void 0) { opt = {}; }
-        opt.keepIds = Components_spreadArray(Components_spreadArray([], (opt.keepIds || []), true), getComponentIds(opt.previousModels), true);
-        if ((0,index_all.isString)(models)) {
-            models = this.parseString(models, opt);
-        }
-        else if ((0,index_all.isArray)(models)) {
-            models = Components_spreadArray([], models, true);
-            models.forEach(function (item, index) {
-                if ((0,index_all.isString)(item)) {
-                    var nodes = _this.parseString(item, opt);
-                    models[index] = (0,index_all.isArray)(nodes) && !nodes.length ? null : nodes;
-                }
-            });
-        }
-        var isMult = (0,index_all.isArray)(models);
-        // @ts-ignore
-        models = (isMult ? models : [models]).filter(Boolean).map(function (model) { return _this.processDef(model); });
-        // @ts-ignore
-        models = isMult ? (0,index_all.flatten)(models, 1) : models[0];
-        var result = common/* Collection */.FE.prototype.add.apply(this, [models, opt]);
-        this.__firstAdd = result;
-        return result;
-    };
-    /**
-     * Process component definition.
-     */
-    Components.prototype.processDef = function (mdl) {
-        // Avoid processing Models
-        if (mdl.cid && mdl.ccid)
-            return mdl;
-        var _a = this, em = _a.em, _b = _a.config, config = _b === void 0 ? {} : _b;
-        var processor = config.processor;
-        var model = mdl;
-        if (processor) {
-            model = Components_assign({}, model); // Avoid 'Cannot delete property ...'
-            var modelPr = processor(model);
-            if (modelPr) {
-                (0,index_all.each)(model, function (val, key) { return delete model[key]; });
-                (0,index_all.extend)(model, modelPr);
-            }
-        }
-        // React JSX preset
-        if (model.$$typeof && typeof model.props == 'object') {
-            model = Components_assign({}, model);
-            model.props = Components_assign({}, model.props);
-            var domc = em.Components;
-            var parser = em.Parser;
-            var parserHtml = parser.parserHtml;
-            (0,index_all.each)(model, function (value, key) {
-                if (!(0,index_all.includes)(['props', 'type'], key))
-                    delete model[key];
-            });
-            var props = model.props;
-            var comps = props.children;
-            delete props.children;
-            delete model.props;
-            var res = parserHtml.splitPropsFromAttr(props);
-            model.attributes = res.attrs;
-            if (comps) {
-                model.components = comps;
-            }
-            if (!model.type) {
-                model.type = 'textnode';
-            }
-            else if (!domc.getType(model.type)) {
-                model.tagName = model.type;
-                delete model.type;
-            }
-            (0,index_all.extend)(model, res.props);
-        }
-        return model;
-    };
-    Components.prototype.onAdd = function (model, c, opts) {
-        if (opts === void 0) { opts = {}; }
-        var _a = this, domc = _a.domc, em = _a.em;
-        var style = model.getStyle();
-        var avoidInline = em && em.getConfig().avoidInlineStyle;
-        domc && domc.Component.ensureInList(model);
-        // @ts-ignore
-        if (!(0,index_all.isEmpty)(style) && !avoidInline && em && em.get && em.getConfig().forceClass && !opts.temporary) {
-            var name_1 = model.cid;
-            em.Css.setClassRule(name_1, style);
-            model.setStyle({});
-            model.addClass(name_1);
-        }
-        model.__postAdd({ recursive: true });
-        // this.__onAddEnd();
-    };
-    return Components;
-}(common/* Collection */.FE));
-/* harmony default export */ const model_Components = (Components);
-
-;// CONCATENATED MODULE: ./src/selector_manager/model/Selector.ts
-var Selector_extends = (undefined && undefined.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        if (typeof b !== "function" && b !== null)
-            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
-
-
-var TYPE_CLASS = 1;
-var TYPE_ID = 2;
-/**
- * @typedef Selector
- * @property {String} name Selector name, eg. `my-class`
- * @property {String} label Selector label, eg. `My Class`
- * @property {Number} [type=1] Type of the selector. 1 (class) | 2 (id)
- * @property {Boolean} [active=true] If not active, it's not selectable by the Style Manager.
- * @property {Boolean} [private=false] If true, it can't be seen by the Style Manager, but it will be rendered in the canvas and in export code.
- * @property {Boolean} [protected=false] If true, it can't be removed from the attached component.
- */
-var Selector = /** @class */ (function (_super) {
-    Selector_extends(Selector, _super);
-    /**
-     * @hideconstructor
-     */
-    function Selector(props, opts) {
-        if (opts === void 0) { opts = {}; }
-        var _this = _super.call(this, props, opts) || this;
-        var _a = opts.config, config = _a === void 0 ? {} : _a;
-        var name = _this.get('name');
-        var label = _this.get('label');
-        if (!name) {
-            _this.set('name', label);
-        }
-        else if (!label) {
-            _this.set('label', name);
-        }
-        var namePreEsc = _this.get('name');
-        var escapeName = config.escapeName;
-        var nameEsc = escapeName ? escapeName(namePreEsc) : Selector.escapeName(namePreEsc);
-        _this.set('name', nameEsc);
-        _this.em = opts.em;
-        return _this;
-    }
-    Selector.prototype.defaults = function () {
-        return {
-            name: '',
-            label: '',
-            type: TYPE_CLASS,
-            active: true,
-            private: false,
-            protected: false,
-            _undo: true,
-        };
-    };
-    Selector.prototype.isId = function () {
-        return this.get('type') === TYPE_ID;
-    };
-    Selector.prototype.isClass = function () {
-        return this.get('type') === TYPE_CLASS;
-    };
-    Selector.prototype.getFullName = function (opts) {
-        if (opts === void 0) { opts = {}; }
-        var escape = opts.escape;
-        var name = this.get('name');
-        var pfx = '';
-        switch (this.get('type')) {
-            case TYPE_CLASS:
-                pfx = '.';
-                break;
-            case TYPE_ID:
-                pfx = '#';
-                break;
-        }
-        return pfx + (escape ? escape(name) : name);
-    };
-    /**
-     * Get selector as a string.
-     * @returns {String}
-     * @example
-     * // Given such selector: { name: 'my-selector', type: 2 }
-     * console.log(selector.toString());
-     * // -> `#my-selector`
-     */
-    Selector.prototype.toString = function () {
-        return this.getFullName();
-    };
-    /**
-     * Get selector name.
-     * @returns {String}
-     * @example
-     * // Given such selector: { name: 'my-selector', label: 'My selector' }
-     * console.log(selector.getName());
-     * // -> `my-selector`
-     */
-    Selector.prototype.getName = function () {
-        return this.get('name') || '';
-    };
-    /**
-     * Get selector label.
-     * @returns {String}
-     * @example
-     * // Given such selector: { name: 'my-selector', label: 'My selector' }
-     * console.log(selector.getLabel());
-     * // -> `My selector`
-     */
-    Selector.prototype.getLabel = function () {
-        return this.get('label') || '';
-    };
-    /**
-     * Update selector label.
-     * @param {String} label New label
-     * @example
-     * // Given such selector: { name: 'my-selector', label: 'My selector' }
-     * selector.setLabel('New Label')
-     * console.log(selector.getLabel());
-     * // -> `New Label`
-     */
-    Selector.prototype.setLabel = function (label) {
-        return this.set('label', label);
-    };
-    /**
-     * Get selector active state.
-     * @returns {Boolean}
-     */
-    Selector.prototype.getActive = function () {
-        return !!this.get('active');
-    };
-    /**
-     * Update selector active state.
-     * @param {Boolean} value New active state
-     */
-    Selector.prototype.setActive = function (value) {
-        return this.set('active', value);
-    };
-    Selector.prototype.toJSON = function (opts) {
-        if (opts === void 0) { opts = {}; }
-        var em = this.em;
-        var obj = common/* Model */.Hn.prototype.toJSON.call(this, [opts]);
-        var defaults = (0,index_all.result)(this, 'defaults');
-        if (em && em.getConfig().avoidDefaults) {
-            (0,index_all.forEach)(defaults, function (value, key) {
-                if (obj[key] === value) {
-                    delete obj[key];
-                }
-            });
-            if (obj.label === obj.name) {
-                delete obj.label;
-            }
-            var objLen = (0,index_all.keys)(obj).length;
-            if (objLen === 1 && obj.name) {
-                obj = obj.name;
-            }
-            if (objLen === 2 && obj.name && obj.type) {
-                obj = this.getFullName();
-            }
-        }
-        return obj;
-    };
-    /**
-     * Escape string
-     * @param {string} name
-     * @return {string}
-     * @private
-     */
-    Selector.escapeName = function (name) {
-        return "".concat(name).trim().replace(/([^a-z0-9\w-\\:@\\/]+)/gi, '-');
-    };
-    // Type selectors: https://developer.mozilla.org/it/docs/Web/CSS/CSS_Selectors
-    Selector.TYPE_CLASS = TYPE_CLASS;
-    Selector.TYPE_ID = TYPE_ID;
-    return Selector;
-}(common/* Model */.Hn));
-/* harmony default export */ const model_Selector = (Selector);
-Selector.prototype.idAttribute = 'name';
-
-;// CONCATENATED MODULE: ./src/selector_manager/model/Selectors.ts
-var Selectors_extends = (undefined && undefined.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        if (typeof b !== "function" && b !== null)
-            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
-
-
-
-var combine = function (tail, curr) {
-    return tail.reduce(function (acc, item, n) {
-        return acc.concat(combine(tail.slice(n + 1), "".concat(curr).concat(item)));
-    }, [curr]);
-};
-var Selectors = /** @class */ (function (_super) {
-    Selectors_extends(Selectors, _super);
-    function Selectors() {
-        return _super !== null && _super.apply(this, arguments) || this;
-    }
-    Selectors.prototype.modelId = function (attr) {
-        return "".concat(attr.name, "_").concat(attr.type || model_Selector.TYPE_CLASS);
-    };
-    Selectors.prototype.getStyleable = function () {
-        return (0,index_all.filter)(this.models, function (item) { return item.getActive() && !item.get('private'); });
-    };
-    Selectors.prototype.getValid = function (_a) {
-        var _b = _a === void 0 ? {} : _a, noDisabled = _b.noDisabled;
-        return (0,index_all.filter)(this.models, function (item) { return !item.get('private'); }).filter(function (item) { return (noDisabled ? item.get('active') : 1); });
-    };
-    Selectors.prototype.getFullString = function (collection, opts) {
-        if (opts === void 0) { opts = {}; }
-        var result = [];
-        var coll = collection || this;
-        coll.forEach(function (selector) { return result.push(selector.getFullName(opts)); });
-        opts.sort && result.sort();
-        return result.join('').trim();
-    };
-    Selectors.prototype.getFullName = function (opts) {
-        if (opts === void 0) { opts = {}; }
-        var combination = opts.combination, array = opts.array;
-        var result = [];
-        var sels = this.map(function (s) { return s.getFullName(opts); }).sort();
-        if (combination) {
-            sels.forEach(function (sel, n) {
-                result = result.concat(combine(sels.slice(n + 1), sel));
-            });
-        }
-        else {
-            result = sels;
-        }
-        return (array ? result : combination ? result.join(',') : result.join(''));
-    };
-    return Selectors;
-}(common/* Collection */.FE));
-/* harmony default export */ const model_Selectors = (Selectors);
-Selectors.prototype.model = model_Selector;
-
-;// CONCATENATED MODULE: ./src/abstract/ModuleCategory.ts
-var ModuleCategory_extends = (undefined && undefined.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        if (typeof b !== "function" && b !== null)
-            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
-var ModuleCategory_spreadArray = (undefined && undefined.__spreadArray) || function (to, from, pack) {
-    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
-        if (ar || !(i in from)) {
-            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
-            ar[i] = from[i];
-        }
-    }
-    return to.concat(ar || Array.prototype.slice.call(from));
-};
-
-var Category = /** @class */ (function (_super) {
-    ModuleCategory_extends(Category, _super);
-    function Category() {
-        return _super !== null && _super.apply(this, arguments) || this;
-    }
-    Category.prototype.defaults = function () {
-        return {
-            id: '',
-            label: '',
-            open: true,
-            attributes: {},
-        };
-    };
-    Category.prototype.getId = function () {
-        return this.get('id');
-    };
-    Category.prototype.getLabel = function () {
-        return this.get('label');
-    };
-    return Category;
-}(common/* Model */.Hn));
-/* harmony default export */ const ModuleCategory = (Category);
-function getItemsByCategory(allItems) {
-    var categorySet = new Set();
-    var categoryMap = new Map();
-    var emptyItem = { items: [] };
-    allItems.forEach(function (item) {
-        var category = item.category;
-        if (category) {
-            categorySet.add(category);
-            var categoryItems = categoryMap.get(category);
-            if (categoryItems) {
-                categoryItems.push(item);
-            }
-            else {
-                categoryMap.set(category, [item]);
-            }
-        }
-        else {
-            emptyItem.items.push(item);
-        }
-    });
-    var categoryWithItems = Array.from(categorySet).map(function (category) { return ({
-        category: category,
-        items: categoryMap.get(category) || [],
-    }); });
-    return ModuleCategory_spreadArray(ModuleCategory_spreadArray([], categoryWithItems, true), [emptyItem], false);
-}
-
-;// CONCATENATED MODULE: ./src/abstract/CollectionWithCategories.ts
-var CollectionWithCategories_extends = (undefined && undefined.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        if (typeof b !== "function" && b !== null)
-            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
-
-
-
-
-var CATEGORY_KEY = 'category';
-var CollectionWithCategories = /** @class */ (function (_super) {
-    CollectionWithCategories_extends(CollectionWithCategories, _super);
-    function CollectionWithCategories() {
-        return _super !== null && _super.apply(this, arguments) || this;
-    }
-    CollectionWithCategories.prototype.initCategory = function (model) {
-        var category = model.get(CATEGORY_KEY);
-        var isDefined = category instanceof ModuleCategory;
-        // Ensure the category exists and it's not already initialized
-        if (category && !isDefined) {
-            if ((0,index_all.isString)(category)) {
-                category = { id: category, label: category };
-            }
-            else if ((0,mixins.isObject)(category) && !category.id) {
-                category.id = category.label;
-            }
-            var catModel = this.getCategories().add(category);
-            model.set(CATEGORY_KEY, catModel, { silent: true });
-            return catModel;
-        }
-        else if (isDefined) {
-            var catModel = category;
-            this.getCategories().add(catModel);
-            return catModel;
-        }
-    };
-    return CollectionWithCategories;
-}(common/* Collection */.FE));
-
-
-;// CONCATENATED MODULE: ./src/abstract/ModuleCategories.ts
-var ModuleCategories_extends = (undefined && undefined.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        if (typeof b !== "function" && b !== null)
-            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
-
-
-
-
-var Categories = /** @class */ (function (_super) {
-    ModuleCategories_extends(Categories, _super);
-    function Categories() {
-        return _super !== null && _super.apply(this, arguments) || this;
-    }
-    /** @ts-ignore */
-    Categories.prototype.add = function (model, opts) {
-        var models = (0,index_all.isArray)(model) ? model : [model];
-        models.forEach(function (md) { return md && (md.id = (0,mixins.normalizeKey)("".concat(md.id))); });
-        return _super.prototype.add.call(this, model, opts);
-    };
-    Categories.prototype.get = function (id) {
-        return _super.prototype.get.call(this, (0,index_all.isString)(id) ? (0,mixins.normalizeKey)(id) : id);
-    };
-    return Categories;
-}(common/* Collection */.FE));
-/* harmony default export */ const ModuleCategories = (Categories);
-Categories.prototype.model = ModuleCategory;
-
-;// CONCATENATED MODULE: ./src/trait_manager/types.ts
-/**{START_EVENTS}*/
-var TraitsEvents;
-(function (TraitsEvents) {
-    /**
-     * @event `trait:select` New traits selected (eg. by changing a component).
-     * @example
-     * editor.on('trait:select', ({ traits, component }) => { ... });
-     */
-    TraitsEvents["select"] = "trait:select";
-    /**
-     * @event `trait:value` Trait value updated.
-     * @example
-     * editor.on('trait:value', ({ trait, component, value }) => { ... });
-     */
-    TraitsEvents["value"] = "trait:value";
-    /**
-     * @event `trait:custom` Event to use in case of [custom Trait Manager UI](https://grapesjs.com/docs/modules/Traits.html#custom-trait-manager).
-     * @example
-     * editor.on('trait:custom', ({ container }) => { ... });
-     */
-    TraitsEvents["custom"] = "trait:custom";
-    /**
-     * @event `trait` Catch-all event for all the events mentioned above. An object containing all the available data about the triggered event is passed as an argument to the callback.
-     * @example
-     * editor.on('trait', ({ event, model, ... }) => { ... });
-     */
-    TraitsEvents["all"] = "trait";
-})(TraitsEvents || (TraitsEvents = {}));
-/**{END_EVENTS}*/
-// need this to avoid the TS documentation generator to break
-/* harmony default export */ const trait_manager_types = (TraitsEvents);
-
-;// CONCATENATED MODULE: ./src/trait_manager/model/Trait.ts
-var Trait_extends = (undefined && undefined.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        if (typeof b !== "function" && b !== null)
-            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
-var Trait_assign = (undefined && undefined.__assign) || function () {
-    Trait_assign = Object.assign || function(t) {
-        for (var s, i = 1, n = arguments.length; i < n; i++) {
-            s = arguments[i];
-            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
-                t[p] = s[p];
-        }
-        return t;
-    };
-    return Trait_assign.apply(this, arguments);
-};
-
-
-
-
-
-/**
- * @property {String} id Trait id, eg. `my-trait-id`.
- * @property {String} type Trait type, defines how the trait should be rendered. Possible values: `text` (default), `number`, `select`, `checkbox`, `color`, `button`
- * @property {String} label The trait label to show for the rendered trait.
- * @property {String} name The name of the trait used as a key for the attribute/property. By default, the name is used as attribute name or property in case `changeProp` in enabled.
- * @property {String} default Default value to use in case the value is not defined on the component.
- * @property {String} placeholder Placeholder to show inside the default input (if the UI type allows it).
- * @property {String} [category=''] Trait category.
- * @property {Boolean} changeProp If `true`, the trait value is applied on the component property, otherwise, on component attributes.
- *
- * @module docsjs.Trait
- *
- */
-var Trait = /** @class */ (function (_super) {
-    Trait_extends(Trait, _super);
-    function Trait(prop, em) {
-        var _this = _super.call(this, prop) || this;
-        var _a = _this.attributes, target = _a.target, name = _a.name;
-        !_this.get('id') && _this.set('id', name);
-        if (target) {
-            _this.setTarget(target);
-        }
-        _this.em = em;
-        return _this;
-    }
-    Trait.prototype.defaults = function () {
-        return {
-            type: 'text',
-            label: '',
-            name: '',
-            unit: '',
-            step: 1,
-            value: '',
-            default: '',
-            placeholder: '',
-            category: '',
-            changeProp: false,
-            options: [],
-        };
-    };
-    Object.defineProperty(Trait.prototype, "parent", {
-        get: function () {
-            return this.collection;
-        },
-        enumerable: false,
-        configurable: true
-    });
-    Object.defineProperty(Trait.prototype, "category", {
-        get: function () {
-            var cat = this.get('category');
-            return cat instanceof ModuleCategory ? cat : undefined;
-        },
-        enumerable: false,
-        configurable: true
-    });
-    Object.defineProperty(Trait.prototype, "component", {
-        get: function () {
-            return this.target;
-        },
-        enumerable: false,
-        configurable: true
-    });
-    Object.defineProperty(Trait.prototype, "changeProp", {
-        get: function () {
-            return !!this.get('changeProp');
-        },
-        enumerable: false,
-        configurable: true
-    });
-    Trait.prototype.setTarget = function (component) {
-        if (component) {
-            var _a = this.attributes, name_1 = _a.name, changeProp = _a.changeProp, initValue = _a.value, getValue = _a.getValue;
-            this.target = component;
-            this.unset('target');
-            var targetEvent = changeProp ? "change:".concat(name_1) : "change:attributes:".concat(name_1);
-            this.listenTo(component, targetEvent, this.targetUpdated);
-            var value = initValue ||
-                // Avoid the risk of loops in case the trait has a custom getValue
-                (!getValue ? this.getValue() : undefined);
-            !(0,index_all.isUndefined)(value) && this.set({ value: value }, { silent: true });
-        }
-    };
-    /**
-     * Get the trait id.
-     * @returns {String}
-     */
-    Trait.prototype.getId = function () {
-        return this.get('id');
-    };
-    /**
-     * Get the trait type.
-     * @returns {String}
-     */
-    Trait.prototype.getType = function () {
-        return this.get('type');
-    };
-    /**
-     * Get the trait name.
-     * @returns {String}
-     */
-    Trait.prototype.getName = function () {
-        return this.get('name');
-    };
-    /**
-     * Get the trait label.
-     * @param {Object} [opts={}] Options.
-     * @param {Boolean} [opts.locale=true] Use the locale string from i18n module.
-     * @returns {String}
-     */
-    Trait.prototype.getLabel = function (opts) {
-        var _a;
-        if (opts === void 0) { opts = {}; }
-        var _b = opts.locale, locale = _b === void 0 ? true : _b;
-        var id = this.getId();
-        var name = this.get('label') || this.getName();
-        return (locale && ((_a = this.em) === null || _a === void 0 ? void 0 : _a.t("traitManager.traits.labels.".concat(id)))) || name;
-    };
-    /**
-     * Get the trait value.
-     * The value is taken from component attributes by default or from properties if the trait has the `changeProp` enabled.
-     * @param {Object} [opts={}] Options.
-     * @param {Boolean} [opts.useType=false] Get the value based on type (eg. the checkbox will always return a boolean).
-     * @returns {any}
-     */
-    Trait.prototype.getValue = function (opts) {
-        return this.getTargetValue(opts);
-    };
-    /**
-     * Update the trait value.
-     * The value is applied on component attributes by default or on properties if the trait has the `changeProp` enabled.
-     * @param {any} value Value of the trait.
-     * @param {Object} [opts={}] Options.
-     * @param {Boolean} [opts.partial] If `true` the update won't be considered complete (not stored in UndoManager).
-     */
-    Trait.prototype.setValue = function (value, opts) {
-        var _this = this;
-        if (opts === void 0) { opts = {}; }
-        var _a = this, component = _a.component, em = _a.em;
-        var partial = opts.partial;
-        var valueOpts = {};
-        var setValue = this.attributes.setValue;
-        if (setValue) {
-            setValue({
-                value: value,
-                component: component,
-                editor: em === null || em === void 0 ? void 0 : em.getEditor(),
-                trait: this,
-                partial: !!partial,
-                options: opts,
-                emitUpdate: function () { return _this.targetUpdated(); },
-            });
-            return;
-        }
-        if (partial) {
-            valueOpts.avoidStore = true;
-        }
-        this.setTargetValue(value, valueOpts);
-    };
-    /**
-     * Get default value.
-     */
-    Trait.prototype.getDefault = function () {
-        return this.get('default');
-    };
-    /**
-     * Get trait options.
-     */
-    Trait.prototype.getOptions = function () {
-        return this.get('options') || [];
-    };
-    /**
-     * Get current selected option or by id.
-     * @param {String} [id] Option id.
-     * @returns {Object | null}
-     */
-    Trait.prototype.getOption = function (id) {
-        var _this = this;
-        var idSel = (0,mixins.isDef)(id) ? id : this.getValue();
-        return this.getOptions().filter(function (o) { return _this.getOptionId(o) === idSel; })[0];
-    };
-    /**
-     * Get the option id from the option object.
-     * @param {Object} option Option object
-     * @returns {String} Option id
-     */
-    Trait.prototype.getOptionId = function (option) {
-        return option.id || option.value;
-    };
-    /**
-     * Get option label.
-     * @param {String|Object} id Option id or the option object
-     * @param {Object} [opts={}] Options
-     * @param {Boolean} [opts.locale=true] Use the locale string from i18n module
-     * @returns {String} Option label
-     */
-    Trait.prototype.getOptionLabel = function (id, opts) {
-        var _a;
-        if (opts === void 0) { opts = {}; }
-        var _b = opts.locale, locale = _b === void 0 ? true : _b;
-        var option = ((0,index_all.isString)(id) ? this.getOption(id) : id);
-        var optId = this.getOptionId(option);
-        var label = option.label || option.name || optId;
-        var propName = this.getName();
-        return (locale && ((_a = this.em) === null || _a === void 0 ? void 0 : _a.t("traitManager.traits.options.".concat(propName, ".").concat(optId)))) || label;
-    };
-    /**
-     * Get category label.
-     * @param {Object} [opts={}] Options.
-     * @param {Boolean} [opts.locale=true] Use the locale string from i18n module.
-     * @returns {String}
-     */
-    Trait.prototype.getCategoryLabel = function (opts) {
-        if (opts === void 0) { opts = {}; }
-        var _a = this, em = _a.em, category = _a.category;
-        var _b = opts.locale, locale = _b === void 0 ? true : _b;
-        var catId = category === null || category === void 0 ? void 0 : category.getId();
-        var catLabel = category === null || category === void 0 ? void 0 : category.getLabel();
-        return (locale && (em === null || em === void 0 ? void 0 : em.t("traitManager.categories.".concat(catId)))) || catLabel || '';
-    };
-    /**
-     * Run the trait command (used on the button trait type).
-     */
-    Trait.prototype.runCommand = function () {
-        var em = this.em;
-        var command = this.attributes.command;
-        if (command && em) {
-            if ((0,index_all.isString)(command)) {
-                return em.Commands.run(command);
-            }
-            else {
-                return command(em.Editor, this);
-            }
-        }
-    };
-    Trait.prototype.props = function () {
-        return this.attributes;
-    };
-    Trait.prototype.targetUpdated = function () {
-        var _a = this, component = _a.component, em = _a.em;
-        var value = this.getTargetValue({ useType: true });
-        this.set({ value: value }, { fromTarget: 1 });
-        var props = { trait: this, component: component, value: value };
-        component.trigger(trait_manager_types.value, props);
-        em === null || em === void 0 ? void 0 : em.trigger(trait_manager_types.value, props);
-        // This should be triggered for any trait prop change
-        em === null || em === void 0 ? void 0 : em.trigger('trait:update', props);
-    };
-    Trait.prototype.getTargetValue = function (opts) {
-        if (opts === void 0) { opts = {}; }
-        var _a = this, component = _a.component, em = _a.em;
-        var name = this.getName();
-        var getValue = this.get('getValue');
-        var value;
-        if (getValue) {
-            value = getValue({
-                editor: em === null || em === void 0 ? void 0 : em.getEditor(),
-                trait: this,
-                component: component,
-            });
-        }
-        else if (this.changeProp) {
-            value = component.get(name);
-        }
-        else {
-            value = component.getAttributes()[name];
-        }
-        if (opts.useType) {
-            var type = this.getType();
-            if (type === 'checkbox') {
-                var _b = this.attributes, valueTrue = _b.valueTrue, valueFalse = _b.valueFalse;
-                if (!(0,index_all.isUndefined)(valueTrue) && valueTrue === value) {
-                    value = true;
-                }
-                else if (!(0,index_all.isUndefined)(valueFalse) && valueFalse === value) {
-                    value = false;
-                }
-            }
-        }
-        return !(0,index_all.isUndefined)(value) ? value : '';
-    };
-    Trait.prototype.setTargetValue = function (value, opts) {
-        var _a;
-        if (opts === void 0) { opts = {}; }
-        var _b = this, component = _b.component, attributes = _b.attributes;
-        var name = this.getName();
-        if ((0,index_all.isUndefined)(value))
-            return;
-        var valueToSet = value;
-        if (value === 'false') {
-            valueToSet = false;
-        }
-        else if (value === 'true') {
-            valueToSet = true;
-        }
-        if (this.getType() === 'checkbox') {
-            var valueTrue = attributes.valueTrue, valueFalse = attributes.valueFalse;
-            if (valueToSet && !(0,index_all.isUndefined)(valueTrue)) {
-                valueToSet = valueTrue;
-            }
-            if (!valueToSet && !(0,index_all.isUndefined)(valueFalse)) {
-                valueToSet = valueFalse;
-            }
-        }
-        var props = (_a = {}, _a[name] = valueToSet, _a);
-        // This is required for the UndoManager to properly detect changes
-        props.__p = opts.avoidStore ? null : undefined;
-        if (this.changeProp) {
-            component.set(props, opts);
-        }
-        else {
-            component.addAttributes(props, opts);
-        }
-    };
-    Trait.prototype.setValueFromInput = function (value, final, opts) {
-        if (final === void 0) { final = true; }
-        if (opts === void 0) { opts = {}; }
-        var toSet = { value: value };
-        this.set(toSet, Trait_assign(Trait_assign({}, opts), { avoidStore: 1 }));
-        // Have to trigger the change
-        if (final) {
-            this.set('value', '', opts);
-            this.set(toSet, opts);
-        }
-    };
-    Trait.prototype.getInitValue = function () {
-        var component = this.component;
-        var name = this.getName();
-        var value;
-        if (component) {
-            var attrs = component.get('attributes');
-            value = this.changeProp ? component.get(name) : attrs[name];
-        }
-        return value || this.get('value') || this.get('default');
-    };
-    return Trait;
-}(common/* Model */.Hn));
-/* harmony default export */ const model_Trait = (Trait);
-
-;// CONCATENATED MODULE: ./src/trait_manager/model/TraitFactory.ts
-
-
-var TraitFactory = /** @class */ (function () {
-    function TraitFactory(config) {
-        if (config === void 0) { config = {}; }
-        this.config = config;
-    }
-    /**
-     * Build props object by their name
-     */
-    TraitFactory.prototype.build = function (prop, em) {
-        return (0,index_all.isString)(prop) ? this.buildFromString(prop, em) : new model_Trait(prop, em);
-    };
-    TraitFactory.prototype.buildFromString = function (name, em) {
-        var obj = {
-            name: name,
-            type: 'text',
-        };
-        switch (name) {
-            case 'target':
-                obj.type = 'select';
-                obj.default = false;
-                obj.options = this.config.optionsTarget;
-                break;
-        }
-        return new model_Trait(obj, em);
-    };
-    return TraitFactory;
-}());
-/* harmony default export */ const model_TraitFactory = (TraitFactory);
-
-;// CONCATENATED MODULE: ./src/trait_manager/model/Traits.ts
-var Traits_extends = (undefined && undefined.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        if (typeof b !== "function" && b !== null)
-            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
-
-
-
-
-
-var Traits = /** @class */ (function (_super) {
-    Traits_extends(Traits, _super);
-    function Traits(coll, options) {
-        var _this = _super.call(this, coll) || this;
-        _this.categories = new ModuleCategories();
-        _this.em = options.em;
-        _this.on('add', _this.handleAdd);
-        _this.on('reset', _this.handleReset);
-        var tm = _this.module;
-        var tmOpts = tm === null || tm === void 0 ? void 0 : tm.getConfig();
-        _this.tf = new model_TraitFactory(tmOpts);
-        return _this;
-    }
-    Object.defineProperty(Traits.prototype, "module", {
-        get: function () {
-            return this.em.Traits;
-        },
-        enumerable: false,
-        configurable: true
-    });
-    Traits.prototype.getCategories = function () {
-        return this.categories;
-    };
-    Traits.prototype.handleReset = function (coll, _a) {
-        var _b = _a === void 0 ? {} : _a, _c = _b.previousModels, previousModels = _c === void 0 ? [] : _c;
-        previousModels.forEach(function (model) { return model.trigger('remove'); });
-    };
-    Traits.prototype.handleAdd = function (model) {
-        model.em = this.em;
-        var target = this.target;
-        if (target) {
-            model.target = target;
-        }
-        this.initCategory(model);
-    };
-    Traits.prototype.setTarget = function (target) {
-        this.target = target;
-        this.models.forEach(function (trait) { return trait.setTarget(target); });
-    };
-    Traits.prototype.add = function (models, opt) {
-        if (models == undefined) {
-            return undefined;
-        }
-        var _a = this, target = _a.target, em = _a.em;
-        if ((0,index_all.isArray)(models)) {
-            var traits = [];
-            for (var i = 0, len = models.length; i < len; i++) {
-                var trait_1 = models[i];
-                traits[i] = trait_1 instanceof model_Trait ? trait_1 : this.tf.build(trait_1, em);
-                traits[i].setTarget(target);
-            }
-            return _super.prototype.add.call(this, traits, opt);
-        }
-        var trait = models instanceof model_Trait ? models : this.tf.build(models, em);
-        trait.setTarget(target);
-        return _super.prototype.add.call(this, trait, opt);
-    };
-    return Traits;
-}(CollectionWithCategories));
-/* harmony default export */ const model_Traits = (Traits);
-
-;// CONCATENATED MODULE: ./src/dom_components/model/Component.ts
-var Component_extends = (undefined && undefined.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        if (typeof b !== "function" && b !== null)
-            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
-var Component_assign = (undefined && undefined.__assign) || function () {
-    Component_assign = Object.assign || function(t) {
-        for (var s, i = 1, n = arguments.length; i < n; i++) {
-            s = arguments[i];
-            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
-                t[p] = s[p];
-        }
-        return t;
-    };
-    return Component_assign.apply(this, arguments);
-};
-var Component_rest = (undefined && undefined.__rest) || function (s, e) {
-    var t = {};
-    for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
-        t[p] = s[p];
-    if (s != null && typeof Object.getOwnPropertySymbols === "function")
-        for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
-            if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i]))
-                t[p[i]] = s[p[i]];
-        }
-    return t;
-};
-var Component_spreadArray = (undefined && undefined.__spreadArray) || function (to, from, pack) {
-    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
-        if (ar || !(i in from)) {
-            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
-            ar[i] = from[i];
-        }
-    }
-    return to.concat(ar || Array.prototype.slice.call(from));
-};
-
-
-
-
-
-
-
-
-var escapeRegExp = function (str) {
-    return str.replace(/[|\\{}()[\]^$+*?.]/g, '\\$&');
-};
-var avoidInline = function (em) { return !!(em === null || em === void 0 ? void 0 : em.getConfig().avoidInlineStyle); };
-var eventDrag = 'component:drag';
-var keySymbols = '__symbols';
-var keySymbol = '__symbol';
-var keySymbolOvrd = '__symbol_ovrd';
-var keyUpdate = 'component:update';
-var keyUpdateInside = "".concat(keyUpdate, "-inside");
-/**
- * The Component object represents a single node of our template structure, so when you update its properties the changes are
- * immediately reflected on the canvas and in the code to export (indeed, when you ask to export the code we just go through all
- * the tree of nodes).
- * An example on how to update properties:
- * ```js
- * component.set({
- *  tagName: 'span',
- *  attributes: { ... },
- *  removable: false,
- * });
- * component.get('tagName');
- * // -> 'span'
- * ```
- *
- * [Component]: component.html
- *
- * @property {String} [type=''] Component type, eg. `text`, `image`, `video`, etc.
- * @property {String} [tagName='div'] HTML tag of the component, eg. `span`. Default: `div`
- * @property {Object} [attributes={}] Key-value object of the component's attributes, eg. `{ title: 'Hello' }` Default: `{}`
- * @property {String} [name=''] Name of the component. Will be used, for example, in Layers and badges
- * @property {Boolean} [removable=true] When `true` the component is removable from the canvas, default: `true`
- * @property {Boolean|String|Function} [draggable=true] Indicates if it's possible to drag the component inside others.
- *  You can also specify a query string to indentify elements,
- *  eg. `'.some-class[title=Hello], [data-gjs-type=column]'` means you can drag the component only inside elements
- *  containing `some-class` class and `Hello` title, and `column` components. In the case of a function, target and destination components are passed as arguments, return a Boolean to indicate if the drag is possible. Default: `true`
- * @property {Boolean|String|Function} [droppable=true] Indicates if it's possible to drop other components inside. You can use
- * a query string as with `draggable`. In the case of a function, target and destination components are passed as arguments, return a Boolean to indicate if the drop is possible. Default: `true`
- * @property {Boolean} [badgable=true] Set to false if you don't want to see the badge (with the name) over the component. Default: `true`
- * @property {Boolean|Array<String>} [stylable=true] True if it's possible to style the component.
- * You can also indicate an array of CSS properties which is possible to style, eg. `['color', 'width']`, all other properties
- * will be hidden from the style manager. Default: `true`
- * @property {Array<String>} [stylable-require=[]] Indicate an array of style properties to show up which has been marked as `toRequire`. Default: `[]`
- * @property {Array<String>} [unstylable=[]] Indicate an array of style properties which should be hidden from the style manager. Default: `[]`
- * @property {Boolean} [highlightable=true] It can be highlighted with 'dotted' borders if true. Default: `true`
- * @property {Boolean} [copyable=true] True if it's possible to clone the component. Default: `true`
- * @property {Boolean} [resizable=false] Indicates if it's possible to resize the component. It's also possible to pass an object as [options for the Resizer](https://github.com/GrapesJS/grapesjs/blob/master/src/utils/Resizer.ts). Default: `false`
- * @property {Boolean} [editable=false] Allow to edit the content of the component (used on Text components). Default: `false`
- * @property {Boolean} [layerable=true] Set to `false` if you need to hide the component inside Layers. Default: `true`
- * @property {Boolean} [selectable=true] Allow component to be selected when clicked. Default: `true`
- * @property {Boolean} [hoverable=true] Shows a highlight outline when hovering on the element if `true`. Default: `true`
- * @property {Boolean} [locked] Disable the selection of the component and its children in the canvas. You can unlock a children by setting its locked property to `false`. Default: `undefined`
- * @property {Boolean} [void=false] This property is used by the HTML exporter as void elements don't have closing tags, eg. `<br/>`, `<hr/>`, etc. Default: `false`
- * @property {Object} [style={}] Component default style, eg. `{ width: '100px', height: '100px', 'background-color': 'red' }`
- * @property {String} [styles=''] Component related styles, eg. `.my-component-class { color: red }`
- * @property {String} [content=''] Content of the component (not escaped) which will be appended before children rendering. Default: `''`
- * @property {String} [icon=''] Component's icon, this string will be inserted before the name (in Layers and badge), eg. it can be an HTML string '<i class="fa fa-square-o"></i>'. Default: `''`
- * @property {String|Function} [script=''] Component's javascript. More about it [here](/modules/Components-js.html). Default: `''`
- * @property {String|Function} [script-export=''] You can specify javascript available only in export functions (eg. when you get the HTML).
- * If this property is defined it will overwrite the `script` one (in export functions). Default: `''`
- * @property {Array<Object|String>} [traits=''] Component's traits. More about it [here](/modules/Traits.html). Default: `['id', 'title']`
- * @property {Array<String>} [propagate=[]] Indicates an array of properties which will be inhereted by all NEW appended children.
- *  For example if you create a component likes this: `{ removable: false, draggable: false, propagate: ['removable', 'draggable'] }`
- *  and append some new component inside, the new added component will get the exact same properties indicated in the `propagate` array (and the `propagate` property itself). Default: `[]`
- * @property {Array<Object>} [toolbar=null] Set an array of items to show up inside the toolbar when the component is selected (move, clone, delete).
- * Eg. `toolbar: [ { attributes: {class: 'fa fa-arrows'}, command: 'tlb-move' }, ... ]`.
- * By default, when `toolbar` property is falsy the editor will add automatically commands `core:component-exit` (select parent component, added if there is one), `tlb-move` (added if `draggable`) , `tlb-clone` (added if `copyable`), `tlb-delete` (added if `removable`).
- * @property {Collection<Component>} [components=null] Children components. Default: `null`
- * @property {Object} [delegate=null] Delegate commands to other components. Available commands `remove` | `move` | `copy` | `select`. eg. `{ remove: (cmp) => cmp.closestType('other-type') }`
- *
- * @module docsjs.Component
- */
-var Component = /** @class */ (function (_super) {
-    Component_extends(Component, _super);
-    function Component() {
-        return _super !== null && _super.apply(this, arguments) || this;
-    }
-    Object.defineProperty(Component.prototype, "defaults", {
-        /**
-         * @private
-         * @ts-ignore */
-        get: function () {
-            var _a;
-            return _a = {
-                    tagName: 'div',
-                    type: '',
-                    name: '',
-                    removable: true,
-                    draggable: true,
-                    droppable: true,
-                    badgable: true,
-                    stylable: true,
-                    'stylable-require': '',
-                    'style-signature': '',
-                    unstylable: '',
-                    highlightable: true,
-                    copyable: true,
-                    resizable: false,
-                    editable: false,
-                    layerable: true,
-                    selectable: true,
-                    hoverable: true,
-                    void: false,
-                    state: '',
-                    status: '',
-                    content: '',
-                    icon: '',
-                    style: '',
-                    styles: '',
-                    classes: '',
-                    script: '',
-                    'script-props': '',
-                    'script-export': '',
-                    attributes: {},
-                    traits: ['id', 'title'],
-                    propagate: '',
-                    dmode: '',
-                    toolbar: null,
-                    delegate: null
-                },
-                _a[keySymbol] = 0,
-                _a[keySymbols] = 0,
-                _a[keySymbolOvrd] = 0,
-                _a._undo = true,
-                _a._undoexc = ['status', 'open'],
-                _a;
-        },
-        enumerable: false,
-        configurable: true
-    });
-    Object.defineProperty(Component.prototype, "classes", {
-        get: function () {
-            return this.get('classes');
-        },
-        enumerable: false,
-        configurable: true
-    });
-    Object.defineProperty(Component.prototype, "traits", {
-        get: function () {
-            return this.get('traits');
-        },
-        enumerable: false,
-        configurable: true
-    });
-    Object.defineProperty(Component.prototype, "content", {
-        get: function () {
-            var _a;
-            return (_a = this.get('content')) !== null && _a !== void 0 ? _a : '';
-        },
-        enumerable: false,
-        configurable: true
-    });
-    Object.defineProperty(Component.prototype, "toolbar", {
-        get: function () {
-            return this.get('toolbar') || [];
-        },
-        enumerable: false,
-        configurable: true
-    });
-    Object.defineProperty(Component.prototype, "resizable", {
-        get: function () {
-            return this.get('resizable');
-        },
-        enumerable: false,
-        configurable: true
-    });
-    Object.defineProperty(Component.prototype, "delegate", {
-        get: function () {
-            return this.get('delegate');
-        },
-        enumerable: false,
-        configurable: true
-    });
-    Object.defineProperty(Component.prototype, "locked", {
-        get: function () {
-            return this.get('locked');
-        },
-        enumerable: false,
-        configurable: true
-    });
-    /**
-     * Hook method, called once the model is created
-     */
-    Component.prototype.init = function () { };
-    /**
-     * Hook method, called when the model has been updated (eg. updated some model's property)
-     * @param {String} property Property name, if triggered after some property update
-     * @param {*} value Property value, if triggered after some property update
-     * @param {*} previous Property previous value, if triggered after some property update
-     */
-    Component.prototype.updated = function (property, value, previous) { };
-    /**
-     * Hook method, called once the model has been removed
-     */
-    Component.prototype.removed = function () { };
-    Component.prototype.initialize = function (props, opt) {
-        var _this = this;
-        if (props === void 0) { props = {}; }
-        if (opt === void 0) { opt = {}; }
-        (0,index_all.bindAll)(this, '__upSymbProps', '__upSymbCls', '__upSymbComps');
-        var em = opt.em;
-        // Propagate properties from parent if indicated
-        var parent = this.parent();
-        var parentAttr = parent === null || parent === void 0 ? void 0 : parent.attributes;
-        var propagate = this.get('propagate');
-        propagate && this.set('propagate', (0,index_all.isArray)(propagate) ? propagate : [propagate]);
-        if (parentAttr && parentAttr.propagate && !propagate) {
-            var newAttr_1 = {};
-            var toPropagate = parentAttr.propagate;
-            toPropagate.forEach(function (prop) { return (newAttr_1[prop] = parent.get(prop)); });
-            newAttr_1.propagate = toPropagate;
-            this.set(Component_assign(Component_assign({}, newAttr_1), props));
-        }
-        // Check void elements
-        if (opt && opt.config && opt.config.voidElements.indexOf(this.get('tagName')) >= 0) {
-            this.set('void', true);
-        }
-        opt.em = em;
-        this.opt = opt;
-        this.em = em;
-        this.frame = opt.frame;
-        this.config = opt.config || {};
-        this.set('attributes', Component_assign(Component_assign({}, ((0,index_all.result)(this, 'defaults').attributes || {})), (this.get('attributes') || {})));
-        this.ccid = Component.createId(this, opt);
-        this.initClasses();
-        this.initComponents();
-        this.initTraits();
-        this.initToolbar();
-        this.initScriptProps();
-        this.listenTo(this, 'change:script', this.scriptUpdated);
-        this.listenTo(this, 'change:tagName', this.tagUpdated);
-        this.listenTo(this, 'change:attributes', this.attrUpdated);
-        this.listenTo(this, 'change:attributes:id', this._idUpdated);
-        this.on('change:toolbar', this.__emitUpdateTlb);
-        this.on('change', this.__onChange);
-        this.on(keyUpdateInside, this.__propToParent);
-        this.set('status', '');
-        this.views = [];
-        // Register global updates for collection properties
-        ['classes', 'traits', 'components'].forEach(function (name) {
-            var events = "add remove ".concat(name !== 'components' ? 'change' : '');
-            _this.listenTo(_this.get(name), events.trim(), function () {
-                var args = [];
-                for (var _i = 0; _i < arguments.length; _i++) {
-                    args[_i] = arguments[_i];
-                }
-                return _this.emitUpdate.apply(_this, Component_spreadArray([name], args, false));
-            });
-        });
-        if (!opt.temporary) {
-            // Add component styles
-            var cssc = em && em.Css;
-            var _a = this.attributes, styles = _a.styles, type = _a.type;
-            if (styles && cssc) {
-                cssc.addCollection(styles, { avoidUpdateStyle: true }, { group: "cmp:".concat(type) });
-            }
-            this.__postAdd();
-            this.init();
-            this.__isSymbolOrInst() && this.__initSymb();
-            em && em.trigger('component:create', this);
-        }
-    };
-    Component.prototype.__postAdd = function (opts) {
-        if (opts === void 0) { opts = {}; }
-        var em = this.em;
-        var um = em === null || em === void 0 ? void 0 : em.UndoManager;
-        var comps = this.components();
-        if (um && !this.__hasUm) {
-            um.add(comps);
-            um.add(this.getSelectors());
-            this.__hasUm = true;
-        }
-        opts.recursive && comps.map(function (c) { return c.__postAdd(opts); });
-    };
-    Component.prototype.__postRemove = function () {
-        var em = this.em;
-        var um = em === null || em === void 0 ? void 0 : em.get('UndoManager');
-        if (um) {
-            um.remove(this.components());
-            um.remove(this.getSelectors());
-            delete this.__hasUm;
-        }
-    };
-    Component.prototype.__onChange = function (m, opts) {
-        var _this = this;
-        var changed = this.changedAttributes() || {};
-        (0,index_all.keys)(changed).forEach(function (prop) { return _this.emitUpdate(prop); });
-        ['status', 'open', 'toolbar', 'traits'].forEach(function (name) { return delete changed[name]; });
-        // Propagate component prop changes
-        if (!(0,mixins.isEmptyObj)(changed)) {
-            this.__changesUp(opts);
-            this.__propSelfToParent({ component: this, changed: changed, options: opts });
-        }
-    };
-    Component.prototype.__onStyleChange = function (newStyles) {
-        var _this = this;
-        var em = this.em;
-        if (!em)
-            return;
-        var event = 'component:styleUpdate';
-        var styleKeys = (0,index_all.keys)(newStyles);
-        var pros = { style: newStyles };
-        em.trigger(event, this, pros);
-        styleKeys.forEach(function (key) { return em.trigger("".concat(event, ":").concat(key), _this, pros); });
-    };
-    Component.prototype.__changesUp = function (opts) {
-        var _a = this, em = _a.em, frame = _a.frame;
-        [frame, em].forEach(function (md) { return md && md.changesUp(opts); });
-    };
-    Component.prototype.__propSelfToParent = function (props) {
-        this.trigger(keyUpdate, props);
-        this.__propToParent(props);
-    };
-    Component.prototype.__propToParent = function (props) {
-        var parent = this.parent();
-        parent && parent.trigger(keyUpdateInside, props);
-    };
-    Component.prototype.__emitUpdateTlb = function () {
-        this.emitUpdate('toolbar');
-    };
-    /**
-     * Check component's type
-     * @param  {string}  type Component type
-     * @return {Boolean}
-     * @example
-     * component.is('image')
-     * // -> false
-     */
-    Component.prototype.is = function (type) {
-        return !!(this.get('type') == type);
-    };
-    /**
-     * Return all the propeties
-     * @returns {Object}
-     */
-    Component.prototype.props = function () {
-        return this.attributes;
-    };
-    /**
-     * Get the index of the component in the parent collection.
-     * @return {Number}
-     */
-    Component.prototype.index = function () {
-        var collection = this.collection;
-        return collection ? collection.indexOf(this) : 0;
-    };
-    /**
-     * Change the drag mode of the component.
-     * To get more about this feature read: https://github.com/GrapesJS/grapesjs/issues/1936
-     * @param {String} value Drag mode, options: `'absolute'` | `'translate'` | `''`
-     * @returns {this}
-     */
-    Component.prototype.setDragMode = function (value) {
-        return this.set('dmode', value);
-    };
-    /**
-     * Get the drag mode of the component.
-     * @returns {String} Drag mode value, options: `'absolute'` | `'translate'` | `''`
-     */
-    Component.prototype.getDragMode = function () {
-        return this.get('dmode') || '';
-    };
-    /**
-     * Find inner components by query string.
-     * **ATTENTION**: this method works only with already rendered component
-     * @param  {String} query Query string
-     * @return {Array} Array of components
-     * @example
-     * component.find('div > .class');
-     * // -> [Component, Component, ...]
-     */
-    Component.prototype.find = function (query) {
-        var _a;
-        var result = [];
-        var $els = (_a = this.view) === null || _a === void 0 ? void 0 : _a.$el.find(query);
-        $els === null || $els === void 0 ? void 0 : $els.each(function (i) {
-            var $el = $els.eq(i);
-            var model = $el.data('model');
-            model && result.push(model);
-        });
-        return result;
-    };
-    /**
-     * Find all inner components by component type.
-     * The advantage of this method over `find` is that you can use it
-     * also before rendering the component
-     * @param {String} type Component type
-     * @returns {Array<Component>}
-     * @example
-     * const allImages = component.findType('image');
-     * console.log(allImages[0]) // prints the first found component
-     */
-    Component.prototype.findType = function (type) {
-        var result = [];
-        var find = function (components) {
-            return components.forEach(function (item) {
-                item.is(type) && result.push(item);
-                find(item.components());
-            });
-        };
-        find(this.components());
-        return result;
-    };
-    /**
-     * Find the closest parent component by query string.
-     * **ATTENTION**: this method works only with already rendered component
-     * @param  {string} query Query string
-     * @return {Component}
-     * @example
-     * component.closest('div.some-class');
-     * // -> Component
-     */
-    Component.prototype.closest = function (query) {
-        var _a;
-        var result = (_a = this.view) === null || _a === void 0 ? void 0 : _a.$el.closest(query);
-        return (result === null || result === void 0 ? void 0 : result.length) ? result.data('model') : undefined;
-    };
-    /**
-     * Find the closest parent component by its type.
-     * The advantage of this method over `closest` is that you can use it
-     * also before rendering the component
-     * @param {String} type Component type
-     * @returns {Component} Found component, otherwise `undefined`
-     * @example
-     * const Section = component.closestType('section');
-     * console.log(Section);
-     */
-    Component.prototype.closestType = function (type) {
-        var parent = this.parent();
-        while (parent && !parent.is(type)) {
-            parent = parent.parent();
-        }
-        return parent;
-    };
-    /**
-     * The method returns a Boolean value indicating whether the passed
-     * component is a descendant of a given component
-     * @param {Component} component Component to check
-     * @returns {Boolean}
-     */
-    Component.prototype.contains = function (component) {
-        var result = !1;
-        if (!component)
-            return result;
-        var contains = function (components) {
-            !result &&
-                components.forEach(function (item) {
-                    if (item === component)
-                        result = !0;
-                    !result && contains(item.components());
-                });
-        };
-        contains(this.components());
-        return result;
-    };
-    /**
-     * Once the tag is updated I have to rerender the element
-     * @private
-     */
-    Component.prototype.tagUpdated = function () {
-        this.trigger('rerender');
-    };
-    /**
-     * Replace a component with another one
-     * @param {String|Component} el Component or HTML string
-     * @param {Object} [opts={}] Options for the append action
-     * @returns {Array<Component>} New replaced components
-     * @example
-     * const result = component.replaceWith('<div>Some new content</div>');
-     * // result -> [Component]
-     */
-    Component.prototype.replaceWith = function (el, opts) {
-        if (opts === void 0) { opts = {}; }
-        var coll = this.collection;
-        var at = coll.indexOf(this);
-        coll.remove(this);
-        var result = coll.add(el, Component_assign(Component_assign({}, opts), { at: at }));
-        return (0,index_all.isArray)(result) ? result : [result];
-    };
-    /**
-     * Emit changes for each updated attribute
-     * @private
-     */
-    Component.prototype.attrUpdated = function (m, v, opts) {
-        var _this = this;
-        if (opts === void 0) { opts = {}; }
-        var attrs = this.get('attributes');
-        // Handle classes
-        var classes = attrs.class;
-        classes && this.setClass(classes);
-        delete attrs.class;
-        // Handle style
-        var style = attrs.style;
-        style && this.setStyle(style);
-        delete attrs.style;
-        var attrPrev = Component_assign({}, this.previous('attributes'));
-        var diff = (0,mixins.shallowDiff)(attrPrev, this.get('attributes'));
-        (0,index_all.keys)(diff).forEach(function (pr) { return _this.trigger("change:attributes:".concat(pr), _this, diff[pr], opts); });
-    };
-    /**
-     * Update attributes of the component
-     * @param {Object} attrs Key value attributes
-     * @param {Object} options Options for the model update
-     * @return {this}
-     * @example
-     * component.setAttributes({ id: 'test', 'data-key': 'value' });
-     */
-    Component.prototype.setAttributes = function (attrs, opts) {
-        if (opts === void 0) { opts = {}; }
-        this.set('attributes', Component_assign({}, attrs), opts);
-        return this;
-    };
-    /**
-     * Add attributes to the component
-     * @param {Object} attrs Key value attributes
-     * @param {Object} options Options for the model update
-     * @return {this}
-     * @example
-     * component.addAttributes({ 'data-key': 'value' });
-     */
-    Component.prototype.addAttributes = function (attrs, opts) {
-        if (opts === void 0) { opts = {}; }
-        return this.setAttributes(Component_assign(Component_assign({}, this.getAttributes({ noClass: true })), attrs), opts);
-    };
-    /**
-     * Remove attributes from the component
-     * @param {String|Array<String>} attrs Array of attributes to remove
-     * @param {Object} options Options for the model update
-     * @return {this}
-     * @example
-     * component.removeAttributes('some-attr');
-     * component.removeAttributes(['some-attr1', 'some-attr2']);
-     */
-    Component.prototype.removeAttributes = function (attrs, opts) {
-        if (attrs === void 0) { attrs = []; }
-        if (opts === void 0) { opts = {}; }
-        var attrArr = Array.isArray(attrs) ? attrs : [attrs];
-        var compAttr = this.getAttributes();
-        attrArr.map(function (i) { return delete compAttr[i]; });
-        return this.setAttributes(compAttr, opts);
-    };
-    /**
-     * Get the style of the component
-     * @return {Object}
-     */
-    Component.prototype.getStyle = function (options, optsAdd) {
-        if (options === void 0) { options = {}; }
-        if (optsAdd === void 0) { optsAdd = {}; }
-        var em = this.em;
-        var prop = (0,index_all.isString)(options) ? options : '';
-        var opts = prop ? optsAdd : options;
-        if (avoidInline(em) && !opts.inline) {
-            var state = em.get('state');
-            var cc = em.Css;
-            var rule = cc.getIdRule(this.getId(), Component_assign({ state: state }, opts));
-            this.rule = rule;
-            if (rule) {
-                return rule.getStyle(prop);
-            }
-        }
-        return _super.prototype.getStyle.call(this, prop);
-    };
-    /**
-     * Set the style on the component
-     * @param {Object} prop Key value style object
-     * @return {Object}
-     * @example
-     * component.setStyle({ color: 'red' });
-     */
-    Component.prototype.setStyle = function (prop, opts) {
-        var _this = this;
-        if (prop === void 0) { prop = {}; }
-        if (opts === void 0) { opts = {}; }
-        var _a = this, opt = _a.opt, em = _a.em;
-        if (avoidInline(em) && !opt.temporary && !opts.inline) {
-            var style = this.get('style') || {};
-            prop = (0,index_all.isString)(prop) ? this.parseStyle(prop) : prop;
-            prop = Component_assign(Component_assign({}, prop), style);
-            var state = em.get('state');
-            var cc = em.Css;
-            var propOrig = this.getStyle(opts);
-            this.rule = cc.setIdRule(this.getId(), prop, Component_assign({ state: state }, opts));
-            var diff = (0,mixins.shallowDiff)(propOrig, prop);
-            this.set('style', '', { silent: true });
-            (0,index_all.keys)(diff).forEach(function (pr) { return _this.trigger("change:style:".concat(pr)); });
-        }
-        else {
-            prop = _super.prototype.setStyle.apply(this, arguments);
-        }
-        if (!opt.temporary) {
-            this.__onStyleChange(opts.addStyle || prop);
-        }
-        return prop;
-    };
-    /**
-     * Return all component's attributes
-     * @return {Object}
-     */
-    Component.prototype.getAttributes = function (opts) {
-        if (opts === void 0) { opts = {}; }
-        var em = this.em;
-        var classes = [];
-        var attributes = Component_assign({}, this.get('attributes'));
-        var sm = em === null || em === void 0 ? void 0 : em.Selectors;
-        var id = this.getId();
-        // Add classes
-        if (opts.noClass) {
-            delete attributes.class;
-        }
-        else {
-            this.classes.forEach(function (cls) { return classes.push((0,index_all.isString)(cls) ? cls : cls.getName()); });
-            classes.length && (attributes.class = classes.join(' '));
-        }
-        // Add style
-        if (!opts.noStyle) {
-            var style = this.get('style');
-            if ((0,mixins.isObject)(style) && !(0,mixins.isEmptyObj)(style)) {
-                attributes.style = this.styleToString({ inline: 1 });
-            }
-        }
-        // Check if we need an ID on the component
-        if (!(0,index_all.has)(attributes, 'id')) {
-            var addId = false;
-            // If we don't rely on inline styling we have to check
-            // for the ID selector
-            if (avoidInline(em) || !(0,index_all.isEmpty)(this.getStyle())) {
-                addId = !!(sm === null || sm === void 0 ? void 0 : sm.get(id, sm.Selector.TYPE_ID));
-            }
-            if (
-            // Symbols should always have an id
-            this.__getSymbol() ||
-                this.__getSymbols() ||
-                // Components with script should always have an id
-                this.get('script-export') ||
-                this.get('script')) {
-                addId = true;
-            }
-            if (addId) {
-                attributes.id = id;
-            }
-        }
-        return attributes;
-    };
-    /**
-     * Add classes
-     * @param {Array<String>|String} classes Array or string of classes
-     * @return {Array} Array of added selectors
-     * @example
-     * model.addClass('class1');
-     * model.addClass('class1 class2');
-     * model.addClass(['class1', 'class2']);
-     * // -> [SelectorObject, ...]
-     */
-    Component.prototype.addClass = function (classes) {
-        var added = this.em.Selectors.addClass(classes);
-        return this.classes.add(added);
-    };
-    /**
-     * Set classes (resets current collection)
-     * @param {Array<String>|String} classes Array or string of classes
-     * @return {Array} Array of added selectors
-     * @example
-     * model.setClass('class1');
-     * model.setClass('class1 class2');
-     * model.setClass(['class1', 'class2']);
-     * // -> [SelectorObject, ...]
-     */
-    Component.prototype.setClass = function (classes) {
-        this.classes.reset();
-        return this.addClass(classes);
-    };
-    /**
-     * Remove classes
-     * @param {Array<String>|String} classes Array or string of classes
-     * @return {Array} Array of removed selectors
-     * @example
-     * model.removeClass('class1');
-     * model.removeClass('class1 class2');
-     * model.removeClass(['class1', 'class2']);
-     * // -> [SelectorObject, ...]
-     */
-    Component.prototype.removeClass = function (classes) {
-        var removed = [];
-        classes = (0,index_all.isArray)(classes) ? classes : [classes];
-        var selectors = this.classes;
-        var type = model_Selector.TYPE_CLASS;
-        classes.forEach(function (classe) {
-            var classes = classe.split(' ');
-            classes.forEach(function (name) {
-                var selector = selectors.where({ name: name, type: type })[0];
-                selector && removed.push(selectors.remove(selector));
-            });
-        });
-        return removed;
-    };
-    /**
-     * Returns component's classes as an array of strings
-     * @return {Array}
-     */
-    Component.prototype.getClasses = function () {
-        var attr = this.getAttributes();
-        var classStr = attr.class;
-        return classStr ? classStr.split(' ') : [];
-    };
-    Component.prototype.__logSymbol = function (type, toUp, opts) {
-        if (opts === void 0) { opts = {}; }
-        var symbol = this.__getSymbol();
-        var symbols = this.__getSymbols();
-        if (!symbol && !symbols)
-            return;
-        this.em.log(type, { model: this, toUp: toUp, context: 'symbols', opts: opts });
-    };
-    Component.prototype.__initSymb = function () {
-        if (this.__symbReady)
-            return;
-        this.on('change', this.__upSymbProps);
-        this.__symbReady = true;
-    };
-    Component.prototype.__isSymbol = function () {
-        return (0,index_all.isArray)(this.get(keySymbols));
-    };
-    Component.prototype.__isSymbolOrInst = function () {
-        return !!(this.__isSymbol() || this.get(keySymbol));
-    };
-    Component.prototype.__isSymbolTop = function () {
-        var parent = this.parent();
-        var symb = this.__isSymbolOrInst();
-        return symb && (!parent || (parent && !parent.__isSymbol() && !parent.__getSymbol()));
-    };
-    Component.prototype.__isSymbolNested = function () {
-        if (!this.__isSymbolOrInst() || this.__isSymbolTop())
-            return false;
-        var symbTopSelf = (this.__isSymbol() ? this : this.__getSymbol()).__getSymbTop();
-        var symbTop = this.__getSymbTop();
-        var symbTopMain = symbTop.__isSymbol() ? symbTop : symbTop.__getSymbol();
-        return symbTopMain !== symbTopSelf;
-    };
-    Component.prototype.__getAllById = function () {
-        var em = this.em;
-        return em ? em.Components.allById() : {};
-    };
-    Component.prototype.__getSymbol = function () {
-        var symb = this.get(keySymbol);
-        if (symb && (0,index_all.isString)(symb)) {
-            var ref = this.__getAllById()[symb];
-            if (ref) {
-                symb = ref;
-                this.set(keySymbol, ref);
-            }
-            else {
-                symb = 0;
-            }
-        }
-        return symb;
-    };
-    Component.prototype.__getSymbols = function () {
-        var _this = this;
-        var symbs = this.get(keySymbols);
-        if (symbs && (0,index_all.isArray)(symbs)) {
-            symbs.forEach(function (symb, idx) {
-                if (symb && (0,index_all.isString)(symb)) {
-                    symbs[idx] = _this.__getAllById()[symb];
-                }
-            });
-            symbs = symbs.filter(function (symb) { return symb && !(0,index_all.isString)(symb); });
-        }
-        return symbs;
-    };
-    Component.prototype.__isSymbOvrd = function (prop) {
-        if (prop === void 0) { prop = ''; }
-        var ovrd = this.get(keySymbolOvrd);
-        var prp = prop.split(':')[0];
-        var props = prop !== prp ? [prop, prp] : [prop];
-        return ovrd === true || ((0,index_all.isArray)(ovrd) && props.some(function (p) { return ovrd.indexOf(p) >= 0; }));
-    };
-    Component.prototype.__getSymbToUp = function (opts) {
-        var _this = this;
-        if (opts === void 0) { opts = {}; }
-        var result = [];
-        var changed = opts.changed;
-        if (opts.fromInstance ||
-            opts.noPropagate ||
-            opts.fromUndo ||
-            // Avoid updating others if the current component has override
-            (changed && this.__isSymbOvrd(changed))) {
-            return result;
-        }
-        var symbols = this.__getSymbols() || [];
-        var symbol = this.__getSymbol();
-        var all = symbol ? Component_spreadArray([symbol], (symbol.__getSymbols() || []), true) : symbols;
-        result = all
-            .filter(function (s) { return s !== _this; })
-            // Avoid updating those with override
-            .filter(function (s) { return !(changed && s.__isSymbOvrd(changed)); });
-        return result;
-    };
-    Component.prototype.__getSymbTop = function (opts) {
-        var result = this;
-        var parent = this.parent(opts);
-        while (parent && (parent.__isSymbol() || parent.__getSymbol())) {
-            result = parent;
-            parent = parent.parent(opts);
-        }
-        return result;
-    };
-    Component.prototype.__upSymbProps = function (m, opts) {
-        var _this = this;
-        if (opts === void 0) { opts = {}; }
-        var changed = this.changedAttributes() || {};
-        var attrs = changed.attributes || {};
-        delete changed.status;
-        delete changed.open;
-        delete changed[keySymbols];
-        delete changed[keySymbol];
-        delete changed[keySymbolOvrd];
-        delete changed.attributes;
-        delete attrs.id;
-        if (!(0,mixins.isEmptyObj)(attrs))
-            changed.attributes = attrs;
-        if (!(0,mixins.isEmptyObj)(changed)) {
-            var toUp = this.__getSymbToUp(opts);
-            // Avoid propagating overrides to other symbols
-            (0,index_all.keys)(changed).map(function (prop) {
-                if (_this.__isSymbOvrd(prop))
-                    delete changed[prop];
-            });
-            this.__logSymbol('props', toUp, { opts: opts, changed: changed });
-            toUp.forEach(function (child) {
-                var propsChanged = Component_assign({}, changed);
-                // Avoid updating those with override
-                (0,index_all.keys)(propsChanged).map(function (prop) {
-                    if (child.__isSymbOvrd(prop))
-                        delete propsChanged[prop];
-                });
-                child.set(propsChanged, Component_assign({ fromInstance: _this }, opts));
-            });
-        }
-    };
-    Component.prototype.__upSymbCls = function (m, c, opts) {
-        var _this = this;
-        if (opts === void 0) { opts = {}; }
-        var toUp = this.__getSymbToUp(opts);
-        this.__logSymbol('classes', toUp, { opts: opts });
-        toUp.forEach(function (child) {
-            // @ts-ignore This will propagate the change up to __upSymbProps
-            child.set('classes', _this.get('classes'), { fromInstance: _this });
-        });
-        this.__changesUp(opts);
-    };
-    Component.prototype.__upSymbComps = function (m, c, o) {
-        var _this = this;
-        var optUp = o || c || {};
-        var fromInstance = optUp.fromInstance, fromUndo = optUp.fromUndo;
-        var toUpOpts = { fromInstance: fromInstance, fromUndo: fromUndo };
-        var isTemp = m.opt.temporary;
-        // Reset
-        if (!o) {
-            var toUp = this.__getSymbToUp(Component_assign(Component_assign({}, toUpOpts), { changed: 'components:reset' }));
-            // @ts-ignore
-            var cmps_1 = m.models;
-            this.__logSymbol('reset', toUp, { components: cmps_1 });
-            toUp.forEach(function (symb) {
-                var newMods = cmps_1.map(function (mod) { return mod.clone({ symbol: true }); });
-                // @ts-ignore
-                symb.components().reset(newMods, Component_assign({ fromInstance: _this }, c));
-            });
-            // Add
-        }
-        else if (o.add) {
-            var addedInstances_1 = [];
-            var isMainSymb_1 = !!this.__getSymbols();
-            var toUp = this.__getSymbToUp(Component_assign(Component_assign({}, toUpOpts), { changed: 'components:add' }));
-            if (toUp.length) {
-                var addSymb = m.__getSymbol();
-                addedInstances_1 = (addSymb ? addSymb.__getSymbols() : m.__getSymbols()) || [];
-                addedInstances_1 = Component_spreadArray([], addedInstances_1, true);
-                addedInstances_1.push(addSymb ? addSymb : m);
-            }
-            !isTemp &&
-                this.__logSymbol('add', toUp, {
-                    opts: o,
-                    addedInstances: addedInstances_1.map(function (c) { return c.cid; }),
-                    added: m.cid,
-                });
-            // Here, before appending a new symbol, I have to ensure there are no previously
-            // created symbols (eg. used mainly when drag components around)
-            toUp.forEach(function (symb) {
-                var symbTop = symb.__getSymbTop();
-                var symbPrev = addedInstances_1.filter(function (addedInst) {
-                    var addedTop = addedInst.__getSymbTop({ prev: 1 });
-                    return symbTop && addedTop && addedTop === symbTop;
-                })[0];
-                var toAppend = symbPrev || m.clone({ symbol: true, symbolInv: isMainSymb_1 });
-                symb.append(toAppend, Component_assign({ fromInstance: _this }, o));
-            });
-            // Remove
-        }
-        else {
-            // Remove instance reference from the symbol
-            var symb = m.__getSymbol();
-            symb &&
-                !o.temporary &&
-                symb.set(keySymbols, symb.__getSymbols().filter(function (i) { return i !== m; }));
-            // Propagate remove only if the component is an inner symbol
-            if (!m.__isSymbolTop()) {
-                var changed_1 = 'components:remove';
-                var index_1 = o.index;
-                var parent_1 = m.parent();
-                var opts_1 = Component_assign({ fromInstance: m }, o);
-                var isSymbNested = m.__isSymbolNested();
-                var toUpFn = function (symb) {
-                    var symbPrnt = symb.parent();
-                    symbPrnt && !symbPrnt.__isSymbOvrd(changed_1) && symb.remove(opts_1);
-                };
-                // Check if the parent allows the removing
-                var toUp = !(parent_1 === null || parent_1 === void 0 ? void 0 : parent_1.__isSymbOvrd(changed_1)) ? m.__getSymbToUp(toUpOpts) : [];
-                if (isSymbNested) {
-                    toUp = parent_1 === null || parent_1 === void 0 ? void 0 : parent_1.__getSymbToUp(Component_assign(Component_assign({}, toUpOpts), { changed: changed_1 }));
-                    toUpFn = function (symb) {
-                        var toRemove = symb.components().at(index_1);
-                        toRemove && toRemove.remove(Component_assign({ fromInstance: parent_1 }, opts_1));
-                    };
-                }
-                !isTemp &&
-                    this.__logSymbol('remove', toUp, {
-                        opts: o,
-                        removed: m.cid,
-                        isSymbNested: isSymbNested,
-                    });
-                toUp.forEach(toUpFn);
-            }
-        }
-        this.__changesUp(optUp);
-    };
-    Component.prototype.initClasses = function (m, c, opts) {
-        if (opts === void 0) { opts = {}; }
-        var event = 'change:classes';
-        var _a = this.get('attributes') || {}, attrCls = _a.class, restAttr = Component_rest(_a, ["class"]);
-        var toListen = [this, event, this.initClasses];
-        var cls = this.get('classes') || attrCls || [];
-        var clsArr = (0,index_all.isString)(cls) ? cls.split(' ') : cls;
-        this.stopListening.apply(this, toListen);
-        var classes = this.normalizeClasses(clsArr);
-        var selectors = new model_Selectors([]);
-        this.set('classes', selectors, opts);
-        selectors.add(classes);
-        selectors.on('add remove reset', this.__upSymbCls);
-        // Clear attributes from classes
-        attrCls && classes.length && this.set('attributes', restAttr);
-        // @ts-ignore
-        this.listenTo.apply(this, toListen);
-        return this;
-    };
-    Component.prototype.initComponents = function () {
-        var event = 'change:components';
-        var toListen = [this, event, this.initComponents];
-        this.stopListening.apply(this, toListen);
-        // Have to add components after the init, otherwise the parent
-        // is not visible
-        var comps = new model_Components([], this.opt);
-        comps.parent = this;
-        var components = this.get('components');
-        var addChild = !this.opt.avoidChildren;
-        this.set('components', comps);
-        addChild && components && comps.add((0,index_all.isFunction)(components) ? components(this) : components, this.opt);
-        comps.on('add remove reset', this.__upSymbComps);
-        // @ts-ignore
-        this.listenTo.apply(this, toListen);
-        return this;
-    };
-    Component.prototype.initTraits = function (changed) {
-        var em = this.em;
-        var event = 'change:traits';
-        this.off(event, this.initTraits);
-        this.__loadTraits();
-        var attrs = Component_assign({}, this.get('attributes'));
-        var traits = this.traits;
-        traits.each(function (trait) {
-            if (!trait.changeProp) {
-                var name_1 = trait.getName();
-                var value = trait.getInitValue();
-                if (name_1 && value)
-                    attrs[name_1] = value;
-            }
-        });
-        traits.length && this.set('attributes', attrs);
-        this.on(event, this.initTraits);
-        changed && em && em.trigger('component:toggled');
-        return this;
-    };
-    Component.prototype.initScriptProps = function () {
-        if (this.opt.temporary)
-            return;
-        var prop = 'script-props';
-        var toListen = ["change:".concat(prop), this.initScriptProps];
-        this.off.apply(this, toListen);
-        var prevProps = this.previous(prop) || [];
-        var newProps = this.get(prop) || [];
-        var prevPropsEv = prevProps.map(function (e) { return "change:".concat(e); }).join(' ');
-        var newPropsEv = newProps.map(function (e) { return "change:".concat(e); }).join(' ');
-        prevPropsEv && this.off(prevPropsEv, this.__scriptPropsChange);
-        newPropsEv && this.on(newPropsEv, this.__scriptPropsChange);
-        // @ts-ignore
-        this.on.apply(this, toListen);
-    };
-    Component.prototype.__scriptPropsChange = function (m, v, opts) {
-        if (opts === void 0) { opts = {}; }
-        if (opts.avoidStore)
-            return;
-        this.trigger('rerender');
-    };
-    /**
-     * Add new component children
-     * @param  {Component|String} components Component to add
-     * @param {Object} [opts={}] Options for the append action
-     * @return {Array} Array of appended components
-     * @example
-     * someComponent.get('components').length // -> 0
-     * const videoComponent = someComponent.append('<video></video><div></div>')[0];
-     * // This will add 2 components (`video` and `div`) to your `someComponent`
-     * someComponent.get('components').length // -> 2
-     * // You can pass components directly
-     * otherComponent.append(otherComponent2);
-     * otherComponent.append([otherComponent3, otherComponent4]);
-     * // append at specific index (eg. at the beginning)
-     * someComponent.append(otherComponent, { at: 0 });
-     */
-    Component.prototype.append = function (components, opts) {
-        if (opts === void 0) { opts = {}; }
-        var compArr = (0,index_all.isArray)(components) ? Component_spreadArray([], components, true) : [components];
-        var toAppend = compArr.map(function (comp) {
-            if ((0,index_all.isString)(comp)) {
-                return comp;
-            }
-            else {
-                // I have to remove components from the old container before adding them to a new one
-                comp.collection && comp.collection.remove(comp, { temporary: true });
-                return comp;
-            }
-        });
-        var result = this.components().add(toAppend, opts);
-        return (0,index_all.isArray)(result) ? result : [result];
-    };
-    /**
-     * Set new collection if `components` are provided, otherwise the
-     * current collection is returned
-     * @param  {Component|Component[]|String} [components] Component Definitions or HTML string
-     * @param {Object} [opts={}] Options, same as in `Component.append()`
-     * @returns {Collection|Array<[Component]>}
-     * @example
-     * // Set new collection
-     * component.components('<span></span><div></div>');
-     * // Get current collection
-     * const collection = component.components();
-     * console.log(collection.length);
-     * // -> 2
-     */
-    Component.prototype.components = function (components, opts) {
-        if (opts === void 0) { opts = {}; }
-        var coll = this.get('components');
-        if ((0,index_all.isUndefined)(components)) {
-            return coll;
-        }
-        else {
-            coll.reset(undefined, opts);
-            return components ? this.append(components, opts) : [];
-        }
-    };
-    /**
-     * If exists, returns the child component at specific index.
-     * @param {Number} index Index of the component to return
-     * @returns {[Component]|null}
-     * @example
-     * // Return first child
-     * component.getChildAt(0);
-     * // Return second child
-     * component.getChildAt(1);
-     */
-    Component.prototype.getChildAt = function (index) {
-        return this.components().at(index || 0) || undefined;
-    };
-    /**
-     * If exists, returns the last child component.
-     * @returns {[Component]|null}
-     * @example
-     * const lastChild = component.getLastChild();
-     */
-    Component.prototype.getLastChild = function () {
-        var children = this.components();
-        return children.at(children.length - 1) || null;
-    };
-    /**
-     * Remove all inner components
-     * * @return {this}
-     */
-    Component.prototype.empty = function (opts) {
-        if (opts === void 0) { opts = {}; }
-        this.components().reset(undefined, opts);
-        return this;
-    };
-    /**
-     * Get the parent component, if exists
-     * @return {Component|null}
-     * @example
-     * component.parent();
-     * // -> Component
-     */
-    Component.prototype.parent = function (opts) {
-        if (opts === void 0) { opts = {}; }
-        var coll = this.collection || (opts.prev && this.prevColl);
-        return coll ? coll.parent : undefined;
-    };
-    /**
-     * Return all parents of the component.
-     * @returns {Array<Component>}
-     */
-    Component.prototype.parents = function () {
-        var parent = this.parent();
-        return parent ? [parent].concat(parent.parents()) : [];
-    };
-    /**
-     * Script updated
-     * @private
-     */
-    Component.prototype.scriptUpdated = function () {
-        this.set('scriptUpdated', 1);
-    };
-    /**
-     * Init toolbar
-     * @private
-     */
-    Component.prototype.initToolbar = function () {
-        var em = this.em;
-        var model = this;
-        var ppfx = (em && em.getConfig().stylePrefix) || '';
-        if (!model.get('toolbar') && em) {
-            var tb = [];
-            model.collection &&
-                tb.push({
-                    label: em.getIcon('arrowUp'),
-                    command: function (ed) { return ed.runCommand('core:component-exit', { force: 1 }); },
-                });
-            model.get('draggable') &&
-                tb.push({
-                    attributes: { class: "".concat(ppfx, "no-touch-actions"), draggable: true },
-                    label: em.getIcon('move'),
-                    command: 'tlb-move',
-                });
-            model.get('copyable') &&
-                tb.push({
-                    label: em.getIcon('copy'),
-                    command: 'tlb-clone',
-                });
-            model.get('removable') &&
-                tb.push({
-                    label: em.getIcon('delete'),
-                    command: 'tlb-delete',
-                });
-            model.set('toolbar', tb);
-        }
-    };
-    Component.prototype.__loadTraits = function (tr, opts) {
-        if (opts === void 0) { opts = {}; }
-        var traitsI = tr || this.traits;
-        if (!(traitsI instanceof model_Traits)) {
-            traitsI = ((0,index_all.isFunction)(traitsI) ? traitsI(this) : traitsI);
-            var traits = new model_Traits([], this.opt);
-            traits.setTarget(this);
-            if (traitsI.length) {
-                traitsI.forEach(function (tr) { return tr.attributes && delete tr.attributes.value; });
-                traits.add(traitsI);
-            }
-            this.set({ traits: traits }, opts);
-        }
-        return this;
-    };
-    /**
-     * Get traits.
-     * @returns {Array<Trait>}
-     * @example
-     * const traits = component.getTraits();
-     * console.log(traits);
-     * // [Trait, Trait, Trait, ...]
-     */
-    Component.prototype.getTraits = function () {
-        this.__loadTraits();
-        return Component_spreadArray([], this.traits.models, true);
-    };
-    /**
-     * Replace current collection of traits with a new one.
-     * @param {Array<Object>} traits Array of trait definitions
-     * @returns {Array<Trait>}
-     * @example
-     * const traits = component.setTraits([{ type: 'checkbox', name: 'disabled'}, ...]);
-     * console.log(traits);
-     * // [Trait, ...]
-     */
-    Component.prototype.setTraits = function (traits) {
-        var tr = (0,index_all.isArray)(traits) ? traits : [traits];
-        // @ts-ignore
-        this.set({ traits: tr });
-        return this.getTraits();
-    };
-    /**
-     * Get the trait by id/name.
-     * @param  {String} id The `id` or `name` of the trait
-     * @return {Trait|null} Trait getModelToStyle
-     * @example
-     * const traitTitle = component.getTrait('title');
-     * traitTitle && traitTitle.set('label', 'New label');
-     */
-    Component.prototype.getTrait = function (id) {
-        return (this.getTraits().filter(function (trait) {
-            return trait.get('id') === id || trait.get('name') === id;
-        })[0] || null);
-    };
-    /**
-     * Update a trait.
-     * @param  {String} id The `id` or `name` of the trait
-     * @param  {Object} props Object with the props to update
-     * @return {this}
-     * @example
-     * component.updateTrait('title', {
-     *  type: 'select',
-     *  options: [ 'Option 1', 'Option 2' ],
-     * });
-     */
-    Component.prototype.updateTrait = function (id, props) {
-        var _a;
-        var trait = this.getTrait(id);
-        trait && trait.set(props);
-        (_a = this.em) === null || _a === void 0 ? void 0 : _a.trigger('component:toggled');
-        return this;
-    };
-    /**
-     * Get the trait position index by id/name. Useful in case you want to
-     * replace some trait, at runtime, with something else.
-     * @param  {String} id The `id` or `name` of the trait
-     * @return {Number} Index position of the current trait
-     * @example
-     * const traitTitle = component.getTraitIndex('title');
-     * console.log(traitTitle); // 1
-     */
-    Component.prototype.getTraitIndex = function (id) {
-        var trait = this.getTrait(id);
-        return trait ? this.traits.indexOf(trait) : -1;
-    };
-    /**
-     * Remove trait/s by id/s.
-     * @param  {String|Array<String>} id The `id`/`name` of the trait (or an array)
-     * @return {Array<Trait>} Array of removed traits
-     * @example
-     * component.removeTrait('title');
-     * component.removeTrait(['title', 'id']);
-     */
-    Component.prototype.removeTrait = function (id) {
-        var _this = this;
-        var _a;
-        var ids = (0,index_all.isArray)(id) ? id : [id];
-        var toRemove = ids.map(function (id) { return _this.getTrait(id); });
-        var traits = this.traits;
-        var removed = toRemove.length ? traits.remove(toRemove) : [];
-        (_a = this.em) === null || _a === void 0 ? void 0 : _a.trigger('component:toggled');
-        return (0,index_all.isArray)(removed) ? removed : [removed];
-    };
-    /**
-     * Add new trait/s.
-     * @param  {String|Object|Array<String|Object>} trait Trait to add (or an array of traits)
-     * @param  {Options} opts Options for the add
-     * @return {Array<Trait>} Array of added traits
-     * @example
-     * component.addTrait('title', { at: 1 }); // Add title trait (`at` option is the position index)
-     * component.addTrait({
-     *  type: 'checkbox',
-     *  name: 'disabled',
-     * });
-     * component.addTrait(['title', {...}, ...]);
-     */
-    Component.prototype.addTrait = function (trait, opts) {
-        var _a;
-        if (opts === void 0) { opts = {}; }
-        this.__loadTraits();
-        var added = this.traits.add(trait, opts);
-        (_a = this.em) === null || _a === void 0 ? void 0 : _a.trigger('component:toggled');
-        return (0,index_all.isArray)(added) ? added : [added];
-    };
-    /**
-     * Normalize input classes from array to array of objects
-     * @param {Array} arr
-     * @return {Array}
-     * @private
-     */
-    Component.prototype.normalizeClasses = function (arr) {
-        var res = [];
-        var em = this.em;
-        var clm = em === null || em === void 0 ? void 0 : em.Selectors;
-        if (!clm)
-            return [];
-        // @ts-ignore
-        if (arr.models)
-            return Component_spreadArray([], arr.models, true);
-        arr.forEach(function (val) { return res.push(clm.add(val)); });
-        return res;
-    };
-    /**
-     * Override original clone method
-     * @private
-     */
-    Component.prototype.clone = function (opt) {
-        if (opt === void 0) { opt = {}; }
-        var em = this.em;
-        var attr = Component_assign({}, this.attributes);
-        var opts = Component_assign({}, this.opt);
-        var id = this.getId();
-        var cssc = em === null || em === void 0 ? void 0 : em.Css;
-        attr.attributes = Component_assign({}, attr.attributes);
-        delete attr.attributes.id;
-        // @ts-ignore
-        attr.components = [];
-        // @ts-ignore
-        attr.classes = [];
-        // @ts-ignore
-        attr.traits = [];
-        if (this.__isSymbolTop()) {
-            opt.symbol = true;
-        }
-        this.get('components').each(function (md, i) {
-            // @ts-ignore
-            attr.components[i] = md.clone(Component_assign(Component_assign({}, opt), { _inner: 1 }));
-        });
-        this.get('traits').each(function (md, i) {
-            // @ts-ignore
-            attr.traits[i] = md.clone();
-        });
-        this.get('classes').each(function (md, i) {
-            // @ts-ignore
-            attr.classes[i] = md.get('name');
-        });
-        attr.status = '';
-        // @ts-ignore
-        opts.collection = null;
-        // @ts-ignore
-        var cloned = new this.constructor(attr, opts);
-        // Clone component specific rules
-        var newId = "#".concat(cloned.getId());
-        var rulesToClone = cssc ? cssc.getRules("#".concat(id)) : [];
-        rulesToClone.forEach(function (rule) {
-            var newRule = rule.clone();
-            // @ts-ignore
-            newRule.set('selectors', [newId]);
-            cssc.getAll().add(newRule);
-        });
-        // Symbols
-        // If I clone an inner symbol, I have to reset it
-        cloned.set(keySymbols, 0);
-        var symbol = this.__getSymbol();
-        var symbols = this.__getSymbols();
-        if (!opt.symbol && (symbol || symbols)) {
-            cloned.set(keySymbol, 0);
-            cloned.set(keySymbols, 0);
-        }
-        else if (symbol) {
-            // Contains already a reference to a symbol
-            symbol.set(keySymbols, Component_spreadArray(Component_spreadArray([], symbol.__getSymbols(), true), [cloned], false));
-            cloned.__initSymb();
-        }
-        else if (opt.symbol) {
-            // Request to create a symbol
-            if (this.__isSymbol()) {
-                // Already a symbol, cloned should be an instance
-                this.set(keySymbols, Component_spreadArray(Component_spreadArray([], symbols, true), [cloned], false));
-                cloned.set(keySymbol, this);
-                cloned.__initSymb();
-            }
-            else if (opt.symbolInv) {
-                // Inverted, cloned is the instance, the origin is the main symbol
-                this.set(keySymbols, [cloned]);
-                cloned.set(keySymbol, this);
-                [this, cloned].map(function (i) { return i.__initSymb(); });
-            }
-            else {
-                // Cloned becomes the main symbol
-                cloned.set(keySymbols, [this]);
-                [this, cloned].map(function (i) { return i.__initSymb(); });
-                this.set(keySymbol, cloned);
-            }
-        }
-        var event = 'component:clone';
-        em && em.trigger(event, cloned);
-        this.trigger(event, cloned);
-        return cloned;
-    };
-    /**
-     * Get the name of the component.
-     * @param {Object} [opts={}] Options
-     * @param {Boolean} [opts.noCustom] Avoid custom name assigned to the component.
-     * @returns {String}
-     * */
-    Component.prototype.getName = function (opts) {
-        if (opts === void 0) { opts = {}; }
-        var em = this.em;
-        var _a = this.attributes, type = _a.type, tagName = _a.tagName, name = _a.name;
-        var defName = type || tagName;
-        var nameTag = !type ? tagName : '';
-        var i18nPfx = 'domComponents.names.';
-        var i18nName = name && (em === null || em === void 0 ? void 0 : em.t("".concat(i18nPfx).concat(name)));
-        var i18nNameTag = nameTag && (em === null || em === void 0 ? void 0 : em.t("".concat(i18nPfx).concat(nameTag)));
-        var i18nDefName = em && (em.t("".concat(i18nPfx).concat(type)) || em.t("".concat(i18nPfx).concat(tagName)));
-        var customName = this.get('custom-name');
-        return ((!opts.noCustom ? customName : '') || // Used in Layers (when the user changes the name)
-            i18nName || // Use local component `name` key (eg. `domComponents.names.myComponentName`)
-            name || // Use component `name` key
-            i18nNameTag || // Use local component `tagName` key (eg. `domComponents.names.div`)
-            (0,mixins.capitalize)(nameTag) || // Use component `tagName` key
-            i18nDefName || // Use local component `type` key (eg. `domComponents.names.image`)
-            (0,mixins.capitalize)(defName) // Use component `type` key
-        );
-    };
-    /**
-     * Get the icon string
-     * @return {String}
-     */
-    Component.prototype.getIcon = function () {
-        var icon = this.get('icon');
-        return icon ? icon + ' ' : '';
-    };
-    /**
-     * Return HTML string of the component
-     * @param {Object} [opts={}] Options
-     * @param {String} [opts.tag] Custom tagName
-     * @param {Object|Function} [opts.attributes=null] You can pass an object of custom attributes to replace with the current ones or you can even pass a function to generate attributes dynamically.
-     * @param {Boolean} [opts.withProps] Include component properties as `data-gjs-*` attributes. This allows you to have re-importable HTML.
-     * @param {Boolean} [opts.altQuoteAttr] In case the attribute value contains a `"` char, instead of escaping it (`attr="value &quot;"`), the attribute will be quoted using single quotes (`attr='value "'`).
-     * @return {String} HTML string
-     * @example
-     * // Simple HTML return
-     * component.set({ tagName: 'span' });
-     * component.setAttributes({ title: 'Hello' });
-     * component.toHTML();
-     * // -> <span title="Hello"></span>
-     *
-     * // Custom attributes
-     * component.toHTML({ attributes: { 'data-test': 'Hello' } });
-     * // -> <span data-test="Hello"></span>
-     *
-     * // Custom dynamic attributes
-     * component.toHTML({
-     *  attributes(component, attributes) {
-     *    if (component.get('tagName') == 'span') {
-     *      attributes.title = 'Custom attribute';
-     *    }
-     *    return attributes;
-     *  },
-     * });
-     * // -> <span title="Custom attribute"></span>
-     */
-    Component.prototype.toHTML = function (opts) {
-        if (opts === void 0) { opts = {}; }
-        var model = this;
-        var attrs = [];
-        var customTag = opts.tag;
-        var tag = customTag || model.get('tagName');
-        var sTag = model.get('void');
-        var customAttr = opts.attributes;
-        var attributes = this.getAttrToHTML();
-        delete opts.tag;
-        // Get custom attributes if requested
-        if (customAttr) {
-            if ((0,index_all.isFunction)(customAttr)) {
-                attributes = customAttr(model, attributes) || {};
-            }
-            else if ((0,mixins.isObject)(customAttr)) {
-                attributes = customAttr;
-            }
-        }
-        if (opts.withProps) {
-            var props = this.toJSON();
-            (0,index_all.forEach)(props, function (value, key) {
-                var skipProps = ['classes', 'attributes', 'components'];
-                if (key[0] !== '_' && skipProps.indexOf(key) < 0) {
-                    attributes["data-gjs-".concat(key)] =
-                        (0,index_all.isArray)(value) || (0,mixins.isObject)(value) ? JSON.stringify(value) : (0,index_all.isBoolean)(value) ? "".concat(value) : value;
-                }
-            });
-        }
-        for (var attr in attributes) {
-            var val = attributes[attr];
-            if (!(0,index_all.isUndefined)(val) && val !== null) {
-                if ((0,index_all.isBoolean)(val)) {
-                    val && attrs.push(attr);
-                }
-                else {
-                    var valueRes = '';
-                    if (opts.altQuoteAttr && (0,index_all.isString)(val) && val.indexOf('"') >= 0) {
-                        valueRes = "'".concat(val.replace(/'/g, '&apos;'), "'");
-                    }
-                    else {
-                        var value = (0,index_all.isString)(val) ? val.replace(/"/g, '&quot;') : val;
-                        valueRes = "\"".concat(value, "\"");
-                    }
-                    attrs.push("".concat(attr, "=").concat(valueRes));
-                }
-            }
-        }
-        var attrString = attrs.length ? " ".concat(attrs.join(' ')) : '';
-        var inner = model.getInnerHTML(opts);
-        var code = "<".concat(tag).concat(attrString).concat(sTag ? '/' : '', ">").concat(inner);
-        !sTag && (code += "</".concat(tag, ">"));
-        return code;
-    };
-    /**
-     * Get inner HTML of the component
-     * @param {Object} [opts={}] Same options of `toHTML`
-     * @returns {String} HTML string
-     */
-    Component.prototype.getInnerHTML = function (opts) {
-        return this.__innerHTML(opts);
-    };
-    Component.prototype.__innerHTML = function (opts) {
-        if (opts === void 0) { opts = {}; }
-        var cmps = this.components();
-        return !cmps.length ? this.content : cmps.map(function (c) { return c.toHTML(opts); }).join('');
-    };
-    /**
-     * Returns object of attributes for HTML
-     * @return {Object}
-     * @private
-     */
-    Component.prototype.getAttrToHTML = function () {
-        var attrs = this.getAttributes();
-        if (avoidInline(this.em)) {
-            delete attrs.style;
-        }
-        return attrs;
-    };
-    /**
-     * Return a shallow copy of the model's attributes for JSON
-     * stringification.
-     * @return {Object}
-     * @private
-     */
-    Component.prototype.toJSON = function (opts) {
-        if (opts === void 0) { opts = {}; }
-        var obj = backbone.Model.prototype.toJSON.call(this, opts);
-        obj.attributes = this.getAttributes();
-        delete obj.attributes.class;
-        delete obj.toolbar;
-        delete obj.traits;
-        delete obj.status;
-        delete obj.open; // used in Layers
-        delete obj._undoexc;
-        delete obj.delegate;
-        if (!opts.fromUndo) {
-            var symbol = obj[keySymbol];
-            var symbols = obj[keySymbols];
-            if (symbols && (0,index_all.isArray)(symbols)) {
-                obj[keySymbols] = symbols.filter(function (i) { return i; }).map(function (i) { return (i.getId ? i.getId() : i); });
-            }
-            if (symbol && !(0,index_all.isString)(symbol)) {
-                obj[keySymbol] = symbol.getId();
-            }
-        }
-        if (this.em.getConfig().avoidDefaults) {
-            this.getChangedProps(obj);
-        }
-        return obj;
-    };
-    /**
-     * Return an object containing only changed props
-     */
-    Component.prototype.getChangedProps = function (res) {
-        var obj = res || backbone.Model.prototype.toJSON.apply(this);
-        var defaults = (0,index_all.result)(this, 'defaults');
-        (0,index_all.forEach)(defaults, function (value, key) {
-            if (['type'].indexOf(key) === -1 && obj[key] === value) {
-                delete obj[key];
-            }
-        });
-        if ((0,index_all.isEmpty)(obj.type)) {
-            delete obj.type;
-        }
-        (0,index_all.forEach)(['attributes', 'style'], function (prop) {
-            if ((0,index_all.isEmpty)(defaults[prop]) && (0,index_all.isEmpty)(obj[prop])) {
-                delete obj[prop];
-            }
-        });
-        (0,index_all.forEach)(['classes', 'components'], function (prop) {
-            if (!obj[prop] || ((0,index_all.isEmpty)(defaults[prop]) && !obj[prop].length)) {
-                delete obj[prop];
-            }
-        });
-        return obj;
-    };
-    /**
-     * Return the component id
-     * @return {String}
-     */
-    Component.prototype.getId = function () {
-        var attrs = this.get('attributes') || {};
-        return attrs.id || this.ccid || this.cid;
-    };
-    /**
-     * Set new id on the component
-     * @param {String} id
-     * @return {this}
-     */
-    Component.prototype.setId = function (id, opts) {
-        var attrs = Component_assign({}, this.get('attributes'));
-        attrs.id = id;
-        this.set('attributes', attrs, opts);
-        return this;
-    };
-    /**
-     * Get the DOM element of the component.
-     * This works only if the component is already rendered
-     * @param {Frame} frame Specific frame from which taking the element
-     * @return {HTMLElement}
-     */
-    Component.prototype.getEl = function (frame) {
-        var view = this.getView(frame);
-        return view && view.el;
-    };
-    /**
-     * Get the View of the component.
-     * This works only if the component is already rendered
-     * @param {Frame} frame Get View of a specific frame
-     * @return {ComponentView}
-     */
-    Component.prototype.getView = function (frame) {
-        var _a = this, view = _a.view, views = _a.views, em = _a.em;
-        var frm = frame || (em === null || em === void 0 ? void 0 : em.getCurrentFrameModel());
-        if (frm) {
-            view = views.filter(function (view) { return view.frameView === frm.view; })[0];
-        }
-        return view;
-    };
-    Component.prototype.getCurrentView = function () {
-        var frameView = this.em.getCurrentFrame();
-        var frame = frameView === null || frameView === void 0 ? void 0 : frameView.model;
-        return this.getView(frame);
-    };
-    Component.prototype.__getScriptProps = function () {
-        var modelProps = this.props();
-        var scrProps = this.get('script-props') || [];
-        return scrProps.reduce(function (acc, prop) {
-            acc[prop] = modelProps[prop];
-            return acc;
-        }, {});
-    };
-    /**
-     * Return script in string format, cleans 'function() {..' from scripts
-     * if it's a function
-     * @param {string|Function} script
-     * @return {string}
-     * @private
-     */
-    Component.prototype.getScriptString = function (script) {
-        var _this = this;
-        var scr = script || this.get('script') || '';
-        if (!scr) {
-            return scr;
-        }
-        if (this.get('script-props')) {
-            scr = scr.toString().trim();
-        }
-        else {
-            // Deprecated
-            // Need to convert script functions to strings
-            if ((0,index_all.isFunction)(scr)) {
-                var scrStr = scr.toString().trim();
-                scrStr = scrStr.slice(scrStr.indexOf('{') + 1, scrStr.lastIndexOf('}'));
-                scr = scrStr.trim();
-            }
-            var config = this.em.getConfig();
-            var tagVarStart = escapeRegExp(config.tagVarStart || '{[ ');
-            var tagVarEnd = escapeRegExp(config.tagVarEnd || ' ]}');
-            var reg = new RegExp("".concat(tagVarStart, "([\\w\\d-]*)").concat(tagVarEnd), 'g');
-            scr = scr.replace(reg, function (match, v) {
-                // If at least one match is found I have to track this change for a
-                // better optimization inside JS generator
-                _this.scriptUpdated();
-                var result = _this.attributes[v] || '';
-                return (0,index_all.isArray)(result) || typeof result == 'object' ? JSON.stringify(result) : result;
-            });
-        }
-        return scr;
-    };
-    Component.prototype.emitUpdate = function (property) {
-        var _a;
-        var args = [];
-        for (var _i = 1; _i < arguments.length; _i++) {
-            args[_i - 1] = arguments[_i];
-        }
-        var em = this.em;
-        var event = keyUpdate + (property ? ":".concat(property) : '');
-        var item = property && this.get(property);
-        // @ts-ignore
-        property && this.updated.apply(this, Component_spreadArray([property, item, property && this.previous(property)], args, false));
-        this.trigger.apply(this, Component_spreadArray([event], args, false));
-        em && em.trigger.apply(em, Component_spreadArray([event, this], args, false));
-        ['components', 'classes'].indexOf(property) >= 0 &&
-            this.__propSelfToParent({
-                component: this,
-                changed: (_a = {}, _a[property] = item, _a),
-                options: args[2] || args[1] || {},
-            });
-    };
-    /**
-     * Execute callback function on itself and all inner components
-     * @param  {Function} clb Callback function, the model is passed as an argument
-     * @return {this}
-     * @example
-     * component.onAll(component => {
-     *  // do something with component
-     * })
-     */
-    Component.prototype.onAll = function (clb) {
-        if ((0,index_all.isFunction)(clb)) {
-            clb(this);
-            this.components().forEach(function (model) { return model.onAll(clb); });
-        }
-        return this;
-    };
-    /**
-     * Execute a callback function on all inner child components.
-     * @param  {Function} clb Callback function, the child component is passed as an argument
-     * @example
-     * component.forEachChild(child => {
-     *  console.log(child)
-     * })
-     */
-    Component.prototype.forEachChild = function (clb) {
-        if ((0,index_all.isFunction)(clb)) {
-            this.components().forEach(function (child) {
-                clb(child);
-                child.forEachChild(clb);
-            });
-        }
-    };
-    /**
-     * Remove the component
-     * @return {this}
-     */
-    Component.prototype.remove = function (opts) {
-        var _this = this;
-        if (opts === void 0) { opts = {}; }
-        var em = this.em;
-        var coll = this.collection;
-        var remove = function () {
-            coll && coll.remove(_this, Component_assign(Component_assign({}, opts), { action: 'remove-component' }));
-            // Component without parent
-            if (!coll) {
-                _this.components('', opts);
-                _this.components().removeChildren(_this, undefined, opts);
-            }
-        };
-        var rmOpts = Component_assign({}, opts);
-        [this, em].map(function (i) { return i.trigger('component:remove:before', _this, remove, rmOpts); });
-        !rmOpts.abort && remove();
-        return this;
-    };
-    /**
-     * Move the component to another destination component
-     * @param {Component} component Destination component (so the current one will be appended as a child)
-     * @param {Object} opts Options for the append action
-     * @returns {this}
-     * @example
-     * // Move the selected component on top of the wrapper
-     * const dest = editor.getWrapper();
-     * editor.getSelected().move(dest, { at: 0 });
-     */
-    Component.prototype.move = function (component, opts) {
-        if (opts === void 0) { opts = {}; }
-        if (component) {
-            var at = opts.at;
-            var index = this.index();
-            var sameParent = component === this.parent();
-            var sameIndex = index === at || index === at - 1;
-            if (!sameParent || !sameIndex) {
-                if (sameParent && at && at > index) {
-                    opts.at = at - 1;
-                }
-                this.remove({ temporary: 1 });
-                component.append(this, opts);
-                this.emitUpdate();
-            }
-        }
-        return this;
-    };
-    /**
-     * Check if the component is an instance of some component type.
-     * @param {String} type Component type
-     * @returns {Boolean}
-     * @example
-     * // Add a new component type by extending an existing one
-     * editor.Components.addType('text-ext', { extend: 'text' });
-     * // Append a new component somewhere
-     * const newTextExt = editor.getSelected().append({ type: 'text-ext' })[0];
-     * newTextExt.isInstanceOf('text-ext'); // true
-     * newTextExt.isInstanceOf('text'); // true
-     */
-    Component.prototype.isInstanceOf = function (type) {
-        var _a, _b;
-        var cmp = (_b = (_a = this.em) === null || _a === void 0 ? void 0 : _a.Components.getType(type)) === null || _b === void 0 ? void 0 : _b.model;
-        if (!cmp)
-            return false;
-        return this instanceof cmp;
-    };
-    /**
-     * Check if the component is a child of some other component (or component type)
-     * @param {[Component]|String} component Component parent to check. In case a string is passed,
-     *  the check will be performed on the component type.
-     * @returns {Boolean}
-     * @example
-     * const newTextComponent = editor.getSelected().append({
-     *  type: 'text',
-     *  components: 'My text <b>here</b>',
-     * })[0];
-     * const innerComponent = newTextComponent.find('b')[0];
-     * innerComponent.isChildOf(newTextComponent); // true
-     * innerComponent.isChildOf('text'); // true
-     */
-    Component.prototype.isChildOf = function (component) {
-        var byType = (0,index_all.isString)(component);
-        var parent = this.parent();
-        while (parent) {
-            if (byType) {
-                if (parent.isInstanceOf(component)) {
-                    return true;
-                }
-            }
-            else {
-                if (parent === component) {
-                    return true;
-                }
-            }
-            parent = parent.parent();
-        }
-        return false;
-    };
-    /**
-     * Reset id of the component and any of its style rule
-     * @param {Object} [opts={}] Options
-     * @return {this}
-     * @private
-     */
-    Component.prototype.resetId = function (opts) {
-        if (opts === void 0) { opts = {}; }
-        var em = this.em;
-        var oldId = this.getId();
-        if (!oldId)
-            return this;
-        var newId = Component.createId(this);
-        this.setId(newId);
-        var rule = em === null || em === void 0 ? void 0 : em.Css.getIdRule(oldId);
-        var selector = rule === null || rule === void 0 ? void 0 : rule.get('selectors').at(0);
-        selector === null || selector === void 0 ? void 0 : selector.set('name', newId);
-        return this;
-    };
-    Component.prototype._getStyleRule = function (_a) {
-        var _b = _a === void 0 ? {} : _a, id = _b.id;
-        var em = this.em;
-        var idS = id || this.getId();
-        return em === null || em === void 0 ? void 0 : em.Css.getIdRule(idS);
-    };
-    Component.prototype._getStyleSelector = function (opts) {
-        var rule = this._getStyleRule(opts);
-        return rule === null || rule === void 0 ? void 0 : rule.get('selectors').at(0);
-    };
-    Component.prototype._idUpdated = function (m, v, opts) {
-        if (opts === void 0) { opts = {}; }
-        if (opts.idUpdate)
-            return;
-        var ccid = this.ccid;
-        var id = (this.get('attributes') || {}).id;
-        var idPrev = (this.previous('attributes') || {}).id || ccid;
-        var list = Component.getList(this);
-        // If the ID already exists I need to rollback to the old one
-        if (list[id] || (!id && idPrev)) {
-            return this.setId(idPrev, { idUpdate: true });
-        }
-        // Remove the old ID reference and add the new one
-        delete list[idPrev];
-        list[id] = this;
-        this.ccid = id;
-        // Update the style selector name
-        var selector = this._getStyleSelector({ id: idPrev });
-        selector && selector.set({ name: id, label: id });
-    };
-    Component.getDefaults = function () {
-        return (0,index_all.result)(this.prototype, 'defaults');
-    };
-    Component.isComponent = function (el) {
-        return { tagName: (0,mixins.toLowerCase)(el.tagName) };
-    };
-    Component.ensureInList = function (model) {
-        var list = Component.getList(model);
-        var id = model.getId();
-        var current = list[id];
-        if (!current) {
-            // Insert in list
-            list[id] = model;
-        }
-        else if (current !== model) {
-            // Create new ID
-            var nextId = Component.getIncrementId(id, list);
-            model.setId(nextId);
-            list[nextId] = model;
-        }
-        model.components().forEach(function (i) { return Component.ensureInList(i); });
-    };
-    Component.createId = function (model, opts) {
-        if (opts === void 0) { opts = {}; }
-        var list = Component.getList(model);
-        var _a = opts.idMap, idMap = _a === void 0 ? {} : _a;
-        var id = model.get('attributes').id;
-        var nextId;
-        if (id) {
-            nextId = Component.getIncrementId(id, list, opts);
-            model.setId(nextId);
-            if (id !== nextId)
-                idMap[id] = nextId;
-        }
-        else {
-            nextId = Component.getNewId(list);
-        }
-        list[nextId] = model;
-        return nextId;
-    };
-    Component.getNewId = function (list) {
-        var count = Object.keys(list).length;
-        // Testing 1000000 components with `+ 2` returns 0 collisions
-        var ilen = count.toString().length + 2;
-        var uid = (Math.random() + 1.1).toString(36).slice(-ilen);
-        var newId = "i".concat(uid);
-        while (list[newId]) {
-            newId = Component.getNewId(list);
-        }
-        return newId;
-    };
-    Component.getIncrementId = function (id, list, opts) {
-        if (opts === void 0) { opts = {}; }
-        var _a = opts.keepIds, keepIds = _a === void 0 ? [] : _a;
-        var counter = 1;
-        var newId = id;
-        if (keepIds.indexOf(id) < 0) {
-            while (list[newId]) {
-                counter++;
-                newId = "".concat(id, "-").concat(counter);
-            }
-        }
-        return newId;
-    };
-    Component.getList = function (model) {
-        var _a = model.opt, opt = _a === void 0 ? {} : _a;
-        // @ts-ignore
-        var domc = opt.domc, em = opt.em;
-        var dm = domc || (em === null || em === void 0 ? void 0 : em.Components);
-        return dm ? dm.componentsById : {};
-    };
-    Component.checkId = function (components, styles, list, opts) {
-        if (styles === void 0) { styles = []; }
-        if (list === void 0) { list = {}; }
-        if (opts === void 0) { opts = {}; }
-        var comps = (0,index_all.isArray)(components) ? components : [components];
-        var _a = opts.keepIds, keepIds = _a === void 0 ? [] : _a, _b = opts.idMap, idMap = _b === void 0 ? {} : _b;
-        comps.forEach(function (comp) {
-            comp.attributes;
-            var _a = comp.attributes, attributes = _a === void 0 ? {} : _a, components = comp.components;
-            var id = attributes.id;
-            // Check if we have collisions with current components
-            if (id && list[id] && keepIds.indexOf(id) < 0) {
-                var newId_1 = Component.getIncrementId(id, list);
-                idMap[id] = newId_1;
-                attributes.id = newId_1;
-                // Update passed styles
-                (0,index_all.isArray)(styles) &&
-                    styles.forEach(function (style) {
-                        var selectors = style.selectors;
-                        selectors.forEach(function (sel, idx) {
-                            if (sel === "#".concat(id))
-                                selectors[idx] = "#".concat(newId_1);
-                        });
-                    });
-            }
-            components && Component.checkId(components, styles, list, opts);
-        });
-    };
-    return Component;
-}(model_StyleableModel));
-/* harmony default export */ const model_Component = (Component);
-
 ;// CONCATENATED MODULE: ./src/dom_components/model/ComponentTextNode.ts
 var ComponentTextNode_extends = (undefined && undefined.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -32771,7 +33107,7 @@ var ComponentFrame_assign = (undefined && undefined.__assign) || function () {
 };
 
 
-var type = 'iframe';
+var ComponentFrame_type = 'iframe';
 var ComponentFrame = /** @class */ (function (_super) {
     ComponentFrame_extends(ComponentFrame, _super);
     function ComponentFrame() {
@@ -32779,13 +33115,13 @@ var ComponentFrame = /** @class */ (function (_super) {
     }
     Object.defineProperty(ComponentFrame.prototype, "defaults", {
         get: function () {
-            return ComponentFrame_assign(ComponentFrame_assign({}, _super.prototype.defaults), { type: type, tagName: type, droppable: false, resizable: true, traits: ['id', 'title', 'src'], attributes: { frameborder: '0' } });
+            return ComponentFrame_assign(ComponentFrame_assign({}, _super.prototype.defaults), { type: ComponentFrame_type, tagName: ComponentFrame_type, droppable: false, resizable: true, traits: ['id', 'title', 'src'], attributes: { frameborder: '0' } });
         },
         enumerable: false,
         configurable: true
     });
     ComponentFrame.isComponent = function (el) {
-        return (0,mixins.toLowerCase)(el.tagName) === type;
+        return (0,mixins.toLowerCase)(el.tagName) === ComponentFrame_type;
     };
     return ComponentFrame;
 }(model_Component));
@@ -32825,8 +33161,14 @@ var ComponentImage_assign = (undefined && undefined.__assign) || function () {
 var svgAttrs = 'xmlns="http://www.w3.org/2000/svg" width="100" viewBox="0 0 24 24" style="fill: rgba(0,0,0,0.15); transform: scale(0.75)"';
 var ComponentImage = /** @class */ (function (_super) {
     ComponentImage_extends(ComponentImage, _super);
-    function ComponentImage() {
-        return _super !== null && _super.apply(this, arguments) || this;
+    function ComponentImage(props, opt) {
+        if (props === void 0) { props = {}; }
+        var _this = _super.call(this, props, opt) || this;
+        var src = _this.get('attributes').src;
+        if (src && (0,mixins.buildBase64UrlFromSvg)((0,index_all.result)(_this, 'defaults').src) !== src) {
+            _this.set('src', src, { silent: true });
+        }
+        return _this;
     }
     Object.defineProperty(ComponentImage.prototype, "defaults", {
         get: function () {
@@ -32840,13 +33182,6 @@ var ComponentImage = /** @class */ (function (_super) {
         enumerable: false,
         configurable: true
     });
-    ComponentImage.prototype.initialize = function (props, opts) {
-        _super.prototype.initialize.call(this, props, opts);
-        var src = this.get('attributes').src;
-        if (src && (0,mixins.buildBase64UrlFromSvg)((0,index_all.result)(this, 'defaults').src) !== src) {
-            this.set('src', src, { silent: true });
-        }
-    };
     ComponentImage.prototype.initToolbar = function () {
         _super.prototype.initToolbar.call(this);
         var em = this.em;
@@ -32991,8 +33326,11 @@ var ComponentText_assign = (undefined && undefined.__assign) || function () {
 
 var ComponentText = /** @class */ (function (_super) {
     ComponentText_extends(ComponentText, _super);
-    function ComponentText() {
-        return _super !== null && _super.apply(this, arguments) || this;
+    function ComponentText(props, opt) {
+        if (props === void 0) { props = {}; }
+        var _this = _super.call(this, props, opt) || this;
+        _this.__checkInnerChilds();
+        return _this;
     }
     Object.defineProperty(ComponentText.prototype, "defaults", {
         get: function () {
@@ -33001,10 +33339,6 @@ var ComponentText = /** @class */ (function (_super) {
         enumerable: false,
         configurable: true
     });
-    ComponentText.prototype.initialize = function (props, opts) {
-        _super.prototype.initialize.call(this, props, opts);
-        this.__checkInnerChilds();
-    };
     ComponentText.prototype.__checkInnerChilds = function () {
         var disableTextInnerChilds = this.em.Components.config.disableTextInnerChilds;
         if (disableTextInnerChilds) {
@@ -33179,8 +33513,15 @@ var ComponentMap_assign = (undefined && undefined.__assign) || function () {
 
 var ComponentMap = /** @class */ (function (_super) {
     ComponentMap_extends(ComponentMap, _super);
-    function ComponentMap() {
-        return _super !== null && _super.apply(this, arguments) || this;
+    function ComponentMap(props, opt) {
+        if (props === void 0) { props = {}; }
+        var _this = _super.call(this, props, opt) || this;
+        if (_this.get('src'))
+            _this.parseFromSrc();
+        else
+            _this.updateSrc();
+        _this.listenTo(_this, 'change:address change:zoom change:mapType', _this.updateSrc);
+        return _this;
     }
     Object.defineProperty(ComponentMap.prototype, "defaults", {
         /** @ts-ignore */
@@ -33219,14 +33560,6 @@ var ComponentMap = /** @class */ (function (_super) {
         enumerable: false,
         configurable: true
     });
-    ComponentMap.prototype.initialize = function (props, opts) {
-        if (this.get('src'))
-            this.parseFromSrc();
-        else
-            this.updateSrc();
-        _super.prototype.initialize.call(this, props, opts);
-        this.listenTo(this, 'change:address change:zoom change:mapType', this.updateSrc);
-    };
     ComponentMap.prototype.updateSrc = function () {
         this.set('src', this.getMapUrl());
     };
@@ -33456,8 +33789,12 @@ var ComponentTable_assign = (undefined && undefined.__assign) || function () {
 var ComponentTable_type = 'table';
 var ComponentTable = /** @class */ (function (_super) {
     ComponentTable_extends(ComponentTable, _super);
-    function ComponentTable() {
-        return _super !== null && _super.apply(this, arguments) || this;
+    function ComponentTable(props, opt) {
+        if (props === void 0) { props = {}; }
+        var _this = _super.call(this, props, opt) || this;
+        var components = _this.get('components');
+        !components.length && components.add({ type: 'tbody' });
+        return _this;
     }
     Object.defineProperty(ComponentTable.prototype, "defaults", {
         get: function () {
@@ -33466,11 +33803,6 @@ var ComponentTable = /** @class */ (function (_super) {
         enumerable: false,
         configurable: true
     });
-    ComponentTable.prototype.initialize = function (props, opts) {
-        _super.prototype.initialize.call(this, props, opts);
-        var components = this.get('components');
-        !components.length && components.add({ type: 'tbody' });
-    };
     ComponentTable.isComponent = function (el) {
         return (0,mixins.toLowerCase)(el.tagName) === ComponentTable_type;
     };
@@ -33510,21 +33842,12 @@ var ComponentTableBody_assign = (undefined && undefined.__assign) || function ()
 var ComponentTableBody_type = 'tbody';
 var ComponentTableBody = /** @class */ (function (_super) {
     ComponentTableBody_extends(ComponentTableBody, _super);
-    function ComponentTableBody() {
-        return _super !== null && _super.apply(this, arguments) || this;
-    }
-    Object.defineProperty(ComponentTableBody.prototype, "defaults", {
-        get: function () {
-            return ComponentTableBody_assign(ComponentTableBody_assign({}, _super.prototype.defaults), { type: ComponentTableBody_type, tagName: ComponentTableBody_type, draggable: ['table'], droppable: ['tr'], columns: 1, rows: 1 });
-        },
-        enumerable: false,
-        configurable: true
-    });
-    ComponentTableBody.prototype.initialize = function (props, opts) {
-        _super.prototype.initialize.call(this, props, opts);
-        var components = this.get('components');
-        var columns = this.get('columns');
-        var rows = this.get('rows');
+    function ComponentTableBody(props, opt) {
+        if (props === void 0) { props = {}; }
+        var _this = _super.call(this, props, opt) || this;
+        var components = _this.get('components');
+        var columns = _this.get('columns');
+        var rows = _this.get('rows');
         // Init components if empty
         if (!components.length) {
             var rowsToAdd = [];
@@ -33545,7 +33868,15 @@ var ComponentTableBody = /** @class */ (function (_super) {
             }
             components.add(rowsToAdd);
         }
-    };
+        return _this;
+    }
+    Object.defineProperty(ComponentTableBody.prototype, "defaults", {
+        get: function () {
+            return ComponentTableBody_assign(ComponentTableBody_assign({}, _super.prototype.defaults), { type: ComponentTableBody_type, tagName: ComponentTableBody_type, draggable: ['table'], droppable: ['tr'], columns: 1, rows: 1 });
+        },
+        enumerable: false,
+        configurable: true
+    });
     ComponentTableBody.isComponent = function (el) {
         return (0,mixins.toLowerCase)(el.tagName) === ComponentTableBody_type;
     };
@@ -33785,8 +34116,16 @@ var defProvider = 'so';
 var hasParam = function (value) { return value && value !== '0'; };
 var ComponentVideo = /** @class */ (function (_super) {
     ComponentVideo_extends(ComponentVideo, _super);
-    function ComponentVideo() {
-        return _super !== null && _super.apply(this, arguments) || this;
+    function ComponentVideo(props, opt) {
+        if (props === void 0) { props = {}; }
+        var _this = _super.call(this, props, opt) || this;
+        if (_this.get('src'))
+            _this.parseFromSrc();
+        _this.updatePropsFromAttr();
+        _this.updateTraits();
+        _this.on('change:provider', _this.updateTraits);
+        _this.on('change:videoId change:provider', _this.updateSrc);
+        return _this;
     }
     Object.defineProperty(ComponentVideo.prototype, "defaults", {
         get: function () {
@@ -33795,16 +34134,6 @@ var ComponentVideo = /** @class */ (function (_super) {
         enumerable: false,
         configurable: true
     });
-    ComponentVideo.prototype.initialize = function (props, opts) {
-        this.em = opts.em;
-        if (this.get('src'))
-            this.parseFromSrc();
-        this.updatePropsFromAttr();
-        this.updateTraits();
-        this.on('change:provider', this.updateTraits);
-        this.on('change:videoId change:provider', this.updateSrc);
-        _super.prototype.initialize.call(this, props, opts);
-    };
     ComponentVideo.prototype.updatePropsFromAttr = function () {
         if (this.get('provider') === defProvider) {
             var _a = this.get('attributes'), controls = _a.controls, autoplay = _a.autoplay, loop = _a.loop;
@@ -34144,14 +34473,33 @@ var ComponentWrapper_assign = (undefined && undefined.__assign) || function () {
     return ComponentWrapper_assign.apply(this, arguments);
 };
 
+
+
+
 var ComponentWrapper = /** @class */ (function (_super) {
     ComponentWrapper_extends(ComponentWrapper, _super);
     function ComponentWrapper() {
-        return _super !== null && _super.apply(this, arguments) || this;
+        var args = [];
+        for (var _i = 0; _i < arguments.length; _i++) {
+            args[_i] = arguments[_i];
+        }
+        var _a, _b;
+        var _this = _super.apply(this, args) || this;
+        var opts = args[1];
+        var cmp = (_a = opts === null || opts === void 0 ? void 0 : opts.em) === null || _a === void 0 ? void 0 : _a.Components;
+        var CmpHead = (_b = cmp === null || cmp === void 0 ? void 0 : cmp.getType(type)) === null || _b === void 0 ? void 0 : _b.model;
+        var CmpDef = cmp === null || cmp === void 0 ? void 0 : cmp.getType('default').model;
+        if (CmpHead) {
+            _this.set({
+                head: new CmpHead({}, opts),
+                docEl: new CmpDef({ tagName: 'html' }, opts),
+            }, { silent: true });
+        }
+        return _this;
     }
     Object.defineProperty(ComponentWrapper.prototype, "defaults", {
         get: function () {
-            return ComponentWrapper_assign(ComponentWrapper_assign({}, _super.prototype.defaults), { tagName: 'body', removable: false, copyable: false, draggable: false, components: [], traits: [], stylable: [
+            return ComponentWrapper_assign(ComponentWrapper_assign({}, _super.prototype.defaults), { tagName: 'body', removable: false, copyable: false, draggable: false, components: [], traits: [], doctype: '', head: null, docEl: null, stylable: [
                     'background',
                     'background-color',
                     'background-image',
@@ -34164,6 +34512,38 @@ var ComponentWrapper = /** @class */ (function (_super) {
         enumerable: false,
         configurable: true
     });
+    Object.defineProperty(ComponentWrapper.prototype, "head", {
+        get: function () {
+            return this.get('head');
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(ComponentWrapper.prototype, "docEl", {
+        get: function () {
+            return this.get('docEl');
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(ComponentWrapper.prototype, "doctype", {
+        get: function () {
+            return this.attributes.doctype || '';
+        },
+        enumerable: false,
+        configurable: true
+    });
+    ComponentWrapper.prototype.toHTML = function (opts) {
+        if (opts === void 0) { opts = {}; }
+        var doctype = this.doctype;
+        var asDoc = !(0,index_all.isUndefined)(opts.asDocument) ? opts.asDocument : !!doctype;
+        var _a = this, head = _a.head, docEl = _a.docEl;
+        var body = _super.prototype.toHTML.call(this, opts);
+        var headStr = (asDoc && (head === null || head === void 0 ? void 0 : head.toHTML(opts))) || '';
+        var docElAttr = (asDoc && (0,dom/* attrToString */.nB)(docEl === null || docEl === void 0 ? void 0 : docEl.getAttrToHTML())) || '';
+        var docElAttrStr = docElAttr ? " ".concat(docElAttr) : '';
+        return asDoc ? "".concat(doctype, "<html").concat(docElAttrStr, ">").concat(headStr).concat(body, "</html>") : body;
+    };
     ComponentWrapper.prototype.__postAdd = function () {
         var _a;
         var um = (_a = this.em) === null || _a === void 0 ? void 0 : _a.UndoManager;
@@ -34241,19 +34621,8 @@ var ComponentsView = /** @class */ (function (_super) {
      * @param {Object} opts
      * @private
      * */
-    ComponentsView.prototype.addTo = function (model, coll, opts) {
-        if (coll === void 0) { coll = {}; }
-        if (opts === void 0) { opts = {}; }
-        var em = this.em;
-        var i = this.collection.indexOf(model);
-        this.addToCollection(model, null, i);
-        if (em && !opts.temporary) {
-            var triggerAdd_1 = function (model) {
-                em.trigger('component:add', model);
-                model.components().forEach(function (comp) { return triggerAdd_1(comp); });
-            };
-            triggerAdd_1(model);
-        }
+    ComponentsView.prototype.addTo = function (model) {
+        this.addToCollection(model, null, this.collection.indexOf(model));
     };
     /**
      * Add new object to collection
@@ -34264,10 +34633,8 @@ var ComponentsView = /** @class */ (function (_super) {
      * @return   {Object}   Object rendered
      * @private
      * */
-    ComponentsView.prototype.addToCollection = function (model, fragmentEl, index) {
-        // if (!this.compView) this.compView = require('./ComponentView').default;
+    ComponentsView.prototype.addToCollection = function (model, fragment, index) {
         var _a = this, config = _a.config, opts = _a.opts, em = _a.em;
-        var fragment = fragmentEl || null;
         var frameView = config.frameView;
         var sameFrameView = (frameView === null || frameView === void 0 ? void 0 : frameView.model) && model.getView(frameView.model);
         var dt = opts.componentTypes || (em === null || em === void 0 ? void 0 : em.Components.getTypes());
@@ -34631,8 +34998,9 @@ var ComponentView = /** @class */ (function (_super) {
         if (opts === void 0) { opts = {}; }
         var _a = this, model = _a.model, em = _a.em;
         if (avoidInline(em) && !opts.inline) {
+            // Move inline styles to CSSRule
             var styleOpts = this.__cmpStyleOpts;
-            var style = model.getStyle(styleOpts);
+            var style = model.getStyle(ComponentView_assign({ inline: true }, styleOpts));
             !(0,index_all.isEmpty)(style) && model.setStyle(style, styleOpts);
         }
         else {
@@ -36033,6 +36401,88 @@ var ComponentWrapperView = /** @class */ (function (_super) {
 }(view_ComponentView));
 /* harmony default export */ const view_ComponentWrapperView = (ComponentWrapperView);
 
+;// CONCATENATED MODULE: ./src/dom_components/model/Symbols.ts
+var Symbols_extends = (undefined && undefined.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+var Symbols_assign = (undefined && undefined.__assign) || function () {
+    Symbols_assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return Symbols_assign.apply(this, arguments);
+};
+
+
+
+var Symbols = /** @class */ (function (_super) {
+    Symbols_extends(Symbols, _super);
+    function Symbols() {
+        var args = [];
+        for (var _i = 0; _i < arguments.length; _i++) {
+            args[_i] = arguments[_i];
+        }
+        var _this = _super.apply(this, args) || this;
+        _this.refreshDbn = (0,index_all.debounce)(function () { return _this.refresh(); }, 0);
+        var events = _this.events;
+        _this.on(events.update, _this.onUpdate);
+        _this.on(events.updateInside, _this.onUpdateDeep);
+        return _this;
+    }
+    Symbols.prototype.removeChildren = function (component, coll, opts) {
+        var _a;
+        if (opts === void 0) { opts = {}; }
+        _super.prototype.removeChildren.call(this, component, coll, opts);
+        (_a = getSymbolInstances(component)) === null || _a === void 0 ? void 0 : _a.forEach(function (i) { return detachSymbolInstance(i, { skipRefs: true }); });
+        this.__trgEvent(this.events.symbolMainRemove, { component: component });
+    };
+    Symbols.prototype.onAdd = function () {
+        var args = [];
+        for (var _i = 0; _i < arguments.length; _i++) {
+            args[_i] = arguments[_i];
+        }
+        _super.prototype.onAdd.apply(this, args);
+        var component = args[0];
+        this.__trgEvent(this.events.symbolMainAdd, { component: component });
+    };
+    Symbols.prototype.onUpdate = function (props) {
+        this.__trgEvent(this.events.symbolMainUpdate, props);
+    };
+    Symbols.prototype.onUpdateDeep = function (props) {
+        this.__trgEvent(this.events.symbolMainUpdateDeep, props);
+    };
+    Symbols.prototype.refresh = function () {
+        var _a = this, em = _a.em, events = _a.events;
+        em.trigger(events.symbol);
+    };
+    Symbols.prototype.__trgEvent = function (event, props, isInstance) {
+        if (isInstance === void 0) { isInstance = false; }
+        var _a = this, em = _a.em, events = _a.events;
+        var eventType = isInstance ? events.symbolInstance : events.symbolMain;
+        em.trigger(event, props);
+        em.trigger(eventType, Symbols_assign(Symbols_assign({}, props), { event: event }));
+        this.refreshDbn();
+    };
+    return Symbols;
+}(model_Components));
+/* harmony default export */ const model_Symbols = (Symbols);
+
 ;// CONCATENATED MODULE: ./src/dom_components/index.ts
 var dom_components_extends = (undefined && undefined.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -36070,6 +36520,15 @@ var dom_components_rest = (undefined && undefined.__rest) || function (s, e) {
                 t[p[i]] = s[p[i]];
         }
     return t;
+};
+var dom_components_spreadArray = (undefined && undefined.__spreadArray) || function (to, from, pack) {
+    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
+        if (ar || !(i in from)) {
+            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
+            ar[i] = from[i];
+        }
+    }
+    return to.concat(ar || Array.prototype.slice.call(from));
 };
 /**
  * With this module is possible to manage components inside the canvas. You can customize the initial state of the module from the editor initialization, by passing the following [Configuration Object](https://github.com/GrapesJS/grapesjs/blob/master/src/dom_components/config/config.ts)
@@ -36126,6 +36585,10 @@ var dom_components_rest = (undefined && undefined.__rest) || function (s, e) {
  *
  * @module Components
  */
+
+
+
+
 
 
 
@@ -36284,14 +36747,19 @@ var ComponentManager = /** @class */ (function (_super) {
                 view: view_ComponentTextNodeView,
             },
             {
-                id: 'text',
-                model: model_ComponentText,
-                view: view_ComponentTextView,
+                id: type,
+                model: model_ComponentHead,
+                view: view_ComponentView,
             },
             {
                 id: 'wrapper',
                 model: model_ComponentWrapper,
                 view: view_ComponentWrapperView,
+            },
+            {
+                id: 'text',
+                model: model_ComponentText,
+                view: view_ComponentTextView,
             },
             {
                 id: 'default',
@@ -36311,14 +36779,18 @@ var ComponentManager = /** @class */ (function (_super) {
          */
         //name = "DomComponents";
         _this.storageKey = 'components';
+        _this.keySymbols = 'symbols';
+        _this.events = dom_components_types/* ComponentsEvents */.g;
+        var config = _this.config;
+        _this.symbols = new model_Symbols([], { em: em, config: config, domc: _this });
         if (em) {
             //@ts-ignore
             _this.config.components = em.config.components || _this.config.components;
         }
-        for (var name in dom_components_config_config) {
+        for (var name_1 in dom_components_config_config) {
             //@ts-ignore
-            if (!(name in _this.config))
-                _this.config[name] = dom_components_config_config[name];
+            if (!(name_1 in _this.config))
+                _this.config[name_1] = dom_components_config_config[name_1];
         }
         var ppfx = _this.config.pStylePrefix;
         if (ppfx)
@@ -36333,9 +36805,14 @@ var ComponentManager = /** @class */ (function (_super) {
         }
         return _this;
     }
+    ComponentManager.prototype.postLoad = function () {
+        var _a = this, em = _a.em, symbols = _a.symbols;
+        var UndoManager = em.UndoManager;
+        UndoManager.add(symbols);
+    };
     ComponentManager.prototype.load = function (data) {
         var _this = this;
-        return this.loadProjectData(data, {
+        var result = this.loadProjectData(data, {
             onResult: function (result) {
                 var wrapper = _this.getWrapper();
                 if (!wrapper) {
@@ -36353,9 +36830,14 @@ var ComponentManager = /** @class */ (function (_super) {
                 }
             },
         });
+        this.symbols.reset(data[this.keySymbols] || []);
+        return result;
     };
     ComponentManager.prototype.store = function () {
-        return {};
+        var _a;
+        return _a = {},
+            _a[this.keySymbols] = this.symbols,
+            _a;
     };
     /**
      * Returns the main wrapper.
@@ -36638,6 +37120,81 @@ var ComponentManager = /** @class */ (function (_super) {
      */
     ComponentManager.prototype.isComponent = function (obj) {
         return (0,mixins.isComponent)(obj);
+    };
+    /**
+     * Add a new symbol from a component.
+     * If the passed component is not a symbol, it will be converted to an instance and will return the main symbol.
+     * If the passed component is already an instance, a new instance will be created and returned.
+     * If the passed component is the main symbol, a new instance will be created and returned.
+     * @param {[Component]} component Component from which create a symbol.
+     * @returns {[Component]}
+     * @example
+     * const symbol = cmp.addSymbol(editor.getSelected());
+     * // cmp.getSymbolInfo(symbol).isSymbol === true;
+     */
+    ComponentManager.prototype.addSymbol = function (component) {
+        if ((0,index_all.isSymbol)(component) && !isSymbolRoot(component)) {
+            return;
+        }
+        var symbol = component.clone({ symbol: true });
+        isSymbolMain(symbol) && this.symbols.add(symbol);
+        this.em.trigger('component:toggled');
+        return symbol;
+    };
+    /**
+     * Get the array of main symbols.
+     * @returns {Array<[Component]>}
+     * @example
+     * const symbols = cmp.getSymbols();
+     * // [Component, Component, ...]
+     * // Removing the main symbol will detach all the relative instances.
+     * symbols[0].remove();
+     */
+    ComponentManager.prototype.getSymbols = function () {
+        return dom_components_spreadArray([], this.symbols.models, true);
+    };
+    /**
+     * Detach symbol instance from the main one.
+     * The passed symbol instance will become a regular component.
+     * @param {[Component]} component The component symbol to detach.
+     * @example
+     * const cmpInstance = editor.getSelected();
+     * // cmp.getSymbolInfo(cmpInstance).isInstance === true;
+     * cmp.detachSymbol(cmpInstance);
+     * // cmp.getSymbolInfo(cmpInstance).isInstance === false;
+     */
+    ComponentManager.prototype.detachSymbol = function (component) {
+        if (isSymbolInstance(component)) {
+            detachSymbolInstance(component);
+        }
+    };
+    /**
+     * Get info about the symbol.
+     * @param {[Component]} component Component symbol from which to get the info.
+     * @returns {Object} Object containing symbol info.
+     * @example
+     * cmp.getSymbolInfo(editor.getSelected());
+     * // > { isSymbol: true, isMain: false, isInstance: true, ... }
+     */
+    ComponentManager.prototype.getSymbolInfo = function (component, opts) {
+        if (opts === void 0) { opts = {}; }
+        var isMain = isSymbolMain(component);
+        var mainRef = getSymbolMain(component);
+        var isInstance = !!mainRef;
+        var instances = (isMain ? getSymbolInstances(component) : getSymbolInstances(mainRef)) || [];
+        var main = mainRef || (isMain ? component : undefined);
+        var relatives = getSymbolsToUpdate(component, { changed: opts.withChanges });
+        var isSymbol = isMain || isInstance;
+        var isRoot = isSymbol && isSymbolRoot(component);
+        return {
+            isSymbol: isSymbol,
+            isMain: isMain,
+            isInstance: isInstance,
+            isRoot: isRoot,
+            main: main,
+            instances: instances,
+            relatives: relatives || [],
+        };
     };
     /**
      * Check if a component can be moved inside another one.
@@ -38080,6 +38637,12 @@ var BlocksEvents;
      */
     BlocksEvents["dragEnd"] = "block:drag:stop";
     /**
+     * @event `block:category:update` Block category updated.
+     * @example
+     * editor.on('block:category:update', ({ category, changes }) => { ... });
+     */
+    BlocksEvents["categoryUpdate"] = "block:category:update";
+    /**
      * @event `block:custom` Event to use in case of [custom Block Manager UI](https://grapesjs.com/docs/modules/Blocks.html#customization).
      * @example
      * editor.on('block:custom', ({ container, blocks, ... }) => { ... });
@@ -38606,7 +39169,10 @@ var BlockManager = /** @class */ (function (_super) {
         // Global blocks collection
         _this.blocks = _this.all;
         _this.blocksVisible = new model_Blocks(_this.blocks.models, { em: em });
-        _this.categories = new ModuleCategories();
+        _this.categories = new ModuleCategories([], {
+            em: em,
+            events: { update: BlocksEvents.categoryUpdate },
+        });
         // Setup the sync between the global and public collections
         _this.blocks.on('add', function (model) { return _this.blocksVisible.add(model); });
         _this.blocks.on('remove', function (model) { return _this.blocksVisible.remove(model); });
@@ -39092,6 +39658,7 @@ var ClassTagsView_makeTemplateObject = (undefined && undefined.__makeTemplateObj
 
 
 
+
 var ClassTagsView = /** @class */ (function (_super) {
     ClassTagsView_extends(ClassTagsView, _super);
     function ClassTagsView(o) {
@@ -39112,8 +39679,10 @@ var ClassTagsView = /** @class */ (function (_super) {
         _this.em = em;
         _this.componentChanged = (0,index_all.debounce)(_this.componentChanged.bind(_this), 0);
         _this.checkSync = (0,index_all.debounce)(_this.checkSync.bind(_this), 0);
-        var toList = 'component:toggled component:update:classes';
-        var toListCls = 'component:update:classes change:state';
+        var eventCmpUpdate = dom_components_types/* ComponentsEvents */.g.update;
+        var evClsUp = "".concat(eventCmpUpdate, ":classes");
+        var toList = "component:toggled ".concat(evClsUp);
+        var toListCls = "".concat(evClsUp, " ").concat(eventCmpUpdate, ":attributes:id change:state");
         _this.listenTo(em, toList, _this.componentChanged);
         _this.listenTo(em, 'styleManager:update', _this.componentChanged);
         _this.listenTo(em, toListCls, _this.__handleStateChange);
@@ -39577,6 +40146,7 @@ var selector_manager_spreadArray = (undefined && undefined.__spreadArray) || fun
 
 
 
+
 var isId = function (str) { return (0,index_all.isString)(str) && str[0] == '#'; };
 var isClass = function (str) { return (0,index_all.isString)(str) && str[0] == '.'; };
 var selector_manager_evAll = 'selector';
@@ -39626,8 +40196,9 @@ var SelectorManager = /** @class */ (function (_super) {
         });
         em.on('change:state', function (m, value) { return em.trigger(evState, value); });
         _this.model.on('change:cFirst', function (m, value) { return em.trigger('selector:type', value); });
-        em.on('component:toggled component:update:classes', _this.__updateSelectedByComponents);
-        var listenTo = 'component:toggled component:update:classes change:device styleManager:update selector:state selector:type style:target';
+        var eventCmpUpdateCls = "".concat(dom_components_types/* ComponentsEvents */.g.update, ":classes");
+        em.on("component:toggled ".concat(eventCmpUpdateCls), _this.__updateSelectedByComponents);
+        var listenTo = "component:toggled ".concat(eventCmpUpdateCls, " change:device styleManager:update selector:state selector:type style:target");
         _this.model.listenTo(em, listenTo, function () { return _this.__update(); });
         return _this;
     }
@@ -40405,7 +40976,7 @@ var ParserModule = /** @class */ (function (_super) {
     ParserModule.prototype.parseHtml = function (input, options) {
         if (options === void 0) { options = {}; }
         var _a = this, em = _a.em, parserHtml = _a.parserHtml;
-        parserHtml.compTypes = (em.Components.getTypes() || {});
+        parserHtml.compTypes = em.Components.getTypes() || [];
         return parserHtml.parse(input, this.parserCss, options);
     };
     /**
@@ -45190,6 +45761,7 @@ var ItemsView_extends = (undefined && undefined.__extends) || (function () {
     };
 })();
 
+
 var ItemsView = /** @class */ (function (_super) {
     ItemsView_extends(ItemsView, _super);
     function ItemsView(opt) {
@@ -45229,12 +45801,10 @@ var ItemsView = /** @class */ (function (_super) {
         return _this;
     }
     ItemsView.prototype.removeChildren = function (removed) {
-        // @ts-ignore
         var view = removed.viewLayer;
         if (!view)
             return;
         view.remove();
-        // @ts-ignore
         delete removed.viewLayer;
     };
     /**
@@ -45244,8 +45814,7 @@ var ItemsView = /** @class */ (function (_super) {
      * @return Object
      * */
     ItemsView.prototype.addTo = function (model) {
-        var i = this.collection.indexOf(model);
-        this.addToCollection(model, null, i);
+        this.addToCollection(model, null, this.collection.indexOf(model));
     };
     /**
      * Add new object to collection
@@ -45255,44 +45824,45 @@ var ItemsView = /** @class */ (function (_super) {
      *
      * @return Object Object created
      * */
-    ItemsView.prototype.addToCollection = function (model, fragmentEl, index) {
-        var _a = this, parentView = _a.parentView, opt = _a.opt, config = _a.config;
+    ItemsView.prototype.addToCollection = function (model, fragment, index) {
+        var _a = this, parentView = _a.parentView, opt = _a.opt, config = _a.config, el = _a.el;
         var ItemView = opt.ItemView, opened = opt.opened, module = opt.module, level = opt.level, sorter = opt.sorter;
-        var fragment = fragmentEl || null;
-        var item = new ItemView({
-            ItemView: ItemView,
-            level: level,
-            model: model,
-            parentView: parentView,
-            config: config,
-            sorter: sorter,
-            opened: opened,
-            module: module,
-        });
+        var item = model.viewLayer ||
+            new ItemView({
+                ItemView: ItemView,
+                level: level,
+                model: model,
+                parentView: parentView,
+                config: config,
+                sorter: sorter,
+                opened: opened,
+                module: module,
+            });
         var rendered = item.render().el;
         if (fragment) {
             fragment.appendChild(rendered);
         }
         else {
-            if (typeof index !== 'undefined') {
-                var method = 'before';
+            var parent_1 = el;
+            var children = parent_1.childNodes;
+            if (!(0,index_all.isUndefined)(index)) {
+                var lastIndex = children.length == index;
                 // If the added model is the last of collection
                 // need to change the logic of append
-                if (this.$el.children().length == index) {
+                if (lastIndex) {
                     index--;
-                    method = 'after';
                 }
                 // In case the added is new in the collection index will be -1
-                if (index < 0) {
-                    this.$el.append(rendered);
+                if (lastIndex || !children.length) {
+                    parent_1.appendChild(rendered);
                 }
                 else {
-                    // @ts-ignore
-                    this.$el.children().eq(index)[method](rendered);
+                    parent_1.insertBefore(rendered, children[index]);
                 }
             }
-            else
-                this.$el.append(rendered);
+            else {
+                parent_1.appendChild(rendered);
+            }
         }
         this.items.push(item);
         return rendered;
@@ -45497,7 +46067,7 @@ var CommandsModule = /** @class */ (function (_super) {
                 var trg = opts.target;
                 var trgs = trg ? [trg] : commands_spreadArray([], ed.getSelectedAll(), true);
                 var targets = trgs.map(function (trg) { var _a, _b; return ((_b = (_a = trg.delegate) === null || _a === void 0 ? void 0 : _a.move) === null || _b === void 0 ? void 0 : _b.call(_a, trg)) || trg; }).filter(Boolean);
-                var target = targets[0];
+                var target = targets[targets.length - 1];
                 var nativeDrag = (event === null || event === void 0 ? void 0 : event.type) === 'dragstart';
                 var modes = ['absolute', 'translate'];
                 if (!(target === null || target === void 0 ? void 0 : target.get('draggable'))) {
@@ -45805,6 +46375,7 @@ var ItemView_extends = (undefined && undefined.__extends) || (function () {
 
 
 var ItemView_inputProp = 'contentEditable';
+var dataToggleMove = 'data-toggle-move';
 var ItemView = /** @class */ (function (_super) {
     ItemView_extends(ItemView, _super);
     function ItemView(opt) {
@@ -45832,18 +46403,19 @@ var ItemView = /** @class */ (function (_super) {
         return _this;
     }
     ItemView.prototype.events = function () {
-        return {
-            'mousedown [data-toggle-move]': 'startSort',
-            'touchstart [data-toggle-move]': 'startSort',
-            'click [data-toggle-visible]': 'toggleVisibility',
-            'click [data-toggle-open]': 'toggleOpening',
-            'click [data-toggle-select]': 'handleSelect',
-            'mouseover [data-toggle-select]': 'handleHover',
-            'mouseout [data-toggle-select]': 'handleHoverOut',
-            'dblclick [data-name]': 'handleEdit',
-            'keydown [data-name]': 'handleEditKey',
-            'focusout [data-name]': 'handleEditEnd',
-        };
+        var _a;
+        return _a = {},
+            _a["mousedown [".concat(dataToggleMove, "]")] = 'startSort',
+            _a["touchstart [".concat(dataToggleMove, "]")] = 'startSort',
+            _a['click [data-toggle-visible]'] = 'toggleVisibility',
+            _a['click [data-toggle-open]'] = 'toggleOpening',
+            _a['click [data-toggle-select]'] = 'handleSelect',
+            _a['mouseover [data-toggle-select]'] = 'handleHover',
+            _a['mouseout [data-toggle-select]'] = 'handleHoverOut',
+            _a['dblclick [data-name]'] = 'handleEdit',
+            _a['keydown [data-name]'] = 'handleEditKey',
+            _a['focusout [data-name]'] = 'handleEditEnd',
+            _a;
     };
     ItemView.prototype.template = function (model) {
         var _a = this, pfx = _a.pfx, ppfx = _a.ppfx, config = _a.config, clsNoEdit = _a.clsNoEdit, module = _a.module, opt = _a.opt, em = _a.em;
@@ -45862,7 +46434,7 @@ var ItemView = /** @class */ (function (_super) {
         var _b = icons, move = _b.move, eye = _b.eye, eyeOff = _b.eyeOff, chevron = _b.chevron;
         return "\n      <div class=\"".concat(pfx, "layer-item ").concat(ppfx, "one-bg\" data-toggle-select>\n        <div class=\"").concat(pfx, "layer-item-left\">\n          ").concat(hidable
             ? "<i class=\"".concat(pfx, "layer-vis\" data-toggle-visible>\n                <i class=\"").concat(pfx, "layer-vis-on\">").concat(eye, "</i>\n                <i class=\"").concat(pfx, "layer-vis-off\">").concat(eyeOff, "</i>\n              </i>")
-            : '', "\n          <div class=\"").concat(clsTitleC, "\">\n            <div class=\"").concat(clsTitle, "\" style=\"padding-left: ").concat(gut, "\">\n              <div class=\"").concat(pfx, "layer-title-inn\" title=\"").concat(name, "\">\n                <i class=\"").concat(this.clsCaret, "\" data-toggle-open>").concat(chevron, "</i>\n                  ").concat(icon ? "<span class=\"".concat(clsBase, "__icon\">").concat(icon, "</span>") : '', "\n                <span class=\"").concat(clsInput, "\" data-name>").concat(name, "</span>\n              </div>\n            </div>\n          </div>\n        </div>\n        <div class=\"").concat(pfx, "layer-item-right\">\n          <div class=\"").concat(this.clsCount, "\" data-count>").concat(count || '', "</div>\n          <div class=\"").concat(this.clsMove, "\" data-toggle-move>").concat(move || '', "</div>\n        </div>\n      </div>\n      <div class=\"").concat(this.clsChildren, "\"></div>\n    ");
+            : '', "\n          <div class=\"").concat(clsTitleC, "\">\n            <div class=\"").concat(clsTitle, "\" style=\"padding-left: ").concat(gut, "\">\n              <div class=\"").concat(pfx, "layer-title-inn\" title=\"").concat(name, "\">\n                <i class=\"").concat(this.clsCaret, "\" data-toggle-open>").concat(chevron, "</i>\n                  ").concat(icon ? "<span class=\"".concat(clsBase, "__icon\">").concat(icon, "</span>") : '', "\n                <span class=\"").concat(clsInput, "\" data-name>").concat(name, "</span>\n              </div>\n            </div>\n          </div>\n        </div>\n        <div class=\"").concat(pfx, "layer-item-right\">\n          <div class=\"").concat(this.clsCount, "\" data-count>").concat(count || '', "</div>\n          <div class=\"").concat(this.clsMove, "\" ").concat(dataToggleMove, ">").concat(move || '', "</div>\n        </div>\n      </div>\n      <div class=\"").concat(this.clsChildren, "\"></div>\n    ");
     };
     Object.defineProperty(ItemView.prototype, "em", {
         get: function () {
@@ -45896,6 +46468,7 @@ var ItemView = /** @class */ (function (_super) {
             ['change:open', this.updateOpening],
             ['change:layerable', this.updateLayerable],
             ['change:style:display', this.updateVisibility],
+            ['change:draggable', this.updateMove],
             ['rerender:layer', this.render],
             ['change:name change:custom-name', this.updateName],
             // @ts-ignore
@@ -45923,6 +46496,14 @@ var ItemView = /** @class */ (function (_super) {
         var method = hidden ? 'addClass' : 'removeClass';
         this.$el[method](hClass);
         this.getVisibilityEl()[method]("".concat(pfx, "layer-off"));
+    };
+    ItemView.prototype.updateMove = function () {
+        var _a = this, model = _a.model, config = _a.config;
+        var el = this.getItemContainer().find("[".concat(dataToggleMove, "]"))[0];
+        if (el) {
+            var isDraggable = model.get('draggable') && config.sortable;
+            el.style.display = isDraggable ? '' : 'none';
+        }
     };
     /**
      * Toggle visibility
@@ -46147,15 +46728,13 @@ var ItemView = /** @class */ (function (_super) {
             el.html(this.template(model));
             el.find(".".concat(this.clsChildren)).append(children);
         }
-        if (!model.get('draggable') || !config.sortable) {
-            el.children(".".concat(this.clsMove)).remove();
-        }
         !module.isVisible(model) && (this.className += " ".concat(pfx, "hide"));
         hidden && (this.className += " ".concat(ppfx, "hidden"));
         el.attr('class', this.className);
         this.updateStatus();
         this.updateOpening();
         this.updateVisibility();
+        this.updateMove();
         this.__render();
         this._rendered = true;
         return this;
@@ -46244,6 +46823,7 @@ var navigator_assign = (undefined && undefined.__assign) || function () {
 
 
 
+
 var navigator_evAll = 'layer';
 var navigator_evPfx = "".concat(navigator_evAll, ":");
 var evRoot = "".concat(navigator_evPfx, "root");
@@ -46257,7 +46837,7 @@ var events = {
 };
 var styleOpts = { mediaText: '' };
 var propsToListen = ['open', 'status', 'locked', 'custom-name', 'components', 'classes']
-    .map(function (p) { return "component:update:".concat(p); })
+    .map(function (p) { return "".concat(dom_components_types/* ComponentsEvents */.g.update, ":").concat(p); })
     .join(' ');
 var isStyleHidden = function (style) {
     if (style === void 0) { style = {}; }
@@ -46484,7 +47064,6 @@ var LayerManager = /** @class */ (function (_super) {
             parent = parent.parent();
         }
         if (selected && scrollLayers) {
-            // @ts-ignore
             var el = (_a = selected.viewLayer) === null || _a === void 0 ? void 0 : _a.el;
             el === null || el === void 0 ? void 0 : el.scrollIntoView(scrollLayers);
         }
@@ -49565,11 +50144,13 @@ var Sorter = /** @class */ (function (_super) {
      * @return {Boolean}
      */
     Sorter.prototype.validTarget = function (trg, src) {
+        var _a, _b;
+        var pos = this.lastPos;
         var trgModel = this.getTargetModel(trg);
         var srcModel = this.getSourceModel(src, { target: trgModel });
         // @ts-ignore
-        src = srcModel && srcModel.view && srcModel.view.el;
-        trg = trgModel && trgModel.view && trgModel.view.el;
+        src = (_a = srcModel === null || srcModel === void 0 ? void 0 : srcModel.view) === null || _a === void 0 ? void 0 : _a.el;
+        trg = (_b = trgModel === null || trgModel === void 0 ? void 0 : trgModel.view) === null || _b === void 0 ? void 0 : _b.el;
         var result = {
             valid: true,
             src: src,
@@ -49585,10 +50166,11 @@ var Sorter = /** @class */ (function (_super) {
             result.valid = false;
             return result;
         }
+        var index = pos ? (pos.method === 'after' ? pos.indexEl + 1 : pos.indexEl) : trgModel.components().length;
         // Check if the source is draggable in target
         var draggable = srcModel.get('draggable');
         if ((0,index_all.isFunction)(draggable)) {
-            var res = draggable(srcModel, trgModel);
+            var res = draggable(srcModel, trgModel, index);
             result.dragInfo = res;
             result.draggable = res;
             draggable = res;
@@ -49602,7 +50184,7 @@ var Sorter = /** @class */ (function (_super) {
         // Check if the target could accept the source
         var droppable = trgModel.get('droppable');
         if ((0,index_all.isFunction)(droppable)) {
-            var res = droppable(srcModel, trgModel);
+            var res = droppable(srcModel, trgModel, index);
             result.droppable = res;
             result.dropInfo = res;
             droppable = res;
@@ -53779,6 +54361,14 @@ var UndoManagerModule = /** @class */ (function (_super) {
         });
         return result;
     };
+    /**
+     * Execute the provided callback temporarily stopping tracking changes
+     * @param clb The callback to execute with changes tracking stopped
+     * @example
+     * um.skip(() => {
+     *  // Do stuff without tracking
+     * });
+     */
     UndoManagerModule.prototype.skip = function (clb) {
         var isTracking = !!this.um.isTracking();
         isTracking && this.stop();
@@ -54359,7 +54949,8 @@ var rich_text_editor_spreadArray = (undefined && undefined.__spreadArray) || fun
 
 
 
-var eventsUp = "".concat(canvas_types.refresh, " frame:scroll component:update");
+
+var eventsUp = "".concat(canvas_types.refresh, " frame:scroll ").concat(dom_components_types/* ComponentsEvents */.g.update);
 var evEnable = 'rte:enable';
 var evDisable = 'rte:disable';
 var rich_text_editor_evCustom = 'rte:custom';
@@ -59139,6 +59730,7 @@ var style_manager_spreadArray = (undefined && undefined.__spreadArray) || functi
 
 
 
+
 var style_manager_evAll = 'style';
 var style_manager_evPfx = "".concat(style_manager_evAll, ":");
 var evSector = "".concat(style_manager_evPfx, "sector");
@@ -59193,7 +59785,8 @@ var StyleManager = /** @class */ (function (_super) {
         var model = new common/* Model */.Hn({ targets: [] });
         _this.model = model;
         // Triggers for the selection refresh and properties
-        var ev = 'component:toggled component:update:classes change:state change:device frame:resized selector:type';
+        var eventCmpUpdate = dom_components_types/* ComponentsEvents */.g.update;
+        var ev = "component:toggled ".concat(eventCmpUpdate, ":classes change:state change:device frame:resized selector:type");
         _this.upAll = (0,index_all.debounce)(function () { return _this.__upSel(); }, 0);
         model.listenTo(em, ev, _this.upAll);
         // Clear state target on any component selection change, without debounce (#4208)
@@ -59585,8 +60178,10 @@ var StyleManager = /** @class */ (function (_super) {
             var cssGen = em.CodeManager.getGenerator('css');
             // @ts-ignore
             var cmp = target.toHTML ? target : target.getComponent();
-            var optsSel = { array: true };
+            var optsSel_1 = { array: true };
             var cmpRules = [];
+            var tagNameRules = [];
+            var invisibleAndOtherRules = [];
             var otherRules = [];
             var rules = [];
             var rulesBySelectors = function (values) {
@@ -59594,19 +60189,37 @@ var StyleManager = /** @class */ (function (_super) {
                     ? []
                     : cssC_2.getRules().filter(function (rule) {
                         var rSels = rule.getSelectors().map(function (s) { return s.getFullName(); });
-                        return !!rSels.length && rSels.every(function (rSel) { return values.indexOf(rSel) >= 0; });
+                        // rSels is equal to 0 when rule selectors contain tagName like : p {}, .logo path {}, ul li {}
+                        if (rSels.length === 0) {
+                            return false;
+                        }
+                        return rSels.every(function (rSel) { return values.indexOf(rSel) >= 0; });
                     });
+            };
+            var rulesByTagName = function (tagName) {
+                return !tagName ? [] : cssC_2.getRules().filter(function (rule) { return rule.selectorsToString() === tagName; });
             };
             // Componente related rule
             if (cmp) {
                 cmpRules = cssC_2.getRules("#".concat(cmp.getId()));
-                otherRules = sel ? rulesBySelectors(sel.getSelectors().getFullName(optsSel)) : [];
-                rules = otherRules.concat(cmpRules);
+                tagNameRules = rulesByTagName(cmp.get('tagName'));
+                otherRules = sel ? rulesBySelectors(sel.getSelectors().getFullName(optsSel_1)) : [];
+                rules = otherRules.concat(tagNameRules).concat(cmpRules);
             }
             else {
                 cmpRules = sel ? cssC_2.getRules("#".concat(sel.getId())) : [];
-                otherRules = rulesBySelectors(target.getSelectors().getFullName(optsSel));
-                rules = cmpRules.concat(otherRules);
+                tagNameRules = rulesByTagName((sel === null || sel === void 0 ? void 0 : sel.get('tagName')) || '');
+                // Get rules set on invisible selectors like private one
+                var allCmpClasses = (sel === null || sel === void 0 ? void 0 : sel.getSelectors().getFullName(optsSel_1)) || [];
+                var invisibleSel = allCmpClasses.filter(function (item) {
+                    return target
+                        .getSelectors()
+                        .getFullName(optsSel_1)
+                        .findIndex(function (sel) { return sel === item; }) === -1;
+                });
+                // Get rules set on active and visible selectors
+                invisibleAndOtherRules = rulesBySelectors(invisibleSel.concat(target.getSelectors().getFullName(optsSel_1)));
+                rules = tagNameRules.concat(cmpRules).concat(invisibleAndOtherRules);
             }
             var all = rules
                 .filter(function (rule) { return (!(0,index_all.isUndefined)(state) ? rule.get('state') === state : 1); })
@@ -61079,15 +61692,14 @@ var EditorView_EditorView = /** @class */ (function (_super) {
     view_EditorView_extends(EditorView, _super);
     function EditorView(model) {
         var _this = _super.call(this, { model: model }) || this;
-        //const { model } = this;
-        var _a = model.attributes, Panels = _a.Panels, UndoManager = _a.UndoManager;
+        var Panels = model.Panels, UndoManager = model.UndoManager;
         model.view = _this;
         model.once('change:ready', function () {
             Panels.active();
             Panels.disableButtons();
             UndoManager.clear();
             setTimeout(function () {
-                model.trigger('load', model.get('Editor'));
+                model.trigger('load', model.Editor);
                 model.clearDirtyCount();
             });
         });
@@ -61096,32 +61708,25 @@ var EditorView_EditorView = /** @class */ (function (_super) {
     EditorView.prototype.render = function () {
         var _this = this;
         var _a = this, $el = _a.$el, model = _a.model;
-        var _b = model.attributes, Panels = _b.Panels, Canvas = _b.Canvas;
-        var config = model.config, modules = model.modules;
+        var Panels = model.Panels, Canvas = model.Canvas, config = model.config, modules = model.modules;
         var pfx = config.stylePrefix;
         var classNames = ["".concat(pfx, "editor")];
         !config.customUI && classNames.push("".concat(pfx, "one-bg ").concat(pfx, "two-color"));
-        // @ts-ignore
         var contEl = (0,cash_dom["default"])(config.el || "body ".concat(config.container));
         config.cssIcons && (0,mixins.appendStyles)(config.cssIcons, { unique: true, prepand: true });
         $el.empty();
-        // @ts-ignore
-        if (config.width)
-            contEl.css('width', config.width);
-        // @ts-ignore
-        if (config.height)
-            contEl.css('height', config.height);
+        config.width && contEl.css('width', config.width);
+        config.height && contEl.css('height', config.height);
         $el.append(Canvas.render());
         $el.append(Panels.render());
         // Load shallow editor
-        var shallow = model.get('shallow');
-        var shallowCanvasEl = shallow.get('Canvas').render();
+        var shallow = model.shallow;
+        var shallowCanvasEl = shallow.Canvas.render();
         shallowCanvasEl.style.display = 'none';
         $el.append(shallowCanvasEl);
         $el.attr('class', classNames.join(' '));
-        // @ts-ignore
         contEl.addClass("".concat(pfx, "editor-cont")).empty().append($el);
-        modules.forEach(function (md) { return md.postRender && md.postRender(_this); });
+        modules.forEach(function (md) { var _a; return (_a = md.postRender) === null || _a === void 0 ? void 0 : _a.call(md, _this); });
         return this;
     };
     return EditorView;
@@ -62160,7 +62765,7 @@ var grapesjs = {
     plugins: plugins,
     usePlugin: usePlugin,
     // @ts-ignore Will be replaced on build
-    version: '0.21.10',
+    version: '0.21.11',
     /**
      * Initialize the editor with passed options
      * @param {Object} config Configuration object

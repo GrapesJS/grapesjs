@@ -6,13 +6,13 @@
 [![npm](https://img.shields.io/npm/v/grapesjs.svg)](https://www.npmjs.com/package/grapesjs)
 
 
-<p align="center"><img src="http://grapesjs.com/img/grapesjs-front-page-m.jpg" alt="GrapesJS" width="500" align="center"/></p>
+<p align="center"><img src="http://grapesjs.com/assets/images/grapesjs-front-page-m.jpg" alt="GrapesJS" width="500" align="center"/></p>
 
 
 GrapesJS is a free and open source Web Builder Framework which helps building HTML templates, faster and easily, to be delivered in sites, newsletters or mobile apps. Mainly, GrapesJS was designed to be used inside a [CMS] to speed up the creation of dynamic templates. To better understand this concept check the image below
 
 <br/>
-<p align="center"><img src="http://grapesjs.com/img/gjs-concept.png" alt="GrapesJS - Style Manager" height="400" align="center"/></p>
+<p align="center"><img src="http://grapesjs.com/assets/images/gjs-concept.png" alt="GrapesJS - Style Manager" height="400" align="center"/></p>
 <br/>
 
 Generally any 'template system', that you'd find in various applications like CMS, is composed by the **structure** (HTML), **style** (CSS) and **variables**, which are then replaced with other templates and contents on server-side and rendered on client.
@@ -47,11 +47,11 @@ Newsletter Demo - http://grapesjs.com/demo-newsletter-editor.html<br/>
 
 | Blocks | Style Manager | Layer Manager |
 |--|--|--|
-|<img  src="http://grapesjs.com/img/sc-grapesjs-blocks-prp.jpg"  alt="GrapesJS - Block Manager"  height="400"  align="center"/>|<img  src="http://grapesjs.com/img/sc-grapesjs-style-2.jpg"  alt="GrapesJS - Style Manager"  height="400"  align="center"/>|<img  src="http://grapesjs.com/img/sc-grapesjs-layers-2.jpg"  alt="GrapesJS - Layer Manager"  height="400"  align="center"/>|
+|<img  src="http://grapesjs.com/assets/images/sc-grapesjs-blocks-prp.jpg"  alt="GrapesJS - Block Manager"  height="400"  align="center"/>|<img  src="http://grapesjs.com/assets/images/sc-grapesjs-style-2.jpg"  alt="GrapesJS - Style Manager"  height="400"  align="center"/>|<img  src="http://grapesjs.com/assets/images/sc-grapesjs-layers-2.jpg"  alt="GrapesJS - Layer Manager"  height="400"  align="center"/>|
 
 | Code Viewer | Asset Manager |
 |--|--|
-|<img  src="http://grapesjs.com/img/sc-grapesjs-code.jpg"  alt="GrapesJS - Code Viewer"  height="300"  align="center"/>|<img  src="http://grapesjs.com/img/sc-grapesjs-assets-1.jpg"  alt="GrapesJS - Asset Manager"  height="250"  align="center"/>|
+|<img  src="http://grapesjs.com/assets/images/sc-grapesjs-code.jpg"  alt="GrapesJS - Code Viewer"  height="300"  align="center"/>|<img  src="http://grapesjs.com/assets/images/sc-grapesjs-assets-1.jpg"  alt="GrapesJS - Asset Manager"  height="250"  align="center"/>|
 
 * Local and remote storage
 
@@ -203,7 +203,7 @@ Find out more about plugins here: [Creating plugins](https://grapesjs.com/docs/m
 
 If you like the project and you wish to see it grow, please consider supporting us with a donation of your choice or become a backer/sponsor via [Open Collective](https://opencollective.com/grapesjs)
 
-[![PayPalMe](http://grapesjs.com/img/ppme.png)](https://paypal.me/grapesjs)
+[![PayPalMe](http://grapesjs.com/assets/images/ppme.png)](https://paypal.me/grapesjs)
 [![Bitcoin](https://user-images.githubusercontent.com/11614725/52977952-87235f80-33cf-11e9-9607-7a9a354e1155.png)](https://commerce.coinbase.com/checkout/fc90b940-558d-408b-a166-28a823c98173)
 
 <a href="https://opencollective.com/grapesjs"><img src="https://opencollective.com/grapesjs/tiers/sponsors.svg?avatarHeight=64"></a>
