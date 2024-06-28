@@ -230,20 +230,16 @@ export default class ItemView extends View {
    */
   handleEditEnd(ev?: KeyboardEvent) {
     ev?.stopPropagation();
-    const { em, $el, clsNoEdit, clsEdit } = this;
+    const { em, $el, clsNoEdit, clsEdit, model } = this;
     const inputEl = this.getInputName();
     const name = inputEl.textContent!;
     inputEl.scrollLeft = 0;
     inputEl[inputProp] = 'false';
-    this.setName(name, { component: this.model, propName: 'custom-name' });
+    model.setName(name);
     em.setEditing(false);
     $el.find(`.${this.inputNameCls}`).addClass(clsNoEdit).removeClass(clsEdit);
     // Ensure to always update the layer name #4544
     this.updateName();
-  }
-
-  setName(name: string, { propName }: { propName: string; component?: Component }) {
-    this.model.set(propName, name);
   }
 
   /**

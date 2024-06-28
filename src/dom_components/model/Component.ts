@@ -1348,6 +1348,14 @@ export default class Component extends StyleableModel<ComponentProperties> {
   }
 
   /**
+   * Update component name.
+   * @param {String} name New name.
+   */
+  setName(name?: string, opts: SetOptions = {}) {
+    this.set('custom-name', name, opts);
+  }
+
+  /**
    * Get the icon string
    * @return {String}
    */
