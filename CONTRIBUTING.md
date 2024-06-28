@@ -11,6 +11,36 @@ We welcome any type of contribution, not only code. Like for example:
 - **Money**: We welcome financial contributions in full transparency on our [Open Collective].
 
 
+## Setting up the repository
+
+This is a Node.js project and you need to have Node.js installed on your machine. You can download it from [here](https://nodejs.org/). We test versions 14 and 16 of Node in the CI, so it's recommended to use one of these versions, or the latest of: 16.20.2
+
+```bash
+nvm use 16.20.2
+```
+
+You will then use `yarn` to manage the dependencies and run the scripts. You can install it by running:
+
+```bash
+npm install -g yarn
+```
+
+Then you can clone the repository and install the dependencies:
+
+```bash
+git clone __YOUR_FORK__
+cd grapesjs
+yarn
+```
+
+Finally, you can run the development server:
+
+```bash
+yarn start
+```
+
+Navigate to `http://localhost:8080/` to see the editor in action. The development server will watch for changes in the code and automatically reload the page.
+
 ## Your First Contribution
 
 Working on your first Pull Request? You can learn how from this **free** series, [How to Contribute to an Open Source Project on GitHub](https://app.egghead.io/playlists/how-to-contribute-to-an-open-source-project-on-github).
