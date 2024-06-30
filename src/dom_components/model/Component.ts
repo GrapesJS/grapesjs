@@ -1771,7 +1771,10 @@ export default class Component extends StyleableModel<ComponentProperties> {
 
     if (!cmp) return false;
 
-    return this instanceof cmp;
+    // A tiny hack to make isInstanceOf work properly where there a multiple inheritance
+    const { typeExtends } = this.constructor as typeof Component;
+
+    return this instanceof cmp || typeExtends.has(type);
   }
 
   /**
@@ -1860,6 +1863,8 @@ export default class Component extends StyleableModel<ComponentProperties> {
     const selector = this._getStyleSelector({ id: idPrev });
     selector && selector.set({ name: id, label: id });
   }
+
+  static typeExtends = new Set<string>();
 
   static getDefaults() {
     return result(this.prototype, 'defaults');

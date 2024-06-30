@@ -522,7 +522,7 @@ export default class ComponentManager extends ItemManagerModule<DomComponentsCon
     const extendType = this.getType(extend!);
     const extendViewType = this.getType(extendView!);
     const typeToExtend = extendType ? extendType : compType ? compType : this.getType('default');
-    const modelToExt = typeToExtend.model;
+    const modelToExt = typeToExtend.model as typeof Component;
     const viewToExt = extendViewType ? extendViewType.view : typeToExtend.view;
 
     // Function for extending source object methods
@@ -543,12 +543,16 @@ export default class ComponentManager extends ItemManagerModule<DomComponentsCon
     if (typeof model === 'object') {
       const modelDefaults = { defaults: model.defaults };
       delete model.defaults;
+      const typeExtends = new Set(modelToExt.typeExtends);
+      typeExtends.add(modelToExt.getDefaults().type);
+
       methods.model = modelToExt.extend(
         {
           ...model,
           ...getExtendedObj(extendFn, model, modelToExt),
         },
         {
+          typeExtends,
           isComponent: compType && !extendType && !isComponent ? modelToExt.isComponent : isComponent || (() => 0),
         }
       );
