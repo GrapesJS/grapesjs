@@ -446,6 +446,58 @@ describe('Symbols', () => {
     expect(symbol.getInnerHTML()).toBe('Component');
   });
 
+  test('Symbols are working properly when using resetFromString (text component)', () => {
+    const comp = wrapper.append('<div data-a="b">Component <b id="bld">bold</b></div>')[0];
+    const innerNode = comp.components().at(0);
+    const innerCmp = comp.components().at(1);
+    expect(innerNode.toHTML()).toBe('Component ');
+    expect(innerCmp.getInnerHTML()).toBe('bold');
+
+    const symbol = createSymbol(comp);
+    const comp2 = createSymbol(comp);
+    const symbolInner = symbol.components().at(1);
+    const innerCmp2 = comp2.components().at(1);
+
+    expect(getSymbolInfo(innerCmp)).toEqual({
+      isSymbol: true,
+      main: symbolInner,
+      instances: [innerCmp, innerCmp2],
+      isMain: false,
+      isInstance: true,
+      relatives: [symbolInner, innerCmp2],
+    });
+
+    comp.components().resetFromString('Component2 <b id="bld">bold2</b>');
+    expect(comp.components().at(1)).toBe(innerCmp);
+    expect(comp2.components().at(1)).toBe(innerCmp2);
+    expect(innerCmp.getInnerHTML()).toBe('bold2');
+
+    expect(getSymbolInfo(innerCmp)).toEqual({
+      isSymbol: true,
+      main: symbolInner,
+      instances: [innerCmp, innerCmp2],
+      isMain: false,
+      isInstance: true,
+      relatives: [symbolInner, innerCmp2],
+    });
+
+    expect(getSymbolInfo(innerCmp2)).toEqual({
+      isSymbol: true,
+      main: symbolInner,
+      instances: [innerCmp, innerCmp2],
+      isMain: false,
+      isInstance: true,
+      relatives: [symbolInner, innerCmp],
+    });
+
+    expect(comp.components().at(0).getInnerHTML()).toBe('Component2 ');
+    expect(symbol.components().at(0).getInnerHTML()).toBe('Component2 ');
+    expect(comp2.components().at(0).getInnerHTML()).toBe('Component2 ');
+    expect(innerCmp.getInnerHTML()).toBe('bold2');
+    expect(innerCmp2.getInnerHTML()).toBe('bold2');
+    expect(symbolInner.getInnerHTML()).toBe('bold2');
+  });
+
   test('New component added to an instance is correctly propogated to all others', () => {
     const comp = wrapper.append(compMultipleNodes)[0];
     const compLen = comp.components().length;
