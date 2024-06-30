@@ -331,7 +331,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
 
   __postRemove() {
     const { em } = this;
-    const um = em?.get('UndoManager');
+    const um = em?.UndoManager;
     if (um) {
       um.remove(this.components());
       um.remove(this.getSelectors());

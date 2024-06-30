@@ -413,6 +413,39 @@ describe('Symbols', () => {
     });
   });
 
+  test('Removing a component containing an instance, will remove the reference in the main', () => {
+    const container = wrapper.append('<custom-el></custom-el>')[0];
+    const comp = container.append(simpleComp)[0];
+    const symbol = createSymbol(comp);
+
+    const commonInfo = {
+      isSymbol: true,
+      main: symbol,
+      instances: [comp],
+    };
+
+    expect(getSymbolInfo(symbol)).toEqual({
+      ...commonInfo,
+      isMain: true,
+      isInstance: false,
+      relatives: [comp],
+    });
+    expect(comp.parent()).toEqual(container);
+
+    container.remove();
+
+    expect(getSymbolInfo(symbol)).toEqual({
+      ...commonInfo,
+      isMain: true,
+      isInstance: false,
+      relatives: [],
+      instances: [],
+    });
+
+    // the main doesn't lose its children
+    expect(symbol.getInnerHTML()).toBe('Component');
+  });
+
   test('New component added to an instance is correctly propogated to all others', () => {
     const comp = wrapper.append(compMultipleNodes)[0];
     const compLen = comp.components().length;

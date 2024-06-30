@@ -236,7 +236,7 @@ export const updateSymbolComps = (symbol: Component, m: Component, c: Components
       );
 
     // Propagate remove only if the component is an inner symbol
-    if (!isSymbolRoot(m)) {
+    if (!isSymbolRoot(m) && !o.skipRefsUp) {
       const changed = 'components:remove';
       const { index } = o;
       const parent = m.parent();
