@@ -147,7 +147,7 @@ export interface AddComponentTypeOptions {
   isComponent?: (el: HTMLElement) => boolean | ComponentDefinitionDefined | undefined;
   model?: Partial<ComponentModelDefinition> & ThisType<ComponentModelDefinition & Component>;
   view?: Partial<ComponentViewDefinition> & ThisType<ComponentViewDefinition & ComponentView>;
-  block?: boolean | BlockProperties;
+  block?: boolean | Partial<BlockProperties>;
   extend?: string;
   extendView?: string;
   extendFn?: string[];
