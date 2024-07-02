@@ -292,23 +292,30 @@ export default {
     if (em.get('_cmpDrag')) return em.set('_cmpDrag');
 
     const el = ev.target as HTMLElement;
-    let model = getComponentModel(el);
+    let cmp = getComponentModel(el);
 
-    if (!model) {
+    if (!cmp) {
       let parentEl = el.parentNode;
 
-      while (!model && parentEl && !isDoc(parentEl)) {
-        model = getComponentModel(parentEl);
+      while (!cmp && parentEl && !isDoc(parentEl)) {
+        cmp = getComponentModel(parentEl);
         parentEl = parentEl.parentNode;
       }
     }
 
-    if (model) {
-      // Avoid selection of inner text components during editing
-      if (em.isEditing() && !model.get('textable') && model.isChildOf('text')) {
+    if (cmp) {
+      if (
+        em.isEditing() &&
+        // Avoid selection of inner text components during editing
+        ((!cmp.get('textable') && cmp.isChildOf('text')) ||
+          // Prevents selecting another component if the pointer was pressed and
+          // dragged outside of the editing component
+          em.getEditing() !== cmp)
+      ) {
         return;
       }
-      this.select(model, ev);
+
+      this.select(cmp, ev);
     }
   },
 
