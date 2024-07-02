@@ -181,17 +181,28 @@ export const updateSymbolComps = (symbol: Component, m: Component, c: Components
 
   // Reset
   if (!o) {
+    const coll = m as unknown as Components;
     const toUp = getSymbolsToUpdate(symbol, {
       ...toUpOpts,
       changed: 'components:reset',
     });
-    // @ts-ignore
-    const cmps = m.models as Component[];
+    const cmps = coll.models;
+    const newSymbols = new Set<Component>();
     logSymbol(symbol, 'reset', toUp, { components: cmps });
-    toUp.forEach(symb => {
-      const newMods = cmps.map(mod => mod.clone({ symbol: true }));
-      // @ts-ignore
-      symb.components().reset(newMods, { fromInstance: symbol, ...c });
+
+    toUp.forEach(rel => {
+      const relCmps = rel.components();
+      const toReset = cmps.map((cmp, i) => {
+        // This particular case here is to handle reset from `resetFromString`
+        // where we can receive an array of regulat components or already
+        // existing symbols (updated already before reset)
+        if (!isSymbol(cmp) || newSymbols.has(cmp)) {
+          newSymbols.add(cmp);
+          return cmp.clone({ symbol: true });
+        }
+        return relCmps.at(i);
+      });
+      relCmps.reset(toReset, { fromInstance: symbol, ...c } as any);
     });
     // Add
   } else if (o.add) {
@@ -236,7 +247,7 @@ export const updateSymbolComps = (symbol: Component, m: Component, c: Components
       );
 
     // Propagate remove only if the component is an inner symbol
-    if (!isSymbolRoot(m)) {
+    if (!isSymbolRoot(m) && !o.skipRefsUp) {
       const changed = 'components:remove';
       const { index } = o;
       const parent = m.parent();

@@ -16,7 +16,7 @@ import {
 import ComponentText from './ComponentText';
 import ComponentWrapper from './ComponentWrapper';
 import { ComponentsEvents } from '../types';
-import { isSymbolInstance, isSymbolRoot } from './SymbolUtils';
+import { isSymbolInstance, isSymbolRoot, updateSymbolComps } from './SymbolUtils';
 
 export const getComponentIds = (cmp?: Component | Component[] | Components, res: string[] = []) => {
   if (!cmp) return [];
@@ -205,7 +205,10 @@ Component> {
       }
 
       const inner = removed.components();
-      inner.forEach(it => this.removeChildren(it, coll, opts));
+      inner.forEach(it => {
+        updateSymbolComps(it, it, inner, { ...opts, skipRefsUp: true });
+        this.removeChildren(it, coll, opts);
+      });
     }
 
     // Remove stuff registered in DomComponents.handleChanges

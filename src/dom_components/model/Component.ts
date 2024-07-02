@@ -331,7 +331,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
 
   __postRemove() {
     const { em } = this;
-    const um = em?.get('UndoManager');
+    const um = em?.UndoManager;
     if (um) {
       um.remove(this.components());
       um.remove(this.getSelectors());
@@ -1348,6 +1348,14 @@ export default class Component extends StyleableModel<ComponentProperties> {
   }
 
   /**
+   * Update component name.
+   * @param {String} name New name.
+   */
+  setName(name?: string, opts: SetOptions = {}) {
+    this.set('custom-name', name, opts);
+  }
+
+  /**
    * Get the icon string
    * @return {String}
    */
@@ -1763,7 +1771,10 @@ export default class Component extends StyleableModel<ComponentProperties> {
 
     if (!cmp) return false;
 
-    return this instanceof cmp;
+    // A tiny hack to make isInstanceOf work properly where there a multiple inheritance
+    const { typeExtends } = this.constructor as typeof Component;
+
+    return this instanceof cmp || typeExtends.has(type);
   }
 
   /**
@@ -1852,6 +1863,8 @@ export default class Component extends StyleableModel<ComponentProperties> {
     const selector = this._getStyleSelector({ id: idPrev });
     selector && selector.set({ name: id, label: id });
   }
+
+  static typeExtends = new Set<string>();
 
   static getDefaults() {
     return result(this.prototype, 'defaults');

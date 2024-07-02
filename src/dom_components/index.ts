@@ -53,7 +53,7 @@
  *
  * @module Components
  */
-import { debounce, isArray, isEmpty, isFunction, isString, isSymbol, result } from 'underscore';
+import { debounce, isArray, isBoolean, isEmpty, isFunction, isString, isSymbol, result } from 'underscore';
 import { ItemManagerModule } from '../abstract/Module';
 import { AddOptions, ObjectAny } from '../common';
 import EditorModel from '../editor/model/Editor';
@@ -113,6 +113,7 @@ import {
 } from './model/SymbolUtils';
 import { ComponentsEvents, SymbolInfo } from './types';
 import Symbols from './model/Symbols';
+import { BlockProperties } from '../block_manager/model/Block';
 
 export type ComponentEvent =
   | 'component:create'
@@ -146,6 +147,7 @@ export interface AddComponentTypeOptions {
   isComponent?: (el: HTMLElement) => boolean | ComponentDefinitionDefined | undefined;
   model?: Partial<ComponentModelDefinition> & ThisType<ComponentModelDefinition & Component>;
   view?: Partial<ComponentViewDefinition> & ThisType<ComponentViewDefinition & ComponentView>;
+  block?: boolean | Partial<BlockProperties>;
   extend?: string;
   extendView?: string;
   extendFn?: string[];
@@ -517,12 +519,12 @@ export default class ComponentManager extends ItemManagerModule<DomComponentsCon
    */
   addType(type: string, methods: AddComponentTypeOptions) {
     const { em } = this;
-    const { model = {}, view = {}, isComponent, extend, extendView, extendFn = [], extendFnView = [] } = methods;
+    const { model = {}, view = {}, isComponent, extend, extendView, extendFn = [], extendFnView = [], block } = methods;
     const compType = this.getType(type);
     const extendType = this.getType(extend!);
     const extendViewType = this.getType(extendView!);
     const typeToExtend = extendType ? extendType : compType ? compType : this.getType('default');
-    const modelToExt = typeToExtend.model;
+    const modelToExt = typeToExtend.model as typeof Component;
     const viewToExt = extendViewType ? extendViewType.view : typeToExtend.view;
 
     // Function for extending source object methods
@@ -543,12 +545,16 @@ export default class ComponentManager extends ItemManagerModule<DomComponentsCon
     if (typeof model === 'object') {
       const modelDefaults = { defaults: model.defaults };
       delete model.defaults;
+      const typeExtends = new Set(modelToExt.typeExtends);
+      typeExtends.add(modelToExt.getDefaults().type);
+
       methods.model = modelToExt.extend(
         {
           ...model,
           ...getExtendedObj(extendFn, model, modelToExt),
         },
         {
+          typeExtends,
           isComponent: compType && !extendType && !isComponent ? modelToExt.isComponent : isComponent || (() => 0),
         }
       );
@@ -575,6 +581,16 @@ export default class ComponentManager extends ItemManagerModule<DomComponentsCon
       // @ts-ignore
       methods.id = type;
       this.componentTypes.unshift(methods as any);
+    }
+
+    if (block) {
+      const defBlockProps: BlockProperties = {
+        id: type,
+        label: type,
+        content: { type },
+      };
+      const blockProps: BlockProperties = block === true ? defBlockProps : { ...defBlockProps, ...block };
+      em.Blocks.add(blockProps.id || type, blockProps);
     }
 
     const event = `component:type:${compType ? 'update' : 'add'}`;
