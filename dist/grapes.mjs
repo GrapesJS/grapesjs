@@ -17919,20 +17919,24 @@ var showOffsets;
         if (em.get('_cmpDrag'))
             return em.set('_cmpDrag');
         var el = ev.target;
-        var model = (0,mixins.getComponentModel)(el);
-        if (!model) {
+        var cmp = (0,mixins.getComponentModel)(el);
+        if (!cmp) {
             var parentEl = el.parentNode;
-            while (!model && parentEl && !(0,dom/* isDoc */.Mx)(parentEl)) {
-                model = (0,mixins.getComponentModel)(parentEl);
+            while (!cmp && parentEl && !(0,dom/* isDoc */.Mx)(parentEl)) {
+                cmp = (0,mixins.getComponentModel)(parentEl);
                 parentEl = parentEl.parentNode;
             }
         }
-        if (model) {
-            // Avoid selection of inner text components during editing
-            if (em.isEditing() && !model.get('textable') && model.isChildOf('text')) {
+        if (cmp) {
+            if (em.isEditing() &&
+                // Avoid selection of inner text components during editing
+                ((!cmp.get('textable') && cmp.isChildOf('text')) ||
+                    // Prevents selecting another component if the pointer was pressed and
+                    // dragged outside of the editing component
+                    em.getEditing() !== cmp)) {
                 return;
             }
-            this.select(model, ev);
+            this.select(cmp, ev);
         }
     },
     /**
@@ -27273,14 +27277,24 @@ var updateSymbolComps = function (symbol, m, c, o) {
     var isTemp = m.opt.temporary;
     // Reset
     if (!o) {
+        var coll = m;
         var toUp = getSymbolsToUpdate(symbol, SymbolUtils_assign(SymbolUtils_assign({}, toUpOpts), { changed: 'components:reset' }));
-        // @ts-ignore
-        var cmps_1 = m.models;
+        var cmps_1 = coll.models;
+        var newSymbols_1 = new Set();
         logSymbol(symbol, 'reset', toUp, { components: cmps_1 });
-        toUp.forEach(function (symb) {
-            var newMods = cmps_1.map(function (mod) { return mod.clone({ symbol: true }); });
-            // @ts-ignore
-            symb.components().reset(newMods, SymbolUtils_assign({ fromInstance: symbol }, c));
+        toUp.forEach(function (rel) {
+            var relCmps = rel.components();
+            var toReset = cmps_1.map(function (cmp, i) {
+                // This particular case here is to handle reset from `resetFromString`
+                // where we can receive an array of regulat components or already
+                // existing symbols (updated already before reset)
+                if (!isSymbol(cmp) || newSymbols_1.has(cmp)) {
+                    newSymbols_1.add(cmp);
+                    return cmp.clone({ symbol: true });
+                }
+                return relCmps.at(i);
+            });
+            relCmps.reset(toReset, SymbolUtils_assign({ fromInstance: symbol }, c));
         });
         // Add
     }
@@ -27320,7 +27334,7 @@ var updateSymbolComps = function (symbol, m, c, o) {
             !o.temporary &&
             symb.set(keySymbols, getSymbolInstances(symb).filter(function (i) { return i !== m; }));
         // Propagate remove only if the component is an inner symbol
-        if (!isSymbolRoot(m)) {
+        if (!isSymbolRoot(m) && !o.skipRefsUp) {
             var changed_1 = 'components:remove';
             var index_1 = o.index;
             var parent_1 = m.parent();
@@ -27559,7 +27573,10 @@ var Components = /** @class */ (function (_super) {
                 }
             }
             var inner_1 = removed.components();
-            inner_1.forEach(function (it) { return _this.removeChildren(it, coll, opts); });
+            inner_1.forEach(function (it) {
+                updateSymbolComps(it, it, inner_1, Components_assign(Components_assign({}, opts), { skipRefsUp: true }));
+                _this.removeChildren(it, coll, opts);
+            });
         }
         // Remove stuff registered in DomComponents.handleChanges
         var inner = removed.components();
@@ -29019,7 +29036,7 @@ var Component = /** @class */ (function (_super) {
     };
     Component.prototype.__postRemove = function () {
         var em = this.em;
-        var um = em === null || em === void 0 ? void 0 : em.get('UndoManager');
+        var um = em === null || em === void 0 ? void 0 : em.UndoManager;
         if (um) {
             um.remove(this.components());
             um.remove(this.getSelectors());
@@ -29861,8 +29878,7 @@ var Component = /** @class */ (function (_super) {
     /**
      * Override original clone method
      * @private
-     */
-    /** @ts-ignore */
+     * @ts-ignore */
     Component.prototype.clone = function (opt) {
         if (opt === void 0) { opt = {}; }
         var em = this.em;
@@ -29972,6 +29988,14 @@ var Component = /** @class */ (function (_super) {
             i18nDefName || // Use local component `type` key (eg. `domComponents.names.image`)
             (0,mixins.capitalize)(defName) // Use component `type` key
         );
+    };
+    /**
+     * Update component name.
+     * @param {String} name New name.
+     */
+    Component.prototype.setName = function (name, opts) {
+        if (opts === void 0) { opts = {}; }
+        this.set('custom-name', name, opts);
     };
     /**
      * Get the icon string
@@ -30362,7 +30386,9 @@ var Component = /** @class */ (function (_super) {
         var cmp = (_b = (_a = this.em) === null || _a === void 0 ? void 0 : _a.Components.getType(type)) === null || _b === void 0 ? void 0 : _b.model;
         if (!cmp)
             return false;
-        return this instanceof cmp;
+        // A tiny hack to make isInstanceOf work properly where there a multiple inheritance
+        var typeExtends = this.constructor.typeExtends;
+        return this instanceof cmp || typeExtends.has(type);
     };
     /**
      * Check if the component is a child of some other component (or component type)
@@ -30543,6 +30569,7 @@ var Component = /** @class */ (function (_super) {
             components && Component.checkId(components, styles, list, opts);
         });
     };
+    Component.typeExtends = new Set();
     return Component;
 }(model_StyleableModel));
 /* harmony default export */ const model_Component = (Component);
@@ -36969,7 +36996,7 @@ var ComponentManager = /** @class */ (function (_super) {
      */
     ComponentManager.prototype.addType = function (type, methods) {
         var em = this.em;
-        var _a = methods.model, model = _a === void 0 ? {} : _a, _b = methods.view, view = _b === void 0 ? {} : _b, isComponent = methods.isComponent, extend = methods.extend, extendView = methods.extendView, _c = methods.extendFn, extendFn = _c === void 0 ? [] : _c, _d = methods.extendFnView, extendFnView = _d === void 0 ? [] : _d;
+        var _a = methods.model, model = _a === void 0 ? {} : _a, _b = methods.view, view = _b === void 0 ? {} : _b, isComponent = methods.isComponent, extend = methods.extend, extendView = methods.extendView, _c = methods.extendFn, extendFn = _c === void 0 ? [] : _c, _d = methods.extendFnView, extendFnView = _d === void 0 ? [] : _d, block = methods.block;
         var compType = this.getType(type);
         var extendType = this.getType(extend);
         var extendViewType = this.getType(extendView);
@@ -36998,7 +37025,10 @@ var ComponentManager = /** @class */ (function (_super) {
         if (typeof model === 'object') {
             var modelDefaults_1 = { defaults: model.defaults };
             delete model.defaults;
+            var typeExtends = new Set(modelToExt.typeExtends);
+            typeExtends.add(modelToExt.getDefaults().type);
             methods.model = modelToExt.extend(dom_components_assign(dom_components_assign({}, model), getExtendedObj(extendFn, model, modelToExt)), {
+                typeExtends: typeExtends,
                 isComponent: compType && !extendType && !isComponent ? modelToExt.isComponent : isComponent || (function () { return 0; }),
             });
             // Reassign the defaults getter to the model
@@ -37017,6 +37047,15 @@ var ComponentManager = /** @class */ (function (_super) {
             // @ts-ignore
             methods.id = type;
             this.componentTypes.unshift(methods);
+        }
+        if (block) {
+            var defBlockProps = {
+                id: type,
+                label: type,
+                content: { type: type },
+            };
+            var blockProps = block === true ? defBlockProps : dom_components_assign(dom_components_assign({}, defBlockProps), block);
+            em.Blocks.add(blockProps.id || type, blockProps);
         }
         var event = "component:type:".concat(compType ? 'update' : 'add');
         em === null || em === void 0 ? void 0 : em.trigger(event, compType || methods);
@@ -46538,20 +46577,16 @@ var ItemView = /** @class */ (function (_super) {
      */
     ItemView.prototype.handleEditEnd = function (ev) {
         ev === null || ev === void 0 ? void 0 : ev.stopPropagation();
-        var _a = this, em = _a.em, $el = _a.$el, clsNoEdit = _a.clsNoEdit, clsEdit = _a.clsEdit;
+        var _a = this, em = _a.em, $el = _a.$el, clsNoEdit = _a.clsNoEdit, clsEdit = _a.clsEdit, model = _a.model;
         var inputEl = this.getInputName();
         var name = inputEl.textContent;
         inputEl.scrollLeft = 0;
         inputEl[ItemView_inputProp] = 'false';
-        this.setName(name, { component: this.model, propName: 'custom-name' });
+        model.setName(name);
         em.setEditing(false);
         $el.find(".".concat(this.inputNameCls)).addClass(clsNoEdit).removeClass(clsEdit);
         // Ensure to always update the layer name #4544
         this.updateName();
-    };
-    ItemView.prototype.setName = function (name, _a) {
-        var propName = _a.propName;
-        this.model.set(propName, name);
     };
     /**
      * Get the input containing the name of the component
@@ -62765,7 +62800,7 @@ var grapesjs = {
     plugins: plugins,
     usePlugin: usePlugin,
     // @ts-ignore Will be replaced on build
-    version: '0.21.11',
+    version: '0.21.12',
     /**
      * Initialize the editor with passed options
      * @param {Object} config Configuration object

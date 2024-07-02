@@ -4140,6 +4140,125 @@ declare class Symbols extends Components {
 	refresh(): void;
 	__trgEvent(event: string, props: ObjectAny, isInstance?: boolean): void;
 }
+export declare class Blocks extends CollectionWithCategories<Block> {
+	em: EditorModel;
+	constructor(coll: any[], options: {
+		em: EditorModel;
+	});
+	getCategories(): Categories;
+	handleAdd(model: Block): void;
+}
+/** @private */
+export interface BlockProperties {
+	/**
+	 * Block label, eg. `My block`
+	 */
+	label: string;
+	/**
+	 * The content of the block. Might be an HTML string or a [Component Defintion](/modules/Components.html#component-definition)
+	 */
+	content: string | ComponentDefinition | (string | ComponentDefinition)[];
+	/**
+	 * HTML string for the media/icon of the block, eg. `<svg ...`, `<img ...`, etc.
+	 * @default ''
+	 */
+	media?: string;
+	/**
+	 * Block category, eg. `Basic blocks`
+	 * @default ''
+	 */
+	category?: string | CategoryProperties;
+	/**
+	 * If true, triggers the `active` event on the dropped component.
+	 * @default false
+	 */
+	activate?: boolean;
+	/**
+	 * If true, the dropped component will be selected.
+	 * @default false
+	 */
+	select?: boolean;
+	/**
+	 * If true, all IDs of dropped components and their styles will be changed.
+	 * @default false
+	 */
+	resetId?: boolean;
+	/**
+	 * Disable the block from being interacted.
+	 * @default false
+	 */
+	disable?: boolean;
+	/**
+	 * Custom behavior on click.
+	 * @example
+	 * onClick: (block, editor) => editor.getWrapper().append(block.get('content'))
+	 */
+	onClick?: (block: Block, editor: Editor) => void;
+	/**
+	 * Block attributes
+	 */
+	attributes?: Record<string, any>;
+	id?: string;
+	/**
+	 * @deprecated
+	 */
+	activeOnRender?: boolean;
+}
+/**
+ * @property {String} label Block label, eg. `My block`
+ * @property {String|Object} content The content of the block. Might be an HTML string or a [Component Defintion](/modules/Components.html#component-definition)
+ * @property {String} [media=''] HTML string for the media/icon of the block, eg. `<svg ...`, `<img ...`, etc.
+ * @property {String} [category=''] Block category, eg. `Basic blocks`
+ * @property {Boolean} [activate=false] If true, triggers the `active` event on the dropped component.
+ * @property {Boolean} [select=false] If true, the dropped component will be selected.
+ * @property {Boolean} [resetId=false] If true, all IDs of dropped components and their styles will be changed.
+ * @property {Boolean} [disable=false] Disable the block from being interacted
+ * @property {Function} [onClick] Custom behavior on click, eg. `(block, editor) => editor.getWrapper().append(block.get('content'))`
+ * @property {Object} [attributes={}] Block attributes to apply in the view element
+ *
+ * @module docsjs.Block
+ */
+export declare class Block extends Model<BlockProperties> {
+	defaults(): {
+		label: string;
+		content: string;
+		media: string;
+		category: string;
+		activate: boolean;
+		select: undefined;
+		resetId: boolean;
+		disable: boolean;
+		onClick: undefined;
+		attributes: {};
+	};
+	get category(): Category | undefined;
+	get parent(): Blocks;
+	/**
+	 * Get block id
+	 * @returns {String}
+	 */
+	getId(): string;
+	/**
+	 * Get block label
+	 * @returns {String}
+	 */
+	getLabel(): string;
+	/**
+	 * Get block media
+	 * @returns {String}
+	 */
+	getMedia(): string | undefined;
+	/**
+	 * Get block content
+	 * @returns {Object|String|Array<Object|String>}
+	 */
+	getContent(): string | ComponentDefinition | (string | ComponentDefinition)[] | undefined;
+	/**
+	 * Get block category label
+	 * @returns {String}
+	 */
+	getCategoryLabel(): string;
+}
 export type ComponentEvent = "component:create" | "component:mount" | "component:add" | "component:remove" | "component:remove:before" | "component:clone" | "component:update" | "component:styleUpdate" | "component:selected" | "component:deselected" | "component:toggled" | "component:type:add" | "component:type:update" | "component:drag:start" | "component:drag" | "component:drag:end" | "component:resize";
 export interface ComponentModelDefinition extends IComponent {
 	defaults?: ComponentDefinition | (() => ComponentDefinition);
@@ -4152,6 +4271,7 @@ export interface AddComponentTypeOptions {
 	isComponent?: (el: HTMLElement) => boolean | ComponentDefinitionDefined | undefined;
 	model?: Partial<ComponentModelDefinition> & ThisType<ComponentModelDefinition & Component>;
 	view?: Partial<ComponentViewDefinition> & ThisType<ComponentViewDefinition & ComponentView>;
+	block?: boolean | Partial<BlockProperties>;
 	extend?: string;
 	extendView?: string;
 	extendFn?: string[];
@@ -4795,10 +4915,6 @@ declare class ItemView extends View {
 	 * Handle with the end of editing of the component name
 	 */
 	handleEditEnd(ev?: KeyboardEvent): void;
-	setName(name: string, { propName }: {
-		propName: string;
-		component?: Component;
-	}): void;
 	/**
 	 * Get the input containing the name of the component
 	 * @return {HTMLElement}
@@ -5349,8 +5465,7 @@ export declare class Component extends StyleableModel<ComponentProperties> {
 	/**
 	 * Override original clone method
 	 * @private
-	 */
-	/** @ts-ignore */
+	 * @ts-ignore */
 	clone(opt?: {
 		symbol?: boolean;
 		symbolInv?: boolean;
@@ -5364,6 +5479,11 @@ export declare class Component extends StyleableModel<ComponentProperties> {
 	getName(opts?: {
 		noCustom?: boolean;
 	}): any;
+	/**
+	 * Update component name.
+	 * @param {String} name New name.
+	 */
+	setName(name?: string, opts?: SetOptions): void;
 	/**
 	 * Get the icon string
 	 * @return {String}
@@ -5543,6 +5663,7 @@ export declare class Component extends StyleableModel<ComponentProperties> {
 	_idUpdated(m: any, v: any, opts?: {
 		idUpdate?: boolean;
 	}): this | undefined;
+	static typeExtends: Set<string>;
 	static getDefaults(): any;
 	static isComponent(el: HTMLElement, opts?: any): ComponentDefinitionDefined | boolean | undefined;
 	static ensureInList(model: Component): void;
@@ -5713,125 +5834,6 @@ export interface AssetManagerConfig {
 	 * @deprecated
 	 */
 	dropzoneContent?: string;
-}
-export declare class Blocks extends CollectionWithCategories<Block> {
-	em: EditorModel;
-	constructor(coll: any[], options: {
-		em: EditorModel;
-	});
-	getCategories(): Categories;
-	handleAdd(model: Block): void;
-}
-/** @private */
-export interface BlockProperties {
-	/**
-	 * Block label, eg. `My block`
-	 */
-	label: string;
-	/**
-	 * The content of the block. Might be an HTML string or a [Component Defintion](/modules/Components.html#component-definition)
-	 */
-	content: string | ComponentDefinition | (string | ComponentDefinition)[];
-	/**
-	 * HTML string for the media/icon of the block, eg. `<svg ...`, `<img ...`, etc.
-	 * @default ''
-	 */
-	media?: string;
-	/**
-	 * Block category, eg. `Basic blocks`
-	 * @default ''
-	 */
-	category?: string | CategoryProperties;
-	/**
-	 * If true, triggers the `active` event on the dropped component.
-	 * @default false
-	 */
-	activate?: boolean;
-	/**
-	 * If true, the dropped component will be selected.
-	 * @default false
-	 */
-	select?: boolean;
-	/**
-	 * If true, all IDs of dropped components and their styles will be changed.
-	 * @default false
-	 */
-	resetId?: boolean;
-	/**
-	 * Disable the block from being interacted.
-	 * @default false
-	 */
-	disable?: boolean;
-	/**
-	 * Custom behavior on click.
-	 * @example
-	 * onClick: (block, editor) => editor.getWrapper().append(block.get('content'))
-	 */
-	onClick?: (block: Block, editor: Editor) => void;
-	/**
-	 * Block attributes
-	 */
-	attributes?: Record<string, any>;
-	id?: string;
-	/**
-	 * @deprecated
-	 */
-	activeOnRender?: boolean;
-}
-/**
- * @property {String} label Block label, eg. `My block`
- * @property {String|Object} content The content of the block. Might be an HTML string or a [Component Defintion](/modules/Components.html#component-definition)
- * @property {String} [media=''] HTML string for the media/icon of the block, eg. `<svg ...`, `<img ...`, etc.
- * @property {String} [category=''] Block category, eg. `Basic blocks`
- * @property {Boolean} [activate=false] If true, triggers the `active` event on the dropped component.
- * @property {Boolean} [select=false] If true, the dropped component will be selected.
- * @property {Boolean} [resetId=false] If true, all IDs of dropped components and their styles will be changed.
- * @property {Boolean} [disable=false] Disable the block from being interacted
- * @property {Function} [onClick] Custom behavior on click, eg. `(block, editor) => editor.getWrapper().append(block.get('content'))`
- * @property {Object} [attributes={}] Block attributes to apply in the view element
- *
- * @module docsjs.Block
- */
-export declare class Block extends Model<BlockProperties> {
-	defaults(): {
-		label: string;
-		content: string;
-		media: string;
-		category: string;
-		activate: boolean;
-		select: undefined;
-		resetId: boolean;
-		disable: boolean;
-		onClick: undefined;
-		attributes: {};
-	};
-	get category(): Category | undefined;
-	get parent(): Blocks;
-	/**
-	 * Get block id
-	 * @returns {String}
-	 */
-	getId(): string;
-	/**
-	 * Get block label
-	 * @returns {String}
-	 */
-	getLabel(): string;
-	/**
-	 * Get block media
-	 * @returns {String}
-	 */
-	getMedia(): string | undefined;
-	/**
-	 * Get block content
-	 * @returns {Object|String|Array<Object|String>}
-	 */
-	getContent(): string | ComponentDefinition | (string | ComponentDefinition)[] | undefined;
-	/**
-	 * Get block category label
-	 * @returns {String}
-	 */
-	getCategoryLabel(): string;
 }
 export interface BlockManagerConfig {
 	/**
