@@ -179,7 +179,7 @@ const ParserHtml = (em?: EditorModel, config: ParserConfig & { returnArray?: boo
               if (typeof obj !== 'object') {
                 obj = { type: compType.id };
               }
-              result = obj
+              result = obj;
               break;
             }
           }
@@ -280,10 +280,13 @@ const ParserHtml = (em?: EditorModel, config: ParserConfig & { returnArray?: boo
             continue;
           }
 
-          // Throw away empty nodes (keep spaces)
+          // Try to keep meaningful whitespaces when possible (#5984)
+          // Ref: https://github.com/GrapesJS/grapesjs/pull/5719#discussion_r1518531999
           if (!opts.keepEmptyTextNodes) {
-            const content = node.nodeValue;
-            if (content != ' ' && !content!.trim()) {
+            const content = node.nodeValue || '';
+            const isFirstOrLast = i === 0 || i === nodesLen - 1;
+            const hasNewLive = content.includes('\n');
+            if (content != ' ' && !content.trim() && (isFirstOrLast || hasNewLive)) {
               continue;
             }
           }

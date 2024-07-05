@@ -493,6 +493,63 @@ describe('ParserHtml', () => {
     expect(obj.parse(str).html).toEqual(result);
   });
 
+  test('Cleanup useless empty whitespaces', () => {
+    const str = `<div>
+      <p>TestText</p>
+    </div>`;
+    const result = [
+      {
+        tagName: 'div',
+        components: [
+          {
+            tagName: 'p',
+            components: { type: 'textnode', content: 'TestText' },
+            type: 'text',
+          },
+        ],
+      },
+    ];
+    expect(obj.parse(str).html).toEqual(result);
+  });
+
+  test('Keep meaningful whitespaces', () => {
+    const str = `<div>
+      <p>A</p> <p>B</p>   <p>C</p>&nbsp;<p>D</p>
+    </div>`;
+    const result = [
+      {
+        tagName: 'div',
+        type: 'text',
+        components: [
+          {
+            tagName: 'p',
+            components: { type: 'textnode', content: 'A' },
+            type: 'text',
+          },
+          { type: 'textnode', content: ' ', tagName: '' },
+          {
+            tagName: 'p',
+            components: { type: 'textnode', content: 'B' },
+            type: 'text',
+          },
+          { type: 'textnode', content: '   ', tagName: '' },
+          {
+            tagName: 'p',
+            components: { type: 'textnode', content: 'C' },
+            type: 'text',
+          },
+          { type: 'textnode', content: ' ', tagName: '' },
+          {
+            tagName: 'p',
+            components: { type: 'textnode', content: 'D' },
+            type: 'text',
+          },
+        ],
+      },
+    ];
+    expect(obj.parse(str).html).toEqual(result);
+  });
+
   test('Parse node with model attributes to fetch', () => {
     const str =
       '<div id="test1" data-test="test-value" data-gjs-draggable=".myselector" data-gjs-stuff="test">test2 </div>';
