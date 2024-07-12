@@ -3,11 +3,11 @@ import Selectors from '../../../../src/selector_manager/model/Selectors';
 
 describe('Selector', () => {
   let obj: Selector;
-  const nameToEscape = '@Te sT:*[]().%/+#';
-  const nameEscaped = '@Te-sT:-[]().%/+#';
+  const nameToEscape = '  @Te    sT:*[]!"£$%&/()=?^{}(). %/+#';
+  const nameEscaped = '@Te-sT:*[]!"£$%&/()=?^{}().-%/+#';
 
   beforeEach(() => {
-    obj = new Selector({});
+    obj = new Selector({ name: '' });
   });
 
   test('Has name property', () => {
