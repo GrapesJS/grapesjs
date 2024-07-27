@@ -101,7 +101,7 @@ export default class PageManager extends ItemManagerModule<PageManagerConfig, Pa
     const { em, events } = this;
     const lm = em.Layers;
     const mainComp = page.getMainComponent();
-    lm && mainComp && lm.setRoot(mainComp as any);
+    lm && mainComp && lm.setRoot(mainComp);
     em.trigger(events.select, page, m.previous('selected'));
     this.__onChange(chnSel, page, opts);
   }
