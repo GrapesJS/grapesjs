@@ -9,20 +9,20 @@ set -e
 # navigate into the build output directory
 cd docs/.vuepress/dist
 
-# I need to deploy all the documentation inside docs folder
+# Need to deploy all the documentation inside docs folder
 mkdir docs-new
 
 # move all the files from the current directory in docs
 mv `\ls -1 ./ | grep -v docs-new` ./docs-new
 
 # fetch the current site, remove the old docs dir and make current the new one
-git clone -b gh-pages https://github.com/GrapesJS/grapesjs.git tmp && mv tmp/* tmp/.* . && rm -rf tmp
-rm -fR docs
-mv ./docs-new ./docs
+git clone -b main https://github.com/GrapesJS/website.git tmp && mv tmp/* tmp/.* . && rm -rf tmp
+rm -fR public/docs
+mv ./docs-new ./public/docs
 
 # stage all and commit
 git add -A
 git commit -m 'deploy docs'
-git push https://artf@github.com/GrapesJS/grapesjs.git gh-pages
-# surge --domain grapesjs.surge.sh
+git push https://artf@github.com/GrapesJS/website.git main
+
 cd -

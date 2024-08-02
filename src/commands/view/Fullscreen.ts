@@ -72,12 +72,10 @@ export default {
     const pfx = this.enable(targetEl || editor.getContainer());
     this.fsChanged = this.fsChanged.bind(this, pfx);
     document.addEventListener(pfx + 'fullscreenchange', this.fsChanged);
-    editor.trigger('change:canvasOffset');
   },
 
   stop(editor, sender) {
     if (sender && sender.set) sender.set('active', false);
     this.disable();
-    if (editor) editor.trigger('change:canvasOffset');
   },
 } as CommandObject<{ target?: HTMLElement | string }, { [k: string]: any }>;

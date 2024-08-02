@@ -1,24 +1,17 @@
 import { each, isArray, isFunction, isUndefined } from 'underscore';
-import { ObjectAny } from '../../common';
-import { CssRuleJSON } from '../../css_composer/model/CssRule';
-import { ComponentDefinitionDefined } from '../../dom_components/model/types';
+import { ObjectAny, ObjectStrings } from '../../common';
+import { ComponentDefinitionDefined, ComponentStackItem } from '../../dom_components/model/types';
 import EditorModel from '../../editor/model/Editor';
-import { HTMLParserOptions, ParserConfig } from '../config/config';
+import { HTMLParseResult, HTMLParserOptions, ParseNodeOptions, ParserConfig } from '../config/config';
 import BrowserParserHtml from './BrowserParserHtml';
-
-type StringObject = Record<string, string>;
-
-type HTMLParseResult = {
-  html: ComponentDefinitionDefined | ComponentDefinitionDefined[]; // TODO replace with components
-  css?: CssRuleJSON[];
-};
+import { doctypeToString } from '../../utils/dom';
 
 const modelAttrStart = 'data-gjs-';
 const event = 'parse:html';
 
 const ParserHtml = (em?: EditorModel, config: ParserConfig & { returnArray?: boolean } = {}) => {
   return {
-    compTypes: '',
+    compTypes: [] as ComponentStackItem[],
 
     modelAttrStart,
 
@@ -50,7 +43,7 @@ const ParserHtml = (em?: EditorModel, config: ParserConfig & { returnArray?: boo
      */
     splitPropsFromAttr(attr: ObjectAny = {}) {
       const props: ObjectAny = {};
-      const attrs: StringObject = {};
+      const attrs: ObjectStrings = {};
 
       each(attr, (value, key) => {
         if (key.indexOf(this.modelAttrStart) === 0) {
@@ -131,159 +124,175 @@ const ParserHtml = (em?: EditorModel, config: ParserConfig & { returnArray?: boo
       return result;
     },
 
+    parseNodeAttr(node: HTMLElement, result?: ComponentDefinitionDefined) {
+      const model = result || {};
+      const attrs = node.attributes || [];
+      const attrsLen = attrs.length;
+
+      for (let i = 0; i < attrsLen; i++) {
+        const nodeName = attrs[i].nodeName;
+        let nodeValue: string | boolean = attrs[i].nodeValue!;
+
+        if (nodeName == 'style') {
+          model.style = this.parseStyle(nodeValue);
+        } else if (nodeName == 'class') {
+          model.classes = this.parseClass(nodeValue);
+        } else if (nodeName == 'contenteditable') {
+          continue;
+        } else if (nodeName.indexOf(this.modelAttrStart) === 0) {
+          const propsResult = this.getPropAttribute(nodeName, nodeValue);
+          model[propsResult.name] = propsResult.value;
+        } else {
+          // @ts-ignore Check for attributes from props (eg. required, disabled)
+          if (nodeValue === '' && node[nodeName] === true) {
+            nodeValue = true;
+          }
+
+          if (!model.attributes) {
+            model.attributes = {};
+          }
+
+          model.attributes[nodeName] = nodeValue;
+        }
+      }
+
+      return model;
+    },
+
+    detectNode(node: HTMLElement, opts: ParseNodeOptions = {}) {
+      const { compTypes } = this;
+      let result: ComponentDefinitionDefined = {};
+
+      if (compTypes) {
+        const type = node.getAttribute?.(`${this.modelAttrStart}type`);
+
+        // If the type is already defined, use it
+        if (type) {
+          result = { type };
+        } else {
+          // Find the component type
+          for (let i = 0; i < compTypes.length; i++) {
+            const compType = compTypes[i];
+            let obj = compType.model.isComponent(node, opts);
+
+            if (obj) {
+              if (typeof obj !== 'object') {
+                obj = { type: compType.id };
+              }
+              result = obj;
+              break;
+            }
+          }
+        }
+      }
+
+      return result;
+    },
+
+    parseNode(node: HTMLElement, opts: ParseNodeOptions = {}) {
+      const nodes = (node as HTMLTemplateElement).content?.childNodes || node.childNodes;
+      const nodesLen = nodes.length;
+      let model = this.detectNode(node, opts);
+
+      if (!model.tagName) {
+        const tag = node.tagName || '';
+        const ns = node.namespaceURI || '';
+        model.tagName = tag && ns === 'http://www.w3.org/1999/xhtml' ? tag.toLowerCase() : tag;
+      }
+
+      model = this.parseNodeAttr(node, model);
+
+      // Check for custom void elements (valid in XML)
+      if (!nodesLen && `${node.outerHTML}`.slice(-2) === '/>') {
+        model.void = true;
+      }
+
+      // Check for nested elements but avoid it if already provided
+      if (nodesLen && !model.components && !opts.skipChildren) {
+        // Avoid infinite nested text nodes
+        const firstChild = nodes[0];
+
+        // If there is only one child and it's a TEXTNODE
+        // just make it content of the current node
+        if (nodesLen === 1 && firstChild.nodeType === 3) {
+          !model.type && (model.type = 'text');
+          model.components = {
+            type: 'textnode',
+            content: firstChild.nodeValue,
+          };
+        } else {
+          model.components = this.parseNodes(node, {
+            ...opts,
+            inSvg: opts.inSvg || model.type === 'svg',
+          });
+        }
+      }
+
+      // If all children are texts and there is any textnode inside, the parent should
+      // be text too otherwise it won't be possible to edit texnodes.
+      const comps = model.components;
+      if (!model.type && comps?.length) {
+        const { textTypes = [], textTags = [] } = config;
+        let allTxt = true;
+        let foundTextNode = false;
+
+        for (let i = 0; i < comps.length; i++) {
+          const comp = comps[i];
+          const cType = comp.type;
+
+          if (!textTypes.includes(cType) && !textTags.includes(comp.tagName)) {
+            allTxt = false;
+            break;
+          }
+
+          if (cType === 'textnode') {
+            foundTextNode = true;
+          }
+        }
+
+        if (allTxt && foundTextNode) {
+          model.type = 'text';
+        }
+      }
+
+      return model;
+    },
+
     /**
      * Get data from the node element
      * @param  {HTMLElement} el DOM element to traverse
      * @return {Array<Object>}
      */
-    parseNode(el: HTMLElement, opts: ObjectAny = {}) {
+    parseNodes(el: HTMLElement, opts: ParseNodeOptions = {}) {
       const result: ComponentDefinitionDefined[] = [];
-      const nodes = el.childNodes;
+      const nodes = (el as HTMLTemplateElement).content?.childNodes || el.childNodes;
+      const nodesLen = nodes.length;
 
-      for (var i = 0, len = nodes.length; i < len; i++) {
+      for (let i = 0; i < nodesLen; i++) {
         const node = nodes[i] as HTMLElement;
-        const attrs = node.attributes || [];
-        const attrsLen = attrs.length;
         const nodePrev = result[result.length - 1];
-        const nodeChild = node.childNodes.length;
-        const ct = this.compTypes;
-        let model: ComponentDefinitionDefined = {}; // TODO use component properties
+        const model = this.parseNode(node, opts);
 
-        // Start with understanding what kind of component it is
-        if (ct) {
-          let obj: any = '';
-          let type = node.getAttribute && node.getAttribute(`${this.modelAttrStart}type`);
-
-          // If the type is already defined, use it
-          if (type) {
-            model = { type };
-          } else {
-            // Iterate over all available Component Types and
-            // the first with a valid result will be that component
-            for (let it = 0; it < ct.length; it++) {
-              const compType = ct[it];
-              // @ts-ignore
-              obj = compType.model.isComponent(node, opts);
-
-              if (obj) {
-                if (typeof obj !== 'object') {
-                  // @ts-ignore
-                  obj = { type: compType.id };
-                }
-                break;
-              }
-            }
-
-            model = obj;
-          }
-        }
-
-        // Set tag name if not yet done
-        if (!model.tagName) {
-          const tag = node.tagName || '';
-          const ns = node.namespaceURI || '';
-          model.tagName = tag && ns === 'http://www.w3.org/1999/xhtml' ? tag.toLowerCase() : tag;
-        }
-
-        if (attrsLen) {
-          model.attributes = {};
-        }
-
-        // Parse attributes
-        for (let j = 0; j < attrsLen; j++) {
-          const nodeName = attrs[j].nodeName;
-          let nodeValue: string | boolean = attrs[j].nodeValue!;
-
-          // Isolate attributes
-          if (nodeName == 'style') {
-            model.style = this.parseStyle(nodeValue);
-          } else if (nodeName == 'class') {
-            model.classes = this.parseClass(nodeValue);
-          } else if (nodeName == 'contenteditable') {
-            continue;
-          } else if (nodeName.indexOf(this.modelAttrStart) === 0) {
-            const propsResult = this.getPropAttribute(nodeName, nodeValue);
-            model[propsResult.name] = propsResult.value;
-          } else {
-            // @ts-ignore Check for attributes from props (eg. required, disabled)
-            if (nodeValue === '' && node[nodeName] === true) {
-              nodeValue = true;
-            }
-
-            model.attributes[nodeName] = nodeValue;
-          }
-        }
-
-        // Check for nested elements but avoid it if already provided
-        if (nodeChild && !model.components) {
-          // Avoid infinite nested text nodes
-          const firstChild = node.childNodes[0];
-
-          // If there is only one child and it's a TEXTNODE
-          // just make it content of the current node
-          if (nodeChild === 1 && firstChild.nodeType === 3) {
-            !model.type && (model.type = 'text');
-            model.components = {
-              type: 'textnode',
-              content: firstChild.nodeValue,
-            };
-          } else {
-            model.components = this.parseNode(node, {
-              ...opts,
-              inSvg: opts.inSvg || model.type === 'svg',
-            });
-          }
-        }
-
-        // Check if it's a text node and if could be moved to the prevous model
-        if (model.type == 'textnode') {
-          if (nodePrev && nodePrev.type == 'textnode') {
+        // Check if it's a text node and if it could be moved to the prevous one
+        if (model.type === 'textnode') {
+          if (nodePrev?.type === 'textnode') {
             nodePrev.content += model.content;
             continue;
           }
 
-          // Throw away empty nodes (keep spaces)
+          // Try to keep meaningful whitespaces when possible (#5984)
+          // Ref: https://github.com/GrapesJS/grapesjs/pull/5719#discussion_r1518531999
           if (!opts.keepEmptyTextNodes) {
-            const content = node.nodeValue;
-            if (content != ' ' && !content!.trim()) {
+            const content = node.nodeValue || '';
+            const isFirstOrLast = i === 0 || i === nodesLen - 1;
+            const hasNewLive = content.includes('\n');
+            if (content != ' ' && !content.trim() && (isFirstOrLast || hasNewLive)) {
               continue;
             }
           }
         }
 
-        // Check for custom void elements (valid in XML)
-        if (!nodeChild && `${node.outerHTML}`.slice(-2) === '/>') {
-          model.void = true;
-        }
-
-        // If all children are texts and there is some textnode the parent should
-        // be text too otherwise I'm unable to edit texnodes
-        const comps = model.components;
-        if (!model.type && comps) {
-          const { textTypes = [], textTags = [] } = config;
-          let allTxt = 1;
-          let foundTextNode = 0;
-
-          for (let ci = 0; ci < comps.length; ci++) {
-            const comp = comps[ci];
-            const cType = comp.type;
-
-            if (!textTypes.includes(cType) && !textTags.includes(comp.tagName)) {
-              allTxt = 0;
-              break;
-            }
-
-            if (cType === 'textnode') {
-              foundTextNode = 1;
-            }
-          }
-
-          if (allTxt && foundTextNode) {
-            model.type = 'text';
-          }
-        }
-
-        // If tagName is still empty and is not a textnode, do not push it
+        // If the tagName is empty and it's not a textnode, skip it
         if (!model.tagName && isUndefined(model.content)) {
           continue;
         }
@@ -303,15 +312,25 @@ const ParserHtml = (em?: EditorModel, config: ParserConfig & { returnArray?: boo
     parse(str: string, parserCss?: any, opts: HTMLParserOptions = {}) {
       const conf = em?.get('Config') || {};
       const res: HTMLParseResult = { html: [] };
-      const cf: ObjectAny = { ...config, ...opts };
+      const cf = { ...config, ...opts };
       const options = {
         ...config.optionsHtml,
         // @ts-ignore Support previous `configParser.htmlType` option
         htmlType: config.optionsHtml?.htmlType || config.htmlType,
         ...opts,
       };
-      const el = isFunction(cf.parserHtml) ? cf.parserHtml(str, options) : BrowserParserHtml(str, options);
-      const scripts = el.querySelectorAll('script');
+      const { preParser, asDocument } = options;
+      const input = isFunction(preParser) ? preParser(str, { editor: em?.getEditor()! }) : str;
+      const parseRes = isFunction(cf.parserHtml) ? cf.parserHtml(input, options) : BrowserParserHtml(input, options);
+      let root = parseRes as HTMLElement;
+      const docEl = parseRes as Document;
+
+      if (asDocument) {
+        root = docEl.documentElement;
+        res.doctype = doctypeToString(docEl.doctype);
+      }
+
+      const scripts = root.querySelectorAll('script');
       let i = scripts.length;
 
       // Support previous `configMain.allowScripts` option
@@ -319,48 +338,59 @@ const ParserHtml = (em?: EditorModel, config: ParserConfig & { returnArray?: boo
 
       // Remove script tags
       if (!allowScripts) {
-        while (i--) scripts[i].parentNode.removeChild(scripts[i]);
+        while (i--) scripts[i].parentNode?.removeChild(scripts[i]);
       }
 
       // Remove unsafe attributes
-      if (!options.allowUnsafeAttr) {
-        this.__clearUnsafeAttr(el);
+      if (!options.allowUnsafeAttr || !options.allowUnsafeAttrValue) {
+        this.__sanitizeNode(root, options);
       }
 
       // Detach style tags and parse them
       if (parserCss) {
-        const styles = el.querySelectorAll('style');
+        const styles = root.querySelectorAll('style');
         let j = styles.length;
         let styleStr = '';
 
         while (j--) {
           styleStr = styles[j].innerHTML + styleStr;
-          styles[j].parentNode.removeChild(styles[j]);
+          styles[j].parentNode?.removeChild(styles[j]);
         }
 
         if (styleStr) res.css = parserCss.parse(styleStr);
       }
 
-      em && em.trigger(`${event}:root`, { input: str, root: el });
-      const result = this.parseNode(el, cf);
-      // I have to keep it otherwise it breaks the DomComponents.addComponent (returns always array)
-      const resHtml = result.length === 1 && !cf.returnArray ? result[0] : result;
+      em?.trigger(`${event}:root`, { input, root: root });
+      let resHtml: HTMLParseResult['html'] = [];
+
+      if (asDocument) {
+        res.head = this.parseNode(docEl.head, cf);
+        res.root = this.parseNodeAttr(root);
+        resHtml = this.parseNode(docEl.body, cf);
+      } else {
+        const result = this.parseNodes(root, cf);
+        // I have to keep it otherwise it breaks the DomComponents.addComponent (returns always array)
+        resHtml = result.length === 1 && !cf.returnArray ? result[0] : result;
+      }
+
       res.html = resHtml;
-      em && em.trigger(event, { input: str, output: res });
+      em?.trigger(event, { input, output: res });
 
       return res;
     },
 
-    __clearUnsafeAttr(node: HTMLElement) {
+    __sanitizeNode(node: HTMLElement, opts: HTMLParserOptions) {
       const attrs = node.attributes || [];
       const nodes = node.childNodes || [];
       const toRemove: string[] = [];
       each(attrs, attr => {
         const name = attr.nodeName || '';
-        name.indexOf('on') === 0 && toRemove.push(name);
+        const value = attr.nodeValue || '';
+        !opts.allowUnsafeAttr && name.startsWith('on') && toRemove.push(name);
+        !opts.allowUnsafeAttrValue && value.startsWith('javascript:') && toRemove.push(name);
       });
       toRemove.map(name => node.removeAttribute(name));
-      each(nodes, node => this.__clearUnsafeAttr(node as HTMLElement));
+      each(nodes, node => this.__sanitizeNode(node as HTMLElement, opts));
     },
   };
 };

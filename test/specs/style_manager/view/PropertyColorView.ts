@@ -91,7 +91,7 @@ describe('PropertyColorView', () => {
   describe('Init property', () => {
     beforeEach(() => {
       em = new Editor();
-      component = new Component({}, { em });
+      component = new Component({}, { em, config: em.Components.config });
       model = new Property({
         type: 'color',
         property: propName,

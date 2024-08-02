@@ -16,7 +16,7 @@ describe('ClassTagsView', () => {
   let em: Editor;
   let compTest: Component;
   const getSelectorNames = (arr: Selector[] | Selectors) => arr.map(item => item.getFullName());
-  const newComponent = (obj: any) => new Component(obj, { em });
+  const newComponent = (obj: any) => new Component(obj, { em, config: em.Components.config });
   const newRule = (obj: any) => new Rule(obj, { em });
 
   beforeAll(() => {
@@ -45,7 +45,7 @@ describe('ClassTagsView', () => {
       },
     };
 
-    compTest = new Component({}, { em });
+    compTest = new Component({}, { em, config: em.Components.config });
     testContext.compTargetStub = compTest;
 
     fixtures.innerHTML = '';

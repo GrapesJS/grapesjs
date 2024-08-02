@@ -15,7 +15,7 @@ describe('ParserHtml', () => {
       textTypes: ['text', 'textnode', 'comment'],
       returnArray: true,
     });
-    obj.compTypes = dom.componentTypes as any;
+    obj.compTypes = dom.componentTypes;
   });
 
   test('Simple div node', () => {
@@ -493,6 +493,63 @@ describe('ParserHtml', () => {
     expect(obj.parse(str).html).toEqual(result);
   });
 
+  test('Cleanup useless empty whitespaces', () => {
+    const str = `<div>
+      <p>TestText</p>
+    </div>`;
+    const result = [
+      {
+        tagName: 'div',
+        components: [
+          {
+            tagName: 'p',
+            components: { type: 'textnode', content: 'TestText' },
+            type: 'text',
+          },
+        ],
+      },
+    ];
+    expect(obj.parse(str).html).toEqual(result);
+  });
+
+  test('Keep meaningful whitespaces', () => {
+    const str = `<div>
+      <p>A</p> <p>B</p>   <p>C</p>&nbsp;<p>D</p>
+    </div>`;
+    const result = [
+      {
+        tagName: 'div',
+        type: 'text',
+        components: [
+          {
+            tagName: 'p',
+            components: { type: 'textnode', content: 'A' },
+            type: 'text',
+          },
+          { type: 'textnode', content: ' ', tagName: '' },
+          {
+            tagName: 'p',
+            components: { type: 'textnode', content: 'B' },
+            type: 'text',
+          },
+          { type: 'textnode', content: '   ', tagName: '' },
+          {
+            tagName: 'p',
+            components: { type: 'textnode', content: 'C' },
+            type: 'text',
+          },
+          { type: 'textnode', content: ' ', tagName: '' },
+          {
+            tagName: 'p',
+            components: { type: 'textnode', content: 'D' },
+            type: 'text',
+          },
+        ],
+      },
+    ];
+    expect(obj.parse(str).html).toEqual(result);
+  });
+
   test('Parse node with model attributes to fetch', () => {
     const str =
       '<div id="test1" data-test="test-value" data-gjs-draggable=".myselector" data-gjs-stuff="test">test2 </div>';
@@ -535,7 +592,6 @@ describe('ParserHtml', () => {
     const result = [
       {
         tagName: 'div',
-        attributes: {},
         type: 'text',
         test: {
           prop1: 'value1',
@@ -553,7 +609,6 @@ describe('ParserHtml', () => {
     const result = [
       {
         tagName: 'div',
-        attributes: {},
         type: 'text',
         test: ['value1', 'value2'],
         components: { type: 'textnode', content: 'test2 ' },
@@ -599,5 +654,152 @@ describe('ParserHtml', () => {
       },
     ];
     expect(obj.parse(str).html).toEqual(result);
+  });
+
+  test('<template> with content is properly parsed', () => {
+    const str = `<template class="test">
+      <tr>
+        <td>Cell</td>
+      </tr>
+    </template>`;
+    const result = [
+      {
+        tagName: 'template',
+        classes: ['test'],
+        components: [
+          {
+            type: 'row',
+            tagName: 'tr',
+            components: [
+              {
+                type: 'cell',
+                tagName: 'td',
+                components: { type: 'textnode', content: 'Cell' },
+              },
+            ],
+          },
+        ],
+      },
+    ];
+    expect(obj.parse(str).html).toEqual(result);
+  });
+
+  describe('Options', () => {
+    test('Remove unsafe attributes', () => {
+      const str = '<img src="path/img" data-test="1" class="test" onload="unsafe"/>';
+      const result = {
+        type: 'image',
+        tagName: 'img',
+        classes: ['test'],
+        attributes: {
+          src: 'path/img',
+          'data-test': '1',
+        },
+      };
+      expect(obj.parse(str).html).toEqual([result]);
+      expect(obj.parse(str, null, { allowUnsafeAttr: true }).html).toEqual([
+        {
+          ...result,
+          attributes: {
+            ...result.attributes,
+            onload: 'unsafe',
+          },
+        },
+      ]);
+    });
+
+    test('Remove unsafe attribute values', () => {
+      const str = '<iframe src="javascript:alert(1)"></iframe>';
+      const result = {
+        type: 'iframe',
+        tagName: 'iframe',
+      };
+      expect(obj.parse(str).html).toEqual([result]);
+      expect(obj.parse(str, null, { allowUnsafeAttrValue: true }).html).toEqual([
+        {
+          ...result,
+          attributes: {
+            src: 'javascript:alert(1)',
+          },
+        },
+      ]);
+    });
+
+    test('Custom preParser option', () => {
+      const str = '<iframe src="javascript:alert(1)"></iframe>';
+      const result = {
+        type: 'iframe',
+        tagName: 'iframe',
+        attributes: {
+          src: 'test:alert(1)',
+        },
+      };
+      const preParser = (str: string) => str.replace('javascript:', 'test:');
+      expect(obj.parse(str, null, { preParser }).html).toEqual([result]);
+    });
+
+    test('parsing as document', () => {
+      const str = `
+        <!DOCTYPE html>
+        <html class="cls-html" lang="en" data-gjs-htmlp="true">
+          <head class="cls-head" data-gjs-headp="true">
+            <meta charset="utf-8">
+            <title>Test</title>
+            <link rel="stylesheet" href="/noop.css">
+            <!-- comment -->
+            <script src="/noop.js"></script>
+            <style>.test { color: red }</style>
+          </head>
+          <body class="cls-body" data-gjs-bodyp="true">
+            <h1>H1</h1>
+          </body>
+        </html>
+      `;
+
+      expect(obj.parse(str, null, { asDocument: true })).toEqual({
+        doctype: '<!DOCTYPE html>',
+        root: { classes: ['cls-html'], attributes: { lang: 'en' }, htmlp: true },
+        head: {
+          type: 'head',
+          tagName: 'head',
+          headp: true,
+          classes: ['cls-head'],
+          components: [
+            { tagName: 'meta', attributes: { charset: 'utf-8' } },
+            {
+              tagName: 'title',
+              type: 'text',
+              components: { type: 'textnode', content: 'Test' },
+            },
+            {
+              tagName: 'link',
+              attributes: { rel: 'stylesheet', href: '/noop.css' },
+            },
+            {
+              type: 'comment',
+              tagName: '',
+              content: ' comment ',
+            },
+            {
+              tagName: 'style',
+              type: 'text',
+              components: { type: 'textnode', content: '.test { color: red }' },
+            },
+          ],
+        },
+        html: {
+          tagName: 'body',
+          bodyp: true,
+          classes: ['cls-body'],
+          components: [
+            {
+              tagName: 'h1',
+              type: 'text',
+              components: { type: 'textnode', content: 'H1' },
+            },
+          ],
+        },
+      });
+    });
   });
 });

@@ -66,6 +66,12 @@ editor.on('block:drag', (block) => { ... });
 editor.on('block:drag:stop', (component, block) => { ... });
 ```
 
+* `block:category:update` Block category updated.
+
+```javascript
+editor.on('block:category:update', ({ category, changes }) => { ... });
+```
+
 * `block:custom` Event to use in case of [custom Block Manager UI](https://grapesjs.com/docs/modules/Blocks.html#customization).
 
 ```javascript

@@ -267,20 +267,20 @@ The Commands module offers also a set of events that you can use to intercept th
 By using our previously created `my-command-modal` command let's see which events we can listen to
 
 ```js
-editor.on('run:my-command-modal', () => {
+editor.on('command:run:my-command-modal', () => {
   console.log('After `my-command-modal` execution');
   // For example, you can add extra content to the modal
   const modalContent = editor.Modal.getContentEl();
   modalContent.insertAdjacentHTML('beforeEnd', '<div>Some content</div>');
 });
-editor.on('run:my-command-modal:before', () => {
+editor.on('command:run:before:my-command-modal', () => {
   console.log('Before `my-command-modal` execution');
 });
 // for stateful commands
-editor.on('stop:my-command-modal', () => {
+editor.on('command:stop:my-command-modal', () => {
   console.log('After `my-command-modal` is stopped');
 });
-editor.on('stop:my-command-modal:before', () => {
+editor.on('command:stop:before:my-command-modal:before', () => {
   console.log('Before `my-command-modal` is stopped');
 });
 ```
@@ -288,11 +288,11 @@ editor.on('stop:my-command-modal:before', () => {
 If you need, you can also listen to all commands
 
 ```js
-editor.on('run', commandId => {
+editor.on('command:run', commandId => {
   console.log('Run', commandId);
 });
 
-editor.on('stop', commandId => {
+editor.on('command:stop', commandId => {
   console.log('Stop', commandId);
 });
 ```
@@ -300,12 +300,12 @@ editor.on('stop', commandId => {
 
 ### Interrupt command flow
 
-Sometimes you might need to interrupt the execution of an existant command due to some condition. In that case, you have to use `run:{COMMAND-ID}:before` event and set to `true` the abort option
+Sometimes you might need to interrupt the execution of an existant command due to some condition. In that case, you have to use `command:run:before:{COMMAND-ID}` event and set to `true` the abort option
 
 ```js
 const condition = 1;
 
-editor.on('run:my-command-modal:before', options => {
+editor.on('command:run:before:my-command-modal', options => {
   if (condition) {
     options.abort = true;
     console.log('Prevent `my-command-modal` from execution');

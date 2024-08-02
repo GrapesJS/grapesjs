@@ -55,7 +55,8 @@
  * @module docsjs.Editor
  */
 import { IBaseModule } from '../abstract/Module';
-import AssetManager, { AssetEvent } from '../asset_manager';
+import AssetManager from '../asset_manager';
+import { AssetEvent } from '../asset_manager/types';
 import BlockManager, { BlockEvent } from '../block_manager';
 import CanvasModule, { CanvasEvent } from '../canvas';
 import CodeManagerModule from '../code_manager';

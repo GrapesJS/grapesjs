@@ -19,7 +19,9 @@ let em: Editor;
 
 describe('Component', () => {
   beforeEach(() => {
-    em = new Editor({ avoidDefaults: true });
+    // FIXME: avoidInlineStyle is deprecated and when running in dev or prod, `avoidInlineStyle` is set to true
+    // The following tests ran with `avoidInlineStyle` to false (this is why I add the parameter here)
+    em = new Editor({ avoidDefaults: true, avoidInlineStyle: true });
     dcomp = em.Components;
     em.Pages.onLoad();
     compOpts = {
@@ -48,7 +50,7 @@ describe('Component', () => {
   test('Clones correctly with traits', () => {
     obj.traits.at(0).set('value', 'testTitle');
     var cloned = obj.clone();
-    cloned.set('stylable', 0);
+    cloned.set('stylable', false);
     cloned.traits.at(0).set('value', 'testTitle2');
     expect(obj.traits.at(0).get('value')).toEqual('testTitle');
     expect(obj.get('stylable')).toEqual(true);
@@ -152,7 +154,7 @@ describe('Component', () => {
     obj = new Component({}, compOpts);
     obj.set({
       bool: true,
-      boolf: false,
+      removable: false,
       string: 'st\'ri"ng',
       array: [1, 'string', true],
       object: { a: 1, b: 'string', c: true },
@@ -165,12 +167,12 @@ describe('Component', () => {
     let resStr = "st'ri&quot;ng";
     let resArr = '[1,&quot;string&quot;,true]';
     let resObj = '{&quot;a&quot;:1,&quot;b&quot;:&quot;string&quot;,&quot;c&quot;:true}';
-    let res = `<div data-gjs-bool data-gjs-string="${resStr}" data-gjs-array="${resArr}" data-gjs-object="${resObj}" data-gjs-empty="" data-gjs-zero="0"></div>`;
+    let res = `<div data-gjs-removable="false" data-gjs-bool="true" data-gjs-string="${resStr}" data-gjs-array="${resArr}" data-gjs-object="${resObj}" data-gjs-empty="" data-gjs-zero="0"></div>`;
     expect(obj.toHTML({ withProps: true })).toEqual(res);
     resStr = 'st&apos;ri"ng';
     resArr = '[1,"string",true]';
     resObj = '{"a":1,"b":"string","c":true}';
-    res = `<div data-gjs-bool data-gjs-string='${resStr}' data-gjs-array='${resArr}' data-gjs-object='${resObj}' data-gjs-empty="" data-gjs-zero="0"></div>`;
+    res = `<div data-gjs-removable="false" data-gjs-bool="true" data-gjs-string='${resStr}' data-gjs-array='${resArr}' data-gjs-object='${resObj}' data-gjs-empty="" data-gjs-zero="0"></div>`;
     expect(obj.toHTML({ withProps: true, altQuoteAttr: true })).toEqual(res);
   });
 
@@ -278,10 +280,10 @@ describe('Component', () => {
       class: 'class1 class2',
       style: 'color: white; background: #fff',
     });
+    // Style is not in attributes because it has not been set as inline
     expect(obj.getAttributes()).toEqual({
       id: 'test',
       class: 'class1 class2',
-      style: 'color:white;background:#fff;',
       'data-test': 'value',
     });
     expect(obj.classes.length).toEqual(2);
@@ -291,13 +293,25 @@ describe('Component', () => {
     });
   });
 
-  test('set inline style with multiple values of the same key', () => {
+  test('set style with multiple values of the same key', () => {
     obj.setAttributes({ style: CSS_BG_STR });
     expect(obj.getStyle()).toEqual(CSS_BG_OBJ);
   });
 
-  test('get proper style from inline style with multiple values of the same key', () => {
-    obj.setAttributes({ style: CSS_BG_STR });
+  test('set style on id and inline style', () => {
+    obj.setStyle({ color: 'red' }); // Should be set on id
+    obj.setStyle({ display: 'flex' }, { inline: true }); // Should be set as inline
+
+    expect(obj.getStyle()).toEqual({
+      color: 'red',
+    });
+    expect(obj.getStyle({ inline: true })).toEqual({
+      display: 'flex',
+    });
+  });
+
+  test('get proper style from style with multiple values of the same key', () => {
+    obj.setAttributes({ style: CSS_BG_STR }, { inline: true });
     expect(obj.getAttributes()).toEqual({
       style: CSS_BG_STR.split('\n').join(''),
     });
@@ -328,8 +342,9 @@ describe('Component', () => {
     obj.append([{}, {}]);
     const comps = obj.components();
     expect(comps.length).toEqual(2);
-    obj.append({});
+    const result = obj.append({});
     expect(comps.length).toEqual(3);
+    expect(result[0].em).toEqual(em);
   });
 
   test('components() set new collection', () => {
@@ -338,6 +353,8 @@ describe('Component', () => {
     const result = obj.components();
     expect(result.length).toEqual(1);
     expect(result.models[0].get('tagName')).toEqual('span');
+
+    expect(result.em).toEqual(em);
   });
 
   test('Propagate properties to children', () => {
@@ -664,18 +681,21 @@ describe('Components', () => {
     var c = new Components([], compOpts);
     var m = c.add({});
     expect(m instanceof Component).toEqual(true);
+    expect(m.em).toEqual(em);
   });
 
   test('Creates image component correctly', () => {
     var c = new Components([], compOpts);
     var m = c.add({ type: 'image' });
     expect(m instanceof ComponentImage).toEqual(true);
+    expect(m.em).toEqual(em);
   });
 
   test('Creates text component correctly', () => {
     var c = new Components([], compOpts);
     var m = c.add({ type: 'text' });
     expect(m instanceof ComponentText).toEqual(true);
+    expect(m.em).toEqual(em);
   });
 
   test('Avoid conflicting components with the same ID', () => {
@@ -703,7 +723,8 @@ describe('Components', () => {
     const added = dcomp.addComponent(block) as Component;
     const addComps = added.components();
     // Let's check if everthing is working as expected
-    expect(Object.keys(dcomp.componentsById).length).toBe(3); // + 1 wrapper
+    // 2 test components + 1 wrapper + 1 head + 1 docEl
+    expect(Object.keys(dcomp.componentsById).length).toBe(5);
     expect(added.getId()).toBe(id);
     expect(addComps.at(0).getId()).toBe(idB);
     const cc = em.get('CssComposer');

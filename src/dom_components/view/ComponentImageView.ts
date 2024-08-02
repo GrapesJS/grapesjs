@@ -103,7 +103,7 @@ export default class ComponentImageView<TComp extends ComponentImage = Component
 
   onLoad() {
     // Used to update component tools box (eg. toolbar, resizer) once the image is loaded
-    this.em.trigger('change:canvasOffset');
+    this.em.Canvas.refresh({ all: true });
   }
 
   noDrag(ev: Event) {

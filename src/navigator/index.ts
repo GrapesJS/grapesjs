@@ -47,6 +47,7 @@ import EditorModel from '../editor/model/Editor';
 import { hasWin, isComponent, isDef } from '../utils/mixins';
 import defaults, { LayerManagerConfig } from './config/config';
 import View from './view/ItemView';
+import { ComponentsEvents } from '../dom_components/types';
 
 interface LayerData {
   name: string;
@@ -74,7 +75,7 @@ const events = {
 const styleOpts = { mediaText: '' };
 
 const propsToListen = ['open', 'status', 'locked', 'custom-name', 'components', 'classes']
-  .map(p => `component:update:${p}`)
+  .map(p => `${ComponentsEvents.update}:${p}`)
   .join(' ');
 
 const isStyleHidden = (style: any = {}) => {
@@ -195,7 +196,7 @@ export default class LayerManager extends Module<LayerManagerConfig> {
       style.display = 'none';
     }
 
-    component.setStyle(style, styleOpts);
+    component.setStyle(style, styleOpts as any);
     this.updateLayer(component);
     this.em.trigger('component:toggled'); // Updates Style Manager #2938
   }
@@ -324,7 +325,6 @@ export default class LayerManager extends Module<LayerManagerConfig> {
     }
 
     if (selected && scrollLayers) {
-      // @ts-ignore
       const el = selected.viewLayer?.el;
       el?.scrollIntoView(scrollLayers);
     }
@@ -367,7 +367,7 @@ export default class LayerManager extends Module<LayerManagerConfig> {
   __isLayerable(cmp: Component): boolean {
     const tag = cmp.get('tagName');
     const hideText = this.config.hideTextnode;
-    const isValid = !hideText || (!cmp.is('textnode') && tag !== 'br');
+    const isValid = !hideText || (!cmp.isInstanceOf('textnode') && tag !== 'br');
 
     return isValid && cmp.get('layerable')!;
   }

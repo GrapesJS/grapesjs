@@ -4,7 +4,6 @@ import Component from '../../dom_components/model/Component';
 import ComponentView from '../../dom_components/view/ComponentView';
 import EditorModel from '../../editor/model/Editor';
 import { isEnterKey, isEscKey } from '../../utils/dom';
-import { getModel } from '../../utils/mixins';
 import LayerManager from '../index';
 import ItemsView from './ItemsView';
 import { getOnComponentDrag, getOnComponentDragEnd, getOnComponentDragStart } from '../../commands';
@@ -21,12 +20,13 @@ export type ItemViewProps = ViewOptions & {
 };
 
 const inputProp = 'contentEditable';
+const dataToggleMove = 'data-toggle-move';
 
 export default class ItemView extends View {
   events() {
     return {
-      'mousedown [data-toggle-move]': 'startSort',
-      'touchstart [data-toggle-move]': 'startSort',
+      [`mousedown [${dataToggleMove}]`]: 'startSort',
+      [`touchstart [${dataToggleMove}]`]: 'startSort',
       'click [data-toggle-visible]': 'toggleVisibility',
       'click [data-toggle-open]': 'toggleOpening',
       'click [data-toggle-select]': 'handleSelect',
@@ -77,7 +77,7 @@ export default class ItemView extends View {
         </div>
         <div class="${pfx}layer-item-right">
           <div class="${this.clsCount}" data-count>${count || ''}</div>
-          <div class="${this.clsMove}" data-toggle-move>${move || ''}</div>
+          <div class="${this.clsMove}" ${dataToggleMove}>${move || ''}</div>
         </div>
       </div>
       <div class="${this.clsChildren}"></div>
@@ -96,8 +96,8 @@ export default class ItemView extends View {
     return this.config.stylePrefix;
   }
 
-  opt: any;
-  module: any;
+  opt: ItemViewProps;
+  module: LayerManager;
   config: any;
   sorter: any;
   /** @ts-ignore */
@@ -152,13 +152,13 @@ export default class ItemView extends View {
       ['change:open', this.updateOpening],
       ['change:layerable', this.updateLayerable],
       ['change:style:display', this.updateVisibility],
+      ['change:draggable', this.updateMove],
       ['rerender:layer', this.render],
       ['change:name change:custom-name', this.updateName],
       // @ts-ignore
     ].forEach(item => this.listenTo(model, item[0], item[1]));
     this.$el.data('model', model);
     this.$el.data('collection', components);
-    // @ts-ignore
     model.viewLayer = this;
     onInit.bind(this)({
       component: model,
@@ -182,6 +182,15 @@ export default class ItemView extends View {
     const method = hidden ? 'addClass' : 'removeClass';
     this.$el[method](hClass);
     this.getVisibilityEl()[method](`${pfx}layer-off`);
+  }
+
+  updateMove() {
+    const { model, config } = this;
+    const el = this.getItemContainer().find(`[${dataToggleMove}]`)[0];
+    if (el) {
+      const isDraggable = model.get('draggable') && config.sortable;
+      el.style.display = isDraggable ? '' : 'none';
+    }
   }
 
   /**
@@ -220,20 +229,16 @@ export default class ItemView extends View {
    */
   handleEditEnd(ev?: KeyboardEvent) {
     ev?.stopPropagation();
-    const { em, $el, clsNoEdit, clsEdit } = this;
+    const { em, $el, clsNoEdit, clsEdit, model } = this;
     const inputEl = this.getInputName();
     const name = inputEl.textContent!;
     inputEl.scrollLeft = 0;
     inputEl[inputProp] = 'false';
-    this.setName(name, { component: this.model, propName: 'custom-name' });
+    model.setName(name);
     em.setEditing(false);
     $el.find(`.${this.inputNameCls}`).addClass(clsNoEdit).removeClass(clsEdit);
     // Ensure to always update the layer name #4544
     this.updateName();
-  }
-
-  setName(name: string, { propName }: { propName: string; component?: Component }) {
-    this.model.set(propName, name);
   }
 
   /**
@@ -357,7 +362,7 @@ export default class ItemView extends View {
     const countEl = itemEl.find('[data-count]');
 
     title[count ? 'removeClass' : 'addClass'](clsNoChild);
-    countEl.html(count || '');
+    countEl.html(`${count || ''}`);
     !count && module.setOpen(model, false);
   }
 
@@ -390,6 +395,7 @@ export default class ItemView extends View {
 
   remove(...args: []) {
     View.prototype.remove.apply(this, args);
+    delete this.model.viewLayer;
     this.__clearItems();
     return this;
   }
@@ -422,16 +428,13 @@ export default class ItemView extends View {
       el.find(`.${this.clsChildren}`).append(children);
     }
 
-    if (!model.get('draggable') || !config.sortable) {
-      el.children(`.${this.clsMove}`).remove();
-    }
-
     !module.isVisible(model) && (this.className += ` ${pfx}hide`);
     hidden && (this.className += ` ${ppfx}hidden`);
     el.attr('class', this.className!);
     this.updateStatus();
     this.updateOpening();
     this.updateVisibility();
+    this.updateMove();
     this.__render();
     this._rendered = true;
     return this;

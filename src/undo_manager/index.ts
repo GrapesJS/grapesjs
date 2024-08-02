@@ -133,7 +133,6 @@ export default class UndoManagerModule extends Module<UndoManagerConfig & { name
     });
 
     this.um.on('undo redo', () => {
-      em.trigger('change:canvasOffset');
       em.getSelectedAll().map(c => c.trigger('rerender:layer'));
     });
     ['undo', 'redo'].forEach(ev => this.um.on(ev, () => em.trigger(ev)));
@@ -322,6 +321,14 @@ export default class UndoManagerModule extends Module<UndoManagerConfig & { name
     return result;
   }
 
+  /**
+   * Execute the provided callback temporarily stopping tracking changes
+   * @param clb The callback to execute with changes tracking stopped
+   * @example
+   * um.skip(() => {
+   *  // Do stuff without tracking
+   * });
+   */
   skip(clb: Function) {
     const isTracking = !!this.um.isTracking();
 

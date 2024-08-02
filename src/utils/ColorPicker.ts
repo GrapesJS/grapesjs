@@ -7,11 +7,49 @@
 // License: MIT
 import { hasWin } from './mixins';
 
+export interface ColorPickerOptions {
+  beforeShow?: () => void;
+  move?: () => void;
+  change?: () => void;
+  show?: () => void;
+  hide?: () => void;
+  color?: boolean | string;
+  flat?: boolean;
+  showInput?: boolean;
+  allowEmpty?: boolean;
+  showButtons?: boolean;
+  clickoutFiresChange?: boolean;
+  showInitial?: boolean;
+  showPalette?: boolean;
+  showPaletteOnly?: boolean;
+  hideAfterPaletteSelect?: boolean;
+  togglePaletteOnly?: boolean;
+  showSelectionPalette?: boolean;
+  localStorageKey?: boolean | string;
+  appendTo?: string | HTMLElement;
+  maxSelectionSize?: number;
+  cancelText?: string;
+  chooseText?: string;
+  togglePaletteMoreText?: string;
+  togglePaletteLessText?: string;
+  clearText?: string;
+  noColorSelectedText?: string;
+  preferredFormat?: boolean | string;
+  containerClassName?: string;
+  replacerClassName?: string;
+  showAlpha?: boolean;
+  theme?: string;
+  palette?: string[][];
+  selectionPalette?: string[];
+  disabled?: boolean;
+  offset?: { top: number; left: number };
+}
+
 export default function ($, undefined?: any) {
   'use strict';
   if (!hasWin()) return;
 
-  var defaultOpts = {
+  var defaultOpts: ColorPickerOptions = {
       // Callbacks
       beforeShow: noop,
       move: noop,
@@ -982,34 +1020,45 @@ export default function ($, undefined?: any) {
 
   /**
    * checkOffset - get the offset below/above and left/right element depending on screen position
-   * Thanks https://github.com/jquery/jquery-ui/blob/master/ui/jquery.ui.datepicker.js
    */
   function getOffset(picker, input) {
-    var extraY = 0;
-    var dpWidth = picker.outerWidth();
-    var dpHeight = picker.outerHeight();
-    var inputHeight = input.outerHeight();
-    var doc = picker[0].ownerDocument;
-    var docElem = doc.documentElement;
-    var cW = docElem.clientWidth;
-    var cH = docElem.clientHeight;
-    var scL = $(doc).scrollLeft();
-    var scT = $(doc).scrollTop();
-    var viewWidth = cW + scL;
-    var viewHeight = cH + scT;
-    var offset = input.offset();
+    let offsetElm = input[0] as HTMLElement;
+    const pickerEl = picker[0] as HTMLElement;
+    const rootElm = pickerEl.parentElement;
+    const inputRect = offsetElm.getBoundingClientRect();
+    const pickerW = pickerEl.offsetWidth;
+    const pickerH = pickerEl.offsetHeight;
+    const offset = {
+      top: 0,
+      left: 0,
+      width: offsetElm.offsetWidth,
+      height: offsetElm.offsetHeight,
+    };
 
-    offset.top += inputHeight;
+    while (offsetElm) {
+      offset.top += offsetElm.offsetTop - offsetElm.scrollTop;
+      offset.left += offsetElm.offsetLeft - offsetElm.scrollLeft;
 
-    offset.left -= Math.min(
-      offset.left,
-      offset.left + dpWidth > viewWidth && viewWidth > dpWidth ? Math.abs(offset.left + dpWidth - viewWidth) : 0
-    );
+      // Check if the current element in our root, or if the next offset parent is outside of the root
+      if (offsetElm === rootElm || !rootElm.contains(offsetElm.offsetParent)) {
+        break;
+      }
 
-    offset.top -= Math.min(
-      offset.top,
-      offset.top + dpHeight > viewHeight && viewHeight > dpHeight ? Math.abs(dpHeight + inputHeight - extraY) : extraY
-    );
+      offsetElm = offsetElm.offsetParent;
+    }
+
+    // Input is to close to the right side of the screen to show picker
+    if (inputRect.right + pickerW > window.innerWidth - window.scrollX && inputRect.right - pickerW > 0) {
+      // Right align the picker to the input
+      offset.left -= pickerW - offset.width;
+    }
+
+    // Input is to close to the bottom of the screen to show picker above
+    if (inputRect.bottom + pickerH < window.innerHeight - window.scrollY) {
+      offset.top += offset.height;
+    } else {
+      offset.top -= pickerH;
+    }
 
     return offset;
   }

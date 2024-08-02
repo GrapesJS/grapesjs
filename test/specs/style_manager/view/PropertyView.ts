@@ -78,7 +78,7 @@ describe('PropertyView', () => {
   describe('Init property', () => {
     beforeEach(() => {
       em = new Editor({});
-      component = new Component({}, { em });
+      component = new Component({}, { em, config: em.Components.config });
       model = new Property({
         property: propName,
         default: defValue,

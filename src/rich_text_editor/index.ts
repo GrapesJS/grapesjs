@@ -46,10 +46,12 @@ import { createEl, cx, on, removeEl } from '../utils/dom';
 import { hasWin, isDef } from '../utils/mixins';
 import defaults, { CustomRTE, RichTextEditorConfig } from './config/config';
 import RichTextEditor, { RichTextEditorAction } from './model/RichTextEditor';
+import CanvasEvents from '../canvas/types';
+import { ComponentsEvents } from '../dom_components/types';
 
 export type RichTextEditorEvent = 'rte:enable' | 'rte:disable' | 'rte:custom';
 
-const eventsUp = 'change:canvasOffset frame:scroll component:update';
+const eventsUp = `${CanvasEvents.refresh} frame:scroll ${ComponentsEvents.update}`;
 
 export const evEnable = 'rte:enable';
 export const evDisable = 'rte:disable';

@@ -19,14 +19,7 @@
  * commands.add(...);
  * ```
  *
- ** ## Available Events
- * * `run:{commandName}` - Triggered when some command is called to run (eg. editor.runCommand('preview'))
- * * `stop:{commandName}` - Triggered when some command is called to stop (eg. editor.stopCommand('preview'))
- * * `run:{commandName}:before` - Triggered before the command is called
- * * `stop:{commandName}:before` - Triggered before the command is called to stop
- * * `abort:{commandName}` - Triggered when the command execution is aborted (`editor.on(`run:preview:before`, opts => opts.abort = 1);`)
- * * `run` - Triggered on run of any command. The id and the result are passed as arguments to the callback
- * * `stop` - Triggered on stop of any command. The id and the result are passed as arguments to the callback
+ * {REPLACE_EVENTS}
  *
  * ## Methods
  * * [add](#add)
@@ -49,6 +42,7 @@ import { Module } from '../abstract';
 import Component, { eventDrag } from '../dom_components/model/Component';
 import Editor from '../editor/model/Editor';
 import { ObjectAny } from '../common';
+import CommandsEvents from './types';
 
 export type CommandEvent = 'run' | 'stop' | `run:${string}` | `stop:${string}` | `abort:${string}`;
 
@@ -105,6 +99,7 @@ export default class CommandsModule extends Module<CommandsConfig & { pStylePref
   defaultCommands: Record<string, Command> = {};
   commands: Record<string, CommandObject> = {};
   active: Record<string, any> = {};
+  events = CommandsEvents;
 
   /**
    * @private
@@ -146,7 +141,7 @@ export default class CommandsModule extends Module<CommandsConfig & { pStylePref
         const trg = opts.target as Component | undefined;
         const trgs = trg ? [trg] : [...ed.getSelectedAll()];
         const targets = trgs.map(trg => trg.delegate?.move?.(trg) || trg).filter(Boolean);
-        const target = targets[0] as Component | undefined;
+        const target = targets[targets.length - 1] as Component | undefined;
         const nativeDrag = event?.type === 'dragstart';
         const modes = ['absolute', 'translate'];
 
@@ -439,6 +434,16 @@ export default class CommandsModule extends Module<CommandsConfig & { pStylePref
     if (!command.stop) command.noStop = true;
     const cmd = CommandAbstract.extend(command);
     return new cmd(this.config);
+  }
+
+  __onRun(id: string, clb: () => void) {
+    const { em, events } = this;
+    em.on(`${events.runCommand}${id}`, clb);
+  }
+
+  __onStop(id: string, clb: () => void) {
+    const { em, events } = this;
+    em.on(`${events.stopCommand}${id}`, clb);
   }
 
   destroy() {

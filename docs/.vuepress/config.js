@@ -11,8 +11,8 @@ module.exports = {
   serviceWorker: false, // Enable Service Worker for offline usage
   head: [
     ['link', { rel: 'icon', href: '/logo-icon.png' }],
-    ['link', { rel: 'stylesheet', href: isDev ? `${devPath}/dist/css/grapes.min.css` : `${baseUrl}/stylesheets/grapes.min.css?v${version}` }],
-    ['script', { src: isDev ? `${devPath}/grapes.min.js` : `${baseUrl}/js/grapes.min.js?v${version}` }],
+    ['link', { rel: 'stylesheet', href: isDev ? `${devPath}/dist/css/grapes.min.css` : `${baseUrl}/assets/styles/grapesjs/grapes.min.css?${version}` }],
+    ['script', { src: isDev ? `${devPath}/grapes.min.js` : `${baseUrl}/assets/scripts/grapesjs/grapes.min.js?${version}` }],
   ],
   localesSKIP: {
     '/': {
@@ -125,6 +125,7 @@ module.exports = {
           title: 'Guides',
           collapsable: false,
           children: [
+            ['/guides/Symbols', 'Symbols'],
             ['/guides/Replace-Rich-Text-Editor', 'Replace Rich Text Editor'],
             ['/guides/Custom-CSS-parser', 'Use Custom CSS Parser'],
           ]

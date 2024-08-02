@@ -95,7 +95,7 @@ export default class CanvasView extends ModuleView<Canvas> {
     this.className = `${pfx}canvas ${ppfx}no-touch-actions${!em.config.customUI ? ` ${pfx}canvas-bg` : ''}`;
     this.clsUnscale = `${pfx}unscale`;
     this._initFrames();
-    this.listenTo(em, 'change:canvasOffset', this.clearOff);
+    this.listenTo(em, events.refresh, this.clearOff);
     this.listenTo(em, 'component:selected', this.checkSelected);
     this.listenTo(em, `${events.coords} ${events.zoom}`, this.updateFrames);
     this.listenTo(model, 'change:frames', this._onFramesUpdate);

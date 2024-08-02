@@ -204,6 +204,22 @@ stack.each(item => ...);
 
 Returns **Collection** 
 
+## skip
+
+Execute the provided callback temporarily stopping tracking changes
+
+### Parameters
+
+*   `clb` **[Function][17]** The callback to execute with changes tracking stopped
+
+### Examples
+
+```javascript
+um.skip(() => {
+ // Do stuff without tracking
+});
+```
+
 ## clear
 
 Clear the stack
@@ -247,3 +263,5 @@ Returns **this**
 [15]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
 
 [16]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean
+
+[17]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function

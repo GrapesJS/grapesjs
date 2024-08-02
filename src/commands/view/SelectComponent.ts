@@ -7,6 +7,7 @@ import { getComponentModel, getComponentView, getUnitFromValue, getViewEl, hasWi
 import { CommandObject } from './CommandAbstract';
 import { CanvasSpotBuiltInTypes } from '../../canvas/model/CanvasSpot';
 import { ResizerOptions } from '../../utils/Resizer';
+import { ComponentsEvents } from '../../dom_components/types';
 
 let showOffsets: boolean;
 /**
@@ -30,6 +31,8 @@ let showOffsets: boolean;
  *
  */
 export default {
+  activeResizer: false,
+
   init() {
     this.onSelect = debounce(this.onSelect, 0);
     bindAll(
@@ -77,6 +80,7 @@ export default {
     const { parentNode } = em.getContainer()!;
     const method = enable ? 'on' : 'off';
     const methods = { on, off };
+    const eventCmpUpdate = ComponentsEvents.update;
     !listenToEl.length && parentNode && listenToEl.push(parentNode as HTMLElement);
     const trigger = (win: Window, body: HTMLBodyElement) => {
       methods[method](body, 'mouseover', this.onHover);
@@ -87,13 +91,13 @@ export default {
     };
     methods[method](window, 'resize', this.onFrameUpdated);
     methods[method](listenToEl, 'scroll', this.onContainerChange);
-    em[method]('component:toggled component:update undo redo', this.onSelect, this);
+    em[method](`component:toggled ${eventCmpUpdate} undo redo`, this.onSelect, this);
     em[method]('change:componentHovered', this.onHovered, this);
     em[method]('component:resize styleable:change component:input', this.updateGlobalPos, this);
-    em[method]('component:update:toolbar', this._upToolbar, this);
-    em[method]('change:canvasOffset', this.updateAttached, this);
+    em[method](`${eventCmpUpdate}:toolbar`, this._upToolbar, this);
     em[method]('frame:updated', this.onFrameUpdated, this);
     em[method]('canvas:updateTools', this.onFrameUpdated, this);
+    em[method](em.Canvas.events.refresh, this.updateAttached, this);
     em.Canvas.getFrames().forEach(frame => {
       const { view } = frame;
       const win = view?.getWindow();
@@ -288,23 +292,30 @@ export default {
     if (em.get('_cmpDrag')) return em.set('_cmpDrag');
 
     const el = ev.target as HTMLElement;
-    let model = getComponentModel(el);
+    let cmp = getComponentModel(el);
 
-    if (!model) {
+    if (!cmp) {
       let parentEl = el.parentNode;
 
-      while (!model && parentEl && !isDoc(parentEl)) {
-        model = getComponentModel(parentEl);
+      while (!cmp && parentEl && !isDoc(parentEl)) {
+        cmp = getComponentModel(parentEl);
         parentEl = parentEl.parentNode;
       }
     }
 
-    if (model) {
-      // Avoid selection of inner text components during editing
-      if (em.isEditing() && !model.get('textable') && model.isChildOf('text')) {
+    if (cmp) {
+      if (
+        em.isEditing() &&
+        // Avoid selection of inner text components during editing
+        ((!cmp.get('textable') && cmp.isChildOf('text')) ||
+          // Prevents selecting another component if the pointer was pressed and
+          // dragged outside of the editing component
+          em.getEditing() !== cmp)
+      ) {
         return;
       }
-      this.select(model, ev);
+
+      this.select(cmp, ev);
     }
   },
 
@@ -396,12 +407,17 @@ export default {
         ...resizableOpts
       } = isObject(resizable) ? resizable : {};
 
-      if (hasCustomResize || !el) return;
+      if (hasCustomResize || !el || this.activeResizer) return;
 
       let modelToStyle: any;
       const { config } = em;
       const pfx = config.stylePrefix || '';
       const resizeClass = `${pfx}resizing`;
+      const self = this;
+      const resizeEventOpts = {
+        component: model,
+        el,
+      };
 
       const toggleBodyClass = (method: string, e: any, opts: any) => {
         const docs = opts.docs;
@@ -445,20 +461,23 @@ export default {
             config.unitHeight = getUnitFromValue(currentHeight);
             config.unitWidth = getUnitFromValue(currentWidth);
           }
+          self.activeResizer = true;
+          editor.trigger('component:resize', { ...resizeEventOpts, type: 'start' });
         },
 
         // Update all positioned elements (eg. component toolbar)
         onMove(ev) {
           onMove(ev);
-          editor.trigger('component:resize');
+          editor.trigger('component:resize', { ...resizeEventOpts, type: 'move' });
         },
 
         onEnd(ev, opts) {
           onEnd(ev, opts);
           toggleBodyClass('remove', ev, opts);
-          editor.trigger('component:resize');
+          editor.trigger('component:resize', { ...resizeEventOpts, type: 'end' });
           canvas.toggleFramesEvents(true);
           showOffsets = true;
+          self.activeResizer = false;
         },
 
         updateTarget(el, rect, options) {
@@ -580,7 +599,7 @@ export default {
   },
 
   onFrameResize() {
-    this.canvas.refreshSpots();
+    this.canvas.refresh({ all: true });
   },
 
   updateTools() {

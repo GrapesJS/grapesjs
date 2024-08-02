@@ -128,14 +128,14 @@ export default class CssRule extends StyleableModel<CssRuleProperties> {
   clone(): CssRule {
     const opts = { ...this.opt };
     const attr = { ...this.attributes };
-    attr.selectors = this.get('selectors')!.map(s => s.clone()) as Selector[];
+    attr.selectors = this.get('selectors')!.map(s => s.clone() as Selector);
     // @ts-ignore
     return new this.constructor(attr, opts);
   }
 
   ensureSelectors(m: any, c: any, opts: any) {
     const { em } = this;
-    const sm = em?.get('SelectorManager');
+    const sm = em?.Selectors;
     const toListen = [this, 'change:selectors', this.ensureSelectors];
     let sels = this.getSelectors() as any;
     this.stopListening(...toListen);
@@ -193,7 +193,7 @@ export default class CssRule extends StyleableModel<CssRuleProperties> {
       escape: (str: string) => (CSS && CSS.escape ? CSS.escape(str) : str),
     };
     // @ts-ignore
-    const selectors = this.get('selectors').getFullString(0, selOpts);
+    const selectors = this.getSelectors().getFullString(0, selOpts);
     const stateStr = state && !opts.skipState ? `:${state}` : '';
     selectors && result.push(`${selectors}${stateStr}`);
     addSelector && !opts.skipAdd && result.push(addSelector);
@@ -235,12 +235,12 @@ export default class CssRule extends StyleableModel<CssRuleProperties> {
   getDevice() {
     const { em } = this;
     const { atRuleType, mediaText } = this.attributes;
-    const devices = em?.get('DeviceManager').getDevices() || [];
-    const deviceDefault = devices.filter((d: any) => d.getWidthMedia() === '')[0];
+    const devices = em?.Devices.getDevices() || [];
+    const deviceDefault = devices.filter(d => d.getWidthMedia() === '')[0];
     if (atRuleType !== 'media' || !mediaText) {
       return deviceDefault || null;
     }
-    return devices.filter((d: any) => d.getWidthMedia() === getMediaLength(mediaText))[0] || null;
+    return devices.filter(d => d.getWidthMedia() === getMediaLength(mediaText))[0] || null;
   }
 
   /**
@@ -253,8 +253,8 @@ export default class CssRule extends StyleableModel<CssRuleProperties> {
   getState() {
     const { em } = this;
     const stateValue = this.get('state');
-    const states = em?.get('SelectorManager').getStates() || [];
-    return states.filter((s: any) => s.getName() === stateValue)[0] || null;
+    const states = em?.Selectors.getStates() || [];
+    return states.filter(s => s.getName() === stateValue)[0] || null;
   }
 
   /**
@@ -265,7 +265,7 @@ export default class CssRule extends StyleableModel<CssRuleProperties> {
    * console.log(cmp?.toHTML());
    */
   getComponent() {
-    const sel = this.getSelectors() as any;
+    const sel = this.getSelectors();
     const sngl = sel.length == 1 && sel.at(0);
     const cmpId = sngl && sngl.isId() && sngl.get('name');
     return (cmpId && this.em?.Components.getById(cmpId)) || null;
