@@ -2,6 +2,8 @@ import { keys } from 'underscore';
 import { Model } from '../../common';
 import { DataRecordProps, DataSourcesEvents } from '../types';
 import DataRecords from './DataRecords';
+import DataSource from './DataSource';
+import EditorModel from '../../editor/model/Editor';
 
 export default class DataRecord<T extends DataRecordProps = DataRecordProps> extends Model<T> {
   constructor(props: T, opts = {}) {
@@ -13,11 +15,11 @@ export default class DataRecord<T extends DataRecordProps = DataRecordProps> ext
     return this.collection as unknown as DataRecords;
   }
 
-  get dataSource() {
+  get dataSource(): DataSource {
     return this.cl.dataSource;
   }
 
-  get em() {
+  get em(): EditorModel {
     return this.dataSource.em;
   }
 

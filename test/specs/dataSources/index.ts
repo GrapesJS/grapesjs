@@ -1,6 +1,6 @@
 import Editor from '../../../src/editor/model/Editor';
-import DataSourceManager from '../../../src/dataSources';
-import { DataSourceProps, DataSourcesEvents } from '../../../src/dataSources/types';
+import DataSourceManager from '../../../src/data_sources';
+import { DataSourceProps, DataSourcesEvents } from '../../../src/data_sources/types';
 import ComponentWrapper from '../../../src/dom_components/model/ComponentWrapper';
 import ComponentDataVariable from '../../../src/dom_components/model/ComponentDataVariable';
 

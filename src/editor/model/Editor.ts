@@ -42,7 +42,7 @@ import CssRules from '../../css_composer/model/CssRules';
 import { ComponentAdd, DragMode } from '../../dom_components/model/types';
 import ComponentWrapper from '../../dom_components/model/ComponentWrapper';
 import { CanvasSpotBuiltInTypes } from '../../canvas/model/CanvasSpot';
-import DataSourceManager from '../../dataSources';
+import DataSourceManager from '../../data_sources';
 
 Backbone.$ = $;
 

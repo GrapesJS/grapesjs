@@ -1,4 +1,4 @@
-import { DataSourcesEvents, DataVariableListener } from '../../dataSources/types';
+import { DataSourcesEvents, DataVariableListener } from '../../data_sources/types';
 import { stringToPath } from '../../utils/mixins';
 import ComponentDataVariable from '../model/ComponentDataVariable';
 import ComponentView from './ComponentView';
