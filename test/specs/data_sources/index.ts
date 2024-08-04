@@ -34,6 +34,46 @@ describe('DataSourceManager', () => {
     expect(dsm).toBeTruthy();
   });
 
+  describe.only('Style', () => {
+    let fixtures: HTMLElement;
+    let cmpRoot: ComponentWrapper;
+
+    beforeEach(() => {
+      document.body.innerHTML = '<div id="fixtures"></div>';
+      const { Pages, Components } = em;
+      Pages.onLoad();
+      cmpRoot = Components.getWrapper()!;
+      const View = Components.getType('wrapper')!.view;
+      const wrapperEl = new View({
+        model: cmpRoot,
+        config: { ...cmpRoot.config, em },
+      });
+      wrapperEl.render();
+      fixtures = document.body.querySelector('#fixtures')!;
+      fixtures.appendChild(wrapperEl.el);
+    });
+
+    test('todo', () => {
+      const styleDataSource: DataSourceProps = {
+        id: 'colors-data',
+        records: [{ id: 'id1', color: 'red' }],
+      };
+
+      const cmp = cmpRoot.append({
+        tagName: 'h1',
+        type: 'text',
+        content: 'Hello World',
+        style: {
+          color: {
+            type: 'data-variable',
+            default: 'black',
+            path: 'colors-data.id1.color',
+          },
+        },
+      })[0];
+    });
+  });
+
   test('add DataSource with records', () => {
     const eventAdd = jest.fn();
     em.on(dsm.events.add, eventAdd);

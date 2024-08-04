@@ -698,7 +698,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
     if (avoidInline(em) && !opt.temporary && !opts.inline) {
       const style = this.get('style') || {};
       prop = isString(prop) ? this.parseStyle(prop) : prop;
-      prop = { ...prop, ...style };
+      prop = { ...prop, ...(style as any) };
       const state = em.get('state');
       const cc = em.Css;
       const propOrig = this.getStyle(opts);

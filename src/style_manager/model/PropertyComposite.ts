@@ -276,7 +276,13 @@ export default class PropertyComposite<T extends Record<string, any> = PropertyC
 
     const result = this.getStyleFromProps()[this.getName()] || '';
 
-    return getLastStyleValue(result);
+    if (result && typeof result !== 'string' && 'type' in result) {
+      if (result.type === 'data-variable') {
+        console.log('Datasources __getFullValue');
+      }
+    }
+
+    return getLastStyleValue(result as string);
   }
 
   __getJoin() {
@@ -300,7 +306,15 @@ export default class PropertyComposite<T extends Record<string, any> = PropertyC
   }
 
   __splitStyleName(style: StyleProps, name: string, sep: string | RegExp) {
-    return this.__splitValue(style[name] || '', sep);
+    const value = style[name];
+
+    if (value && typeof value !== 'string' && 'type' in value) {
+      if (value.type === 'data-variable') {
+        console.log('Datasources __splitStyleName');
+      }
+    }
+
+    return this.__splitValue((value as string) || '', sep);
   }
 
   __getSplitValue(value: string | string[] = '', { byName }: OptionByName = {}) {
@@ -340,7 +354,15 @@ export default class PropertyComposite<T extends Record<string, any> = PropertyC
 
     if (!fromStyle) {
       // Get props from the main property
-      result = this.__getSplitValue(style[name] || '', { byName });
+      const value = style[name];
+
+      if (value && typeof value !== 'string' && 'type' in value) {
+        if (value.type === 'data-variable') {
+          console.log('Datasources __getPropsFromStyle');
+        }
+      }
+
+      result = this.__getSplitValue((value as string) || '', { byName });
 
       // Get props from the inner properties
       props.forEach(prop => {
