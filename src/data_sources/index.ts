@@ -6,6 +6,7 @@ import DataRecord from './model/DataRecord';
 import DataSource from './model/DataSource';
 import DataSources from './model/DataSources';
 import { DataSourceProps, DataSourcesEvents } from './types';
+import { Events } from 'backbone';
 
 export default class DataSourceManager extends ItemManagerModule<ModuleConfig, DataSources> {
   storageKey = '';
@@ -14,6 +15,7 @@ export default class DataSourceManager extends ItemManagerModule<ModuleConfig, D
 
   constructor(em: EditorModel) {
     super(em, 'DataSources', new DataSources([], em), DataSourcesEvents);
+    Object.assign(this, Events); // Mixin Backbone.Events
   }
 
   /**

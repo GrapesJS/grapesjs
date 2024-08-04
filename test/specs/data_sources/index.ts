@@ -53,11 +53,12 @@ describe('DataSourceManager', () => {
       fixtures.appendChild(wrapperEl.el);
     });
 
-    test('todo', () => {
+    test('component initializes with data-variable style', () => {
       const styleDataSource: DataSourceProps = {
         id: 'colors-data',
         records: [{ id: 'id1', color: 'red' }],
       };
+      dsm.add(styleDataSource);
 
       const cmp = cmpRoot.append({
         tagName: 'h1',
@@ -66,11 +67,15 @@ describe('DataSourceManager', () => {
         style: {
           color: {
             type: 'data-variable',
-            default: 'black',
+            value: 'black',
             path: 'colors-data.id1.color',
           },
         },
       })[0];
+
+      const el = cmp.getEl();
+      console.log('el', el?.style);
+      expect(el?.style.color).toBe('red');
     });
   });
 

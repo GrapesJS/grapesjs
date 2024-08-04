@@ -277,7 +277,7 @@ export default class PropertyComposite<T extends Record<string, any> = PropertyC
     const result = this.getStyleFromProps()[this.getName()] || '';
 
     if (result && typeof result !== 'string' && 'type' in result) {
-      if (result.type === 'data-variable') {
+      if (result.type === 'data-variable-css') {
         console.log('Datasources __getFullValue');
       }
     }
@@ -309,7 +309,7 @@ export default class PropertyComposite<T extends Record<string, any> = PropertyC
     const value = style[name];
 
     if (value && typeof value !== 'string' && 'type' in value) {
-      if (value.type === 'data-variable') {
+      if (value.type === 'data-variable-css') {
         console.log('Datasources __splitStyleName');
       }
     }
@@ -357,7 +357,7 @@ export default class PropertyComposite<T extends Record<string, any> = PropertyC
       const value = style[name];
 
       if (value && typeof value !== 'string' && 'type' in value) {
-        if (value.type === 'data-variable') {
+        if (value.type === 'data-variable-css') {
           console.log('Datasources __getPropsFromStyle');
         }
       }
