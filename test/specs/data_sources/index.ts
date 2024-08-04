@@ -34,7 +34,7 @@ describe('DataSourceManager', () => {
     expect(dsm).toBeTruthy();
   });
 
-  describe.only('Style', () => {
+  describe('Style', () => {
     let fixtures: HTMLElement;
     let cmpRoot: ComponentWrapper;
 
@@ -66,16 +66,15 @@ describe('DataSourceManager', () => {
         content: 'Hello World',
         style: {
           color: {
-            type: 'data-variable',
+            type: 'data-variable-css',
             value: 'black',
             path: 'colors-data.id1.color',
           },
         },
       })[0];
 
-      const el = cmp.getEl();
-      console.log('el', el?.style);
-      expect(el?.style.color).toBe('red');
+      const style = cmp.getStyle();
+      expect(style).toHaveProperty('color', 'red');
     });
   });
 

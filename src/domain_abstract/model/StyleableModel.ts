@@ -2,7 +2,7 @@ import { isArray, isString, keys } from 'underscore';
 import { Model, ObjectAny, ObjectHash, SetOptions } from '../../common';
 import ParserHtml from '../../parser/model/ParserHtml';
 import Selectors from '../../selector_manager/model/Selectors';
-import { shallowDiff, get, stringToPath } from '../../utils/mixins';
+import { shallowDiff, stringToPath } from '../../utils/mixins';
 import EditorModel from '../../editor/model/Editor';
 import StyleDataVariable from '../../data_sources/model/StyleDataVariable';
 import { DataSourcesEvents, DataVariableListener } from '../../data_sources/types';
@@ -91,54 +91,46 @@ export default class StyleableModel<T extends ObjectHash = any> extends Model<T>
 
     const propNew = { ...prop };
     const newStyle = { ...propNew };
-    // Remove empty style properties
-    keys(newStyle).forEach(prop => {
-      if (newStyle[prop] === '') {
-        delete newStyle[prop];
+
+    keys(newStyle).forEach(key => {
+      // Remove empty style properties
+      if (newStyle[key] === '') {
+        delete newStyle[key];
+
+        return;
+      }
+
+      const styleValue = newStyle[key];
+      if (typeof styleValue === 'object' && styleValue.type === 'data-variable-css') {
+        newStyle[key] = new StyleDataVariable(styleValue, { em: this.em });
       }
     });
 
-    this.convertToStyleDataVariable(newStyle);
-
     this.set('style', newStyle, opts as any);
+
     const diff = shallowDiff(propOrig, newStyle);
     // Delete the property used for partial updates
     delete diff.__p;
 
     keys(diff).forEach(pr => {
-      // @ts-ignore
       const { em } = this;
-      if (opts.noEvent) return;
+      if (opts.noEvent) {
+        return;
+      }
+
       this.trigger(`change:style:${pr}`);
       if (em) {
         em.trigger('styleable:change', this, pr, opts);
         em.trigger(`styleable:change:${pr}`, this, pr, opts);
+
+        const styleValue = newStyle[pr];
+        if (styleValue instanceof StyleDataVariable) {
+          this.listenToDataVariable(styleValue, pr);
+        }
       }
     });
-
-    this.processDataVariableStyles(newStyle);
 
     return newStyle;
-  }
-
-  convertToStyleDataVariable(style: StyleProps) {
-    keys(style).forEach(key => {
-      const styleValue = style[key];
-      // @ts-ignore
-      if (typeof styleValue === 'object' && styleValue.type === 'data-variable-css') {
-        // @ts-ignore
-        style[key] = new StyleDataVariable(styleValue, { em: this.em });
-      }
-    });
-  }
-
-  processDataVariableStyles(style: StyleProps) {
-    keys(style).forEach(key => {
-      const styleValue = style[key];
-      if (styleValue instanceof StyleDataVariable) {
-        this.listenToDataVariable(styleValue, key);
-      }
-    });
   }
 
   listenToDataVariable(dataVar: StyleDataVariable, styleProp: string) {
@@ -155,6 +147,7 @@ export default class StyleableModel<T extends ObjectHash = any> extends Model<T>
 
     dataListeners.forEach(ls =>
       this.listenTo(ls.obj, ls.event, () => {
+        console.log('data variable change', ls.obj, ls.event);
         const newValue = em?.DataSources.getValue(normPath, dataVar.get('value'));
         this.updateStyleProp(styleProp, newValue);
       })
