@@ -147,7 +147,6 @@ export default class StyleableModel<T extends ObjectHash = any> extends Model<T>
 
     dataListeners.forEach(ls =>
       this.listenTo(ls.obj, ls.event, () => {
-        console.log('data variable change', ls.obj, ls.event);
         const newValue = em?.DataSources.getValue(normPath, dataVar.get('value'));
         this.updateStyleProp(styleProp, newValue);
       })

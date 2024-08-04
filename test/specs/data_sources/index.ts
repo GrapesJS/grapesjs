@@ -76,6 +76,54 @@ describe('DataSourceManager', () => {
       const style = cmp.getStyle();
       expect(style).toHaveProperty('color', 'red');
     });
+
+    test('component updates on style change', () => {
+      const styleDataSource: DataSourceProps = {
+        id: 'colors-data',
+        records: [{ id: 'id1', color: 'red' }],
+      };
+      dsm.add(styleDataSource);
+
+      const cmp = cmpRoot.append({
+        tagName: 'h1',
+        type: 'text',
+        content: 'Hello World',
+        style: {
+          color: {
+            type: 'data-variable-css',
+            value: 'black',
+            path: 'colors-data.id1.color',
+          },
+        },
+      })[0];
+
+      const style = cmp.getStyle();
+      expect(style).toHaveProperty('color', 'red');
+
+      const colorsDatasource = dsm.get('colors-data');
+      colorsDatasource.getRecord('id1')?.set({ color: 'blue' });
+
+      const updatedStyle = cmp.getStyle();
+      expect(updatedStyle).toHaveProperty('color', 'blue');
+    });
+
+    test("should use default value if data source doesn't exist", () => {
+      const cmp = cmpRoot.append({
+        tagName: 'h1',
+        type: 'text',
+        content: 'Hello World',
+        style: {
+          color: {
+            type: 'data-variable-css',
+            value: 'black',
+            path: 'unknown.id1.color',
+          },
+        },
+      })[0];
+
+      const style = cmp.getStyle();
+      expect(style).toHaveProperty('color', 'black');
+    });
   });
 
   test('add DataSource with records', () => {
