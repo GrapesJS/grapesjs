@@ -29,7 +29,7 @@ export default {
       link: 'Link',
       map: 'Karte',
       tfoot: 'Tabellenfuß',
-      tbody: 'Tabellenkörßer',
+      tbody: 'Tabellenkörper',
       thead: 'Tabellenkopf',
       table: 'Tabelle',
       row: 'Tabellenzeile',
@@ -41,8 +41,8 @@ export default {
     devices: {
       desktop: 'Desktop',
       tablet: 'Tablet',
-      mobileLandscape: 'Mobile horizontal',
-      mobilePortrait: 'Mobile vertikal'
+      mobileLandscape: 'Mobil Landschaft',
+      mobilePortrait: 'Mobil Portrait'
     }
   },
   panels: {
@@ -110,7 +110,7 @@ export default {
       'padding-left-sub': 'Links',
       'border-width-sub': 'Breite',
       'border-style-sub': 'Stil',
-      'border-color-sub': 'Rarbe',
+      'border-color-sub': 'Farbe',
       'border-top-left-radius-sub': 'Oben links',
       'border-top-right-radius-sub': 'Oben rechts',
       'border-bottom-right-radius-sub': 'Unten rechts',
@@ -148,7 +148,7 @@ export default {
       'box-shadow': 'Boxschatten',
       'box-shadow-h': 'X',
       'box-shadow-v': 'Y',
-      'box-shadow-blur': 'Unschärge',
+      'box-shadow-blur': 'Unschärfe',
       'box-shadow-spread': 'Verteilung',
       'box-shadow-color': 'Farbe',
       'box-shadow-type': 'Typ',
