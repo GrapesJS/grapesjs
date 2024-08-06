@@ -122,7 +122,7 @@ export default {
       'padding-bottom': 'Innerer Abstand unten',
       'font-family': 'Schriftart',
       'font-size': 'Schriftgröße',
-      'font-weight': 'Schriftbreite',
+      'font-weight': 'Schriftstärke',
       'letter-spacing': 'Zeichenabstand',
       color: 'Schriftfarbe',
       'line-height': 'Zeilenhöhe',
