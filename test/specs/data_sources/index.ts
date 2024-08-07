@@ -126,6 +126,61 @@ describe('DataSourceManager', () => {
     });
   });
 
+  describe.only('Transformers', () => {
+    let fixtures: HTMLElement;
+    let cmpRoot: ComponentWrapper;
+
+    beforeEach(() => {
+      document.body.innerHTML = '<div id="fixtures"></div>';
+      const { Pages, Components } = em;
+      Pages.onLoad();
+      cmpRoot = Components.getWrapper()!;
+      const View = Components.getType('wrapper')!.view;
+      const wrapperEl = new View({
+        model: cmpRoot,
+        config: { ...cmpRoot.config, em },
+      });
+      wrapperEl.render();
+      fixtures = document.body.querySelector('#fixtures')!;
+      fixtures.appendChild(wrapperEl.el);
+    });
+
+    test('onRecordInsert', () => {
+      const testDataSource: DataSourceProps = {
+        id: 'test-data-source',
+        records: [],
+        transformers: {
+          onRecordInsert: record => {
+            record.content = record.content.toUpperCase();
+            return record;
+          },
+        },
+      };
+      dsm.add(testDataSource);
+
+      const cmp = cmpRoot.append({
+        tagName: 'h1',
+        type: 'text',
+        components: [
+          {
+            type: 'data-variable',
+            value: 'default',
+            path: 'test-data-source.id1.content',
+          },
+        ],
+      })[0];
+
+      const ds = dsm.get('test-data-source');
+      ds.addRecord({ id: 'id1', content: 'i love grapes' });
+
+      const el = cmp.getEl();
+      expect(el?.innerHTML).toContain('I LOVE GRAPES');
+
+      const result = ds.getRecord('id1')?.get('content');
+      expect(result).toBe('I LOVE GRAPES');
+    });
+  });
+
   test('add DataSource with records', () => {
     const eventAdd = jest.fn();
     em.on(dsm.events.add, eventAdd);

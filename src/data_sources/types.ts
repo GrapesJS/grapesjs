@@ -12,6 +12,19 @@ export interface DataSourceProps {
    * DataSource records.
    */
   records?: DataRecords | DataRecord[] | DataRecordProps[];
+
+  /**
+   * DataSource validation and transformation factories.
+   */
+
+  transformers?: DataSourceTransformers;
+}
+
+export interface DataSourceTransformers {
+  onRecordInsert?: (record: DataRecordProps) => DataRecordProps;
+  onRecordUpdate?: (record: DataRecord) => DataRecord;
+  onRecordDelete?: (record: DataRecord) => DataRecord;
+  onRecordRead?: (record: DataRecord) => DataRecord;
 }
 
 export interface DataRecordProps extends ObjectAny {

@@ -1,6 +1,6 @@
 import { AddOptions, CombinedModelConstructorOptions, Model, RemoveOptions } from '../../common';
 import EditorModel from '../../editor/model/Editor';
-import { DataRecordProps, DataSourceProps } from '../types';
+import { DataRecordProps, DataSourceProps, DataSourceTransformers } from '../types';
 import DataRecord from './DataRecord';
 import DataRecords from './DataRecords';
 import DataSources from './DataSources';
@@ -8,15 +8,19 @@ import DataSources from './DataSources';
 interface DataSourceOptions extends CombinedModelConstructorOptions<{ em: EditorModel }, DataSource> {}
 
 export default class DataSource extends Model<DataSourceProps> {
+  transformers: DataSourceTransformers;
+
   defaults() {
     return {
       records: [],
+      transformers: {},
     };
   }
 
   constructor(props: DataSourceProps, opts: DataSourceOptions) {
     super(props, opts);
-    const { records } = props;
+    const { records, transformers } = props;
+    this.transformers = transformers || {};
 
     if (!(records instanceof DataRecords)) {
       this.set({ records: new DataRecords(records!, { dataSource: this }) });
@@ -38,6 +42,11 @@ export default class DataSource extends Model<DataSourceProps> {
   }
 
   addRecord(record: DataRecordProps, opts?: AddOptions) {
+    const onRecordInsert = this.transformers.onRecordInsert;
+    if (onRecordInsert) {
+      record = onRecordInsert(record);
+    }
+
     return this.records.add(record, opts);
   }
 
