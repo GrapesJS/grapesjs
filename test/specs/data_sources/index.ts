@@ -261,6 +261,41 @@ describe('DataSourceManager', () => {
       const result = ds.getRecord('id1')?.get('content');
       expect(result).toBe('I LOVE GRAPES');
     });
+
+    test('onRecordDelete', () => {
+      const testDataSource: DataSourceProps = {
+        id: 'test-data-source',
+        records: [],
+        transformers: {
+          onRecordDelete: ({ record }) => {
+            if (record.get('content') === 'i love grapes') {
+              throw new Error('Cannot delete record with content "i love grapes"');
+            }
+          },
+        },
+      };
+      dsm.add(testDataSource);
+
+      const cmp = cmpRoot.append({
+        tagName: 'h1',
+        type: 'text',
+        components: [
+          {
+            type: 'data-variable',
+            value: 'default',
+            path: 'test-data-source.id1.content',
+          },
+        ],
+      })[0];
+
+      const ds = dsm.get('test-data-source');
+      ds.addRecord({ id: 'id1', content: 'i love grapes' });
+
+      let el = cmp.getEl();
+      expect(el?.innerHTML).toContain('i love grapes');
+
+      expect(() => ds.removeRecord('id1')).toThrowError('Cannot delete record with content "i love grapes"');
+    });
   });
 
   test('add DataSource with records', () => {
