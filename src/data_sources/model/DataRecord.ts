@@ -1,9 +1,10 @@
 import { keys } from 'underscore';
-import { Model } from '../../common';
+import { Model, SetOptions } from '../../common';
 import { DataRecordProps, DataSourcesEvents } from '../types';
 import DataRecords from './DataRecords';
 import DataSource from './DataSource';
 import EditorModel from '../../editor/model/Editor';
+import { _StringKey } from 'backbone';
 
 export default class DataRecord<T extends DataRecordProps = DataRecordProps> extends Model<T> {
   constructor(props: T, opts = {}) {
@@ -58,5 +59,36 @@ export default class DataRecord<T extends DataRecordProps = DataRecordProps> ext
     const data = { dataSource, dataRecord: this };
     const paths = this.getPaths(prop);
     paths.forEach(path => em.trigger(`${DataSourcesEvents.path}:${path}`, { ...data, path }));
+  }
+
+  set<A extends _StringKey<T>>(
+    attributeName: Partial<T> | A,
+    value?: SetOptions | T[A] | undefined,
+    options?: SetOptions | undefined
+  ): this;
+  set(attributeName: unknown, value?: unknown, options?: SetOptions): DataRecord {
+    const onRecordSet = this.dataSource?.transformers?.onRecordSet;
+
+    if (options?.avoidTransformers) {
+      // @ts-ignore
+      super.set(attributeName, value, options);
+      return this;
+    }
+
+    if (onRecordSet) {
+      const newValue = onRecordSet({
+        id: this.id,
+        key: attributeName as string,
+        value,
+      });
+
+      // @ts-ignore
+      super.set(attributeName, newValue, options);
+      return this;
+    } else {
+      // @ts-ignore
+      super.set(attributeName, value, options);
+      return this;
+    }
   }
 }

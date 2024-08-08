@@ -42,9 +42,9 @@ export default class DataSource extends Model<DataSourceProps> {
   }
 
   addRecord(record: DataRecordProps, opts?: AddOptions) {
-    const onRecordInsert = this.transformers.onRecordInsert;
-    if (onRecordInsert) {
-      record = onRecordInsert(record);
+    const onRecordAdd = this.transformers.onRecordAdd;
+    if (onRecordAdd) {
+      record = onRecordAdd({ record });
     }
 
     return this.records.add(record, opts);

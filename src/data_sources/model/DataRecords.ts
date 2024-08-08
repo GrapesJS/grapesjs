@@ -16,14 +16,14 @@ export default class DataRecords extends Collection<DataRecord> {
   add(model: {} | DataRecord<DataRecordProps>, options?: AddRecordOptions): DataRecord<DataRecordProps>;
   add(models: ({} | DataRecord<DataRecordProps>)[], options?: AddRecordOptions): DataRecord<DataRecordProps>[];
   add(models: unknown, options?: AddRecordOptions): DataRecord<DataRecordProps> | DataRecord<DataRecordProps>[] {
-    const onRecordInsert = this.dataSource?.transformers?.onRecordInsert;
+    const onRecordAdd = this.dataSource?.transformers?.onRecordAdd;
 
     if (options?.avoidTransformers) {
       return super.add(models as DataRecord<DataRecordProps>, options);
     }
 
-    if (onRecordInsert) {
-      const m = (Array.isArray(models) ? models : [models]).map(onRecordInsert);
+    if (onRecordAdd) {
+      const m = (Array.isArray(models) ? models : [models]).map(model => onRecordAdd({ record: model }));
 
       return super.add(m, options);
     } else {

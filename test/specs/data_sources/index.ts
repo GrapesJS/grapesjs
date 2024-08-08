@@ -145,12 +145,12 @@ describe('DataSourceManager', () => {
       fixtures.appendChild(wrapperEl.el);
     });
 
-    test('onRecordInsert', () => {
+    test('onRecordAdd', () => {
       const testDataSource: DataSourceProps = {
         id: 'test-data-source',
         records: [],
         transformers: {
-          onRecordInsert: record => {
+          onRecordAdd: ({ record }) => {
             record.content = record.content.toUpperCase();
             return record;
           },
@@ -172,6 +172,52 @@ describe('DataSourceManager', () => {
 
       const ds = dsm.get('test-data-source');
       ds.addRecord({ id: 'id1', content: 'i love grapes' });
+
+      const el = cmp.getEl();
+      expect(el?.innerHTML).toContain('I LOVE GRAPES');
+
+      const result = ds.getRecord('id1')?.get('content');
+      expect(result).toBe('I LOVE GRAPES');
+    });
+
+    test('onRecordSet', () => {
+      const testDataSource: DataSourceProps = {
+        id: 'test-data-source',
+        records: [],
+        transformers: {
+          onRecordSet: ({ id, key, value }) => {
+            if (key !== 'content') {
+              return value;
+            }
+
+            if (typeof value !== 'string') {
+              throw new Error('Value must be a string');
+            }
+
+            return value.toUpperCase();
+          },
+        },
+      };
+      dsm.add(testDataSource);
+
+      const cmp = cmpRoot.append({
+        tagName: 'h1',
+        type: 'text',
+        components: [
+          {
+            type: 'data-variable',
+            value: 'default',
+            path: 'test-data-source.id1.content',
+          },
+        ],
+      })[0];
+
+      const ds = dsm.get('test-data-source');
+      const dr = ds.addRecord({ id: 'id1', content: 'i love grapes' });
+
+      expect(() => dr.set('content', 123)).toThrowError('Value must be a string');
+
+      dr.set('content', 'I LOVE GRAPES');
 
       const el = cmp.getEl();
       expect(el?.innerHTML).toContain('I LOVE GRAPES');

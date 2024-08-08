@@ -21,10 +21,10 @@ export interface DataSourceProps {
 }
 
 export interface DataSourceTransformers {
-  onRecordInsert?: (record: DataRecordProps) => DataRecordProps;
-  onRecordUpdate?: (record: DataRecord) => DataRecord;
-  onRecordDelete?: (record: DataRecord) => DataRecord;
-  onRecordRead?: (record: DataRecord) => DataRecord;
+  onRecordAdd?: (args: { record: DataRecordProps }) => DataRecordProps;
+  onRecordSet?: (args: { id: string | number; key: string; value: any }) => any;
+  onRecordDelete?: (args: { record: DataRecord }) => DataRecord;
+  onRecordRead?: (args: { record: DataRecord }) => DataRecord;
 }
 
 export interface DataRecordProps extends ObjectAny {
