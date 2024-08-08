@@ -65,6 +65,7 @@ import { AddOptions, EventHandler, LiteralUnion } from '../common';
 import CssComposer from '../css_composer';
 import CssRule from '../css_composer/model/CssRule';
 import CssRules from '../css_composer/model/CssRules';
+import DataSourceManager from '../data_sources';
 import DeviceManager from '../device_manager';
 import ComponentManager, { ComponentEvent } from '../dom_components';
 import Component from '../dom_components/model/Component';
@@ -240,6 +241,9 @@ export default class Editor implements IBaseModule<EditorConfig> {
   }
   get DeviceManager(): DeviceManager {
     return this.em.Devices;
+  }
+  get DataSources(): DataSourceManager {
+    return this.em.DataSources;
   }
 
   get EditorModel() {

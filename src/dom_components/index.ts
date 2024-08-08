@@ -101,6 +101,8 @@ import ComponentVideoView from './view/ComponentVideoView';
 import ComponentView, { IComponentView } from './view/ComponentView';
 import ComponentWrapperView from './view/ComponentWrapperView';
 import ComponentsView from './view/ComponentsView';
+import ComponentDataVariable, { type as typeVariable } from './model/ComponentDataVariable';
+import ComponentDataVariableView from './view/ComponentDataVariableView';
 import ComponentHead, { type as typeHead } from './model/ComponentHead';
 import {
   getSymbolMain,
@@ -179,6 +181,11 @@ export interface CanMoveResult {
 
 export default class ComponentManager extends ItemManagerModule<DomComponentsConfig, any> {
   componentTypes: ComponentStackItem[] = [
+    {
+      id: typeVariable,
+      model: ComponentDataVariable,
+      view: ComponentDataVariableView,
+    },
     {
       id: 'cell',
       model: ComponentTableCell,

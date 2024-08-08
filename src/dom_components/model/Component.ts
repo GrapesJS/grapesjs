@@ -698,7 +698,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
     if (avoidInline(em) && !opt.temporary && !opts.inline) {
       const style = this.get('style') || {};
       prop = isString(prop) ? this.parseStyle(prop) : prop;
-      prop = { ...prop, ...style };
+      prop = { ...prop, ...(style as any) };
       const state = em.get('state');
       const cc = em.Css;
       const propOrig = this.getStyle(opts);
@@ -932,7 +932,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
    * // append at specific index (eg. at the beginning)
    * someComponent.append(otherComponent, { at: 0 });
    */
-  append(components: ComponentAdd, opts: AddOptions = {}): Component[] {
+  append<T extends Component = Component>(components: ComponentAdd, opts: AddOptions = {}): T[] {
     const compArr = isArray(components) ? [...components] : [components];
     const toAppend = compArr.map(comp => {
       if (isString(comp)) {
@@ -947,7 +947,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
       action: ActionLabelComponents.add,
       ...opts,
     });
-    return isArray(result) ? result : [result];
+    return result as T[];
   }
 
   /**

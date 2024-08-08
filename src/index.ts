@@ -140,5 +140,10 @@ export type { default as Sector } from './style_manager/model/Sector';
 export type { default as Sectors } from './style_manager/model/Sectors';
 export type { default as Trait } from './trait_manager/model/Trait';
 export type { default as Traits } from './trait_manager/model/Traits';
+export type { default as DataSourceManager } from './data_sources';
+export type { default as DataSources } from './data_sources/model/DataSources';
+export type { default as DataSource } from './data_sources/model/DataSource';
+export type { default as DataRecord } from './data_sources/model/DataRecord';
+export type { default as DataRecords } from './data_sources/model/DataRecords';
 
 export default grapesjs;

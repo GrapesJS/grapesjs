@@ -2,9 +2,21 @@ import { isArray, isString, keys } from 'underscore';
 import { Model, ObjectAny, ObjectHash, SetOptions } from '../../common';
 import ParserHtml from '../../parser/model/ParserHtml';
 import Selectors from '../../selector_manager/model/Selectors';
-import { shallowDiff } from '../../utils/mixins';
+import { shallowDiff, stringToPath } from '../../utils/mixins';
+import EditorModel from '../../editor/model/Editor';
+import StyleDataVariable from '../../data_sources/model/StyleDataVariable';
+import { DataSourcesEvents, DataVariableListener } from '../../data_sources/types';
 
-export type StyleProps = Record<string, string | string[]>;
+export type StyleProps = Record<
+  string,
+  | string
+  | string[]
+  | {
+      type: 'data-variable-css';
+      value: string;
+      path: string;
+    }
+>;
 
 export type UpdateStyleOptions = SetOptions & {
   partial?: boolean;
@@ -20,6 +32,9 @@ export const getLastStyleValue = (value: string | string[]) => {
 };
 
 export default class StyleableModel<T extends ObjectHash = any> extends Model<T> {
+  em?: EditorModel;
+  dataListeners: DataVariableListener[] = [];
+
   /**
    * Forward style string to `parseStyle` to be parse to an object
    * @param  {string} str
@@ -46,6 +61,11 @@ export default class StyleableModel<T extends ObjectHash = any> extends Model<T>
   getStyle(prop?: string | ObjectAny): StyleProps {
     const style = this.get('style') || {};
     const result: ObjectAny = { ...style };
+    if (this.em) {
+      const resolvedStyle = this.resolveDataVariables({ ...result });
+      // @ts-ignore
+      return prop && isString(prop) ? resolvedStyle[prop] : resolvedStyle;
+    }
     return prop && isString(prop) ? result[prop] : result;
   }
 
@@ -71,28 +91,95 @@ export default class StyleableModel<T extends ObjectHash = any> extends Model<T>
 
     const propNew = { ...prop };
     const newStyle = { ...propNew };
-    // Remove empty style properties
-    keys(newStyle).forEach(prop => {
-      if (newStyle[prop] === '') {
-        delete newStyle[prop];
+
+    keys(newStyle).forEach(key => {
+      // Remove empty style properties
+      if (newStyle[key] === '') {
+        delete newStyle[key];
+
+        return;
+      }
+
+      const styleValue = newStyle[key];
+      if (typeof styleValue === 'object' && styleValue.type === 'data-variable-css') {
+        newStyle[key] = new StyleDataVariable(styleValue, { em: this.em });
       }
     });
+
     this.set('style', newStyle, opts as any);
-    const diff = shallowDiff(propOrig, propNew);
+
+    const diff = shallowDiff(propOrig, newStyle);
     // Delete the property used for partial updates
     delete diff.__p;
+
     keys(diff).forEach(pr => {
-      // @ts-ignore
       const { em } = this;
-      if (opts.noEvent) return;
+      if (opts.noEvent) {
+        return;
+      }
+
       this.trigger(`change:style:${pr}`);
       if (em) {
         em.trigger('styleable:change', this, pr, opts);
         em.trigger(`styleable:change:${pr}`, this, pr, opts);
+
+        const styleValue = newStyle[pr];
+        if (styleValue instanceof StyleDataVariable) {
+          this.listenToDataVariable(styleValue, pr);
+        }
       }
     });
 
-    return propNew;
+    return newStyle;
+  }
+
+  listenToDataVariable(dataVar: StyleDataVariable, styleProp: string) {
+    const { em } = this;
+    const { path } = dataVar.attributes;
+    const normPath = stringToPath(path || '').join('.');
+    const dataListeners: DataVariableListener[] = [];
+    const prevListeners = this.dataListeners || [];
+
+    prevListeners.forEach(ls => this.stopListening(ls.obj, ls.event, this.updateStyleProp));
+
+    dataListeners.push({ obj: dataVar, event: 'change:value' });
+    dataListeners.push({ obj: em, event: `${DataSourcesEvents.path}:${normPath}` });
+
+    dataListeners.forEach(ls =>
+      this.listenTo(ls.obj, ls.event, () => {
+        const [dsId, drId, keyPath] = stringToPath(path);
+        const ds = em?.DataSources.get(dsId);
+        const dr = ds && ds.records.get(drId);
+        const newValue = dr && dr.get(keyPath);
+
+        this.updateStyleProp(styleProp, newValue);
+      })
+    );
+    this.dataListeners = dataListeners;
+  }
+
+  updateStyleProp(prop: string, value: string) {
+    const style = this.getStyle();
+    style[prop] = value;
+    this.setStyle(style, { noEvent: true });
+    this.trigger(`change:style:${prop}`);
+  }
+
+  resolveDataVariables(style: StyleProps): StyleProps {
+    const resolvedStyle = { ...style };
+    keys(resolvedStyle).forEach(key => {
+      const styleValue = resolvedStyle[key];
+
+      if (styleValue instanceof StyleDataVariable) {
+        const [dsId, drId, keyPath] = stringToPath(styleValue.get('path'));
+        const ds = this.em?.DataSources.get(dsId);
+        const dr = ds && ds.records.get(drId);
+        const resolvedValue = dr && dr.get(keyPath);
+
+        resolvedStyle[key] = resolvedValue || styleValue.get('value');
+      }
+    });
+    return resolvedStyle;
   }
 
   /**
@@ -147,7 +234,7 @@ export default class StyleableModel<T extends ObjectHash = any> extends Model<T>
       const value = style[prop];
       const values = isArray(value) ? (value as string[]) : [value];
 
-      values.forEach((val: string) => {
+      (values as string[]).forEach((val: string) => {
         const value = `${val}${important ? ' !important' : ''}`;
         value && result.push(`${prop}:${value};`);
       });
@@ -164,9 +251,4 @@ export default class StyleableModel<T extends ObjectHash = any> extends Model<T>
     // @ts-ignore
     return this.selectorsToString ? this.selectorsToString(opts) : this.getSelectors().getFullString();
   }
-
-  // @ts-ignore
-  // _validate(attr, opts) {
-  //   return true;
-  // }
 }

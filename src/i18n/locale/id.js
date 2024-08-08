@@ -137,13 +137,13 @@ export default {
     empty: 'Pilih elemen terlebih dulu sebelum menggunakan Manajemen Trait',
     label: 'Pengaturan komponen',
     categories: {
-      categoryId: 'Label kategori'
+      categoryId: 'Label kategori',
     },
     traits: {
       // The core library generates the name by their `name` property
       labels: {
         title: 'Judul',
-        href: 'Url (href)'
+        href: 'Url (href)',
         // id: 'Id',
         // alt: 'Alt',
       },
