@@ -1,4 +1,4 @@
-import { toLowerCase } from '../../utils/mixins';
+import { stringToPath, toLowerCase } from '../../utils/mixins';
 import Component from './Component';
 import { ToHTMLOptions } from './types';
 
@@ -17,7 +17,11 @@ export default class ComponentDataVariable extends Component {
 
   getInnerHTML(opts: ToHTMLOptions & { keepVariables?: boolean } = {}) {
     const { path, value } = this.attributes;
-    return opts.keepVariables ? path : this.em.DataSources.getValue(path, value);
+    const [dsId, drId, key] = stringToPath(path);
+    const ds = this.em.DataSources.get(dsId);
+    const dr = ds && ds.getRecord(drId);
+
+    return opts.keepVariables ? path : dr ? dr.get(key) : value;
   }
 
   static isComponent(el: HTMLElement) {

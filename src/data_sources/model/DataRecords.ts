@@ -1,3 +1,4 @@
+import { Model } from 'backbone';
 import { AddOptions, Collection } from '../../common';
 import { DataRecordProps } from '../types';
 import DataRecord from './DataRecord';

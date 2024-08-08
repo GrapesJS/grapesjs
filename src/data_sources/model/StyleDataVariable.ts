@@ -30,9 +30,13 @@ export default class StyleDataVariable extends Model {
     }
   }
 
-  onDataSourceChange(model: any) {
+  onDataSourceChange() {
     const { path } = this.attributes;
-    const newValue = get(model, stringToPath(path).join('.'), '');
+    const [dsId, drId, key] = stringToPath(path);
+    const ds = this?.em?.DataSources.get(dsId);
+    const dr = ds && ds.getRecord(drId);
+    const newValue = dr?.get(key);
+
     this.set({ value: newValue });
   }
 }

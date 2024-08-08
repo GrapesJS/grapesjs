@@ -51,7 +51,13 @@ export default class DataSource extends Model<DataSourceProps> {
   }
 
   getRecord(id: string | number): DataRecord | undefined {
-    return this.records.get(id);
+    const onRecordRead = this.transformers.onRecordRead;
+    const record = this.records.get(id);
+    if (record && onRecordRead) {
+      return onRecordRead({ record });
+    }
+
+    return record;
   }
 
   getRecords() {

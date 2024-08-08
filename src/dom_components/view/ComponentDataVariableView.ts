@@ -16,8 +16,11 @@ export default class ComponentDataVariableView extends ComponentView<ComponentDa
     const { model, em } = this;
     const { path } = model.attributes;
     const normPath = stringToPath(path || '').join('.');
+    const [dsId, drId] = stringToPath(path || '');
     const { DataSources } = em;
-    const [ds, dr] = DataSources.fromPath(path);
+    const ds = DataSources.get(dsId);
+    const dr = ds && ds.getRecord(drId);
+
     const dataListeners: DataVariableListener[] = [];
     const prevListeners = this.dataListeners || [];
 
@@ -38,7 +41,14 @@ export default class ComponentDataVariableView extends ComponentView<ComponentDa
   postRender() {
     const { model, el, em } = this;
     const { path, value } = model.attributes;
-    el.innerHTML = em.DataSources.getValue(path, value);
+    const { DataSources } = em;
+    const [dsId, drId, key, ...resPath] = stringToPath(path || '');
+
+    const ds = DataSources.get(dsId);
+    const dr = ds && ds.getRecord(drId);
+
+    el.innerHTML = dr ? dr.get(key) : value;
+
     super.postRender();
   }
 }
