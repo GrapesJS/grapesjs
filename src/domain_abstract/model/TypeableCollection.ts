@@ -27,6 +27,9 @@ const TypeableCollection = {
 
       const model = new Model(attrs, { ...options, em });
       model.typeView = View;
+      // As we're using a dynamic model function, backbone collection is unable to
+      // get `model.prototype.idAttribute`
+      this.model.prototype = Model.prototype;
       return model;
     };
     const init = this.init && this.init.bind(this);
