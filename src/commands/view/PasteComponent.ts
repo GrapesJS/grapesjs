@@ -30,7 +30,6 @@ export default {
 
         if (type.startsWith('image')) {
           components = await pasteImage(ed, data);
-          console.log('🚀 ~ run ~ components:', components);
         } else {
           switch (type) {
             case 'web application/json':
