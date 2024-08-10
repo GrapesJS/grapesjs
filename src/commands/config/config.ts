@@ -19,12 +19,19 @@ export interface CommandsConfig {
    * @default true
    */
   strict?: boolean;
+
+  /**
+   * The clipboard format used for transferring GrapesJS components.
+   * @default 'application/x-grapesjs-component'
+   */
+  CLIPBOARD_COMPONENT_FORMAT?: string;
 }
 
 const config: CommandsConfig = {
   stylePrefix: 'com-',
   defaults: {},
   strict: true,
+  CLIPBOARD_COMPONENT_FORMAT: 'application/x-grapesjs-component',
 };
 
 export default config;

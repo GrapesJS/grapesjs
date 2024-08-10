@@ -2,60 +2,61 @@ import Component from '../../dom_components/model/Component';
 import { CommandObject } from './CommandAbstract';
 import Editor from '../../editor';
 import DOMPurify from 'dompurify';
-
-const GRAPESJS_COMPONENT_FORMAT = 'application/x-grapesjs-component';
+import defaults from '../config/config';
 
 export default {
   async run(ed, s, opts) {
     const clipboardItems = await navigator.clipboard.read();
     const lastSelected = ed.getSelected();
 
-    if (clipboardItems.length && lastSelected) {
-      const selected = ed.getSelectedAll().map(sel => sel.delegate?.copy?.(sel) || sel);
+    if (clipboardItems.length === 0 || !lastSelected) {
+      return;
+    }
 
-      for (const item of clipboardItems) {
-        const desiredTypes = ['web application/json', 'image', 'text/html', 'text/plain'];
-        let type;
+    const selected = ed.getSelectedAll().map(sel => sel.delegate?.copy?.(sel) || sel);
 
-        for (const desiredType of desiredTypes) {
-          type = item.types.find(t => t.startsWith(desiredType));
-          if (type) break;
-        }
+    for (const item of clipboardItems) {
+      const desiredTypes = ['web application/json', 'image', 'text/html', 'text/plain'];
+      let type;
 
-        let components = [];
-        if (!type) continue;
+      for (const desiredType of desiredTypes) {
+        type = item.types.find(t => t.startsWith(desiredType));
+        if (type) break;
+      }
 
-        const data = await item.getType(type);
+      let components = [];
+      if (!type) continue;
 
-        if (type.startsWith('image')) {
-          components = await this.pasteImage(ed, data);
-        } else {
-          switch (type) {
-            case 'web application/json':
-              components = await this.pasteLocal(item);
-              break;
-            case 'text/html':
-              components = await this.pasteHTML(data);
-              break;
-            case 'text/plain':
-              components = await this.pasteText(data);
-              break;
-            default:
-              console.warn(`Unsupported clipboard data type: ${type}`);
-              break;
-          }
-        }
+      const data = await item.getType(type);
 
-        const addedComponents: Component[] = [];
-        for (let index = 0; index < components.length; index++) {
-          const component = components[index];
-          const added = this.addComponentToSelection(ed, selected, component, opts);
-          addedComponents.push(...added);
+      if (type.startsWith('image')) {
+        components = await this.pasteImage(ed, data);
+      } else {
+        switch (type) {
+          case 'web application/json':
+            components = await this.pasteLocal(item);
+            break;
+          case 'text/html':
+            components = await this.pasteHTML(data);
+            break;
+          case 'text/plain':
+            components = await this.pasteText(data);
+            break;
+          default:
+            console.warn(`Unsupported clipboard data type: ${type}`);
+            break;
         }
       }
 
-      lastSelected.emitUpdate();
+      const addedComponents: Component[] = [];
+      for (let index = 0; index < components.length; index++) {
+        const component = components[index];
+        const added = this.addComponentToSelection(ed, selected, component, opts);
+        addedComponents.push(...added);
+      }
     }
+
+    lastSelected.emitUpdate();
   },
 
   async pasteImage(ed: Editor, data: Blob): Promise<any> {
@@ -110,7 +111,7 @@ export default {
     try {
       const { format, data: componentData } = JSON.parse(jsonContent);
 
-      if (format === GRAPESJS_COMPONENT_FORMAT) {
+      if (format === defaults.CLIPBOARD_COMPONENT_FORMAT) {
         return [componentData];
       }
     } catch (err) {
