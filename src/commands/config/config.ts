@@ -24,14 +24,21 @@ export interface CommandsConfig {
    * The clipboard format used for transferring GrapesJS components.
    * @default 'application/x-grapesjs-component'
    */
-  CLIPBOARD_COMPONENT_FORMAT?: string;
+  ClipboardComponentFormat?: string;
+
+  /**
+   * If true, HTML will be pasted as text
+   * @default false
+   */
+  disableHtmlPasting?: boolean;
 }
 
 const config: CommandsConfig = {
   stylePrefix: 'com-',
   defaults: {},
   strict: true,
-  CLIPBOARD_COMPONENT_FORMAT: 'application/x-grapesjs-component',
+  ClipboardComponentFormat: 'application/x-grapesjs-component',
+  disableHtmlPasting: false,
 };
 
 export default config;

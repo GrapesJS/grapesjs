@@ -13,7 +13,7 @@ export default {
     });
 
     const clipboardDataString = JSON.stringify({
-      format: defaults.CLIPBOARD_COMPONENT_FORMAT,
+      format: this.config.ClipboardComponentFormat,
       data: clipboardData,
     });
 

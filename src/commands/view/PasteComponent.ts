@@ -2,7 +2,7 @@ import Component from '../../dom_components/model/Component';
 import { CommandObject } from './CommandAbstract';
 import Editor from '../../editor';
 import DOMPurify from 'dompurify';
-import defaults from '../config/config';
+import _ from 'underscore';
 
 export default {
   async run(ed, s, opts) {
@@ -21,25 +21,25 @@ export default {
       const supportedTypes = ['web application/json', 'image', 'text/html', 'text/plain'];
       let type;
 
-      for (const supportedType of supportedTypes) {
-        type = item.types.find(t => t.startsWith(supportedType));
+      for (const t of item.types) {
+        type = supportedTypes.find(supportedType => t.startsWith(supportedType));
         if (type) break;
       }
+
       if (!type) continue;
 
-      const imgType: string = type.startsWith('image') ? type : '';
       const data = await item.getType(type);
-      switch (type) {
-        case imgType:
+      switch (true) {
+        case type.startsWith('image'):
           components = await this.pasteImage(ed, data);
           break;
-        case 'web application/json':
+        case type === 'web application/json':
           components = await this.pasteLocal(item);
           break;
-        case 'text/html':
-          components = await this.pasteHTML(data);
+        case type === 'text/html':
+          components = await (this.config.disableHtmlPasting ? this.pasteText(data) : this.pasteHTML(data));
           break;
-        case 'text/plain':
+        case type === 'text/plain':
           components = await this.pasteText(data);
           break;
         default:
@@ -95,10 +95,21 @@ export default {
   },
 
   async pasteText(data: Blob) {
+    const textData = await data.text();
+    const parser = new DOMParser();
+    const parsedDoc = parser.parseFromString(textData, 'text/html');
+
+    const isParsableHTML = Array.from(parsedDoc.body.childNodes).some(node => node.nodeType === 1);
+
+    if (isParsableHTML && !this.config.disableHtmlPasting) {
+      return await this.pasteHTML(new Blob([textData], { type: 'text/html' }));
+    }
+
     const textContent = await data.text();
+    const escapedContent = _.escape(textContent);
     const componentData = {
       type: 'text',
-      content: textContent,
+      content: escapedContent,
     };
     return [componentData];
   },
@@ -110,7 +121,7 @@ export default {
     try {
       const { format, data: componentData } = JSON.parse(jsonContent);
 
-      if (format === defaults.CLIPBOARD_COMPONENT_FORMAT) {
+      if (format === this.config.ClipboardComponentFormat) {
         return [componentData];
       }
     } catch (err) {
