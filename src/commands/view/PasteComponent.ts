@@ -27,7 +27,7 @@ export default {
       }
       if (!type) continue;
 
-      const imgType = type.startsWith('image') ? type : '';
+      const imgType: string = type.startsWith('image') ? type : '';
       const data = await item.getType(type);
       switch (type) {
         case imgType:
@@ -50,7 +50,7 @@ export default {
       const addedComponents: Component[] = [];
       for (let index = 0; index < components.length; index++) {
         const component = components[index];
-        const added = this.addComponentToSelection(ed, selected, component, opts);
+        const added = this.insertComponentIntoSelection(ed, selected, component, opts);
         addedComponents.push(...added);
       }
     }
@@ -120,7 +120,7 @@ export default {
     return [];
   },
 
-  addComponentToSelection(
+  insertComponentIntoSelection(
     ed: Editor,
     selected: any[],
     componentData: { type: string; content: string },
@@ -135,13 +135,13 @@ export default {
         const addOpts = { at, action: opts.action || 'paste-component' };
         const parent = sel.parent();
         if (parent) {
-          const addedComponent = this.doAddComponent(parent, componentData, addOpts);
+          const addedComponent = this.addChildComponent(parent, componentData, addOpts);
           addedComponents.push(addedComponent);
         }
       } else {
         const pageBody = ed.getModel().Pages.getSelected()?.getMainComponent();
         const addOpts = { at: pageBody?.components().length || 0, action: opts.action || 'paste-component' };
-        const addedComponent = this.doAddComponent(pageBody as Component, componentData, addOpts);
+        const addedComponent = this.addChildComponent(pageBody as Component, componentData, addOpts);
         addedComponents.push(addedComponent);
       }
     });
@@ -149,7 +149,7 @@ export default {
     return addedComponents;
   },
 
-  doAddComponent(parent: Component, componentData: any, addOpts: { at: any; action: any }) {
+  addChildComponent(parent: Component, componentData: any, addOpts: { at: any; action: any }) {
     const addedComponent = parent.components().add(componentData, addOpts);
     return addedComponent;
   },
