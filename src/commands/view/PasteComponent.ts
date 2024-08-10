@@ -16,36 +16,35 @@ export default {
     const selected = ed.getSelectedAll().map(sel => sel.delegate?.copy?.(sel) || sel);
 
     for (const item of clipboardItems) {
-      const desiredTypes = ['web application/json', 'image', 'text/html', 'text/plain'];
+      let components = [];
+
+      const supportedTypes = ['web application/json', 'image', 'text/html', 'text/plain'];
       let type;
 
-      for (const desiredType of desiredTypes) {
-        type = item.types.find(t => t.startsWith(desiredType));
+      for (const supportedType of supportedTypes) {
+        type = item.types.find(t => t.startsWith(supportedType));
         if (type) break;
       }
-
-      let components = [];
       if (!type) continue;
 
+      const imgType = type.startsWith('image') ? type : '';
       const data = await item.getType(type);
-
-      if (type.startsWith('image')) {
-        components = await this.pasteImage(ed, data);
-      } else {
-        switch (type) {
-          case 'web application/json':
-            components = await this.pasteLocal(item);
-            break;
-          case 'text/html':
-            components = await this.pasteHTML(data);
-            break;
-          case 'text/plain':
-            components = await this.pasteText(data);
-            break;
-          default:
-            console.warn(`Unsupported clipboard data type: ${type}`);
-            break;
-        }
+      switch (type) {
+        case imgType:
+          components = await this.pasteImage(ed, data);
+          break;
+        case 'web application/json':
+          components = await this.pasteLocal(item);
+          break;
+        case 'text/html':
+          components = await this.pasteHTML(data);
+          break;
+        case 'text/plain':
+          components = await this.pasteText(data);
+          break;
+        default:
+          console.warn(`Unsupported clipboard data type: ${type}`);
+          break;
       }
 
       const addedComponents: Component[] = [];
