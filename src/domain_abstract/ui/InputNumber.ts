@@ -140,7 +140,7 @@ export default class InputNumber extends Input {
   upArrowClick() {
     const { model } = this;
     const step = model.get('step');
-    let value = parseFloat(model.get('value'));
+    let value = parseFloat(this.getInputEl().value);
     this.setValue(this.normalizeValue(value + step));
     this.elementUpdated();
   }
@@ -151,7 +151,7 @@ export default class InputNumber extends Input {
   downArrowClick() {
     const { model } = this;
     const step = model.get('step');
-    const value = parseFloat(model.get('value'));
+    const value = parseFloat(this.getInputEl().value);
     this.setValue(this.normalizeValue(value - step));
     this.elementUpdated();
   }

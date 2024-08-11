@@ -16,6 +16,7 @@ jobs:
           registry-url: 'https://registry.npmjs.org'
           cache: 'yarn'
       - run: yarn --frozen-lockfile
+      - run: yarn build
       - run: npm run lint
       - run: npm publish
         env:

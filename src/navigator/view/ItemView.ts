@@ -159,7 +159,6 @@ export default class ItemView extends View {
     ].forEach(item => this.listenTo(model, item[0], item[1]));
     this.$el.data('model', model);
     this.$el.data('collection', components);
-    // @ts-ignore
     model.viewLayer = this;
     onInit.bind(this)({
       component: model,
@@ -396,6 +395,7 @@ export default class ItemView extends View {
 
   remove(...args: []) {
     View.prototype.remove.apply(this, args);
+    delete this.model.viewLayer;
     this.__clearItems();
     return this;
   }
