@@ -317,33 +317,69 @@ describe('DataSourceManager', () => {
       fixtures.appendChild(wrapperEl.el);
     });
 
-    test('component initializes with data-variable trait input', () => {
-      const inputDataSource: DataSourceProps = {
-        id: 'test-input',
-        records: [{ id: 'id1', value: 'test-value' }],
-      };
-      dsm.add(inputDataSource);
+    describe('input component', () => {
+      test('component initializes with trait data-variable on input component', () => {
+        const inputDataSource: DataSourceProps = {
+          id: 'test-input',
+          records: [{ id: 'id1', value: 'test-value' }],
+        };
+        dsm.add(inputDataSource);
 
-      const cmp = cmpRoot.append({
-        tagName: 'input',
-        traits: [
-          'name',
-          'type',
-          {
-            type: 'text',
-            label: 'Value',
-            name: 'value',
-            value: {
-              type: 'data-variable',
-              value: 'default',
-              path: 'test-input.id1.value',
+        const cmp = cmpRoot.append({
+          tagName: 'input',
+          traits: [
+            'name',
+            'type',
+            {
+              type: 'text',
+              label: 'Value',
+              name: 'value',
+              value: {
+                type: 'data-variable',
+                value: 'default',
+                path: 'test-input.id1.value',
+              },
             },
-          },
-        ],
-      })[0];
+          ],
+        })[0];
 
-      const input = cmp.getEl();
-      expect(input?.getAttribute('value')).toBe('test-value');
+        const input = cmp.getEl();
+        expect(input?.getAttribute('value')).toBe('test-value');
+      });
+
+      test('component updates with trait data-variable on input component', () => {
+        const inputDataSource: DataSourceProps = {
+          id: 'test-input',
+          records: [{ id: 'id1', value: 'test-value' }],
+        };
+        dsm.add(inputDataSource);
+
+        const cmp = cmpRoot.append({
+          tagName: 'input',
+          traits: [
+            'name',
+            'type',
+            {
+              type: 'text',
+              label: 'Value',
+              name: 'value',
+              value: {
+                type: 'data-variable',
+                value: 'default',
+                path: 'test-input.id1.value',
+              },
+            },
+          ],
+        })[0];
+
+        const input = cmp.getEl();
+        expect(input?.getAttribute('value')).toBe('test-value');
+
+        const testDs = dsm.get('test-input');
+        testDs.getRecord('id1')?.set({ value: 'new-value' });
+
+        expect(input?.getAttribute('value')).toBe('new-value');
+      });
     });
   });
 
