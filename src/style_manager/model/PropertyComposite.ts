@@ -5,6 +5,7 @@ import Properties from './Properties';
 import Property, { OptionsStyle, OptionsUpdate, PropertyProps } from './Property';
 import { PropertyNumberProps } from './PropertyNumber';
 import { PropertySelectProps } from './PropertySelect';
+import { DataVariableType } from '../../data_sources/model/DataVariable';
 
 export const isNumberType = (type: string) => type === 'integer' || type === 'number';
 
@@ -277,7 +278,7 @@ export default class PropertyComposite<T extends Record<string, any> = PropertyC
     const result = this.getStyleFromProps()[this.getName()] || '';
 
     if (result && typeof result !== 'string' && 'type' in result) {
-      if (result.type === 'data-variable-css') {
+      if (result.type === DataVariableType) {
         console.log('Datasources __getFullValue');
       }
     }
@@ -309,7 +310,7 @@ export default class PropertyComposite<T extends Record<string, any> = PropertyC
     const value = style[name];
 
     if (value && typeof value !== 'string' && 'type' in value) {
-      if (value.type === 'data-variable-css') {
+      if (value.type === DataVariableType) {
         console.log('Datasources __splitStyleName');
       }
     }
@@ -357,7 +358,7 @@ export default class PropertyComposite<T extends Record<string, any> = PropertyC
       const value = style[name];
 
       if (value && typeof value !== 'string' && 'type' in value) {
-        if (value.type === 'data-variable-css') {
+        if (value.type === DataVariableType) {
           console.log('Datasources __getPropsFromStyle');
         }
       }

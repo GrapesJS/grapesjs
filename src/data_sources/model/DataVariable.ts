@@ -1,15 +1,15 @@
 import { Model } from '../../common';
 import EditorModel from '../../editor/model/Editor';
 import { stringToPath } from '../../utils/mixins';
-import Trait from './Trait';
 
-export default class TraitDataVariable extends Model {
+export const DataVariableType = 'data-variable';
+
+export default class DataVariable extends Model {
   em?: EditorModel;
-  trait?: Trait;
 
   defaults() {
     return {
-      type: 'data-variable',
+      type: DataVariableType,
       value: '',
       path: '',
     };
@@ -18,8 +18,6 @@ export default class TraitDataVariable extends Model {
   initialize(attrs: any, options: any) {
     super.initialize(attrs, options);
     this.em = options.em;
-    this.trait = options.trait;
-
     this.listenToDataSource();
 
     return this;
@@ -34,18 +32,16 @@ export default class TraitDataVariable extends Model {
     }
   }
 
+  onDataSourceChange() {
+    const newValue = this.getDataValue();
+    this.set({ value: newValue });
+  }
+
   getDataValue() {
     const { path } = this.attributes;
     const [dsId, drId, key] = stringToPath(path);
     const ds = this?.em?.DataSources.get(dsId);
     const dr = ds && ds.getRecord(drId);
-    const dv = dr?.get(key);
-
-    return dv;
-  }
-
-  onDataSourceChange() {
-    const dv = this.getDataValue();
-    this?.trait?.setTargetValue(dv);
+    return dr?.get(key);
   }
 }

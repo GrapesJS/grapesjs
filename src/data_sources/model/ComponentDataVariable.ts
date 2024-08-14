@@ -1,15 +1,15 @@
+import Component from '../../dom_components/model/Component';
+import { ToHTMLOptions } from '../../dom_components/model/types';
 import { stringToPath, toLowerCase } from '../../utils/mixins';
-import Component from './Component';
-import { ToHTMLOptions } from './types';
+import { DataVariableType } from './DataVariable';
 
-export const type = 'data-variable';
 
 export default class ComponentDataVariable extends Component {
   get defaults() {
     return {
       // @ts-ignore
       ...super.defaults,
-      type,
+      type: DataVariableType,
       path: '',
       value: '',
     };
@@ -25,6 +25,6 @@ export default class ComponentDataVariable extends Component {
   }
 
   static isComponent(el: HTMLElement) {
-    return toLowerCase(el.tagName) === type;
+    return toLowerCase(el.tagName) === DataVariableType;
   }
 }

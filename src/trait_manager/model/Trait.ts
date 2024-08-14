@@ -7,8 +7,9 @@ import { isDef, stringToPath } from '../../utils/mixins';
 import TraitsEvents, { TraitGetValueOptions, TraitOption, TraitProperties, TraitSetValueOptions } from '../types';
 import TraitView from '../view/TraitView';
 import Traits from './Traits';
-import TraitDataVariable from './TraitDataVariable';
 import { DataSourcesEvents, DataVariableListener } from '../../data_sources/types';
+import TraitDataVariable from '../../data_sources/model/TraitDataVariable';
+import { DataVariableType } from '../../data_sources/model/DataVariable';
 
 /**
  * @property {String} id Trait id, eg. `my-trait-id`.
@@ -59,7 +60,7 @@ export default class Trait extends Model<TraitProperties> {
     if (
       this.attributes.value &&
       typeof this.attributes.value === 'object' &&
-      this.attributes.value.type === 'data-variable'
+      this.attributes.value.type === DataVariableType
     ) {
       this.dataVariable = new TraitDataVariable(this.attributes.value, { em: this.em, trait: this });
 
@@ -108,12 +109,12 @@ export default class Trait extends Model<TraitProperties> {
     const dataListeners: DataVariableListener[] = [];
     const prevListeners = this.dataListeners || [];
 
-    prevListeners.forEach(ls => this.stopListening(ls.obj, ls.event, this.updateValueFromDataVariable));
+    prevListeners.forEach((ls) => this.stopListening(ls.obj, ls.event, this.updateValueFromDataVariable));
 
     dataListeners.push({ obj: dataVar, event: 'change:value' });
     dataListeners.push({ obj: em, event: `${DataSourcesEvents.path}:${normPath}` });
 
-    dataListeners.forEach(ls =>
+    dataListeners.forEach((ls) =>
       this.listenTo(ls.obj, ls.event, () => {
         const dr = dataVar.getDataValue();
         this.updateValueFromDataVariable(dr);
@@ -194,7 +195,7 @@ export default class Trait extends Model<TraitProperties> {
     const valueOpts: { avoidStore?: boolean } = {};
     const { setValue } = this.attributes;
 
-    // if (value && typeof value === 'object' && value.type === 'data-variable') {
+    // if (value && typeof value === 'object' && value.type === DataVariableType) {
     //   value = new TraitDataVariable(value, { em: this.em, trait: this }).initialize();
     //   this.listenToDataVariable(value);
     // }
@@ -240,7 +241,7 @@ export default class Trait extends Model<TraitProperties> {
    */
   getOption(id?: string): TraitOption | undefined {
     const idSel = isDef(id) ? id : this.getValue();
-    return this.getOptions().filter(o => this.getOptionId(o) === idSel)[0];
+    return this.getOptions().filter((o) => this.getOptionId(o) === idSel)[0];
   }
 
   /**

@@ -2,7 +2,8 @@ import Editor from '../../../src/editor/model/Editor';
 import DataSourceManager from '../../../src/data_sources';
 import { DataSourceProps, DataSourcesEvents } from '../../../src/data_sources/types';
 import ComponentWrapper from '../../../src/dom_components/model/ComponentWrapper';
-import ComponentDataVariable from '../../../src/dom_components/model/ComponentDataVariable';
+import ComponentDataVariable from '../../../src/data_sources/model/ComponentDataVariable';
+import { DataVariableType } from '../../../src/data_sources/model/DataVariable';
 
 describe('DataSourceManager', () => {
   let em: Editor;
@@ -66,7 +67,7 @@ describe('DataSourceManager', () => {
         content: 'Hello World',
         style: {
           color: {
-            type: 'data-variable-css',
+            type: DataVariableType,
             value: 'black',
             path: 'colors-data.id1.color',
           },
@@ -90,7 +91,7 @@ describe('DataSourceManager', () => {
         content: 'Hello World',
         style: {
           color: {
-            type: 'data-variable-css',
+            type: DataVariableType,
             value: 'black',
             path: 'colors-data.id1.color',
           },
@@ -114,7 +115,7 @@ describe('DataSourceManager', () => {
         content: 'Hello World',
         style: {
           color: {
-            type: 'data-variable-css',
+            type: DataVariableType,
             value: 'black',
             path: 'unknown.id1.color',
           },
@@ -163,7 +164,7 @@ describe('DataSourceManager', () => {
         type: 'text',
         components: [
           {
-            type: 'data-variable',
+            type: DataVariableType,
             value: 'default',
             path: 'test-data-source.id1.content',
           },
@@ -205,7 +206,7 @@ describe('DataSourceManager', () => {
         type: 'text',
         components: [
           {
-            type: 'data-variable',
+            type: DataVariableType,
             value: 'default',
             path: 'test-data-source.id1.content',
           },
@@ -245,7 +246,7 @@ describe('DataSourceManager', () => {
         type: 'text',
         components: [
           {
-            type: 'data-variable',
+            type: DataVariableType,
             value: 'default',
             path: 'test-data-source.id1.content',
           },
@@ -281,7 +282,7 @@ describe('DataSourceManager', () => {
         type: 'text',
         components: [
           {
-            type: 'data-variable',
+            type: DataVariableType,
             value: 'default',
             path: 'test-data-source.id1.content',
           },
@@ -335,7 +336,7 @@ describe('DataSourceManager', () => {
               label: 'Value',
               name: 'value',
               value: {
-                type: 'data-variable',
+                type: DataVariableType,
                 value: 'default',
                 path: 'test-input.id1.value',
               },
@@ -364,7 +365,7 @@ describe('DataSourceManager', () => {
               label: 'Value',
               name: 'value',
               value: {
-                type: 'data-variable',
+                type: DataVariableType,
                 value: 'default',
                 path: 'test-input.id1.value',
               },
@@ -413,7 +414,7 @@ describe('DataSourceManager', () => {
 
     const addDataVariable = (path = 'ds1.id1.name') =>
       cmpRoot.append<ComponentDataVariable>({
-        type: 'data-variable',
+        type: DataVariableType,
         value: 'default',
         path,
       })[0];

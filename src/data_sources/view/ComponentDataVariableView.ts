@@ -1,7 +1,7 @@
 import { DataSourcesEvents, DataVariableListener } from '../../data_sources/types';
+import ComponentView from '../../dom_components/view/ComponentView';
 import { stringToPath } from '../../utils/mixins';
 import ComponentDataVariable from '../model/ComponentDataVariable';
-import ComponentView from './ComponentView';
 
 export default class ComponentDataVariableView extends ComponentView<ComponentDataVariable> {
   dataListeners: DataVariableListener[] = [];
@@ -24,7 +24,7 @@ export default class ComponentDataVariableView extends ComponentView<ComponentDa
     const dataListeners: DataVariableListener[] = [];
     const prevListeners = this.dataListeners || [];
 
-    prevListeners.forEach(ls => this.stopListening(ls.obj, ls.event, this.postRender));
+    prevListeners.forEach((ls) => this.stopListening(ls.obj, ls.event, this.postRender));
 
     ds && dataListeners.push({ obj: ds.records, event: 'add remove reset' });
     dr && dataListeners.push({ obj: dr, event: 'change' });
@@ -34,7 +34,7 @@ export default class ComponentDataVariableView extends ComponentView<ComponentDa
       { obj: em, event: `${DataSourcesEvents.path}:${normPath}` }
     );
 
-    dataListeners.forEach(ls => this.listenTo(ls.obj, ls.event, this.postRender));
+    dataListeners.forEach((ls) => this.listenTo(ls.obj, ls.event, this.postRender));
     this.dataListeners = dataListeners;
   }
 

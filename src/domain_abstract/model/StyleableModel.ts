@@ -6,13 +6,14 @@ import { shallowDiff, stringToPath } from '../../utils/mixins';
 import EditorModel from '../../editor/model/Editor';
 import StyleDataVariable from '../../data_sources/model/StyleDataVariable';
 import { DataSourcesEvents, DataVariableListener } from '../../data_sources/types';
+import { DataVariableType } from '../../data_sources/model/DataVariable';
 
 export type StyleProps = Record<
   string,
   | string
   | string[]
   | {
-      type: 'data-variable-css';
+      type: typeof DataVariableType;
       value: string;
       path: string;
     }
@@ -92,7 +93,7 @@ export default class StyleableModel<T extends ObjectHash = any> extends Model<T>
     const propNew = { ...prop };
     const newStyle = { ...propNew };
 
-    keys(newStyle).forEach(key => {
+    keys(newStyle).forEach((key) => {
       // Remove empty style properties
       if (newStyle[key] === '') {
         delete newStyle[key];
@@ -101,7 +102,7 @@ export default class StyleableModel<T extends ObjectHash = any> extends Model<T>
       }
 
       const styleValue = newStyle[key];
-      if (typeof styleValue === 'object' && styleValue.type === 'data-variable-css') {
+      if (typeof styleValue === 'object' && styleValue.type === DataVariableType) {
         newStyle[key] = new StyleDataVariable(styleValue, { em: this.em });
       }
     });
@@ -112,7 +113,7 @@ export default class StyleableModel<T extends ObjectHash = any> extends Model<T>
     // Delete the property used for partial updates
     delete diff.__p;
 
-    keys(diff).forEach(pr => {
+    keys(diff).forEach((pr) => {
       const { em } = this;
       if (opts.noEvent) {
         return;
@@ -140,12 +141,12 @@ export default class StyleableModel<T extends ObjectHash = any> extends Model<T>
     const dataListeners: DataVariableListener[] = [];
     const prevListeners = this.dataListeners || [];
 
-    prevListeners.forEach(ls => this.stopListening(ls.obj, ls.event, this.updateStyleProp));
+    prevListeners.forEach((ls) => this.stopListening(ls.obj, ls.event, this.updateStyleProp));
 
     dataListeners.push({ obj: dataVar, event: 'change:value' });
     dataListeners.push({ obj: em, event: `${DataSourcesEvents.path}:${normPath}` });
 
-    dataListeners.forEach(ls =>
+    dataListeners.forEach((ls) =>
       this.listenTo(ls.obj, ls.event, () => {
         const [dsId, drId, keyPath] = stringToPath(path);
         const ds = em?.DataSources.get(dsId);
@@ -167,7 +168,7 @@ export default class StyleableModel<T extends ObjectHash = any> extends Model<T>
 
   resolveDataVariables(style: StyleProps): StyleProps {
     const resolvedStyle = { ...style };
-    keys(resolvedStyle).forEach(key => {
+    keys(resolvedStyle).forEach((key) => {
       const styleValue = resolvedStyle[key];
 
       if (styleValue instanceof StyleDataVariable) {

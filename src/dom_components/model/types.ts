@@ -11,6 +11,7 @@ import Component from './Component';
 import Components from './Components';
 import { ToolbarButtonProps } from './ToolbarButton';
 import { ParseNodeOptions } from '../../parser/config/config';
+import { DataVariableType } from '../../data_sources/model/DataVariable';
 
 export type DragMode = 'translate' | 'absolute' | '';
 
@@ -175,7 +176,7 @@ export interface ComponentProperties {
    * Component default style, eg. `{ width: '100px', height: '100px', 'background-color': 'red' }`
    * @default {}
    */
-  style?: string | Record<string, any | { type: 'data-variable'; path: string; value: string }>;
+  style?: string | Record<string, any | { type: typeof DataVariableType; path: string; value: string }>;
   /**
    * Component related styles, eg. `.my-component-class { color: red }`
    * @default ''
