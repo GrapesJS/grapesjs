@@ -1,12 +1,14 @@
-import { isString, isUndefined } from 'underscore';
+import { isString, isUndefined, keys } from 'underscore';
 import Category from '../../abstract/ModuleCategory';
 import { LocaleOptions, Model, SetOptions } from '../../common';
 import Component from '../../dom_components/model/Component';
 import EditorModel from '../../editor/model/Editor';
-import { isDef } from '../../utils/mixins';
+import { isDef, stringToPath } from '../../utils/mixins';
 import TraitsEvents, { TraitGetValueOptions, TraitOption, TraitProperties, TraitSetValueOptions } from '../types';
 import TraitView from '../view/TraitView';
 import Traits from './Traits';
+import TraitDataVariable from './TraitDataVariable';
+import { DataSourcesEvents, DataVariableListener } from '../../data_sources/types';
 
 /**
  * @property {String} id Trait id, eg. `my-trait-id`.
@@ -26,6 +28,8 @@ export default class Trait extends Model<TraitProperties> {
   em: EditorModel;
   view?: TraitView;
   el?: HTMLElement;
+  dataListeners: DataVariableListener[] = [];
+  dataVariable?: TraitDataVariable;
 
   defaults() {
     return {
@@ -51,6 +55,18 @@ export default class Trait extends Model<TraitProperties> {
       this.setTarget(target);
     }
     this.em = em;
+
+    if (
+      this.attributes.value &&
+      typeof this.attributes.value === 'object' &&
+      this.attributes.value.type === 'data-variable'
+    ) {
+      this.dataVariable = new TraitDataVariable(this.attributes.value, { em: this.em, trait: this });
+
+      const dv = this.dataVariable.getDataValue();
+      this.set({ value: dv });
+      this.listenToDataVariable(this.dataVariable);
+    }
   }
 
   get parent() {
@@ -83,6 +99,32 @@ export default class Trait extends Model<TraitProperties> {
         (!getValue ? this.getValue() : undefined);
       !isUndefined(value) && this.set({ value }, { silent: true });
     }
+  }
+
+  listenToDataVariable(dataVar: TraitDataVariable) {
+    const { em } = this;
+    const { path } = dataVar.attributes;
+    const normPath = stringToPath(path || '').join('.');
+    const dataListeners: DataVariableListener[] = [];
+    const prevListeners = this.dataListeners || [];
+
+    prevListeners.forEach(ls => this.stopListening(ls.obj, ls.event, this.updateValueFromDataVariable));
+
+    dataListeners.push({ obj: dataVar, event: 'change:value' });
+    dataListeners.push({ obj: em, event: `${DataSourcesEvents.path}:${normPath}` });
+
+    dataListeners.forEach(ls =>
+      this.listenTo(ls.obj, ls.event, () => {
+        const dr = dataVar.getDataValue();
+        this.updateValueFromDataVariable(dr);
+      })
+    );
+    this.dataListeners = dataListeners;
+  }
+
+  updateValueFromDataVariable(value: string) {
+    this.setTargetValue(value);
+    this.trigger('change:value');
   }
 
   /**
@@ -130,6 +172,12 @@ export default class Trait extends Model<TraitProperties> {
    * @returns {any}
    */
   getValue(opts?: TraitGetValueOptions) {
+    if (this.dataVariable) {
+      const dValue = this.dataVariable.getDataValue();
+
+      return dValue;
+    }
+
     return this.getTargetValue(opts);
   }
 
@@ -145,6 +193,11 @@ export default class Trait extends Model<TraitProperties> {
     const { partial } = opts;
     const valueOpts: { avoidStore?: boolean } = {};
     const { setValue } = this.attributes;
+
+    // if (value && typeof value === 'object' && value.type === 'data-variable') {
+    //   value = new TraitDataVariable(value, { em: this.em, trait: this }).initialize();
+    //   this.listenToDataVariable(value);
+    // }
 
     if (setValue) {
       setValue({

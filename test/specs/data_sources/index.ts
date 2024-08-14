@@ -298,6 +298,55 @@ describe('DataSourceManager', () => {
     });
   });
 
+  describe('Traits', () => {
+    let fixtures: HTMLElement;
+    let cmpRoot: ComponentWrapper;
+
+    beforeEach(() => {
+      document.body.innerHTML = '<div id="fixtures"></div>';
+      const { Pages, Components } = em;
+      Pages.onLoad();
+      cmpRoot = Components.getWrapper()!;
+      const View = Components.getType('wrapper')!.view;
+      const wrapperEl = new View({
+        model: cmpRoot,
+        config: { ...cmpRoot.config, em },
+      });
+      wrapperEl.render();
+      fixtures = document.body.querySelector('#fixtures')!;
+      fixtures.appendChild(wrapperEl.el);
+    });
+
+    test('component initializes with data-variable trait input', () => {
+      const inputDataSource: DataSourceProps = {
+        id: 'test-input',
+        records: [{ id: 'id1', value: 'test-value' }],
+      };
+      dsm.add(inputDataSource);
+
+      const cmp = cmpRoot.append({
+        tagName: 'input',
+        traits: [
+          'name',
+          'type',
+          {
+            type: 'text',
+            label: 'Value',
+            name: 'value',
+            value: {
+              type: 'data-variable',
+              value: 'default',
+              path: 'test-input.id1.value',
+            },
+          },
+        ],
+      })[0];
+
+      const input = cmp.getEl();
+      expect(input?.getAttribute('value')).toBe('test-value');
+    });
+  });
+
   test('add DataSource with records', () => {
     const eventAdd = jest.fn();
     em.on(dsm.events.add, eventAdd);
