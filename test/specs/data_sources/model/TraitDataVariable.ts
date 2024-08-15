@@ -35,7 +35,7 @@ describe('TraitDataVariable', () => {
   });
 
   describe('text input component', () => {
-    test('component initializes with trait data-variable value on text input component', () => {
+    test('component initializes data-variable value', () => {
       const inputDataSource: DataSourceProps = {
         id: 'test-input',
         records: [{ id: 'id1', value: 'test-value' }],
@@ -46,7 +46,6 @@ describe('TraitDataVariable', () => {
         tagName: 'input',
         traits: [
           'name',
-          'type',
           {
             type: 'text',
             label: 'Value',
@@ -64,7 +63,39 @@ describe('TraitDataVariable', () => {
       expect(input?.getAttribute('value')).toBe('test-value');
     });
 
-    test('component updates with trait data-variable value on text input component', () => {
+    test('component initializes data-variable placeholder', () => {
+      const inputDataSource: DataSourceProps = {
+        id: 'test-input',
+        records: [{ id: 'id1', value: 'test-value' }],
+      };
+      dsm.add(inputDataSource);
+
+      const cmp = cmpRoot.append({
+        tagName: 'input',
+        traits: [
+          'name',
+          {
+            type: 'text',
+            label: 'Placeholder',
+            name: 'placeholder',
+            value: {
+              type: DataVariableType,
+              value: 'default',
+              path: 'test-input.id1.value',
+            },
+          },
+        ],
+      })[0];
+
+      const input = cmp.getEl();
+      expect(input?.getAttribute('placeholder')).toBe('test-value');
+
+      const testDs = dsm.get('test-input');
+      testDs.getRecord('id1')?.set({ value: 'new-value' });
+      expect(input?.getAttribute('placeholder')).toBe('new-value');
+    });
+
+    test('component updates with data-variable value', () => {
       const inputDataSource: DataSourceProps = {
         id: 'test-input',
         records: [{ id: 'id1', value: 'test-value' }],
@@ -94,7 +125,6 @@ describe('TraitDataVariable', () => {
 
       const testDs = dsm.get('test-input');
       testDs.getRecord('id1')?.set({ value: 'new-value' });
-
       expect(input?.getAttribute('value')).toBe('new-value');
     });
   });
