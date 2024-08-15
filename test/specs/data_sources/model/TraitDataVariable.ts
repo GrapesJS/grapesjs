@@ -33,9 +33,9 @@ describe('TraitDataVariable', () => {
   afterEach(() => {
     em.destroy();
   });
-  
-  describe('input component', () => {
-    test('component initializes with trait data-variable on input component', () => {
+
+  describe('text input component', () => {
+    test('component initializes with trait data-variable value on text input component', () => {
       const inputDataSource: DataSourceProps = {
         id: 'test-input',
         records: [{ id: 'id1', value: 'test-value' }],
@@ -64,7 +64,7 @@ describe('TraitDataVariable', () => {
       expect(input?.getAttribute('value')).toBe('test-value');
     });
 
-    test('component updates with trait data-variable on input component', () => {
+    test('component updates with trait data-variable value on text input component', () => {
       const inputDataSource: DataSourceProps = {
         id: 'test-input',
         records: [{ id: 'id1', value: 'test-value' }],
