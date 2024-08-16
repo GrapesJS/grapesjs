@@ -128,4 +128,41 @@ describe('TraitDataVariable', () => {
       expect(input?.getAttribute('value')).toBe('new-value');
     });
   });
+
+  describe('checkbox input component', () => {
+    test('component initializes and updates data-variable value', () => {
+      const inputDataSource: DataSourceProps = {
+        id: 'test-checkbox-datasource',
+        records: [{ id: 'id1', value: 'true' }],
+      };
+      dsm.add(inputDataSource);
+
+      const cmp = cmpRoot.append({
+        type: 'checkbox',
+        tagName: 'input',
+        attributes: { type: 'checkbox', name: 'my-checkbox' },
+        traits: [
+          {
+            type: 'checkbox',
+            label: 'Checked',
+            name: 'checked',
+            value: {
+              type: 'data-variable',
+              value: 'false',
+              path: 'test-checkbox-datasource.id1.value',
+            },
+            valueTrue: 'true',
+            valueFalse: 'false',
+          },
+        ],
+      })[0];
+
+      const input = cmp.getEl() as HTMLInputElement;
+      expect(input?.checked).toBe(true);
+
+      const testDs = dsm.get('test-checkbox-datasource');
+      testDs.getRecord('id1')?.set({ value: 'false' });
+      expect(input?.getAttribute('checked')).toBe('false');
+    });
+  });
 });
