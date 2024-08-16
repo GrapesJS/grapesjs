@@ -191,10 +191,45 @@ describe('TraitDataVariable', () => {
       })[0];
 
       const img = cmp.getEl() as HTMLImageElement;
+      expect(img?.getAttribute('src')).toBe('url-to-cat-image');
 
       const testDs = dsm.get(inputDataSource.id);
       testDs.getRecord('id1')?.set({ value: 'url-to-dog-image' });
       expect(img?.getAttribute('src')).toBe('url-to-dog-image');
+    });
+  });
+
+  describe('link component', () => {
+    test('component initializes and updates data-variable value', () => {
+      const inputDataSource: DataSourceProps = {
+        id: 'test-link-datasource',
+        records: [{ id: 'id1', value: 'url-to-cat-image' }],
+      };
+      dsm.add(inputDataSource);
+
+      const cmp = cmpRoot.append({
+        type: 'link',
+        tagName: 'a',
+        traits: [
+          {
+            type: 'text',
+            name: 'href',
+            value: {
+              type: 'data-variable',
+              value: 'default',
+              path: `${inputDataSource.id}.id1.value`,
+            },
+          },
+        ],
+        components: [{ tagName: 'span', content: 'Link' }],
+      })[0];
+
+      const link = cmp.getEl() as HTMLLinkElement;
+      expect(link?.href).toBe('http://localhost/url-to-cat-image');
+
+      const testDs = dsm.get(inputDataSource.id);
+      testDs.getRecord('id1')?.set({ value: 'url-to-dog-image' });
+      expect(link?.href).toBe('http://localhost/url-to-dog-image');
     });
   });
 });
