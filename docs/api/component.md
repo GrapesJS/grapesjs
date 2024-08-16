@@ -659,6 +659,15 @@ Get the name of the component.
 
 Returns **[String][1]** 
 
+## setName
+
+Update component name.
+
+### Parameters
+
+*   `name` **[String][1]** New name.
+*   `opts` **SetOptions**  (optional, default `{}`)
+
 ## getIcon
 
 Get the icon string

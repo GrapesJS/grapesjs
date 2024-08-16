@@ -79,6 +79,7 @@ async function generateDocs () {
     ['pages/index.ts', 'pages.md'],
     ['pages/model/Page.ts', 'page.md'],
     ['parser/index.ts', 'parser.md'],
+    ['data_sources/index.ts', 'data_source_manager.md'],
   ].map(async (file) => {
     const filePath = `${srcRoot}/${file[0]}`;
 
