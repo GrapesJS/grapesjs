@@ -53,7 +53,7 @@ describe('TraitDataVariable', () => {
             value: {
               type: DataVariableType,
               value: 'default',
-              path: 'test-input.id1.value',
+              path: `${inputDataSource.id}.id1.value`,
             },
           },
         ],
@@ -81,7 +81,7 @@ describe('TraitDataVariable', () => {
             value: {
               type: DataVariableType,
               value: 'default',
-              path: 'test-input.id1.value',
+              path: `${inputDataSource.id}.id1.value`,
             },
           },
         ],
@@ -90,7 +90,7 @@ describe('TraitDataVariable', () => {
       const input = cmp.getEl();
       expect(input?.getAttribute('placeholder')).toBe('test-value');
 
-      const testDs = dsm.get('test-input');
+      const testDs = dsm.get(inputDataSource.id);
       testDs.getRecord('id1')?.set({ value: 'new-value' });
       expect(input?.getAttribute('placeholder')).toBe('new-value');
     });
@@ -114,7 +114,7 @@ describe('TraitDataVariable', () => {
             value: {
               type: DataVariableType,
               value: 'default',
-              path: 'test-input.id1.value',
+              path: `${inputDataSource.id}.id1.value`,
             },
           },
         ],
@@ -123,7 +123,7 @@ describe('TraitDataVariable', () => {
       const input = cmp.getEl();
       expect(input?.getAttribute('value')).toBe('test-value');
 
-      const testDs = dsm.get('test-input');
+      const testDs = dsm.get(inputDataSource.id);
       testDs.getRecord('id1')?.set({ value: 'new-value' });
       expect(input?.getAttribute('value')).toBe('new-value');
     });
@@ -149,7 +149,7 @@ describe('TraitDataVariable', () => {
             value: {
               type: 'data-variable',
               value: 'false',
-              path: 'test-checkbox-datasource.id1.value',
+              path: `${inputDataSource.id}.id1.value`,
             },
             valueTrue: 'true',
             valueFalse: 'false',
@@ -160,9 +160,41 @@ describe('TraitDataVariable', () => {
       const input = cmp.getEl() as HTMLInputElement;
       expect(input?.checked).toBe(true);
 
-      const testDs = dsm.get('test-checkbox-datasource');
+      const testDs = dsm.get(inputDataSource.id);
       testDs.getRecord('id1')?.set({ value: 'false' });
       expect(input?.getAttribute('checked')).toBe('false');
+    });
+  });
+
+  describe('image component', () => {
+    test('component initializes and updates data-variable value', () => {
+      const inputDataSource: DataSourceProps = {
+        id: 'test-image-datasource',
+        records: [{ id: 'id1', value: 'url-to-cat-image' }],
+      };
+      dsm.add(inputDataSource);
+
+      const cmp = cmpRoot.append({
+        type: 'image',
+        tagName: 'img',
+        traits: [
+          {
+            type: 'text',
+            name: 'src',
+            value: {
+              type: 'data-variable',
+              value: 'default',
+              path: `${inputDataSource.id}.id1.value`,
+            },
+          },
+        ],
+      })[0];
+
+      const img = cmp.getEl() as HTMLImageElement;
+
+      const testDs = dsm.get(inputDataSource.id);
+      testDs.getRecord('id1')?.set({ value: 'url-to-dog-image' });
+      expect(img?.getAttribute('src')).toBe('url-to-dog-image');
     });
   });
 });
