@@ -60,7 +60,7 @@ describe('ComponentTextView', () => {
   describe('.getContent', () => {
     let fakeRte: CustomRTE<any>;
     let fakeRteContent = '';
-    let fakeChildContainer: InnerHTML;
+    let fakeChildContainer: any;
 
     beforeEach(() => {
       fakeRteContent = 'fakeRteContent';
@@ -75,7 +75,7 @@ describe('ComponentTextView', () => {
         innerHTML: 'fakeChildInnerHTML',
       };
 
-      spyOn(view, 'getChildrenContainer').and.returnValue(fakeChildContainer);
+      jest.spyOn(view, 'getChildrenContainer').mockReturnValue(fakeChildContainer);
       em.RichTextEditor.customRte = fakeRte;
     });
 
