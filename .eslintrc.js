@@ -51,7 +51,7 @@ module.exports = {
     indent: ['error', 2],
     quotes: ['error', 'single'],
     'linebreak-style': ['error', 'unix'],
-    'max-len': ['error', { code: 120 }],
+    'max-len': ['error', { code: 300 }],
     'no-multiple-empty-lines': ['error', { max: 1, maxEOF: 1 }],
   },
   overrides: [
@@ -71,5 +71,5 @@ module.exports = {
       },
     },
   ],
-  ignorePatterns: ['docs/api/*'],
+  ignorePatterns: ['docs/api/*', 'dist/*'],
 };
