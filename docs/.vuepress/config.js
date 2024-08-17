@@ -97,6 +97,7 @@ module.exports = {
         ['/api/keymaps', 'Keymaps'],
         ['/api/undo_manager', 'Undo Manager'],
         ['/api/parser', 'Parser'],
+        ['/api/data_source_manager', 'Data Source Manager'],
       ],
       '/': [
         '',
@@ -120,6 +121,7 @@ module.exports = {
             ['/modules/Storage', 'Storage Manager'],
             ['/modules/Modal', 'Modal'],
             ['/modules/Plugins', 'Plugins'],
+            ['/modules/DataSources', 'Data Sources'],
           ]
         }, {
           title: 'Guides',
