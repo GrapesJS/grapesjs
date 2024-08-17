@@ -48,28 +48,9 @@ module.exports = {
     '@typescript-eslint/no-unsafe-function-type': 'off',
     '@typescript-eslint/no-non-null-asserted-optional-chain': 'off',
     '@typescript-eslint/no-wrapper-object-types': 'off',
-    indent: ['error', 2],
-    quotes: ['error', 'single'],
     'linebreak-style': ['error', 'unix'],
     'max-len': ['error', { code: 300 }],
     'no-multiple-empty-lines': ['error', { max: 1, maxEOF: 1 }],
   },
-  overrides: [
-    {
-      files: ['*.ts'],
-      parser: '@typescript-eslint/parser',
-      rules: {
-        indent: ['error', 2],
-        quotes: ['error', 'single'],
-      },
-    },
-    {
-      files: ['*.js'],
-      rules: {
-        indent: ['error', 2],
-        quotes: ['error', 'single'],
-      },
-    },
-  ],
   ignorePatterns: ['docs/api/*', 'dist/*'],
 };
