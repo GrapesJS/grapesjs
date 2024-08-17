@@ -3,17 +3,17 @@ module.exports = {
   env: {
     browser: true,
     node: true,
-    'jest/globals': true
+    'jest/globals': true,
   },
   globals: {
     $: true,
-    grapesjs: true
+    grapesjs: true,
   },
   extends: ['eslint:recommended', 'plugin:@typescript-eslint/recommended', 'prettier'],
   plugins: ['@typescript-eslint', 'jest'],
   parserOptions: {
     ecmaVersion: 2021,
-    sourceType: 'module'
+    sourceType: 'module',
   },
   rules: {
     'no-var': 'off',
@@ -52,7 +52,7 @@ module.exports = {
     quotes: ['error', 'single'],
     'linebreak-style': ['error', 'unix'],
     'max-len': ['error', { code: 120 }],
-    'no-multiple-empty-lines': ['error', { max: 1, maxEOF: 1 }]
+    'no-multiple-empty-lines': ['error', { max: 1, maxEOF: 1 }],
   },
   overrides: [
     {
@@ -60,15 +60,16 @@ module.exports = {
       parser: '@typescript-eslint/parser',
       rules: {
         indent: ['error', 2],
-        quotes: ['error', 'single']
-      }
+        quotes: ['error', 'single'],
+      },
     },
     {
       files: ['*.js'],
       rules: {
         indent: ['error', 2],
-        quotes: ['error', 'single']
-      }
-    }
-  ]
+        quotes: ['error', 'single'],
+      },
+    },
+  ],
+  ignorePatterns: ['docs/api/*'],
 };
