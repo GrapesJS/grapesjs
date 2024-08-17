@@ -27,7 +27,7 @@ export default {
       'getPosition',
       'getGuidesStatic',
       'renderGuide',
-      'getGuidesTarget'
+      'getGuidesTarget',
     );
     const { target, event, mode, dragger = {} } = opts;
     const el = target.getEl();
@@ -119,7 +119,7 @@ export default {
         debounce(() => {
           this.updateGuides();
           opts.debug && this.guides?.forEach((item: any) => this.renderGuide(item));
-        }, 200)
+        }, 200),
       );
     }
 
@@ -130,7 +130,7 @@ export default {
     let result: any = [];
     const el = this.target.getEl();
     const { parentNode = {} } = el;
-    each(parentNode.children, item => (result = result.concat(el !== item ? this.getElementGuides(item) : [])));
+    each(parentNode.children, (item) => (result = result.concat(el !== item ? this.getElementGuides(item) : [])));
 
     return result.concat(this.getElementGuides(parentNode));
   },
@@ -225,20 +225,20 @@ export default {
       { type: 'r', x: left + width }, // Right
       { type: 'x', x: left + width / 2 }, // Mid x
       { type: 'y', y: top + height / 2 }, // Mid y
-    ].map(item => ({
+    ].map((item) => ({
       ...item,
       origin: el,
       originRect,
       guide: opts.debug && this.renderGuide(item),
     }));
-    guides.forEach(item => this.guides?.push(item));
+    guides.forEach((item) => this.guides?.push(item));
 
     return guides;
   },
 
   getTranslate(transform: string, axis = 'x') {
     let result = 0;
-    (transform || '').split(' ').forEach(item => {
+    (transform || '').split(' ').forEach((item) => {
       const itemStr = item.trim();
       const fn = `translate${axis.toUpperCase()}(`;
       if (itemStr.indexOf(fn) === 0) result = parseFloat(itemStr.replace(fn, ''));
@@ -251,7 +251,7 @@ export default {
     const val = `${fn}${value})`;
     let result = (transform || '')
       .split(' ')
-      .map(item => {
+      .map((item) => {
         const itemStr = item.trim();
         if (itemStr.indexOf(fn) === 0) item = val;
         return item;
@@ -296,7 +296,7 @@ export default {
     } else {
       const adds: any = { position, width, height };
       const style: any = { left, top, __p };
-      keys(adds).forEach(add => {
+      keys(adds).forEach((add) => {
         const prop = adds[add];
         if (prop) style[add] = prop;
       });
@@ -378,7 +378,7 @@ export default {
   },
 
   hideGuidesInfo() {
-    ['X', 'Y'].forEach(item => {
+    ['X', 'Y'].forEach((item) => {
       const guide = this[`elGuideInfo${item}`];
       if (guide) guide.style.display = 'none';
     });
@@ -390,7 +390,7 @@ export default {
   renderGuideInfo(guides: Guide[] = []) {
     const { guidesStatic } = this;
     this.hideGuidesInfo();
-    guides.forEach(item => {
+    guides.forEach((item) => {
       const { origin, x } = item;
       const rectOrigin = this.getElementPos(origin);
       const axis = isUndefined(x) ? 'y' : 'x';
@@ -405,8 +405,8 @@ export default {
 
       // Find the nearest element
       const res = guidesStatic
-        ?.filter(stat => stat.type === item.type)
-        .map(stat => {
+        ?.filter((stat) => stat.type === item.type)
+        .map((stat) => {
           const { left, width, top, height } = stat.originRect;
           const statEdge1 = isY ? left : top;
           const statEdge2 = isY ? left + width : top + height;
@@ -415,9 +415,9 @@ export default {
             guide: stat,
           };
         })
-        .filter(item => item.gap > 0)
+        .filter((item) => item.gap > 0)
         .sort((a, b) => a.gap - b.gap)
-        .map(item => item.guide)[0];
+        .map((item) => item.guide)[0];
 
       if (res) {
         const { left, width, top, height, rect } = res.originRect;
@@ -458,7 +458,7 @@ export default {
     const classes = [`${ppfx}is__grabbing`];
     const { Canvas } = editor;
     const body = Canvas.getBody();
-    classes.forEach(cls => body.classList[methodCls](cls));
+    classes.forEach((cls) => body.classList[methodCls](cls));
     Canvas[enable ? 'startAutoscroll' : 'stopAutoscroll']();
   },
 } as CommandObject<

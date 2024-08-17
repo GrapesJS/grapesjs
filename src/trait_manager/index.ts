@@ -213,7 +213,7 @@ export default class TraitManager extends Module<TraitManagerConfigModule> {
         editor: em,
         config: this.getConfig(),
       },
-      this.getTypes()
+      this.getTypes(),
     );
     this.view = view;
     return view.el;

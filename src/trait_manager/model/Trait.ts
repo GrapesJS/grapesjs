@@ -187,7 +187,7 @@ export default class Trait extends Model<TraitProperties> {
    */
   getOption(id?: string): TraitOption | undefined {
     const idSel = isDef(id) ? id : this.getValue();
-    return this.getOptions().filter(o => this.getOptionId(o) === idSel)[0];
+    return this.getOptions().filter((o) => this.getOptionId(o) === idSel)[0];
   }
 
   /**

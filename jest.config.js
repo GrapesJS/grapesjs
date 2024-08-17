@@ -4,9 +4,9 @@ module.exports = {
   moduleFileExtensions: ['js', 'ts'],
   verbose: true,
   testEnvironmentOptions: {
-    url: 'http://localhost/'
+    url: 'http://localhost/',
   },
   modulePaths: ['<rootDir>/src'],
   testMatch: ['<rootDir>/test/specs/**/*.(t|j)s'],
-  setupFilesAfterEnv: ['<rootDir>/test/setup.js']
+  setupFilesAfterEnv: ['<rootDir>/test/setup.js'],
 };

@@ -41,7 +41,7 @@ export default class PropertiesView extends View {
   }
 
   clearItems() {
-    this.properties.forEach(item => item.remove());
+    this.properties.forEach((item) => item.remove());
     this.properties = [];
   }
 
@@ -49,7 +49,7 @@ export default class PropertiesView extends View {
     const { $el, pfx } = this;
     this.clearItems();
     const fragment = document.createDocumentFragment();
-    this.collection.forEach(model => this.add(model, fragment));
+    this.collection.forEach((model) => this.add(model, fragment));
     $el.empty();
     $el.append(fragment);
     $el.attr('class', `${pfx}properties`);

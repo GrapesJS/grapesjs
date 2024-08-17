@@ -1,4 +1,3 @@
-
 .#{$sm-prefix} {
   &clear {
     cursor: pointer;
@@ -285,7 +284,9 @@
   .#{$sm-prefix}btn {
     background-color: lighten-color(var(--gjs-main-dark-color), 13%);
     border-radius: 2px;
-    box-shadow: 1px 1px 0 lighten-color(var(--gjs-main-dark-color), 2%), 1px 1px 0 lighten-color(var(--gjs-main-dark-color), 17%) inset;
+    box-shadow:
+      1px 1px 0 lighten-color(var(--gjs-main-dark-color), 2%),
+      1px 1px 0 lighten-color(var(--gjs-main-dark-color), 17%) inset;
     padding: 5px;
     position: relative;
     text-align: center;
@@ -308,7 +309,7 @@
 
   &__text-shadow .#{$sm-prefix}layer-preview-cnt::after {
     color: #000;
-    content: "T";
+    content: 'T';
     font-weight: 900;
     line-height: 17px;
     padding: 0 4px;
@@ -479,7 +480,6 @@
 .#{$sm-prefix}btn-upload ##{$sm-prefix}label {
   padding: 2px 0;
 }
-
 
 .#{$sm-prefix}layer > ##{$sm-prefix}move {
   @include opacity(0.7);

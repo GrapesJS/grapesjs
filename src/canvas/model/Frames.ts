@@ -15,7 +15,7 @@ export default class Frames extends ModuleCollection<Frame> {
     this.on('add', this.onAdd);
     this.on('reset', this.onReset);
     this.on('remove', this.onRemove);
-    this.forEach(frame => this.onAdd(frame));
+    this.forEach((frame) => this.onAdd(frame));
   }
 
   onAdd(frame: Frame) {
@@ -24,7 +24,7 @@ export default class Frames extends ModuleCollection<Frame> {
 
   onReset(m: Frame, opts?: { previousModels?: Frame[] }) {
     const prev = opts?.previousModels || [];
-    prev.map(p => this.onRemove(p));
+    prev.map((p) => this.onRemove(p));
   }
 
   onRemove(frame: Frame) {
@@ -33,7 +33,7 @@ export default class Frames extends ModuleCollection<Frame> {
   }
 
   initRefs() {
-    this.forEach(frame => frame.initRefs());
+    this.forEach((frame) => frame.initRefs());
   }
 
   itemLoaded() {
@@ -52,6 +52,6 @@ export default class Frames extends ModuleCollection<Frame> {
   }
 
   listenToLoadItems(on: boolean) {
-    this.forEach(item => item[on ? 'on' : 'off']('loaded', this.itemLoaded));
+    this.forEach((item) => item[on ? 'on' : 'off']('loaded', this.itemLoaded));
   }
 }

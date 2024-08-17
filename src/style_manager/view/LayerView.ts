@@ -105,7 +105,7 @@ export default class LayerView extends View<Layer> {
       const prvEl = this.getPreviewEl();
       const style = model.getStylePreview({ number: { min: -3, max: 3 } });
       const styleStr = keys(style)
-        .map(k => `${k}:${style[k]}`)
+        .map((k) => `${k}:${style[k]}`)
         .join(';');
       prvEl.setAttribute('style', styleStr);
     }

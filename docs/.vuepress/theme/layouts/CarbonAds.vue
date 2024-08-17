@@ -1,9 +1,9 @@
 <script>
 export default {
-  render (h) {
-    return h('div', { class: 'carbon-ads', attrs: { id: 'native-carbon' }})
+  render(h) {
+    return h('div', { class: 'carbon-ads', attrs: { id: 'native-carbon' } });
   },
-  mounted () {
+  mounted() {
     // window.BSANativeCallback = (a) => {
     //   const total = a.ads.length;
     //
@@ -18,26 +18,23 @@ export default {
     this.load();
   },
   watch: {
-    '$route' (to, from) {
-      if (
-        to.path !== from.path &&
-        this.$el.querySelector('#carbonads')
-      ) {
+    $route(to, from) {
+      if (to.path !== from.path && this.$el.querySelector('#carbonads')) {
         this.$el.innerHTML = '';
         this.load();
       }
-    }
+    },
   },
   methods: {
     initCarbon() {
       const { _bsa } = window;
-      if(typeof _bsa !== 'undefined' && _bsa) {
+      if (typeof _bsa !== 'undefined' && _bsa) {
         _bsa.init('default', 'CK7I62QJ', 'placement:grapesjscomdocs', {
           target: '#native-carbon',
         });
       }
     },
-    load () {
+    load() {
       // const s = document.createElement('script');
       // s.src = `//m.servedby-buysellads.com/monetization.js`;
       // s.onload = () => this.initCarbon();
@@ -48,9 +45,9 @@ export default {
       src.setAttribute('id', '_carbonads_js');
       const adCont = document.getElementById('native-carbon');
       adCont && adCont.appendChild(src);
-    }
-  }
-}
+    },
+  },
+};
 // @import "~@default-theme/styles/config.styl"
 </script>
 

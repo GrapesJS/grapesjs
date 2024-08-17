@@ -15,7 +15,7 @@ describe('ClassTagsView', () => {
   let target: Editor;
   let em: Editor;
   let compTest: Component;
-  const getSelectorNames = (arr: Selector[] | Selectors) => arr.map(item => item.getFullName());
+  const getSelectorNames = (arr: Selector[] | Selectors) => arr.map((item) => item.getFullName());
   const newComponent = (obj: any) => new Component(obj, { em, config: em.Components.config });
   const newRule = (obj: any) => new Rule(obj, { em });
 
@@ -113,7 +113,7 @@ describe('ClassTagsView', () => {
     // expect(view.endNewTag.calledOnce).toEqual(true);
   });
 
-  test('Collection changes on update of target', done => {
+  test('Collection changes on update of target', (done) => {
     coll.add({ name: 'test' });
     target.trigger('component:toggled');
     setTimeout(() => {
@@ -134,7 +134,7 @@ describe('ClassTagsView', () => {
     expect(testContext.$tags.html()).toEqual('');
   });
 
-  test('Accept new tags', done => {
+  test('Accept new tags', (done) => {
     em.setSelected(compTest);
     view.addNewTag('test');
     view.addNewTag('test2');
@@ -160,7 +160,7 @@ describe('ClassTagsView', () => {
     expect(testContext.$statesC.css('display')).toEqual('');
   });
 
-  test('Update state visibility on new tag', done => {
+  test('Update state visibility on new tag', (done) => {
     const spy = jest.spyOn(view, 'updateStateVis');
     em.setSelected(compTest);
     view.addNewTag('test');
@@ -170,7 +170,7 @@ describe('ClassTagsView', () => {
     });
   });
 
-  test('Update state visibility on removing of the tag', done => {
+  test('Update state visibility on removing of the tag', (done) => {
     em.setSelected(compTest);
     view.addNewTag('test');
     const spy = jest.spyOn(view, 'updateStateVis');
@@ -181,7 +181,7 @@ describe('ClassTagsView', () => {
     });
   });
 
-  test('Output correctly state options', done => {
+  test('Output correctly state options', (done) => {
     target.get('SelectorManager').setStates([{ name: 'testName', label: 'testLabel' }]);
     setTimeout(() => {
       const res = '<option value="">- State -</option><option value="testName">testLabel</option>';

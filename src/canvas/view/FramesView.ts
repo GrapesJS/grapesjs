@@ -16,7 +16,7 @@ export default class FramesView extends ModuleDomainViews<Frames, FrameWrapView>
   }
 
   onRemoveBefore(items: FrameWrapView[], opts = {}) {
-    items.forEach(item => item.remove(opts));
+    items.forEach((item) => item.remove(opts));
   }
 
   onRender() {
@@ -26,7 +26,7 @@ export default class FramesView extends ModuleDomainViews<Frames, FrameWrapView>
 
   clearItems() {
     const items = this.viewCollection || [];
-    items.forEach(item => item.remove());
+    items.forEach((item) => item.remove());
     this.viewCollection = [];
   }
 

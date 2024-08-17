@@ -10,7 +10,7 @@ export default {
     const lastSelected = ed.getSelected();
 
     if (clp?.length && lastSelected) {
-      ed.getSelectedAll().forEach(sel => {
+      ed.getSelectedAll().forEach((sel) => {
         const selected = sel.delegate?.copy?.(sel) || sel;
         const { collection } = selected;
         let added;
@@ -33,7 +33,7 @@ export default {
         }
 
         added = isArray(added) ? added : [added];
-        added.forEach(add => ed.trigger('component:paste', add));
+        added.forEach((add) => ed.trigger('component:paste', add));
       });
 
       lastSelected.emitUpdate();
@@ -42,10 +42,10 @@ export default {
 } as CommandObject;
 
 function doAdd(ed: Editor, clp: Component[], parent: Component, addOpts: any): Component[] | Component {
-  const copyable = clp.filter(cop => cop.get('copyable'));
-  const pasteable = copyable.filter(cop => ed.Components.canMove(parent, cop).result);
+  const copyable = clp.filter((cop) => cop.get('copyable'));
+  const pasteable = copyable.filter((cop) => ed.Components.canMove(parent, cop).result);
   return parent.components().add(
-    pasteable.map(cop => cop.clone()),
-    addOpts
+    pasteable.map((cop) => cop.clone()),
+    addOpts,
   );
 }

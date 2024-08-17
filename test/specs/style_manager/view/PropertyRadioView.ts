@@ -38,7 +38,7 @@ describe('PropertyRadioView', () => {
         list: options,
         property: propName,
       },
-      { em }
+      { em },
     );
     view = new PropertyRadioView({ model });
     document.body.innerHTML = '<div id="fixtures"></div>';
@@ -96,7 +96,7 @@ describe('PropertyRadioView', () => {
     expect(view.model.get('value')).toEqual(propValue);
   });
 
-  test('Update input on value change', done => {
+  test('Update input on value change', (done) => {
     view.model.set('value', propValue);
     setTimeout(() => {
       expect((getCheckedEl(view) as any).value).toEqual(propValue);

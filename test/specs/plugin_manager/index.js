@@ -4,7 +4,7 @@ describe('PluginManager', () => {
   describe('Main', () => {
     var obj;
     var val;
-    var testPlugin = e => {
+    var testPlugin = (e) => {
       val = e;
     };
 

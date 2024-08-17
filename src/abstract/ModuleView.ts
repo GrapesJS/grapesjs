@@ -5,17 +5,14 @@ import { View } from '../common';
 import EditorModel from '../editor/model/Editor';
 
 type ModuleFromModel<TModel extends ModuleModel> = TModel extends ModuleModel<infer M> ? M : unknown;
-type ModuleModelExt<TItem extends ModuleModel | ModuleCollection> = TItem extends ModuleCollection<infer M>
-  ? ModuleFromModel<M>
-  : TItem extends ModuleModel<infer M>
-  ? M
-  : unknown;
+type ModuleModelExt<TItem extends ModuleModel | ModuleCollection> =
+  TItem extends ModuleCollection<infer M> ? ModuleFromModel<M> : TItem extends ModuleModel<infer M> ? M : unknown;
 
 // type TCollection<TItem extends ModuleModel | ModuleCollection> = TItem extends ModuleCollection ? TItem : unknown;
 
 export default class ModuleView<
   TModel extends ModuleModel | ModuleCollection = ModuleModel,
-  TElement extends Element = HTMLElement
+  TElement extends Element = HTMLElement,
 > extends View<TModel extends ModuleModel ? TModel : undefined, TElement> {
   protected get pfx() {
     return this.ppfx + (this.config as any).stylePrefix || '';

@@ -495,7 +495,7 @@ export default class ComponentManager extends ItemManagerModule<DomComponentsCon
   clear(opts = {}) {
     const components = this.getComponents();
     //@ts-ignore
-    components?.filter(Boolean).forEach(i => i.remove(opts));
+    components?.filter(Boolean).forEach((i) => i.remove(opts));
     return this;
   }
 
@@ -556,7 +556,7 @@ export default class ComponentManager extends ItemManagerModule<DomComponentsCon
         {
           typeExtends,
           isComponent: compType && !extendType && !isComponent ? modelToExt.isComponent : isComponent || (() => 0),
-        }
+        },
       );
       // Reassign the defaults getter to the model
       Object.defineProperty(methods.model!.prototype, 'defaults', {
@@ -646,7 +646,7 @@ export default class ComponentManager extends ItemManagerModule<DomComponentsCon
       component.set({
         status: 'selected',
       });
-      ['component:selected', 'component:toggled'].forEach(event => this.em.trigger(event, component, opts));
+      ['component:selected', 'component:toggled'].forEach((event) => this.em.trigger(event, component, opts));
     }
   }
 
@@ -657,7 +657,7 @@ export default class ComponentManager extends ItemManagerModule<DomComponentsCon
         status: '',
         state: '',
       });
-      ['component:deselected', 'component:toggled'].forEach(event => this.em.trigger(event, component, opts));
+      ['component:deselected', 'component:toggled'].forEach((event) => this.em.trigger(event, component, opts));
     }
   }
 
@@ -695,7 +695,7 @@ export default class ComponentManager extends ItemManagerModule<DomComponentsCon
         const events = [keyUpdate, keyUpdateInside].join(' ');
         shallow.on(
           events,
-          debounce(() => shallow?.components(''), 100)
+          debounce(() => shallow?.components(''), 100),
         );
       }
       this.shallow = shallow;
@@ -886,8 +886,8 @@ export default class ComponentManager extends ItemManagerModule<DomComponentsCon
 
   destroy() {
     const all = this.allById();
-    Object.keys(all).forEach(id => all[id] && all[id].remove());
+    Object.keys(all).forEach((id) => all[id] && all[id].remove());
     this.componentView?.remove();
-    [this.em, this.componentsById, this.componentView].forEach(i => (i = {}));
+    [this.em, this.componentsById, this.componentView].forEach((i) => (i = {}));
   }
 }

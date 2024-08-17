@@ -1,9 +1,9 @@
 <template>
   <div>
     <div class="panel__top" id="panel__top7">
-        <div class="panel__basic-actions" id="panel__basic-actions7"></div>
-        <div class="panel__devices" id="panel__devices7"></div>
-        <div class="panel__switcher" id="panel__switcher7"></div>
+      <div class="panel__basic-actions" id="panel__basic-actions7"></div>
+      <div class="panel__devices" id="panel__devices7"></div>
+      <div class="panel__switcher" id="panel__switcher7"></div>
     </div>
 
     <div class="editor-row">
@@ -29,24 +29,34 @@ import utils from './demos/utils.js';
 export default {
   mounted() {
     const editor7 = grapesjs.init(utils.gjsConfigDevices);
-    editor7.Panels.addPanel(Object.assign({}, utils.panelTop, {
-      el: '#panel__top7'
-    }));
-    editor7.Panels.addPanel(Object.assign({}, utils.panelBasicActions, {
-      el: '#panel__basic-actions7'
-    }));
-    editor7.Panels.addPanel(Object.assign({}, utils.panelSidebar, {
-      el: '#panel__right7'
-    }));
-    editor7.Panels.addPanel(Object.assign({}, utils.panelSwitcherTraits, {
-      el: '#panel__switcher7'
-    }));
-    editor7.Panels.addPanel(Object.assign({}, utils.panelDevices, {
-      el: '#panel__devices7'
-    }));
+    editor7.Panels.addPanel(
+      Object.assign({}, utils.panelTop, {
+        el: '#panel__top7',
+      }),
+    );
+    editor7.Panels.addPanel(
+      Object.assign({}, utils.panelBasicActions, {
+        el: '#panel__basic-actions7',
+      }),
+    );
+    editor7.Panels.addPanel(
+      Object.assign({}, utils.panelSidebar, {
+        el: '#panel__right7',
+      }),
+    );
+    editor7.Panels.addPanel(
+      Object.assign({}, utils.panelSwitcherTraits, {
+        el: '#panel__switcher7',
+      }),
+    );
+    editor7.Panels.addPanel(
+      Object.assign({}, utils.panelDevices, {
+        el: '#panel__devices7',
+      }),
+    );
     window.editor7 = editor7;
-  }
-}
+  },
+};
 </script>
 
 <style>

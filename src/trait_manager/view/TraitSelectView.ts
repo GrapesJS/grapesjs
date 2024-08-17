@@ -31,7 +31,7 @@ export default class TraitSelectView extends TraitView {
       const values: string[] = [];
       let input = '<select>';
 
-      opts.forEach(el => {
+      opts.forEach((el) => {
         let attrs = '';
         let name, value, style;
 

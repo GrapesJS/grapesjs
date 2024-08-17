@@ -86,7 +86,7 @@ describe('GrapesJS', () => {
       expect(editor.getStyle().length).toEqual(0);
     });
 
-    test.skip('Editor canvas baseCSS can be overwritten',() => {
+    test.skip('Editor canvas baseCSS can be overwritten', () => {
       config.components = htmlString;
       config.baseCss = '#wrapper { background-color: #eee; }';
       config.protectedCss = '';
@@ -101,7 +101,7 @@ describe('GrapesJS', () => {
       config.protectedCss = '';
       grapesjs.init(config);
       expect(window.frames[0].document.documentElement.outerHTML.replace(/\s+/g, ' ')).toContain(
-        'body { background-color: #fff'
+        'body { background-color: #fff',
       );
     });
 
@@ -229,7 +229,7 @@ describe('GrapesJS', () => {
       });
       editor.runCommand(id);
       editor.stopCommand(id);
-      editor.on(`run:${id}:before`, opts => (opts.abort = 1));
+      editor.on(`run:${id}:before`, (opts) => (opts.abort = 1));
       editor.runCommand(id);
       expect(result).toEqual({
         run: 1,
@@ -284,7 +284,7 @@ describe('GrapesJS', () => {
       const protCss = editor.getConfig().protectedCss;
       expect(editor.getStyle().length).toEqual(3);
       expect(css).toEqual(
-        `${protCss}.test2{color:red;}.test3{color:blue;}@media only screen and (max-width: 620px){.notused{color:red;}}`
+        `${protCss}.test2{color:red;}.test3{color:blue;}@media only screen and (max-width: 620px){.notused{color:red;}}`,
       );
     });
 
@@ -300,9 +300,9 @@ describe('GrapesJS', () => {
     });
 
     describe('Plugins', () => {
-      test.skip('Adds new storage as plugin and store data there', done => {
+      test.skip('Adds new storage as plugin and store data there', (done) => {
         const pluginName = storageId + '-p2';
-        grapesjs.plugins.add(pluginName, e => e.StorageManager.add(storageId, storageMock));
+        grapesjs.plugins.add(pluginName, (e) => e.StorageManager.add(storageId, storageMock));
         config.storageManager.type = storageId;
         config.plugins = [pluginName];
         const editor = grapesjs.init(config);
@@ -339,7 +339,7 @@ describe('GrapesJS', () => {
         };
 
         const pluginName = storageId + '-p';
-        grapesjs.plugins.add(pluginName, e => e.StorageManager.add(storageId, storageMock));
+        grapesjs.plugins.add(pluginName, (e) => e.StorageManager.add(storageId, storageMock));
         config.fromElement = true;
         config.storageManager.type = storageId;
         config.plugins = [pluginName];
@@ -376,7 +376,7 @@ describe('GrapesJS', () => {
       });
 
       test('Execute inline plugins without any options', () => {
-        const inlinePlugin: Plugin = edt => {
+        const inlinePlugin: Plugin = (edt) => {
           edt.getModel().set('customValue', 'TEST');
         };
         config.plugins = [inlinePlugin];

@@ -184,7 +184,7 @@ export default class BlocksView extends View {
       </div>
     `;
 
-    this.collection.each(model => this.add(model, frag));
+    this.collection.each((model) => this.add(model, frag));
     this.append(frag);
     const cls = `${this.blockContClass}s ${ppfx}one-bg ${ppfx}two-color`;
     this.$el.addClass(cls);

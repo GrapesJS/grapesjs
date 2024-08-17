@@ -19,7 +19,7 @@ export default class ComponentVideoView extends ComponentImageView<ComponentVide
     ComponentView.prototype.initialize.apply(this, arguments);
     const { model } = this;
     const props = ['loop', 'autoplay', 'controls', 'color', 'rel', 'modestbranding', 'poster'];
-    const events = props.map(p => `change:${p}`).join(' ');
+    const events = props.map((p) => `change:${p}`).join(' ');
     this.listenTo(model, 'change:provider', this.updateProvider);
     this.listenTo(model, 'change:src', this.updateSrc);
     this.listenTo(model, events, this.updateVideo);

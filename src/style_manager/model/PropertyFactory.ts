@@ -14,7 +14,7 @@ type PartialProps = Partial<
   PropertyProps | PropertyStackProps | PropertyNumberProps | PropertySelectProps | { properties?: any }
 >;
 
-const getOptions = (items: string[]): Option[] => items.map(item => ({ id: item }));
+const getOptions = (items: string[]): Option[] => items.map((item) => ({ id: item }));
 
 export default class PropertyFactory {
   props: Record<string, PropertyProps | undefined> = {};
@@ -151,7 +151,7 @@ export default class PropertyFactory {
       'Times New Roman, Times, serif',
       'Trebuchet MS, Helvetica' + ss,
       'Verdana, Geneva' + ss,
-    ].map(font => {
+    ].map((font) => {
       return { id: font, label: font.split(',')[0] };
     });
 
@@ -178,7 +178,7 @@ export default class PropertyFactory {
 
   __sub(items: (string | PropertyProps)[]) {
     return () =>
-      items.map(p => {
+      items.map((p) => {
         if (isString(p)) return this.get(p)!;
         const { extend, ...rest } = p;
         return {
@@ -439,7 +439,7 @@ export default class PropertyFactory {
             const filter = (style[name] || '') as string;
             const sep = property.getLayerSeparator();
             return filter
-              ? filter.split(sep).map(input => {
+              ? filter.split(sep).map((input) => {
                   const { name, value } = property.__parseFn(input);
                   return {
                     'transform-type': name,
@@ -538,7 +538,7 @@ export default class PropertyFactory {
     const result: PropertyProps[] = [];
     const propsArr = isString(props) ? [props] : props;
 
-    propsArr.forEach(prop => {
+    propsArr.forEach((prop) => {
       result.push(this.get(prop) || { property: prop });
     });
 

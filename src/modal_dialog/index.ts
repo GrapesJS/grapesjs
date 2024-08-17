@@ -68,7 +68,7 @@ export default class ModalModule extends Module<ModalConfig> {
         //@ts-ignore
         isFunction(custom) && custom(data);
         em.trigger('modal', data);
-      }, 0)
+      }, 0),
     );
 
     return this;

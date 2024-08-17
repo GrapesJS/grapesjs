@@ -39,7 +39,7 @@ describe('ComponentTextView', () => {
 
   test('Component empty', () => {
     expect(fixtures.innerHTML).toEqual(
-      `<div data-gjs-highlightable="true" id="${el.id}" data-gjs-type="default"></div>`
+      `<div data-gjs-highlightable="true" id="${el.id}" data-gjs-type="default"></div>`,
     );
   });
 

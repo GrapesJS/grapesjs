@@ -76,7 +76,7 @@ export default class DeviceManager extends ItemManagerModule<
   constructor(em: EditorModel) {
     super(em, 'DeviceManager', new Devices(), deviceEvents, defaults);
     this.devices = this.all;
-    this.config.devices?.forEach(device => this.add(device, { silent: true }));
+    this.config.devices?.forEach((device) => this.add(device, { silent: true }));
     this.select(this.config.default || this.devices.at(0));
     em.on(chnSel, this._onSelect, this);
     return this;
@@ -146,7 +146,7 @@ export default class DeviceManager extends ItemManagerModule<
    */
   get(id: string): Device | undefined {
     // Support old API
-    const byName = this.getAll().filter(d => d.get('name') === id)[0];
+    const byName = this.getAll().filter((d) => d.get('name') === id)[0];
     return byName || this.devices.get(id) || null;
   }
 

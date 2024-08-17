@@ -75,7 +75,7 @@ const events = {
 const styleOpts = { mediaText: '' };
 
 const propsToListen = ['open', 'status', 'locked', 'custom-name', 'components', 'classes']
-  .map(p => `${ComponentsEvents.update}:${p}`)
+  .map((p) => `${ComponentsEvents.update}:${p}`)
   .join(' ');
 
 const isStyleHidden = (style: any = {}) => {

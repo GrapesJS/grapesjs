@@ -124,7 +124,7 @@ export default class ModalView extends ModuleView<Modal> {
   updateAttr(attr?: any) {
     const { pfx, $el, el } = this;
     //@ts-ignore
-    const currAttr = [].slice.call(el.attributes).map(i => i.name);
+    const currAttr = [].slice.call(el.attributes).map((i) => i.name);
     $el.removeAttr(currAttr.join(' '));
     $el.attr({
       ...(attr || {}),

@@ -14,7 +14,7 @@ export default class PropertyColorView extends PropertyNumberView {
     const inp = this.inputInst;
     inp && inp.remove && inp.remove();
     // @ts-ignore
-    ['inputInst', '$color'].forEach(i => (this[i] = null));
+    ['inputInst', '$color'].forEach((i) => (this[i] = null));
     return this;
   }
 

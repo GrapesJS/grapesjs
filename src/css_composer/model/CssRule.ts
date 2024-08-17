@@ -128,7 +128,7 @@ export default class CssRule extends StyleableModel<CssRuleProperties> {
   clone(): CssRule {
     const opts = { ...this.opt };
     const attr = { ...this.attributes };
-    attr.selectors = this.get('selectors')!.map(s => s.clone() as Selector);
+    attr.selectors = this.get('selectors')!.map((s) => s.clone() as Selector);
     // @ts-ignore
     return new this.constructor(attr, opts);
   }
@@ -147,7 +147,7 @@ export default class CssRule extends StyleableModel<CssRuleProperties> {
     sels = isString(sels) ? [sels] : sels;
 
     if (Array.isArray(sels)) {
-      const res = sels.filter(i => i).map(i => (sm ? sm.add(i) : i));
+      const res = sels.filter((i) => i).map((i) => (sm ? sm.add(i) : i));
       sels = new Selectors(res);
     }
 
@@ -236,11 +236,11 @@ export default class CssRule extends StyleableModel<CssRuleProperties> {
     const { em } = this;
     const { atRuleType, mediaText } = this.attributes;
     const devices = em?.Devices.getDevices() || [];
-    const deviceDefault = devices.filter(d => d.getWidthMedia() === '')[0];
+    const deviceDefault = devices.filter((d) => d.getWidthMedia() === '')[0];
     if (atRuleType !== 'media' || !mediaText) {
       return deviceDefault || null;
     }
-    return devices.filter(d => d.getWidthMedia() === getMediaLength(mediaText))[0] || null;
+    return devices.filter((d) => d.getWidthMedia() === getMediaLength(mediaText))[0] || null;
   }
 
   /**
@@ -254,7 +254,7 @@ export default class CssRule extends StyleableModel<CssRuleProperties> {
     const { em } = this;
     const stateValue = this.get('state');
     const states = em?.Selectors.getStates() || [];
-    return states.filter(s => s.getName() === stateValue)[0] || null;
+    return states.filter((s) => s.getName() === stateValue)[0] || null;
   }
 
   /**
@@ -339,7 +339,7 @@ export default class CssRule extends StyleableModel<CssRuleProperties> {
     if (wd && !atRule) atRule = 'media';
 
     const a1: string[] = sel.map((model: any) => model.getFullName());
-    const a2: string[] = this.get('selectors')?.map(model => model.getFullName())!;
+    const a2: string[] = this.get('selectors')?.map((model) => model.getFullName())!;
 
     // Check selectors
     const a1S = a1.slice().sort();

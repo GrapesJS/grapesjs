@@ -6,7 +6,7 @@ const { keys } = Object;
 describe('Editor', () => {
   let editor: Editor;
 
-  beforeEach(done => {
+  beforeEach((done) => {
     editor = new Editor();
     editor.getModel().loadOnStart();
     editor.on('change:readyLoad', () => done());

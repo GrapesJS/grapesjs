@@ -228,7 +228,7 @@ export default class Dragger {
     }
 
     const moveDelta = (delta: DraggerPosition) => {
-      xyArr.forEach(co => (delta[co] = delta[co] * result(opts, 'scale')));
+      xyArr.forEach((co) => (delta[co] = delta[co] * result(opts, 'scale')));
       this.delta = delta;
       this.move(delta.x, delta.y);
       isFunction(onDrag) && onDrag(ev, this);
@@ -255,12 +255,12 @@ export default class Dragger {
     const newDelta = delta;
     let { trgX, trgY } = this;
 
-    this.guidesTarget.forEach(trg => {
+    this.guidesTarget.forEach((trg) => {
       // Skip the guide if its locked axis already exists
       if ((trg.x && this.trgX) || (trg.y && this.trgY)) return;
       trg.active = false;
 
-      this.guidesStatic.forEach(stat => {
+      this.guidesStatic.forEach((stat) => {
         if ((trg.y && stat.x) || (trg.x && stat.y)) return;
         const isY = trg.y && stat.y;
         const axs = isY ? 'y' : 'x';
@@ -281,7 +281,7 @@ export default class Dragger {
     trgX = this.trgX;
     trgY = this.trgY;
 
-    xyArr.forEach(co => {
+    xyArr.forEach((co) => {
       const axis = co.toUpperCase();
       // @ts-ignore
       let trg = this[`trg${axis}`];
@@ -381,7 +381,7 @@ export default class Dragger {
 
   getWindowEl() {
     const cont = this.getContainerEl();
-    return cont.map(item => {
+    return cont.map((item) => {
       const doc = item.ownerDocument || item;
       // @ts-ignore
       return doc.defaultView || doc.parentWindow;

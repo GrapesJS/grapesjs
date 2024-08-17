@@ -77,7 +77,7 @@ export default class PageManager extends ItemManagerModule<PageManagerConfig, Pa
     bindAll(this, '_onPageChange');
     const model = new ModuleModel({ _undo: true } as any);
     this.model = model;
-    this.pages.on('reset', coll => coll.at(0) && this.select(coll.at(0)));
+    this.pages.on('reset', (coll) => coll.at(0) && this.select(coll.at(0)));
     this.pages.on('all', this.__onChange, this);
     model.on(chnSel, this._onPageChange);
   }
@@ -91,7 +91,7 @@ export default class PageManager extends ItemManagerModule<PageManagerConfig, Pa
   onLoad() {
     const { pages, config, em } = this;
     const opt = { silent: true };
-    const configPages = config.pages?.map(page => new Page(page, { em, config })) || [];
+    const configPages = config.pages?.map((page) => new Page(page, { em, config })) || [];
     pages.add(configPages, opt);
     const mainPage = !pages.length ? this.add({ type: typeMain }, opt) : this._initPage();
     mainPage && this.select(mainPage, opt);
@@ -167,7 +167,7 @@ export default class PageManager extends ItemManagerModule<PageManagerConfig, Pa
    * const somePage = pageManager.get('page-id');
    */
   get(id: string): Page | undefined {
-    return this.pages.filter(p => p.get(p.idAttribute) === id)[0];
+    return this.pages.filter((p) => p.get(p.idAttribute) === id)[0];
   }
 
   /**
@@ -178,7 +178,7 @@ export default class PageManager extends ItemManagerModule<PageManagerConfig, Pa
    */
   getMain() {
     const { pages } = this;
-    return pages.filter(p => p.get('type') === typeMain)[0] || pages.at(0);
+    return pages.filter((p) => p.get('type') === typeMain)[0] || pages.at(0);
   }
 
   /**
@@ -191,7 +191,7 @@ export default class PageManager extends ItemManagerModule<PageManagerConfig, Pa
    */
   getAllWrappers(): ComponentWrapper[] {
     const pages = this.getAll();
-    return unique(flatten(pages.map(page => page.getAllFrames().map(frame => frame.getComponent()))));
+    return unique(flatten(pages.map((page) => page.getAllFrames().map((frame) => frame.getComponent()))));
   }
 
   /**
@@ -229,7 +229,7 @@ export default class PageManager extends ItemManagerModule<PageManagerConfig, Pa
     this.model.stopListening();
     this.model.clear({ silent: true });
     //@ts-ignore
-    ['selected', 'model'].map(i => (this[i] = 0));
+    ['selected', 'model'].map((i) => (this[i] = 0));
   }
 
   store() {
@@ -238,7 +238,7 @@ export default class PageManager extends ItemManagerModule<PageManagerConfig, Pa
 
   load(data: any) {
     const result = this.loadProjectData(data, { all: this.pages, reset: true });
-    this.pages.forEach(page => page.getFrames().initRefs());
+    this.pages.forEach((page) => page.getFrames().initRefs());
     return result;
   }
 

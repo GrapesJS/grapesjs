@@ -23,7 +23,7 @@ export default class Symbols extends Components {
 
   removeChildren(component: Component, coll?: Components, opts: any = {}) {
     super.removeChildren(component, coll, opts);
-    getSymbolInstances(component)?.forEach(i => detachSymbolInstance(i, { skipRefs: true }));
+    getSymbolInstances(component)?.forEach((i) => detachSymbolInstance(i, { skipRefs: true }));
     this.__trgEvent(this.events.symbolMainRemove, { component });
   }
 

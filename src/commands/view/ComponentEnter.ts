@@ -6,7 +6,7 @@ export default {
     if (!ed.Canvas.hasFocus()) return;
     const toSelect: Component[] = [];
 
-    ed.getSelectedAll().forEach(component => {
+    ed.getSelectedAll().forEach((component) => {
       const coll = component.components();
       const next = coll && coll.filter((c: any) => c.get('selectable'))[0];
       next && toSelect.push(next);

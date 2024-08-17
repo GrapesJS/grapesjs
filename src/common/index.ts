@@ -61,7 +61,7 @@ export type ElementRect = {
 
 export type CombinedModelConstructorOptions<
   E,
-  M extends Model<any, any, E> = Model
+  M extends Model<any, any, E> = Model,
 > = Backbone.ModelConstructorOptions<M> & E;
 
 export interface ViewOptions<TModel extends Model | undefined = Model, TElement extends Element = HTMLElement>

@@ -26,7 +26,7 @@ export default {
       const tlb = canvas.getToolbarEl();
       tlb && (tlb.style.display = on ? 'none' : '');
       const elP = body.querySelectorAll(`.${this.ppfx}no-pointer`);
-      each(elP, item => ((item as HTMLElement).style.pointerEvents = on ? 'all' : ''));
+      each(elP, (item) => ((item as HTMLElement).style.pointerEvents = on ? 'all' : ''));
       em[mthEv]('run:tlb-move:before', this.preventDrag);
     }
   },
