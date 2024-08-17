@@ -122,7 +122,7 @@ export default class FrameView extends ModuleView<Frame, HTMLIFrameElement> {
   }
 
   getCanvasModel(): Canvas {
-    return this.em.Canvas.getModel();
+    return this?.em.Canvas?.getModel();
   }
 
   getWindow() {
@@ -344,7 +344,7 @@ export default class FrameView extends ModuleView<Frame, HTMLIFrameElement> {
   renderStyles(opts: any = {}) {
     const head = this.getHead();
     const canvas = this.getCanvasModel();
-    const normalize = (stls: any[]) =>
+    const normalize = (stls: any[] = []) =>
       stls.map(href => ({
         tag: 'link',
         attributes: {
@@ -353,7 +353,7 @@ export default class FrameView extends ModuleView<Frame, HTMLIFrameElement> {
         },
       }));
     const prevStyles = normalize(opts.prev || canvas.previous('styles'));
-    const styles = normalize(canvas.get('styles'));
+    const styles = normalize(canvas?.get('styles'));
     const toRemove: any[] = [];
     const toAdd: any[] = [];
     const find = (items: any[], stack: any[], res: any[]) => {
@@ -375,7 +375,8 @@ export default class FrameView extends ModuleView<Frame, HTMLIFrameElement> {
   renderHead() {
     const { model, em } = this;
     const { root } = model;
-    const HeadView = em.Components.getType(typeHead)!.view;
+    const HeadView = em?.Components?.getType(typeHead)!.view;
+    if(!HeadView) return;
     this.headView = new HeadView({
       el: this.getHead(),
       model: root.head,
@@ -475,7 +476,9 @@ export default class FrameView extends ModuleView<Frame, HTMLIFrameElement> {
     </style>`
     );
     const { root } = model;
-    const { view } = em.Components.getType('wrapper')!;
+    const { view } = em?.Components?.getType('wrapper') || {}
+
+    if(!view) return;
     this.wrapper = new view({
       model: root,
       config: {

@@ -894,6 +894,7 @@ export default class EditorModel extends Model {
    */
   stopDefault(opts = {}) {
     const commands = this.get('Commands');
+    if(!commands) return;
     const command = commands.get(this.config.defaultCommand);
     if (!command || !this.defaultRunning) return;
     command.stop(this, this, opts);
@@ -1013,11 +1014,11 @@ export default class EditorModel extends Model {
     shallow?.destroyAll();
     this.stopListening();
     this.stopDefault();
-    this.modules
+    (this.modules || [])
       .slice()
       .reverse()
       .forEach(mod => mod.destroy());
-    view && view.remove();
+    view?.remove && view.remove();
     this.clear({ silent: true });
     this.destroyed = true;
     ['_config', 'view', '_previousAttributes', '_events', '_listeners'].forEach(
