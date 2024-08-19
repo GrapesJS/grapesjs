@@ -127,9 +127,10 @@ export default class LayerManager extends Module<LayerManagerConfig> {
       root = wrapper.find(component)[0] || wrapper;
     }
 
-    this.model.set('root', root);
+    const result = this.__getLayerFromComponent(root);
+    this.model.set('root', result);
 
-    return root;
+    return result;
   }
 
   /**
@@ -152,7 +153,10 @@ export default class LayerManager extends Module<LayerManagerConfig> {
    * console.log(components);
    */
   getComponents(component: Component): Component[] {
-    return component.components().filter((cmp: any) => this.__isLayerable(cmp));
+    return component
+      .components()
+      .map(cmp => this.__getLayerFromComponent(cmp))
+      .filter((cmp: any) => this.__isLayerable(cmp));
   }
 
   /**
@@ -360,12 +364,16 @@ export default class LayerManager extends Module<LayerManagerConfig> {
     this.__trgCustom();
   }
 
+  __getLayerFromComponent(cmp: Component) {
+    return cmp.delegate?.layer?.(cmp) || cmp;
+  }
+
   __onComponent(component: Component) {
     this.updateLayer(component);
   }
 
   __isLayerable(cmp: Component): boolean {
-    const tag = cmp.get('tagName');
+    const tag = cmp.tagName;
     const hideText = this.config.hideTextnode;
     const isValid = !hideText || (!cmp.isInstanceOf('textnode') && tag !== 'br');
 
