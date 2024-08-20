@@ -36,7 +36,7 @@ Check the full list of available options here: [Block Manager Config](https://gi
 
 ## Initialization
 
-By default, Block Manager UI is considered a hidden component. Currently, the GrapesJS core, renders default panels and buttons that allow you to show them, but in long term, this is something that might will change. Here below you can see how to init the editor without default panels and immediately rendered Block Manager UI.
+By default, Block Manager UI is considered a hidden component. Currently, the GrapesJS core, renders default panels and buttons that allow you to show them, but in the long term, this is something that might change. Here below you can see how to init the editor without default panels and immediately rendered Block Manager UI.
 
 ::: tip
 Follow the [Getting Started] guide in order to setup properly the editor with custom panels.
