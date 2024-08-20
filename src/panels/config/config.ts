@@ -12,6 +12,7 @@ const prv = 'preview';
 interface ButtonProps {
   id?: string;
   active?: boolean;
+  label?: string;
   togglable?: boolean;
   className?: string;
   command?: string | (() => any);
