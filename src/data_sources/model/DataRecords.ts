@@ -24,7 +24,7 @@ export default class DataRecords extends Collection<DataRecord> {
     }
 
     if (onRecordAdd) {
-      const m = (Array.isArray(models) ? models : [models]).map(model => onRecordAdd({ record: model }));
+      const m = (Array.isArray(models) ? models : [models]).map((model) => onRecordAdd({ record: model }));
 
       return super.add(m, options);
     } else {

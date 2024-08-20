@@ -61,7 +61,7 @@ export default class DataSource extends Model<DataSourceProps> {
   }
 
   getRecords() {
-    return [...this.records.models].map(record => this.getRecord(record.id));
+    return [...this.records.models].map((record) => this.getRecord(record.id));
   }
 
   removeRecord(id: string | number, opts?: RemoveOptions): DataRecord | undefined {

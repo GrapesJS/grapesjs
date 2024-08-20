@@ -118,7 +118,7 @@ export default class Trait extends Model<TraitProperties> {
       this.listenTo(ls.obj, ls.event, () => {
         const dr = dataVar.getDataValue();
         this.updateValueFromDataVariable(dr);
-      })
+      }),
     );
     this.dataListeners = dataListeners;
   }

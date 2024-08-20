@@ -31,7 +31,7 @@ export default class ComponentDataVariableView extends ComponentView<ComponentDa
     dataListeners.push(
       { obj: model, event: 'change:path change:value' },
       { obj: DataSources.all, event: 'add remove reset' },
-      { obj: em, event: `${DataSourcesEvents.path}:${normPath}` }
+      { obj: em, event: `${DataSourcesEvents.path}:${normPath}` },
     );
 
     dataListeners.forEach((ls) => this.listenTo(ls.obj, ls.event, this.postRender));

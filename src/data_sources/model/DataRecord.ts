@@ -30,7 +30,7 @@ export default class DataRecord<T extends DataRecordProps = DataRecordProps> ext
 
   handleChange() {
     const changed = this.changedAttributes();
-    keys(changed).forEach(prop => this.triggerChange(prop));
+    keys(changed).forEach((prop) => this.triggerChange(prop));
   }
 
   /**
@@ -58,13 +58,13 @@ export default class DataRecord<T extends DataRecordProps = DataRecordProps> ext
     const { dataSource, em } = this;
     const data = { dataSource, dataRecord: this };
     const paths = this.getPaths(prop);
-    paths.forEach(path => em.trigger(`${DataSourcesEvents.path}:${path}`, { ...data, path }));
+    paths.forEach((path) => em.trigger(`${DataSourcesEvents.path}:${path}`, { ...data, path }));
   }
 
   set<A extends _StringKey<T>>(
     attributeName: Partial<T> | A,
     value?: SetOptions | T[A] | undefined,
-    options?: SetOptions | undefined
+    options?: SetOptions | undefined,
   ): this;
   set(attributeName: unknown, value?: unknown, options?: SetOptions): DataRecord {
     const onRecordSet = this.dataSource?.transformers?.onRecordSet;

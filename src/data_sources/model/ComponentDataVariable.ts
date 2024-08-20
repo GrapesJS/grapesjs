@@ -3,7 +3,6 @@ import { ToHTMLOptions } from '../../dom_components/model/types';
 import { stringToPath, toLowerCase } from '../../utils/mixins';
 import { DataVariableType } from './DataVariable';
 
-
 export default class ComponentDataVariable extends Component {
   get defaults() {
     return {
