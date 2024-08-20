@@ -155,7 +155,7 @@ export default class LayerManager extends Module<LayerManagerConfig> {
   getComponents(component: Component): Component[] {
     return component
       .components()
-      .map(cmp => this.__getLayerFromComponent(cmp))
+      .map((cmp) => this.__getLayerFromComponent(cmp))
       .filter((cmp: any) => this.__isLayerable(cmp));
   }
 
