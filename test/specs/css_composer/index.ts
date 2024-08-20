@@ -418,8 +418,7 @@ describe('Css Composer', () => {
         expect(getCSS(obj)).toEqual(cssRule.trim());
       });
 
-      // TODO update jest to be able to test keyframes
-      test.skip('Add rules with @keyframes at rule', () => {
+      test('Add rules with @keyframes at rule', () => {
         const cssRule = `
         @keyframes keyname {
           from { width: 0% }
@@ -428,14 +427,24 @@ describe('Css Composer', () => {
         }
         `;
         const result = obj.addCollection(cssRule);
-        console.log({ result });
         const [rule1, rule2, rule3] = result;
+        console.log({ result: JSON.parse(JSON.stringify(rule1)) });
         expect(result.length).toEqual(3);
         expect(obj.getAll().length).toEqual(3);
 
-        expect(rule1.get('mediaText')).toBe('keyname');
-        expect(rule1.get('atRuleType')).toBe('keyframes');
-        // TODO to complete
+        result.forEach((rule) => {
+          expect(rule.get('mediaText')).toBe('keyname');
+          expect(rule.get('atRuleType')).toBe('keyframes');
+        });
+
+        expect(rule1.getSelectorsString()).toBe('from');
+        expect(rule1.getStyle()).toEqual({ width: '0%' });
+
+        expect(rule2.getSelectorsString()).toBe('40%, 50%');
+        expect(rule2.getStyle()).toEqual({ width: '50%' });
+
+        expect(rule3.getSelectorsString()).toBe('to');
+        expect(rule3.getStyle()).toEqual({ width: '100%' });
       });
     });
   });
