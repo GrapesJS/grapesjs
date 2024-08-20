@@ -40,7 +40,7 @@ describe('ComponentView', () => {
 
   test('Component empty', () => {
     expect(fixtures.innerHTML).toEqual(
-      `<div data-gjs-highlightable="true" id="${el.id}" data-gjs-type="default"></div>`
+      `<div data-gjs-highlightable="true" id="${el.id}" data-gjs-type="default"></div>`,
     );
   });
 
@@ -49,14 +49,14 @@ describe('ComponentView', () => {
     em.setState('test');
     em.setState('');
     expect(fixtures.innerHTML).toEqual(
-      `<div data-gjs-highlightable="true" id="${el.id}" data-gjs-type="default" class="selected"></div>`
+      `<div data-gjs-highlightable="true" id="${el.id}" data-gjs-type="default" class="selected"></div>`,
     );
   });
 
   test('Add helper class on status update', () => {
     model.set('status', 'selected');
     expect(fixtures.innerHTML).toEqual(
-      `<div data-gjs-highlightable="true" id="${el.id}" data-gjs-type="default" class="selected"></div>`
+      `<div data-gjs-highlightable="true" id="${el.id}" data-gjs-type="default" class="selected"></div>`,
     );
   });
 
@@ -119,7 +119,7 @@ describe('ComponentView', () => {
         // @ts-ignore
         components: [{ tagName: 'span' }, { attributes: { title: 'test' } }],
       },
-      compOpts
+      compOpts,
     );
     view = new ComponentView({
       ...compViewOpst,
@@ -133,7 +133,7 @@ describe('ComponentView', () => {
     const firstId = el.children[0].id;
     const secondId = el.children[1].id;
     expect(view.$el.html()).toEqual(
-      `<span data-gjs-highlightable="true" id="${firstId}" data-gjs-type="default"></span><div data-gjs-highlightable="true" id="${secondId}" data-gjs-type="default" title="test"></div>`
+      `<span data-gjs-highlightable="true" id="${firstId}" data-gjs-type="default"></span><div data-gjs-highlightable="true" id="${secondId}" data-gjs-type="default" title="test"></div>`,
     );
   });
 

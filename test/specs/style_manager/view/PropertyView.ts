@@ -67,7 +67,7 @@ describe('PropertyView', () => {
     expect(view.model.get('value')).toEqual(propValue);
   });
 
-  test('Update input on value change', done => {
+  test('Update input on value change', (done) => {
     view.model.set('value', propValue);
     setTimeout(() => {
       expect(view.getInputEl().value).toEqual(propValue);

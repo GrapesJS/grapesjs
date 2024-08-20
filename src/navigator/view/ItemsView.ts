@@ -126,7 +126,7 @@ export default class ItemsView extends View {
 
   remove(...args: []) {
     View.prototype.remove.apply(this, args);
-    this.items.map(i => i.remove());
+    this.items.map((i) => i.remove());
     return this;
   }
 
@@ -134,7 +134,9 @@ export default class ItemsView extends View {
     const { el, module } = this;
     const frag = document.createDocumentFragment();
     el.innerHTML = '';
-    this.collection.map(cmp => module.__getLayerFromComponent(cmp)).forEach(model => this.addToCollection(model, frag));
+    this.collection
+      .map((cmp) => module.__getLayerFromComponent(cmp))
+      .forEach((model) => this.addToCollection(model, frag));
     el.appendChild(frag);
     el.className = this.className!;
     return this;

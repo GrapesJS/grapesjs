@@ -63,8 +63,8 @@ export default {
         this.cDim.length === 0
           ? $(this.outsideElem)
           : !this.posIsLastEl && this.cDim[this.posIndex]
-          ? $(this.cDim[this.posIndex][5]).parent()
-          : $(this.outsideElem);
+            ? $(this.cDim[this.posIndex][5]).parent()
+            : $(this.outsideElem);
       this.posTargetModel = this.posTargetEl.data('model');
       this.posTargetCollection = this.posTargetEl.data('model-comp');
     }

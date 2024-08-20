@@ -1,6 +1,6 @@
 name: 🐞 Bug report
 description: Create a bug report for GrapesJS.
-title: "BUG: "
+title: 'BUG: '
 labels: []
 body:
   - type: markdown

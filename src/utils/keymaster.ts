@@ -315,7 +315,7 @@ assignKey.isPressed = isPressed;
 assignKey.getPressedKeyCodes = getPressedKeyCodes;
 assignKey.unbind = unbindKey;
 assignKey.handlers = _handlers;
-assignKey.init = win => {
+assignKey.init = (win) => {
   // set the handlers globally on document
   // Passing _scope to a callback to ensure it remains the same by execution. Fixes #48
   addEvent(win.document, 'keydown', function (event) {

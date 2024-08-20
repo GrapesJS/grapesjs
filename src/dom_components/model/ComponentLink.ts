@@ -28,7 +28,7 @@ export default class ComponentLink extends ComponentText {
       const len = children.length;
       if (!len) delete result.editable;
 
-      forEach(children, child => {
+      forEach(children, (child) => {
         const { tagName } = child as HTMLElement;
         if (
           (child.nodeType == 3 && (child as any).textContent.trim() !== '') ||

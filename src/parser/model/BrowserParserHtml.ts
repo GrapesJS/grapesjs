@@ -19,10 +19,10 @@ export default (str: string, config: HTMLParserOptions = {}) => {
     const { head, body } = doc;
     // Move all scripts at the bottom of the page
     const scripts = head.querySelectorAll('script');
-    each(scripts, node => body.appendChild(node));
+    each(scripts, (node) => body.appendChild(node));
     // Move inside body all head children
     const hEls: Element[] = [];
-    each(head.children, n => hEls.push(n));
+    each(head.children, (n) => hEls.push(n));
     each(hEls, (node, i) => body.insertBefore(node, body.children[i]));
     res = body;
   } else {

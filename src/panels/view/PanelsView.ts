@@ -65,7 +65,7 @@ export default class PanelsView extends ModuleView<Panels> {
     const $el = this.$el;
     const frag = document.createDocumentFragment();
     $el.empty();
-    this.collection.each(model => this.addToCollection(model, frag));
+    this.collection.each((model) => this.addToCollection(model, frag));
     $el.append(frag);
     $el.attr('class', this.className);
     return this;

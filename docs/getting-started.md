@@ -15,7 +15,7 @@ This is a step-by-step guide for anyone who wants to create their own builder wi
 Before you start using GrapesJS, you'll have to import it. Let's import the latest version:
 
 ```html
-<link rel="stylesheet" href="//unpkg.com/grapesjs/dist/css/grapes.min.css">
+<link rel="stylesheet" href="//unpkg.com/grapesjs/dist/css/grapes.min.css" />
 <script src="//unpkg.com/grapesjs"></script>
 <!--
 If you need plugins, put them below the main grapesjs script
@@ -41,12 +41,13 @@ The main part of the GrapesJS editor is the canvas, this is where you create the
 <<< @/docs/.vuepress/components/demos/DemoCanvasOnly.js
 <<< @/docs/.vuepress/components/demos/DemoCanvasOnly.css
 <Demo>
- <DemoCanvasOnly/>
+<DemoCanvasOnly/>
 </Demo>
 
 With just the canvas you're already able to move, copy and delete components from the structure. For now, we see the example template taken from the container. Next let's look at how to create and drag custom blocks into our canvas.
 
 ## Add Blocks
+
 The block in GrapesJS is just a reusable piece of HTML that you can drop in the canvas. A block can be an image, a button, or an entire section with videos, forms and iframes. Let's start by creating another container and append a few basic blocks inside of it. Later we can use this technique to build more complex structures.
 
 ```html{4}
@@ -55,6 +56,7 @@ The block in GrapesJS is just a reusable piece of HTML that you can drop in the 
 </div>
 <div id="blocks"></div>
 ```
+
 ```js
 const editor = grapesjs.init({
   // ...
@@ -64,16 +66,18 @@ const editor = grapesjs.init({
       {
         id: 'section', // id is mandatory
         label: '<b>Section</b>', // You can use HTML/SVG inside labels
-        attributes: { class:'gjs-block-section' },
+        attributes: { class: 'gjs-block-section' },
         content: `<section>
           <h1>This is a simple title</h1>
           <div>This is just a Lorem text: Lorem ipsum dolor sit amet</div>
         </section>`,
-      }, {
+      },
+      {
         id: 'text',
         label: 'Text',
         content: '<div data-gjs-type="text">Insert your text here</div>',
-      }, {
+      },
+      {
         id: 'image',
         label: 'Image',
         // Select the component once it's dropped
@@ -84,11 +88,12 @@ const editor = grapesjs.init({
         // This triggers `active` event on dropped components and the `image`
         // reacts by opening the AssetManager
         activate: true,
-      }
-    ]
+      },
+    ],
   },
 });
 ```
+
 ```css
 .gjs-block {
   width: auto;
@@ -96,6 +101,7 @@ const editor = grapesjs.init({
   min-height: auto;
 }
 ```
+
 <Demo>
  <DemoBasicBlocks/>
 </Demo>
@@ -107,19 +113,22 @@ editor.BlockManager.add('my-block-id', {
   label: '...',
   category: '...',
   // ...
-})
+});
 ```
+
 ::: tip
 If you want to learn more about blocks we suggest reading its dedicated article: [Block Manager Module](modules/Blocks.html).
 :::
 
 ## Define Components
+
 Technically, once you drop your HTML block inside the canvas each element of the content is transformed into a GrapesJS Component. A GrapesJS Component is an object containing information about how the element is rendered in the canvas (managed in the View) and how it might look in its final code (created by the properties in the Model). Generally, all Model properties are reflected in the View. Therefore, if you add a new attribute to the model, it will be available in the export code (which we will learn more about later), and the element you see in the canvas will be updated with new attributes.
 This isn't totally out of the ordinary, but the unique thing about Components is that you can create a totally decoupled View. This means you can show the user whatever you desire regardless of what is in the Model. For example, by dragging a placeholder text you can fetch and show instead a dynamic content. If you want to learn more about Custom Components, you should check out [Component Manager Module](modules/Components.html).
 
 GrapesJS comes with a few [built-in Components](modules/Components.html#built-in-component-types) that enable different features once rendered in the canvas. For example, by double clicking on an image component you will see the default [Asset Manager](modules/Assets.html), which you can customize or integrate your own. By double clicking on the text component you're able to edit it via the built-in Rich Text Editor, which is also customizable and [replaceable](guides/Replace-Rich-Text-Editor.html).
 
 As we have seen before you can create Blocks directly as Components:
+
 ```js
 editor.BlockManager.add('my-block-id', {
   // ...
@@ -131,16 +140,18 @@ editor.BlockManager.add('my-block-id', {
       {
         tagName: 'span',
         content: '<b>Some static content</b>',
-      }, {
+      },
+      {
         tagName: 'div',
         // use `content` for static strings, `components` string will be parsed
         // and transformed in Components
         components: '<span>HTML at some point</span>',
-      }
-    ]
-  }
-})
+      },
+    ],
+  },
+});
 ```
+
 ::: tip
 Check out the [Components API](api/components.html) to learn how to interact with components dynamically.
 :::
@@ -156,6 +167,7 @@ myComponent.components('<div>New content</div>');
 ```
 
 ## Panels & Buttons
+
 Now that we have a canvas and custom blocks let's see how to create a new custom panel with some buttons inside (using [Panels API](api/panels.html)) which trigger commands (the core one or custom).
 
 ```html{1,2,3}
@@ -197,25 +209,29 @@ editor.Panels.addPanel({
       className: 'btn-toggle-borders',
       label: '<u>B</u>',
       command: 'sw-visibility', // Built-in command
-    }, {
+    },
+    {
       id: 'export',
       className: 'btn-open-export',
       label: 'Exp',
       command: 'export-template',
       context: 'export-template', // For grouping context of buttons from the same panel
-    }, {
+    },
+    {
       id: 'show-json',
       className: 'btn-show-json',
       label: 'JSON',
       context: 'show-json',
       command(editor) {
         editor.Modal.setTitle('Components JSON')
-          .setContent(`<textarea style="width:100%; height: 250px;">
+          .setContent(
+            `<textarea style="width:100%; height: 250px;">
             ${JSON.stringify(editor.getComponents())}
-          </textarea>`)
+          </textarea>`,
+          )
           .open();
       },
-    }
+    },
   ],
 });
 ```
@@ -228,7 +244,7 @@ We have defined where to render the panel with `el: '#basic-panel'` and then for
 Try to use [Commands](api/commands.html) when possible, they allow you to track actions globally. Commands also execute callbacks before and after their execution (you can even interrupt them).
 
 ```js
-editor.on('run:export-template:before', opts => {
+editor.on('run:export-template:before', (opts) => {
   console.log('Before the command run');
   if (0 /* some condition */) {
     opts.abort = 1;
@@ -242,8 +258,8 @@ editor.on('abort:export-template', () => console.log('Command aborted'));
 Check out the [Panels API](api/panels.html) to see all the available methods.
 :::
 
-
 ## Layers
+
 Another utility tool you might find useful when working with web elements is the layer manager. It's a tree overview of the structure nodes and enables you to manage it easier. To enable it you just have to specify where you want to render it.
 
 ```html{4,5,6,7,8,9,10,11}
@@ -260,40 +276,45 @@ Another utility tool you might find useful when working with web elements is the
 </div>
 <div id="blocks"></div>
 ```
+
 <<< @/docs/.vuepress/components/demos/DemoLayers.css
 
 ```js
 const editor = grapesjs.init({
   // ...
   layerManager: {
-    appendTo: '.layers-container'
+    appendTo: '.layers-container',
   },
   // We define a default panel as a sidebar to contain layers
   panels: {
-    defaults: [{
-      id: 'layers',
-      el: '.panel__right',
-      // Make the panel resizable
-      resizable: {
-        maxDim: 350,
-        minDim: 200,
-        tc: 0, // Top handler
-        cl: 1, // Left handler
-        cr: 0, // Right handler
-        bc: 0, // Bottom handler
-        // Being a flex child we need to change `flex-basis` property
-        // instead of the `width` (default)
-        keyWidth: 'flex-basis',
+    defaults: [
+      {
+        id: 'layers',
+        el: '.panel__right',
+        // Make the panel resizable
+        resizable: {
+          maxDim: 350,
+          minDim: 200,
+          tc: false, // Top handler
+          cl: true, // Left handler
+          cr: false, // Right handler
+          bc: false, // Bottom handler
+          // Being a flex child we need to change `flex-basis` property
+          // instead of the `width` (default)
+          keyWidth: 'flex-basis',
+        },
       },
-    }]
-  }
+    ],
+  },
 });
 ```
+
 <Demo>
  <DemoLayers/>
 </Demo>
 
 ## Style Manager
+
 Once you have defined the structure of the template the next step is the ability to style it. To meet this need GrapesJS includes the Style Manager module which is composed by CSS style properties and sectors. To make it more clear, let's see how to define a basic set.
 
 Let's start by adding one more panel inside the `panel__right` and another one in `panel__top` which will contain a Layer/Style Manager switcher:
@@ -310,11 +331,13 @@ Let's start by adding one more panel inside the `panel__right` and another one i
   </div>
 ...
 ```
+
 ```css
 .panel__switcher {
   position: initial;
 }
 ```
+
 ```js
 const editor = grapesjs.init({
   // ...
@@ -324,33 +347,37 @@ const editor = grapesjs.init({
       {
         id: 'panel-switcher',
         el: '.panel__switcher',
-        buttons: [{
+        buttons: [
+          {
             id: 'show-layers',
             active: true,
             label: 'Layers',
             command: 'show-layers',
             // Once activated disable the possibility to turn it off
             togglable: false,
-          }, {
+          },
+          {
             id: 'show-style',
             active: true,
             label: 'Styles',
             command: 'show-styles',
             togglable: false,
-        }],
-      }
-    ]
+          },
+        ],
+      },
+    ],
   },
   // The Selector Manager allows to assign classes and
   // different states (eg. :hover) on components.
   // Generally, it's used in conjunction with Style Manager
   // but it's not mandatory
   selectorManager: {
-    appendTo: '.styles-container'
+    appendTo: '.styles-container',
   },
   styleManager: {
     appendTo: '.styles-container',
-    sectors: [{
+    sectors: [
+      {
         name: 'Dimension',
         open: false,
         // Use built-in properties
@@ -366,9 +393,10 @@ const editor = grapesjs.init({
             units: ['px', '%'], // Units, available only for 'integer' types
             defaults: 'auto', // Default value
             min: 0, // Min value, available only for 'integer' types
-          }
-        ]
-      },{
+          },
+        ],
+      },
+      {
         name: 'Extra',
         open: false,
         buildProps: ['background-color', 'box-shadow', 'custom-prop'],
@@ -385,16 +413,21 @@ const editor = grapesjs.init({
               { value: '18px', name: 'Medium' },
               { value: '32px', name: 'Big' },
             ],
-         }
-        ]
-      }]
+          },
+        ],
+      },
+    ],
   },
 });
 
 // Define commands
 editor.Commands.add('show-layers', {
-  getRowEl(editor) { return editor.getContainer().closest('.editor-row'); },
-  getLayersEl(row) { return row.querySelector('.layers-container') },
+  getRowEl(editor) {
+    return editor.getContainer().closest('.editor-row');
+  },
+  getLayersEl(row) {
+    return row.querySelector('.layers-container');
+  },
 
   run(editor, sender) {
     const lmEl = this.getLayersEl(this.getRowEl(editor));
@@ -406,8 +439,12 @@ editor.Commands.add('show-layers', {
   },
 });
 editor.Commands.add('show-styles', {
-  getRowEl(editor) { return editor.getContainer().closest('.editor-row'); },
-  getStyleEl(row) { return row.querySelector('.styles-container') },
+  getRowEl(editor) {
+    return editor.getContainer().closest('.editor-row');
+  },
+  getStyleEl(row) {
+    return row.querySelector('.styles-container');
+  },
 
   run(editor, sender) {
     const smEl = this.getStyleEl(this.getRowEl(editor));
@@ -438,6 +475,7 @@ Each component can also indicate what to style and what not.
 -->
 
 ## Traits
+
 Most of the time you would style your components and place them somewhere in the structure, but sometimes your components might need custom attributes or even custom behaviors and for this need you can make use of traits. Traits are commonly used to update HTML element attributes (eg. `placeholder` for inputs or `alt` for images), but you can also define your own custom traits. Access the selected Component model and do whatever you want. For this guide, we are going to show you how to render available traits, for more details on how to extend them we suggest you read the [Trait Manager Module page](modules/Traits.html).
 
 Let's create a new container for traits. Tell the editor where to render it and update the sidebar switcher:
@@ -469,9 +507,10 @@ const editor = grapesjs.init({
             label: 'Traits',
             command: 'show-traits',
             togglable: false,
-        }],
-      }
-    ]
+          },
+        ],
+      },
+    ],
   },
   traitManager: {
     appendTo: '.traits-container',
@@ -501,6 +540,7 @@ editor.Commands.add('show-traits', {
 Now if you switch to the Trait panel and select one of the inner components you should see its default traits.
 
 ## Responsive templates
+
 GrapesJS implements a module which allows you to work with responsive templates easily. Let's see how to define different devices and a button for device switching:
 
 ```html{3}
@@ -511,23 +551,28 @@ GrapesJS implements a module which allows you to work with responsive templates 
 </div>
 ...
 ```
+
 ```css
 .panel__devices {
   position: initial;
 }
 ```
+
 ```js
 const editor = grapesjs.init({
   // ...
   deviceManager: {
-    devices: [{
+    devices: [
+      {
         name: 'Desktop',
         width: '', // default size
-      }, {
+      },
+      {
         name: 'Mobile',
         width: '320px', // this value will be used on canvas width
         widthMedia: '480px', // this value will be used in CSS @media
-    }]
+      },
+    ],
   },
   // ...
   panels: {
@@ -536,29 +581,32 @@ const editor = grapesjs.init({
       {
         id: 'panel-devices',
         el: '.panel__devices',
-        buttons: [{
+        buttons: [
+          {
             id: 'device-desktop',
             label: 'D',
             command: 'set-device-desktop',
             active: true,
             togglable: false,
-          }, {
+          },
+          {
             id: 'device-mobile',
             label: 'M',
             command: 'set-device-mobile',
             togglable: false,
-        }],
-      }
-    ]
+          },
+        ],
+      },
+    ],
   },
 });
 
 // Commands
 editor.Commands.add('set-device-desktop', {
-  run: editor => editor.setDevice('Desktop')
+  run: (editor) => editor.setDevice('Desktop'),
 });
 editor.Commands.add('set-device-mobile', {
-  run: editor => editor.setDevice('Mobile')
+  run: (editor) => editor.setDevice('Mobile'),
 });
 ```
 
@@ -579,15 +627,18 @@ const editor = grapesjs.init({
   // ...
   mediaCondition: 'min-width', // default is `max-width`
   deviceManager: {
-    devices: [{
+    devices: [
+      {
         name: 'Mobile',
         width: '320',
         widthMedia: '',
-      }, {
+      },
+      {
         name: 'Desktop',
         width: '',
-        widthMedia:'1024',
-    }]
+        widthMedia: '1024',
+      },
+    ],
   },
   // ...
 });
@@ -601,24 +652,26 @@ Check out the [Device Manager API](api/device_manager.html) to see all the avail
 :::
 
 ## Store & load data
+
 Once you have finished with defining your builder interface the next step would be to setup the storing and loading process.
 GrapesJS implements 2 simple type of storages inside its Storage Manager: The local (by using `localStorage`, active by default) and the remote one. Those are enough to cover most of the cases, but it's also possible to add new implementations ([grapesjs-indexeddb](https://github.com/GrapesJS/storage-indexeddb) is a good example).
 Let's see how the default options work:
 
 ```js
 grapesjs.init({
-    // ...
-    storageManager: {
-      type: 'local', // Type of the storage, available: 'local' | 'remote'
-      autosave: true, // Store data automatically
-      autoload: true, // Autoload stored data on init
-      stepsBeforeSave: 1, // If autosave enabled, indicates how many changes are necessary before store method is triggered
-      options: {
-        local: { // Options for the `local` type
-          key: 'gjsProject', // The key for the local storage
-        },
-      }
-    }
+  // ...
+  storageManager: {
+    type: 'local', // Type of the storage, available: 'local' | 'remote'
+    autosave: true, // Store data automatically
+    autoload: true, // Autoload stored data on init
+    stepsBeforeSave: 1, // If autosave enabled, indicates how many changes are necessary before store method is triggered
+    options: {
+      local: {
+        // Options for the `local` type
+        key: 'gjsProject', // The key for the local storage
+      },
+    },
+  },
 });
 ```
 
@@ -626,21 +679,22 @@ Let's take a look at the configuration required to setup the remote storage:
 
 ```js
 grapesjs.init({
+  // ...
+  storageManager: {
+    type: 'remote',
     // ...
-    storageManager: {
-      type: 'remote',
-      // ...
-      stepsBeforeSave: 10,
-      options: {
-        remote: {
-          headers: {}, // Custom headers for the remote storage request
-          urlStore: 'https://your-server/endpoint/store', // Endpoint URL where to store data project
-          urlLoad: 'https://your-server/endpoint/load', // Endpoint URL where to load data project
-        }
+    stepsBeforeSave: 10,
+    options: {
+      remote: {
+        headers: {}, // Custom headers for the remote storage request
+        urlStore: 'https://your-server/endpoint/store', // Endpoint URL where to store data project
+        urlLoad: 'https://your-server/endpoint/load', // Endpoint URL where to load data project
       },
-    }
+    },
+  },
 });
 ```
+
 As you might noticed, we've left some default options unchanged, increased changes necessary for autosave triggering and passed remote endpoints.
 If you prefer you could also disable the autosaving and use a custom command to trigger the store:
 
@@ -669,6 +723,7 @@ If you prefer you could also disable the autosaving and use a custom command to 
 To get a better overview of the Storage Manager and how you should store/load the template, or how to define new storages you should read the [Storage Manager Module](modules/Storage.html) page.
 
 ## Theming
+
 One last step that might actually improve a lot your editor personality is how it looks visually. To achieve an easy theming we have adapted an atomic design for this purpose. So for example to customize the main palette of colors all you have to do is to place your custom CSS rules after the GrapesJS styles.
 
 To complete our builder let's customize its color palette and to make it more visually "readable" we can replace all button labels with SVG icons:
@@ -706,6 +761,7 @@ To complete our builder let's customize its color palette and to make it more vi
 There is also a bunch of [CSS custom properties (variables)](https://developer.mozilla.org/en-US/docs/Web/CSS/Using_CSS_custom_properties) that you can use to customize the styles of the editor.
 
 For example, you could achieve the same result as above by doing this:
+
 ```css
 :root {
   --gjs-primary-color: #78366a;
@@ -715,10 +771,8 @@ For example, you could achieve the same result as above by doing this:
 }
 ```
 
-
 And here is our final result:
 
 <Demo id="final-result">
   <DemoTheme/>
 </Demo>
-

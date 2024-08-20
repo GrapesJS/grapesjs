@@ -6,7 +6,7 @@ export default {
     if (!ed.Canvas.hasFocus()) return;
     const toSelect: Component[] = [];
 
-    ed.getSelectedAll().forEach(cmp => {
+    ed.getSelectedAll().forEach((cmp) => {
       const parent = cmp.parent();
       if (!parent) return;
 

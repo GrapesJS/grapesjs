@@ -383,14 +383,14 @@ const ParserHtml = (em?: EditorModel, config: ParserConfig & { returnArray?: boo
       const attrs = node.attributes || [];
       const nodes = node.childNodes || [];
       const toRemove: string[] = [];
-      each(attrs, attr => {
+      each(attrs, (attr) => {
         const name = attr.nodeName || '';
         const value = attr.nodeValue || '';
         !opts.allowUnsafeAttr && name.startsWith('on') && toRemove.push(name);
         !opts.allowUnsafeAttrValue && value.startsWith('javascript:') && toRemove.push(name);
       });
-      toRemove.map(name => node.removeAttribute(name));
-      each(nodes, node => this.__sanitizeNode(node as HTMLElement, opts));
+      toRemove.map((name) => node.removeAttribute(name));
+      each(nodes, (node) => this.__sanitizeNode(node as HTMLElement, opts));
     },
   };
 };

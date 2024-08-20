@@ -9,12 +9,14 @@ module.exports = ({ config, pkg, webpack }) => {
     output: {
       ...config.output,
       filename: BUILD_MODULE ? 'grapes.mjs' : 'grapes.min.js',
-      ...(BUILD_MODULE ? {
-        libraryTarget: 'module',
-        library: { type: 'module' },
-      } : {
-        libraryExport: 'default'
-      })
+      ...(BUILD_MODULE
+        ? {
+            libraryTarget: 'module',
+            library: { type: 'module' },
+          }
+        : {
+            libraryExport: 'default',
+          }),
     },
     optimization: {
       ...config.optimization,
@@ -31,20 +33,14 @@ module.exports = ({ config, pkg, webpack }) => {
     },
     resolve: {
       ...config.resolve,
-      modules: [
-        ...(config.resolve && config.resolve.modules),
-        'src'
-      ],
+      modules: [...(config.resolve && config.resolve.modules), 'src'],
       alias: {
         ...(config.resolve && config.resolve.alias),
         jquery: 'utils/cash-dom',
         backbone: `${rootDir}/node_modules/backbone`,
         underscore: `${rootDir}/node_modules/underscore`,
-      }
+      },
     },
-    plugins: [
-      new webpack.DefinePlugin({ __GJS_VERSION__: `'${pkg.version}'` }),
-      ...config.plugins,
-    ]
-  }
+    plugins: [new webpack.DefinePlugin({ __GJS_VERSION__: `'${pkg.version}'` }), ...config.plugins],
+  };
 };

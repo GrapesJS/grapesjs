@@ -261,7 +261,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
     if (parentAttr && parentAttr.propagate && !propagate) {
       const newAttr: Partial<ComponentProperties> = {};
       const toPropagate = parentAttr.propagate;
-      toPropagate.forEach(prop => (newAttr[prop] = parent.get(prop as string)));
+      toPropagate.forEach((prop) => (newAttr[prop] = parent.get(prop as string)));
       newAttr.propagate = toPropagate;
       this.set({ ...newAttr, ...props });
     }
@@ -297,7 +297,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
     this.views = [];
 
     // Register global updates for collection properties
-    ['classes', 'traits', 'components'].forEach(name => {
+    ['classes', 'traits', 'components'].forEach((name) => {
       const events = `add remove ${name !== 'components' ? 'change' : ''}`;
       this.listenTo(this.get(name), events.trim(), (...args) => this.emitUpdate(name, ...args));
     });
@@ -326,7 +326,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
       um.add(this.getSelectors());
       this.__hasUm = true;
     }
-    opts.recursive && comps.map(c => c.__postAdd(opts));
+    opts.recursive && comps.map((c) => c.__postAdd(opts));
   }
 
   __postRemove() {
@@ -341,8 +341,8 @@ export default class Component extends StyleableModel<ComponentProperties> {
 
   __onChange(m: any, opts: any) {
     const changed = this.changedAttributes() || {};
-    keys(changed).forEach(prop => this.emitUpdate(prop));
-    ['status', 'open', 'toolbar', 'traits'].forEach(name => delete changed[name]);
+    keys(changed).forEach((prop) => this.emitUpdate(prop));
+    ['status', 'open', 'toolbar', 'traits'].forEach((name) => delete changed[name]);
     // Propagate component prop changes
     if (!isEmptyObj(changed)) {
       this.__changesUp(opts);
@@ -359,12 +359,12 @@ export default class Component extends StyleableModel<ComponentProperties> {
     const pros = { style: newStyles };
 
     em.trigger(event, this, pros);
-    styleKeys.forEach(key => em.trigger(`${event}:${key}`, this, pros));
+    styleKeys.forEach((key) => em.trigger(`${event}:${key}`, this, pros));
   }
 
   __changesUp(opts: any) {
     const { em, frame } = this;
-    [frame, em].forEach(md => md && md.changesUp(opts));
+    [frame, em].forEach((md) => md && md.changesUp(opts));
   }
 
   __propSelfToParent(props: any) {
@@ -477,7 +477,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
   find(query: string) {
     const result: Component[] = [];
     const $els = this.view?.$el.find(query);
-    $els?.each(i => {
+    $els?.each((i) => {
       const $el = $els.eq(i);
       const model = $el.data('model');
       model && result.push(model);
@@ -499,7 +499,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
   findType(type: string) {
     const result: Component[] = [];
     const find = (components: Components) =>
-      components.forEach(item => {
+      components.forEach((item) => {
         item.is(type) && result.push(item);
         find(item.components());
       });
@@ -552,7 +552,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
     if (!component) return result;
     const contains = (components: Components) => {
       !result &&
-        components.forEach(item => {
+        components.forEach((item) => {
           if (item === component) result = !0;
           !result && contains(item.components());
         });
@@ -604,7 +604,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
 
     const attrPrev = { ...this.previous('attributes') };
     const diff = shallowDiff(attrPrev, this.get('attributes')!);
-    keys(diff).forEach(pr => {
+    keys(diff).forEach((pr) => {
       const attrKey = `attributes:${pr}`;
       this.trigger(`change:${attrKey}`, this, diff[pr], opts);
       this.em?.trigger(`${keyUpdate}:${attrKey}`, this, diff[pr], opts);
@@ -638,7 +638,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
         ...this.getAttributes({ noClass: true }),
         ...attrs,
       },
-      opts
+      opts,
     );
   }
 
@@ -654,7 +654,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
   removeAttributes(attrs: string | string[] = [], opts: SetOptions = {}) {
     const attrArr = Array.isArray(attrs) ? attrs : [attrs];
     const compAttr = this.getAttributes();
-    attrArr.map(i => delete compAttr[i]);
+    attrArr.map((i) => delete compAttr[i]);
     return this.setAttributes(compAttr, opts);
   }
 
@@ -705,7 +705,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
       this.rule = cc.setIdRule(this.getId(), prop, { state, ...opts });
       const diff = shallowDiff(propOrig, prop);
       this.set('style', '', { silent: true });
-      keys(diff).forEach(pr => this.trigger(`change:style:${pr}`));
+      keys(diff).forEach((pr) => this.trigger(`change:style:${pr}`));
     } else {
       prop = super.setStyle.apply(this, arguments as any);
     }
@@ -732,7 +732,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
     if (opts.noClass) {
       delete attributes.class;
     } else {
-      this.classes.forEach(cls => classes.push(isString(cls) ? cls : cls.getName()));
+      this.classes.forEach((cls) => classes.push(isString(cls) ? cls : cls.getName()));
       classes.length && (attributes.class = classes.join(' '));
     }
 
@@ -818,9 +818,9 @@ export default class Component extends StyleableModel<ComponentProperties> {
     const selectors = this.classes;
     const type = Selector.TYPE_CLASS;
 
-    classes.forEach(classe => {
+    classes.forEach((classe) => {
       const classes = classe.split(' ');
-      classes.forEach(name => {
+      classes.forEach((name) => {
         const selector = selectors.where({ name, type })[0];
         selector && removed.push(selectors.remove(selector));
       });
@@ -883,7 +883,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
     this.__loadTraits();
     const attrs = { ...this.get('attributes') };
     const traits = this.traits;
-    traits.each(trait => {
+    traits.each((trait) => {
       if (!trait.changeProp) {
         const name = trait.getName();
         const value = trait.getInitValue();
@@ -903,8 +903,8 @@ export default class Component extends StyleableModel<ComponentProperties> {
     this.off(...toListen);
     const prevProps = this.previous(prop) || [];
     const newProps = this.get(prop) || [];
-    const prevPropsEv = prevProps.map(e => `change:${e}`).join(' ');
-    const newPropsEv = newProps.map(e => `change:${e}`).join(' ');
+    const prevPropsEv = prevProps.map((e) => `change:${e}`).join(' ');
+    const newPropsEv = newProps.map((e) => `change:${e}`).join(' ');
     prevPropsEv && this.off(prevPropsEv, this.__scriptPropsChange);
     newPropsEv && this.on(newPropsEv, this.__scriptPropsChange);
     // @ts-ignore
@@ -934,7 +934,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
    */
   append(components: ComponentAdd, opts: AddOptions = {}): Component[] {
     const compArr = isArray(components) ? [...components] : [components];
-    const toAppend = compArr.map(comp => {
+    const toAppend = compArr.map((comp) => {
       if (isString(comp)) {
         return comp;
       } else {
@@ -966,7 +966,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
    */
   components<T extends ComponentAdd | undefined>(
     components?: T,
-    opts: AddComponentsOption = {}
+    opts: AddComponentsOption = {},
   ): undefined extends T ? Components : Component[] {
     const coll = this.get('components')!;
 
@@ -1086,7 +1086,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
       traits.setTarget(this);
 
       if (traitsI.length) {
-        traitsI.forEach(tr => tr.attributes && delete tr.attributes.value);
+        traitsI.forEach((tr) => tr.attributes && delete tr.attributes.value);
         traits.add(traitsI);
       }
 
@@ -1135,7 +1135,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
    */
   getTrait(id: string) {
     return (
-      this.getTraits().filter(trait => {
+      this.getTraits().filter((trait) => {
         return trait.get('id') === id || trait.get('name') === id;
       })[0] || null
     );
@@ -1183,7 +1183,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
    */
   removeTrait(id: string | string[]) {
     const ids = isArray(id) ? id : [id];
-    const toRemove = ids.map(id => this.getTrait(id));
+    const toRemove = ids.map((id) => this.getTrait(id));
     const { traits } = this;
     const removed = toRemove.length ? traits.remove(toRemove) : [];
     this.em?.trigger('component:toggled');
@@ -1223,7 +1223,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
     if (!clm) return [];
     // @ts-ignore
     if (arr.models) return [...arr.models];
-    arr.forEach(val => res.push(clm.add(val) as Selector));
+    arr.forEach((val) => res.push(clm.add(val) as Selector));
     return res;
   }
 
@@ -1272,7 +1272,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
     // Clone component specific rules
     const newId = `#${cloned.getId()}`;
     const rulesToClone = cssc ? cssc.getRules(`#${id}`) : [];
-    rulesToClone.forEach(rule => {
+    rulesToClone.forEach((rule) => {
       const newRule = rule.clone();
       // @ts-ignore
       newRule.set('selectors', [newId]);
@@ -1303,11 +1303,11 @@ export default class Component extends StyleableModel<ComponentProperties> {
         // Inverted, cloned is the instance, the origin is the main symbol
         this.set(keySymbols, [cloned]);
         cloned.set(keySymbol, this);
-        [this, cloned].map(i => initSymbol(i));
+        [this, cloned].map((i) => initSymbol(i));
       } else {
         // Cloned becomes the main symbol
         cloned.set(keySymbols, [this]);
-        [this, cloned].map(i => initSymbol(i));
+        [this, cloned].map((i) => initSymbol(i));
         this.set(keySymbol, cloned);
       }
     }
@@ -1464,7 +1464,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
 
   __innerHTML(opts: ToHTMLOptions = {}) {
     const cmps = this.components();
-    return !cmps.length ? this.content : cmps.map(c => c.toHTML(opts)).join('');
+    return !cmps.length ? this.content : cmps.map((c) => c.toHTML(opts)).join('');
   }
 
   /**
@@ -1503,7 +1503,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
       const symbol = obj[keySymbol];
       const symbols = obj[keySymbols];
       if (symbols && isArray(symbols)) {
-        obj[keySymbols] = symbols.filter(i => i).map(i => (i.getId ? i.getId() : i));
+        obj[keySymbols] = symbols.filter((i) => i).map((i) => (i.getId ? i.getId() : i));
       }
       if (symbol && !isString(symbol)) {
         obj[keySymbol] = symbol.getId();
@@ -1534,13 +1534,13 @@ export default class Component extends StyleableModel<ComponentProperties> {
       delete obj.type;
     }
 
-    forEach(['attributes', 'style'], prop => {
+    forEach(['attributes', 'style'], (prop) => {
       if (isEmpty(defaults[prop]) && isEmpty(obj[prop])) {
         delete obj[prop];
       }
     });
 
-    forEach(['classes', 'components'], prop => {
+    forEach(['classes', 'components'], (prop) => {
       if (!obj[prop] || (isEmpty(defaults[prop]) && !obj[prop].length)) {
         delete obj[prop];
       }
@@ -1592,7 +1592,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
     const frm = frame || em?.getCurrentFrameModel();
 
     if (frm) {
-      view = views.filter(view => view.frameView === frm.view)[0];
+      view = views.filter((view) => view.frameView === frm.view)[0];
     }
 
     return view;
@@ -1681,7 +1681,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
   onAll(clb: (cmp: Component) => void) {
     if (isFunction(clb)) {
       clb(this);
-      this.components().forEach(model => model.onAll(clb));
+      this.components().forEach((model) => model.onAll(clb));
     }
     return this;
   }
@@ -1696,7 +1696,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
    */
   forEachChild(clb: (child: Component) => void) {
     if (isFunction(clb)) {
-      this.components().forEach(child => {
+      this.components().forEach((child) => {
         clb(child);
         child.forEachChild(clb);
       });
@@ -1719,7 +1719,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
       }
     };
     const rmOpts = { ...opts };
-    [this, em].map(i => i.trigger(ComponentsEvents.removeBefore, this, remove, rmOpts));
+    [this, em].map((i) => i.trigger(ComponentsEvents.removeBefore, this, remove, rmOpts));
     !rmOpts.abort && remove();
     return this;
   }
@@ -1889,7 +1889,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
       list[nextId] = model;
     }
 
-    model.components().forEach(i => Component.ensureInList(i));
+    model.components().forEach((i) => Component.ensureInList(i));
   }
 
   static createId(model: Component, opts: any = {}) {
@@ -1949,11 +1949,11 @@ export default class Component extends StyleableModel<ComponentProperties> {
     components: ComponentDefinitionDefined | ComponentDefinitionDefined[],
     styles: CssRuleJSON[] = [],
     list: ObjectAny = {},
-    opts: { keepIds?: string[]; idMap?: PrevToNewIdMap } = {}
+    opts: { keepIds?: string[]; idMap?: PrevToNewIdMap } = {},
   ) {
     const comps = isArray(components) ? components : [components];
     const { keepIds = [], idMap = {} } = opts;
-    comps.forEach(comp => {
+    comps.forEach((comp) => {
       comp.attributes;
       const { attributes = {}, components } = comp;
       const { id } = attributes;
@@ -1965,7 +1965,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
         attributes.id = newId;
         // Update passed styles
         isArray(styles) &&
-          styles.forEach(style => {
+          styles.forEach((style) => {
             const { selectors } = style;
             selectors.forEach((sel, idx) => {
               if (sel === `#${id}`) selectors[idx] = `#${newId}`;

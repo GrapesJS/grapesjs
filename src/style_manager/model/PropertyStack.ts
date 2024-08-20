@@ -232,7 +232,7 @@ export default class PropertyStack extends PropertyComposite<PropertyStackProps>
    */
   addLayer(props: LayerValues = {}, opts = {}) {
     const values: LayerValues = {};
-    this.getProperties().forEach(prop => {
+    this.getProperties().forEach((prop) => {
       const key = prop.getId();
       const value = props[key];
       values[key] = isUndefined(value) ? prop.getDefaultValue() : value;
@@ -286,7 +286,7 @@ export default class PropertyStack extends PropertyComposite<PropertyStackProps>
         result = layerLabel(layer, { index, values, property: this });
       } else {
         const parts: string[] = [];
-        this.getProperties().map(prop => {
+        this.getProperties().map((prop) => {
           parts.push(values[prop.getId()]);
         });
         result = parts.filter(Boolean).join(' ');
@@ -321,7 +321,7 @@ export default class PropertyStack extends PropertyComposite<PropertyStackProps>
         property: this,
       });
     } else {
-      const result = this.getProperties().map(prop => {
+      const result = this.getProperties().map((prop) => {
         const name = prop.getName();
         const val = values[prop.getId()];
         let value = isUndefined(val) ? prop.getDefaultValue() : val;
@@ -340,7 +340,7 @@ export default class PropertyStack extends PropertyComposite<PropertyStackProps>
             return acc;
           }, {} as StyleProps)
         : {
-            [this.getName()]: result.map(r => r.value).join(join),
+            [this.getName()]: result.map((r) => r.value).join(join),
           };
     }
 
@@ -419,7 +419,7 @@ export default class PropertyStack extends PropertyComposite<PropertyStackProps>
 
     // Update properties by layer value
     values &&
-      this.getProperties().forEach(prop => {
+      this.getProperties().forEach((prop) => {
         const value = values[prop.getId()] ?? '';
         prop.__getFullValue() !== value && prop.upValue(value, { ...opts, __up: true });
       });
@@ -439,7 +439,7 @@ export default class PropertyStack extends PropertyComposite<PropertyStackProps>
 
   __setLayers(newLayers: LayerValues[] = [], opts: { isEmptyValue?: boolean } = {}) {
     const { layers } = this;
-    const layersNew = newLayers.map(values => ({ values }));
+    const layersNew = newLayers.map((values) => ({ values }));
 
     if (layers.length === layersNew.length) {
       layersNew.map((layer, n) => layers.at(n)?.upValues(layer.values));
@@ -455,8 +455,8 @@ export default class PropertyStack extends PropertyComposite<PropertyStackProps>
     const result = this.parseValue(value);
     result.__layers = value
       .split(VALUES_REG)
-      .map(v => v.trim())
-      .map(v => this.__parseLayer(v))
+      .map((v) => v.trim())
+      .map((v) => this.__parseLayer(v))
       .filter(Boolean);
 
     return result;
@@ -488,8 +488,8 @@ export default class PropertyStack extends PropertyComposite<PropertyStackProps>
     if (!fromStyle) {
       // Get layers from the main property
       const layers = this.__splitStyleName(style, name, sep)
-        .map(value => value.split(this.getSplitSeparator()))
-        .map(parts => {
+        .map((value) => value.split(this.getSplitSeparator()))
+        .map((parts) => {
           const result: PropValues = {};
           props.forEach((prop, i) => {
             const value = parts[i];
@@ -498,10 +498,10 @@ export default class PropertyStack extends PropertyComposite<PropertyStackProps>
           return result;
         });
       // Get layers from the inner properties
-      props.forEach(prop => {
+      props.forEach((prop) => {
         const id = prop.getId();
         this.__splitStyleName(style, prop.getName(), sep)
-          .map(value => ({ [id]: value || prop.getDefaultValue() }))
+          .map((value) => ({ [id]: value || prop.getDefaultValue() }))
           .forEach((inLayer, i) => {
             layers[i] = layers[i] ? { ...layers[i], ...inLayer } : inLayer;
           });
@@ -521,9 +521,9 @@ export default class PropertyStack extends PropertyComposite<PropertyStackProps>
     const name = this.getName();
     const layers = this.getLayers();
     const props = this.getProperties();
-    const styles = layers.map(l => this.getStyleFromLayer(l, opts));
-    styles.forEach(style => {
-      keys(style).map(key => {
+    const styles = layers.map((l) => this.getStyleFromLayer(l, opts));
+    styles.forEach((style) => {
+      keys(style).map((key) => {
         if (!result[key]) {
           result[key] = [];
         }
@@ -531,14 +531,14 @@ export default class PropertyStack extends PropertyComposite<PropertyStackProps>
         result[key].push(style[key]);
       });
     });
-    keys(result).map(key => {
+    keys(result).map((key) => {
       result[key] = (result[key] as string[]).join(this.__getJoinLayers());
     });
 
     if (this.isDetached()) {
       result[name] = '';
       !layers.length &&
-        props.map(prop => {
+        props.map((prop) => {
           result[prop.getName()] = '';
         });
     } else {
@@ -559,7 +559,7 @@ export default class PropertyStack extends PropertyComposite<PropertyStackProps>
   isEmptyValueStyle(style: StyleProps = {}) {
     const emptyStyle = this.getEmptyValueStyle({ force: true });
     const props = keys(emptyStyle);
-    return !!props.length && props.every(prop => emptyStyle[prop] === style[prop]);
+    return !!props.length && props.every((prop) => emptyStyle[prop] === style[prop]);
   }
 
   getEmptyValueStyle(opts: { force?: boolean } = {}) {
@@ -574,7 +574,7 @@ export default class PropertyStack extends PropertyComposite<PropertyStackProps>
         const style: StyleProps = {};
 
         if (this.isDetached()) {
-          props.map(prop => {
+          props.map((prop) => {
             style[prop.getName()] = result;
           });
         } else {

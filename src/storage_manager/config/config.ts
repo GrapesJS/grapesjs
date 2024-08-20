@@ -85,8 +85,8 @@ const config: StorageManagerConfig = {
   autoload: true,
   stepsBeforeSave: 1,
   recovery: false,
-  onStore: data => data,
-  onLoad: data => data,
+  onStore: (data) => data,
+  onLoad: (data) => data,
   options: {
     local: {
       key: 'gjsProject',
@@ -99,8 +99,8 @@ const config: StorageManagerConfig = {
       contentTypeJson: true,
       fetchOptions: '',
       credentials: 'include',
-      onStore: data => data,
-      onLoad: result => result,
+      onStore: (data) => data,
+      onLoad: (result) => result,
     },
   },
 };

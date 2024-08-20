@@ -156,7 +156,7 @@ export default class ItemView extends View {
       ['rerender:layer', this.render],
       ['change:name change:custom-name', this.updateName],
       // @ts-ignore
-    ].forEach(item => this.listenTo(model, item[0], item[1]));
+    ].forEach((item) => this.listenTo(model, item[0], item[1]));
     this.$el.data('model', model);
     this.$el.data('collection', components);
     model.viewLayer = this;

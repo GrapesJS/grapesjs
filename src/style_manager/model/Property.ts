@@ -167,7 +167,7 @@ export default class Property<T extends Record<string, any> = PropertyProps> ext
 
     const kProps = [...keys(this.__getClearProps()), '__p'];
     const toProps = keys(to);
-    const applyStyle = !opts.__up && !parentProp && (isClear || kProps.some(k => toProps.indexOf(k) >= 0));
+    const applyStyle = !opts.__up && !parentProp && (isClear || kProps.some((k) => toProps.indexOf(k) >= 0));
     const onChange = this.get('onChange');
     const evOpts = { property: this, from, to, value, opts };
     sm.__trgEv(sm.events.propertyUpdate, evOpts);
@@ -560,8 +560,8 @@ export default class Property<T extends Record<string, any> = PropertyProps> ext
     // Check if the property is available based on other property's values
     if (sectors && requires) {
       const properties = keys(requires);
-      sectors.forEach(sector => {
-        sector.getProperties().forEach(model => {
+      sectors.forEach((sector) => {
+        sector.getProperties().forEach((model) => {
           if (includes(properties, model.id)) {
             const values = requires[model.id];
             stylable = stylable && includes(values, model.get('value'));

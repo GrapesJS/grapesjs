@@ -132,7 +132,7 @@ describe('Pages', () => {
     test('Pages are created correctly', () => {
       const pages = pm.getAll();
       expect(pages.length).toBe(initPages.length);
-      pages.map(page => {
+      pages.map((page) => {
         // All pages should have an ID
         expect(page.get('id')).toBeTruthy();
         // The main component is always a wrapper
@@ -140,8 +140,8 @@ describe('Pages', () => {
       });
       // Components container should contain the same amount of wrappers as pages
       const wrappers = Object.keys(allbyId)
-        .map(id => allbyId[id])
-        .filter(i => i.is('wrapper'));
+        .map((id) => allbyId[id])
+        .filter((i) => i.is('wrapper'));
       expect(wrappers.length).toBe(initPages.length);
       // Components container should contain the right amount of components
       // Number of wrappers (eg. 3) where each one containes 1 component and 1 textnode (5 * 3)

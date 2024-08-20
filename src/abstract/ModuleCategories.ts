@@ -19,7 +19,7 @@ export default class Categories extends Collection<Category> {
     if (em) {
       evUpdate &&
         this.on('change', (category, options) =>
-          em.trigger(evUpdate, { category, changes: category.changedAttributes(), options })
+          em.trigger(evUpdate, { category, changes: category.changedAttributes(), options }),
         );
     }
   }
@@ -27,7 +27,7 @@ export default class Categories extends Collection<Category> {
   /** @ts-ignore */
   add(model: (CategoryProperties | Category)[] | CategoryProperties | Category, opts?: AddOptions) {
     const models = isArray(model) ? model : [model];
-    models.forEach(md => md && (md.id = normalizeKey(`${md.id}`)));
+    models.forEach((md) => md && (md.id = normalizeKey(`${md.id}`)));
     return super.add(model, opts);
   }
 

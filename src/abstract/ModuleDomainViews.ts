@@ -5,7 +5,7 @@ import { View } from '../common';
 
 export default abstract class ModuleDomainViews<
   TCollection extends ModuleCollection,
-  TItemView extends ModuleView
+  TItemView extends ModuleView,
 > extends ModuleView<TCollection> {
   // Defines the View per type
   itemsView = '';
@@ -68,7 +68,7 @@ export default abstract class ModuleDomainViews<
     this.clearItems();
     this.$el.empty();
 
-    if (this.collection.length) this.collection.each(model => this.add(model, frag));
+    if (this.collection.length) this.collection.each((model) => this.add(model, frag));
 
     this.$el.append(frag);
     this.onRender();

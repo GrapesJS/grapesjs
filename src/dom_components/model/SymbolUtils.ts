@@ -54,7 +54,7 @@ export const getSymbolInstances = (symbol?: Component): Component[] | undefined 
         symbs[idx] = symbol!.__getAllById()[symb];
       }
     });
-    symbs = symbs.filter(symb => symb && !isString(symb));
+    symbs = symbs.filter((symb) => symb && !isString(symb));
   }
 
   return symbs || undefined;
@@ -64,7 +64,7 @@ export const isSymbolOverride = (symbol?: Component, prop = '') => {
   const ovrd = symbol?.get(keySymbolOvrd);
   const [prp] = prop.split(':');
   const props = prop !== prp ? [prop, prp] : [prop];
-  return ovrd === true || (isArray(ovrd) && props.some(p => ovrd.indexOf(p) >= 0));
+  return ovrd === true || (isArray(ovrd) && props.some((p) => ovrd.indexOf(p) >= 0));
 };
 
 export const getSymbolsToUpdate = (symb: Component, opts: SymbolToUpOptions = {}) => {
@@ -85,9 +85,9 @@ export const getSymbolsToUpdate = (symb: Component, opts: SymbolToUpOptions = {}
   const symbol = getSymbolMain(symb);
   const all = symbol ? [symbol, ...(getSymbolInstances(symbol) || [])] : symbols;
   result = all
-    .filter(s => s !== symb)
+    .filter((s) => s !== symb)
     // Avoid updating those with override
-    .filter(s => !(changed && isSymbolOverride(s, changed)));
+    .filter((s) => !(changed && isSymbolOverride(s, changed)));
 
   return result;
 };
@@ -112,10 +112,10 @@ export const detachSymbolInstance = (symbol: Component, opts: { skipRefs?: boole
     symbs &&
     symbolMain.set(
       keySymbols,
-      symbs.filter(s => s !== symbol)
+      symbs.filter((s) => s !== symbol),
     );
   symbol.set(keySymbol, 0);
-  symbol.components().forEach(s => detachSymbolInstance(s, opts));
+  symbol.components().forEach((s) => detachSymbolInstance(s, opts));
 };
 
 export const logSymbol = (symb: Component, type: string, toUp: Component[], opts: any = {}) => {
@@ -147,15 +147,15 @@ export const updateSymbolProps = (symbol: Component, opts: SymbolToUpOptions = {
   if (!isEmptyObj(changed)) {
     const toUp = getSymbolsToUpdate(symbol, opts);
     // Avoid propagating overrides to other symbols
-    keys(changed).map(prop => {
+    keys(changed).map((prop) => {
       if (isSymbolOverride(symbol, prop)) delete changed[prop];
     });
 
     logSymbol(symbol, 'props', toUp, { opts, changed });
-    toUp.forEach(child => {
+    toUp.forEach((child) => {
       const propsChanged = { ...changed };
       // Avoid updating those with override
-      keys(propsChanged).map(prop => {
+      keys(propsChanged).map((prop) => {
         if (isSymbolOverride(child, prop)) delete propsChanged[prop];
       });
       child.set(propsChanged, { fromInstance: symbol, ...opts });
@@ -166,7 +166,7 @@ export const updateSymbolProps = (symbol: Component, opts: SymbolToUpOptions = {
 export const updateSymbolCls = (symbol: Component, opts: any = {}) => {
   const toUp = getSymbolsToUpdate(symbol, opts);
   logSymbol(symbol, 'classes', toUp, { opts });
-  toUp.forEach(child => {
+  toUp.forEach((child) => {
     // @ts-ignore This will propagate the change up to __upSymbProps
     child.set('classes', symbol.get('classes'), { fromInstance: symbol });
   });
@@ -190,7 +190,7 @@ export const updateSymbolComps = (symbol: Component, m: Component, c: Components
     const newSymbols = new Set<Component>();
     logSymbol(symbol, 'reset', toUp, { components: cmps });
 
-    toUp.forEach(rel => {
+    toUp.forEach((rel) => {
       const relCmps = rel.components();
       const toReset = cmps.map((cmp, i) => {
         // This particular case here is to handle reset from `resetFromString`
@@ -221,14 +221,14 @@ export const updateSymbolComps = (symbol: Component, m: Component, c: Components
     !isTemp &&
       logSymbol(symbol, 'add', toUp, {
         opts: o,
-        addedInstances: addedInstances.map(c => c.cid),
+        addedInstances: addedInstances.map((c) => c.cid),
         added: m.cid,
       });
     // Here, before appending a new symbol, I have to ensure there are no previously
     // created symbols (eg. used mainly when drag components around)
-    toUp.forEach(symb => {
+    toUp.forEach((symb) => {
       const symbTop = getSymbolTop(symb);
-      const symbPrev = addedInstances.filter(addedInst => {
+      const symbPrev = addedInstances.filter((addedInst) => {
         const addedTop = getSymbolTop(addedInst, { prev: 1 });
         return symbTop && addedTop && addedTop === symbTop;
       })[0];
@@ -243,7 +243,7 @@ export const updateSymbolComps = (symbol: Component, m: Component, c: Components
       !o.temporary &&
       symb.set(
         keySymbols,
-        getSymbolInstances(symb)!.filter(i => i !== m)
+        getSymbolInstances(symb)!.filter((i) => i !== m),
       );
 
     // Propagate remove only if the component is an inner symbol
@@ -262,7 +262,7 @@ export const updateSymbolComps = (symbol: Component, m: Component, c: Components
 
       if (isSymbNested) {
         toUp = parent! && getSymbolsToUpdate(parent, { ...toUpOpts, changed })!;
-        toUpFn = symb => {
+        toUpFn = (symb) => {
           const toRemove = symb.components().at(index);
           toRemove && toRemove.remove({ fromInstance: parent, ...opts });
         };

@@ -42,7 +42,7 @@ export default class ComponentWrapper extends Component {
           head: new CmpHead({}, opts),
           docEl: new CmpDef({ tagName: 'html' }, opts),
         },
-        { silent: true }
+        { silent: true },
       );
     }
   }

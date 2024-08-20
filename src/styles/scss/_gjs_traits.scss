@@ -8,7 +8,6 @@
   }
 
   &label {
-
     &-wrp {
       width: 30%;
       min-width: 30%;
@@ -16,13 +15,13 @@
   }
 
   &field {
-
     &-wrp {
       flex-grow: 1;
     }
   }
 
-  &traits-c, &traits-cs {
+  &traits-c,
+  &traits-cs {
     display: flex;
     flex-direction: column;
   }

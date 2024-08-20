@@ -186,7 +186,7 @@ export default class AssetsView extends View {
     const assets = this.$el.find(`.${this.pfx}assets`);
     assets.empty();
     this.toggleNoAssets(!!this.collection.length);
-    this.collection.each(model => this.addAsset(model, fragment));
+    this.collection.each((model) => this.addAsset(model, fragment));
     assets.append(fragment);
   }
 

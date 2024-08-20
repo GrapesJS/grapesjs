@@ -115,7 +115,7 @@ export default class RichTextEditorModule extends Module<RichTextEditorConfig & 
     this.initRte(createEl('div'));
 
     //Avoid closing on toolbar clicking
-    on(toolbar, 'mousedown', e => e.stopPropagation());
+    on(toolbar, 'mousedown', (e) => e.stopPropagation());
   }
 
   __trgCustom() {
@@ -266,7 +266,7 @@ export default class RichTextEditorModule extends Module<RichTextEditorConfig & 
    */
   get(name: string): RichTextEditorAction | undefined {
     let result;
-    this.globalRte?.getActions().forEach(action => {
+    this.globalRte?.getActions().forEach((action) => {
       if (action.name == name) {
         result = action;
       }
@@ -342,7 +342,7 @@ export default class RichTextEditorModule extends Module<RichTextEditorConfig & 
       event: 'rteToolbarPosUpdate',
       left: 0,
     });
-    ['top', 'left', 'bottom', 'right'].forEach(key => {
+    ['top', 'left', 'bottom', 'right'].forEach((key) => {
       const value = pos[key as keyof typeof pos];
       if (isDef(value)) {
         style[key as any] = isString(value) ? value : (value || 0) + un;

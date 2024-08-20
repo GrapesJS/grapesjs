@@ -128,7 +128,7 @@ export default class KeymapsModule extends Module<KeymapsConfig & { name?: strin
           em.trigger(`keymap:emit:${id}`, ...args);
         }
       },
-      undefined
+      undefined,
     );
     em.trigger('keymap:add', keymap);
     return keymap;
@@ -171,7 +171,7 @@ export default class KeymapsModule extends Module<KeymapsConfig & { name?: strin
 
     if (keymap) {
       delete this.keymaps[id];
-      keymap.keys.split(', ').forEach(k => {
+      keymap.keys.split(', ').forEach((k) => {
         // @ts-ignore
         keymaster.unbind(k.trim());
       });
@@ -185,7 +185,7 @@ export default class KeymapsModule extends Module<KeymapsConfig & { name?: strin
    * @return {this}
    */
   removeAll() {
-    Object.keys(this.keymaps).forEach(keymap => this.remove(keymap));
+    Object.keys(this.keymaps).forEach((keymap) => this.remove(keymap));
     keymaster.handlers = {};
     return this;
   }

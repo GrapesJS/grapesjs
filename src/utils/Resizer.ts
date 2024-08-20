@@ -351,7 +351,7 @@ export default class Resizer {
     const handlers: Handlers = {};
     ['tl', 'tc', 'tr', 'cl', 'cr', 'bl', 'bc', 'br'].forEach(
       // @ts-ignore
-      hdl => (handlers[hdl] = opts[hdl] ? createHandler(hdl, opts) : null)
+      (hdl) => (handlers[hdl] = opts[hdl] ? createHandler(hdl, opts) : null),
     );
 
     for (let n in handlers) {
@@ -376,7 +376,7 @@ export default class Resizer {
   toggleFrames(silent?: boolean) {
     if (this.opts.silentFrames) {
       const frames = document.querySelectorAll('iframe');
-      each(frames, frame => (frame.style.pointerEvents = silent ? 'none' : ''));
+      each(frames, (frame) => (frame.style.pointerEvents = silent ? 'none' : ''));
     }
   }
 

@@ -52,7 +52,7 @@ export default {
         let assets: Asset[] = am.getAll().filter((i: Asset) => i);
 
         if (types && types.length) {
-          assets = assets.filter(a => types.indexOf(a.get('type')) !== -1);
+          assets = assets.filter((a) => types.indexOf(a.get('type')) !== -1);
         }
 
         am.render(assets);

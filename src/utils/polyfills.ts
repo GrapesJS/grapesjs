@@ -30,7 +30,7 @@ export default () => {
 
   if (hasWin() && isIE()) {
     const originalCreateHTMLDocument = DOMImplementation.prototype.createHTMLDocument;
-    DOMImplementation.prototype.createHTMLDocument = title => {
+    DOMImplementation.prototype.createHTMLDocument = (title) => {
       if (!title) title = '';
       return originalCreateHTMLDocument.apply(document.implementation, [title]);
     };
