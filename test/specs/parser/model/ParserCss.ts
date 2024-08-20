@@ -251,8 +251,7 @@ describe('ParserCss', () => {
     expect(obj.parse(str)).toEqual([result]);
   });
 
-  // Can't test keyframes https://github.com/NV/CSSOM/issues/95
-  test.skip('Parse rule with a keyframes at-rule', () => {
+  test('Parse rule with a keyframes at-rule', () => {
     var str = `@keyframes {
       from {opacity: 0;}
       to {opacity: 1;}
