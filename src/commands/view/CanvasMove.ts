@@ -70,7 +70,7 @@ export default {
     const canvas = this.getCanvas();
     const classes = [`${ppfx}is__grab`];
     !enable && classes.push(`${ppfx}is__grabbing`);
-    classes.forEach(cls => canvas.classList[methodCls](cls));
+    classes.forEach((cls) => canvas.classList[methodCls](cls));
     methodsEv[methodEv](document, 'keyup', this.onKeyUp);
     methodsEv[methodEv](canvas, 'mousedown', this.enableDragger);
     methodsEv[methodEv](document, 'mouseup', this.disableDragger);

@@ -31,7 +31,7 @@ describe('PropertyNumberView', () => {
         units,
         property: propName,
       },
-      { em }
+      { em },
     );
     view = new PropertyNumberView({ model });
     document.body.innerHTML = '<div id="fixtures"></div>';
@@ -112,7 +112,7 @@ describe('PropertyNumberView', () => {
           max: maxValue,
           unit: units[1],
         },
-        { em }
+        { em },
       );
       view = new PropertyNumberView({
         model,

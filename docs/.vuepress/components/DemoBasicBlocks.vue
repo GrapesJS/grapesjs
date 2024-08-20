@@ -13,18 +13,18 @@ import utils from './demos/utils.js';
 export default {
   mounted() {
     window.editor2 = grapesjs.init(utils.gjsConfigBlocks);
-  }
-}
+  },
+};
 </script>
 
 <style>
-  .gjs {
-    border: 3px solid #444;
-    box-sizing: border-box;
-  }
-  .gjs-block {
-    width: auto;
-    height: auto;
-    min-height: auto;
-  }
+.gjs {
+  border: 3px solid #444;
+  box-sizing: border-box;
+}
+.gjs-block {
+  width: auto;
+  height: auto;
+  min-height: auto;
+}
 </style>

@@ -2,27 +2,29 @@ name: Tests
 
 on:
   push:
-    branches: [ dev ]
+    branches: [dev]
   pull_request:
-    branches: [ dev ]
+    branches: [dev]
 
 jobs:
-  build:
+  quailty:
     runs-on: ubuntu-latest
 
     strategy:
       matrix:
-        node-version: [14.17, 16.x]
+        node-version: [18.x, 20.x]
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'yarn'
       - run: yarn --frozen-lockfile
-      - run: yarn build
       - run: npm run lint
+      - run: npm run lint:ts
+      - run: npm run format:check
+      - run: yarn build
       - run: npm run ts:build:check
       - run: npm test

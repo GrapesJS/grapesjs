@@ -7,7 +7,7 @@ const combine = (tail: string[], curr: string): string[] => {
     (acc, item, n) => {
       return acc.concat(combine(tail.slice(n + 1), `${curr}${item}`));
     },
-    [curr]
+    [curr],
   );
 };
 
@@ -22,17 +22,17 @@ export default class Selectors extends Collection<Selector> {
   }
 
   getStyleable() {
-    return filter(this.models, item => item.getActive() && !item.get('private'));
+    return filter(this.models, (item) => item.getActive() && !item.get('private'));
   }
 
   getValid({ noDisabled }: any = {}) {
-    return filter(this.models, item => !item.get('private')).filter(item => (noDisabled ? item.get('active') : 1));
+    return filter(this.models, (item) => !item.get('private')).filter((item) => (noDisabled ? item.get('active') : 1));
   }
 
   getFullString(collection?: Selector[] | null, opts: { sort?: boolean } = {}) {
     const result: string[] = [];
     const coll = collection || this;
-    coll.forEach(selector => result.push(selector.getFullName(opts)));
+    coll.forEach((selector) => result.push(selector.getFullName(opts)));
     opts.sort && result.sort();
     return result.join('').trim();
   }
@@ -40,7 +40,7 @@ export default class Selectors extends Collection<Selector> {
   getFullName<T extends FullNameOptions>(opts: T = {} as T) {
     const { combination, array } = opts;
     let result: string[] = [];
-    const sels = this.map(s => s.getFullName(opts)).sort();
+    const sels = this.map((s) => s.getFullName(opts)).sort();
 
     if (combination) {
       sels.forEach((sel, n) => {

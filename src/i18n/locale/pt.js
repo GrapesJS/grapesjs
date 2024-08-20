@@ -181,7 +181,7 @@ export default {
         // alt: 'Alt',
         title: 'Título',
         href: 'Link',
-        target: 'Abrir em'
+        target: 'Abrir em',
       },
       // In a simple trait, like text input, these are used on input attributes
       attributes: {

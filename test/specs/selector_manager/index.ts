@@ -83,7 +83,7 @@ describe('SelectorManager', () => {
       expect(Array.isArray(result)).toEqual(true);
       const concat = obj
         .getAll()
-        .map(item => item.getFullName())
+        .map((item) => item.getFullName())
         .join('');
       expect(concat).toEqual('.test1.test2#test3.test3');
       expect(obj.getAll().length).toEqual(4);
@@ -96,8 +96,8 @@ describe('SelectorManager', () => {
       expect(
         obj
           .get(cls)
-          .map(item => item.getFullName())
-          .join('')
+          .map((item) => item.getFullName())
+          .join(''),
       ).toEqual(concat);
     });
 

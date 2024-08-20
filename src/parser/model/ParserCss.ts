@@ -15,7 +15,7 @@ const ParserCss = (em?: EditorModel, config: ParserConfig = {}) => ({
     const { parserCss } = config;
     const editor = em?.Editor;
     const nodes = parserCss ? parserCss(input, editor!) : BrowserCssParser(input);
-    nodes.forEach(node => (output = output.concat(this.checkNode(node))));
+    nodes.forEach((node) => (output = output.concat(this.checkNode(node))));
     em?.trigger('parse:css', { input, output, nodes });
 
     return output;
@@ -39,7 +39,7 @@ const ParserCss = (em?: EditorModel, config: ParserConfig = {}) => ({
       const opts = { atRule: parsedNode.atRule, mediaText: parsedNode.params };
 
       if (classSets.length) {
-        classSets.forEach(classSet => {
+        classSets.forEach((classSet) => {
           nodes.push(createNode(classSet, style, opts));
         });
       } else {

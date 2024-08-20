@@ -79,7 +79,7 @@ export default class FrameWrapView extends ModuleView<Frame> {
     this.__clear(opts);
     ModuleView.prototype.remove.apply(this, opts);
     //@ts-ignore
-    ['frame', 'dragger', 'cv', 'elTools'].forEach(i => (this[i] = 0));
+    ['frame', 'dragger', 'cv', 'elTools'].forEach((i) => (this[i] = 0));
     return this;
   }
 
@@ -123,7 +123,7 @@ export default class FrameWrapView extends ModuleView<Frame> {
           ...(!width ? { width: el.offsetWidth } : {}),
           ...(!height ? { height: el.offsetHeight } : {}),
         },
-        { silent: 1 }
+        { silent: 1 },
       );
     }
 
@@ -211,7 +211,7 @@ export default class FrameWrapView extends ModuleView<Frame> {
       <div class="${ppfx}frame-wrapper__right" data-frame-right></div>
       <div class="${ppfx}frame-wrapper__left" data-frame-left></div>
       <div class="${ppfx}frame-wrapper__bottom" data-frame-bottom></div>
-      `
+      `,
       )
       .append(frame.el);
     const elTools = createEl(
@@ -244,7 +244,7 @@ export default class FrameWrapView extends ModuleView<Frame> {
         </div>
       </div>
       <div class="${ppfx}offset-fixed-v"></div>
-    `
+    `,
     );
     this.elTools = elTools;
     const twrp = cv?.toolsWrapper;

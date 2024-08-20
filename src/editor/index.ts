@@ -256,7 +256,7 @@ export default class Editor implements IBaseModule<EditorConfig> {
    */
   getConfig<
     P extends EditorConfigKeys | undefined = undefined,
-    R = P extends EditorConfigKeys ? EditorConfig[P] : EditorConfig
+    R = P extends EditorConfigKeys ? EditorConfig[P] : EditorConfig,
   >(prop?: P): R {
     return this.em.getConfig(prop);
   }

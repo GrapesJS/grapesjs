@@ -132,7 +132,7 @@ export default class PropertyComposite<T extends Record<string, any> = PropertyC
    * @returns {[Property]|null}
    */
   getProperty(id: string): Property | undefined {
-    return this.properties.filter(prop => prop.getId() === id || prop.getName() === id)[0];
+    return this.properties.filter((prop) => prop.getId() === id || prop.getName() === id)[0];
   }
 
   /**
@@ -164,11 +164,14 @@ export default class PropertyComposite<T extends Record<string, any> = PropertyC
    * // { 'margin-top': '10px', 'margin-right': '20px', ... };
    */
   getValues({ byName }: { byName?: boolean } = {}) {
-    return this.getProperties().reduce((res, prop) => {
-      const key = byName ? prop.getName() : prop.getId();
-      res[key] = `${prop.__getFullValue()}`;
-      return res;
-    }, {} as Record<string, any>);
+    return this.getProperties().reduce(
+      (res, prop) => {
+        const key = byName ? prop.getName() : prop.getId();
+        res[key] = `${prop.__getFullValue()}`;
+        return res;
+      },
+      {} as Record<string, any>,
+    );
   }
 
   /**
@@ -210,7 +213,7 @@ export default class PropertyComposite<T extends Record<string, any> = PropertyC
         style = values;
       } else {
         const value = this.getProperties()
-          .map(p => p.__getFullValue({ withDefault: 1 }))
+          .map((p) => p.__getFullValue({ withDefault: 1 }))
           .filter(Boolean)
           .join(join);
         style = { [name]: value };
@@ -294,15 +297,15 @@ export default class PropertyComposite<T extends Record<string, any> = PropertyC
   __styleHasProps(style: StyleProps = {}) {
     const name = this.getName();
     const props = this.getProperties();
-    const nameProps = props.map(prop => prop.getName());
+    const nameProps = props.map((prop) => prop.getName());
     const allNameProps = [name, ...nameProps];
-    return allNameProps.some(prop => !isUndefined(style[prop]) && style[prop] !== '');
+    return allNameProps.some((prop) => !isUndefined(style[prop]) && style[prop] !== '');
   }
 
   __splitValue(value: string | string[], sep: string | RegExp) {
     return getLastStyleValue(value)
       .split(sep)
-      .map(value => value.trim())
+      .map((value) => value.trim())
       .filter(Boolean);
   }
 
@@ -320,7 +323,7 @@ export default class PropertyComposite<T extends Record<string, any> = PropertyC
 
   __getSplitValue(value: string | string[] = '', { byName }: OptionByName = {}) {
     const props = this.getProperties();
-    const props4Nums = props.length === 4 && props.every(prop => isNumberType(prop.getType()));
+    const props4Nums = props.length === 4 && props.every((prop) => isNumberType(prop.getType()));
     const values = this.__splitValue(value, this.getSplitSeparator());
     const result: StyleProps = {};
 
@@ -366,7 +369,7 @@ export default class PropertyComposite<T extends Record<string, any> = PropertyC
       result = this.__getSplitValue((value as string) || '', { byName });
 
       // Get props from the inner properties
-      props.forEach(prop => {
+      props.forEach((prop) => {
         const value = style[prop.getName()];
         const key = byName ? prop.getName() : prop.getId();
         if (!isUndefined(value) && value !== '') result[key] = value;
@@ -377,26 +380,26 @@ export default class PropertyComposite<T extends Record<string, any> = PropertyC
   }
 
   __setProperties(values: Record<string, any> = {}, opts: OptionsUpdate = {}) {
-    this.getProperties().forEach(prop => {
+    this.getProperties().forEach((prop) => {
       const value = values[prop.getId()];
       prop.__getFullValue() !== value && prop.upValue(value, opts);
     });
 
     // Keep track of the values, otherwise clear() will not trigger changes.
     const valuesStr = keys(values)
-      .map(k => values[k])
+      .map((k) => values[k])
       .join(' ');
     this.set('value', valuesStr as any, { silent: true });
   }
 
   clear() {
-    this.getProperties().map(p => p.clear({ __clearIn: !this.isDetached() }));
+    this.getProperties().map((p) => p.clear({ __clearIn: !this.isDetached() }));
     Property.prototype.clear.call(this);
     return this;
   }
 
   hasValue(opts?: Parameters<Property['hasValue']>[0]) {
-    return this.getProperties().some(prop => prop.hasValue(opts));
+    return this.getProperties().some((prop) => prop.hasValue(opts));
   }
 
   getFullValue() {

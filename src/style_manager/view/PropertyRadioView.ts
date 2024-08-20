@@ -19,7 +19,7 @@ export default class PropertyRadioView extends PropertySelectView {
     if (!this.input) {
       const optionsRes: string[] = [];
 
-      options.forEach(opt => {
+      options.forEach((opt) => {
         const cls = opt.className ? `${opt.className} ${pfx}icon ${itemCls}` : '';
         const id = model.getOptionId(opt);
         const elId = `${prop}-${id}-${cid}`;

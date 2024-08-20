@@ -31,7 +31,7 @@ describe('Css Composer', () => {
     const getCSS = (obj: CssComposer) =>
       obj
         .getAll()
-        .map(r => r.toCSS())
+        .map((r) => r.toCSS())
         .join('');
 
     beforeEach(() => {
@@ -297,7 +297,7 @@ describe('Css Composer', () => {
             },
           },
         ];
-        toTest.forEach(test => {
+        toTest.forEach((test) => {
           const { selector, style, opts } = test;
           obj.setRule(selector, style, opts);
           expect(obj.getAll().length).toEqual(1);
@@ -321,7 +321,7 @@ describe('Css Composer', () => {
             opt: { atRuleType: 'media', atRuleParams: '(min-width: 480px)' },
           },
         ];
-        toTest.forEach(test => {
+        toTest.forEach((test) => {
           const { selector, style, opt } = test;
           obj.setRule(selector, style, opt);
           const rule = obj.getRule(selector, opt)!;
@@ -407,7 +407,7 @@ describe('Css Composer', () => {
         expect(result.length).toEqual(2);
         expect(obj.getAll().length).toEqual(2);
 
-        result.forEach(rule => {
+        result.forEach((rule) => {
           expect(rule.getSelectors().length).toBe(0);
           expect(rule.get('selectorsAdd')).toBeFalsy();
           expect(rule.get('mediaText')).toBeFalsy();
@@ -418,8 +418,7 @@ describe('Css Composer', () => {
         expect(getCSS(obj)).toEqual(cssRule.trim());
       });
 
-      // TODO update jest to be able to test keyframes
-      test.skip('Add rules with @keyframes at rule', () => {
+      test('Add rules with @keyframes at rule', () => {
         const cssRule = `
         @keyframes keyname {
           from { width: 0% }
@@ -428,14 +427,24 @@ describe('Css Composer', () => {
         }
         `;
         const result = obj.addCollection(cssRule);
-        console.log({ result });
         const [rule1, rule2, rule3] = result;
+        console.log({ result: JSON.parse(JSON.stringify(rule1)) });
         expect(result.length).toEqual(3);
         expect(obj.getAll().length).toEqual(3);
 
-        expect(rule1.get('mediaText')).toBe('keyname');
-        expect(rule1.get('atRuleType')).toBe('keyframes');
-        // TODO to complete
+        result.forEach((rule) => {
+          expect(rule.get('mediaText')).toBe('keyname');
+          expect(rule.get('atRuleType')).toBe('keyframes');
+        });
+
+        expect(rule1.getSelectorsString()).toBe('from');
+        expect(rule1.getStyle()).toEqual({ width: '0%' });
+
+        expect(rule2.getSelectorsString()).toBe('40%, 50%');
+        expect(rule2.getStyle()).toEqual({ width: '50%' });
+
+        expect(rule3.getSelectorsString()).toBe('to');
+        expect(rule3.getStyle()).toEqual({ width: '100%' });
       });
     });
   });

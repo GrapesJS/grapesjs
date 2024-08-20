@@ -13,7 +13,7 @@ export default class SectorsView extends View {
   module: any;
 
   constructor(
-    o: { module?: any; config?: StyleManagerConfig; el?: HTMLElement; em?: EditorModel; collection?: Sectors } = {}
+    o: { module?: any; config?: StyleManagerConfig; el?: HTMLElement; em?: EditorModel; collection?: Sectors } = {},
   ) {
     // @ts-ignore
     super(o);
@@ -30,9 +30,9 @@ export default class SectorsView extends View {
   remove() {
     View.prototype.remove.apply(this, arguments as any);
     ['config', 'module', 'em'].forEach(
-      i =>
+      (i) =>
         // @ts-ignore
-        (this[i] = {})
+        (this[i] = {}),
     );
     return this;
   }
@@ -54,7 +54,7 @@ export default class SectorsView extends View {
     const { $el, pfx, ppfx } = this;
     $el.empty();
     const frag = document.createDocumentFragment();
-    this.collection.each(model => this.addToCollection(model, frag));
+    this.collection.each((model) => this.addToCollection(model, frag));
     $el.append(frag);
     $el.addClass(`${pfx}sectors ${ppfx}one-bg ${ppfx}two-color`);
     return this;

@@ -61,7 +61,7 @@ export function getItemsByCategory<T extends ModelWithCategory>(allItems: T[]) {
   const categoryMap = new Map<Category, T[]>();
   const emptyItem: ItemsByCategory<T> = { items: [] };
 
-  allItems.forEach(item => {
+  allItems.forEach((item) => {
     const { category } = item;
 
     if (category) {
@@ -78,7 +78,7 @@ export function getItemsByCategory<T extends ModelWithCategory>(allItems: T[]) {
     }
   });
 
-  const categoryWithItems = Array.from(categorySet).map(category => ({
+  const categoryWithItems = Array.from(categorySet).map((category) => ({
     category,
     items: categoryMap.get(category) || [],
   }));

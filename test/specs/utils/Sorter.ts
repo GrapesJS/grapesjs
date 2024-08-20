@@ -294,7 +294,7 @@ describe('Sorter', () => {
       el.style.position = 'absolute';
       el.style.top = '0';
       var ch = obj.getChildrenDim(el);
-      ch = ch.map(v => {
+      ch = ch.map((v) => {
         // @ts-ignore
         return v.slice(0, 5);
       });
@@ -345,7 +345,7 @@ describe('Sorter', () => {
       ];
 
       var dims = obj.dimsFromTarget(sib3);
-      dims = dims.map(v => {
+      dims = dims.map((v) => {
         // @ts-ignore
         return v.slice(0, 5);
       });
@@ -445,7 +445,7 @@ describe('Sorter', () => {
               return srcModel.getEl()!.className === 'canDrop';
             },
           },
-          config
+          config,
         );
         parentView = new ComponentTextView({
           ...cmpViewOpts,
@@ -465,7 +465,7 @@ describe('Sorter', () => {
             content: 'Content text',
             attributes: { class: 'canDrop' },
           },
-          config
+          config,
         );
         var srcView = new ComponentTextView({
           ...cmpViewOpts,
@@ -484,7 +484,7 @@ describe('Sorter', () => {
             content: 'Content text',
             attributes: { class: 'cannotDrop' },
           },
-          config
+          config,
         );
         var srcView = new ComponentTextView({
           ...cmpViewOpts,
@@ -507,7 +507,7 @@ describe('Sorter', () => {
               return trgModel.getEl()!.className === 'canDrag';
             },
           },
-          config
+          config,
         );
         srcView = new ComponentTextView({
           ...cmpViewOpts,
@@ -528,7 +528,7 @@ describe('Sorter', () => {
             content: 'Content text',
             attributes: { class: 'canDrag' },
           },
-          config
+          config,
         );
         var parentView = new ComponentTextView({
           ...cmpViewOpts,
@@ -547,7 +547,7 @@ describe('Sorter', () => {
             content: 'Content text',
             attributes: { class: 'cannotDrag' },
           },
-          config
+          config,
         );
         var parentView = new ComponentTextView({
           ...cmpViewOpts,
@@ -574,14 +574,14 @@ describe('Sorter', () => {
           tagName: 'div',
           name: 'child00',
         },
-        config
+        config,
       );
       child01 = new Component(
         {
           tagName: 'div',
           name: 'child01',
         },
-        config
+        config,
       );
       child0 = new Component(
         {
@@ -590,14 +590,14 @@ describe('Sorter', () => {
           // @ts-ignore
           components: [child00, child01],
         },
-        config
+        config,
       );
       child10 = new Component(
         {
           tagName: 'div',
           name: 'child10',
         },
-        config
+        config,
       );
       child1 = new Component(
         {
@@ -606,14 +606,14 @@ describe('Sorter', () => {
           // @ts-ignore
           components: [child10],
         },
-        config
+        config,
       );
       child2 = new Component(
         {
           tagName: 'div',
           name: 'child2',
         },
-        config
+        config,
       );
       root = new Component(
         {
@@ -622,7 +622,7 @@ describe('Sorter', () => {
           // @ts-ignore
           components: [child0, child1, child2],
         },
-        config
+        config,
       );
     });
     test('Parents', () => {

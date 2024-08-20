@@ -66,7 +66,7 @@ describe('Selectors', () => {
       obj.getFullName({
         combination: true,
         array: true,
-      })
+      }),
     ).toEqual(['.a', '.a.b', '.b']);
 
     expect(obj.getFullName({ combination: true })).toEqual('.a,.a.b,.b');
@@ -80,7 +80,7 @@ describe('Selectors', () => {
       obj.getFullName({
         combination: true,
         array: true,
-      })
+      }),
     ).toEqual(['.a', '.a.b', '.a.b.c', '.a.c', '.b', '.b.c', '.c']);
   });
 
@@ -90,7 +90,7 @@ describe('Selectors', () => {
       obj.getFullName({
         combination: true,
         array: true,
-      })
+      }),
     ).toEqual([
       '.a',
       '.a.b',

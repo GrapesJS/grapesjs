@@ -63,9 +63,9 @@ describe('Preview command', () => {
     });
 
     it('should hide all panels', () => {
-      fakePanels.forEach(panel => expect(panel.get('visible')).toEqual(true));
+      fakePanels.forEach((panel) => expect(panel.get('visible')).toEqual(true));
       Preview.run!(fakeEditor, obj, obj);
-      fakePanels.forEach(panel => expect(panel.get('visible')).toEqual(false));
+      fakePanels.forEach((panel) => expect(panel.get('visible')).toEqual(false));
     });
 
     it("should stop the 'core:component-outline' command if active", () => {
@@ -89,9 +89,9 @@ describe('Preview command', () => {
 
   describe('.stop', () => {
     it('should show all panels', () => {
-      fakePanels.forEach(panel => panel.set('visible', false));
+      fakePanels.forEach((panel) => panel.set('visible', false));
       Preview.stop!(fakeEditor, obj, obj);
-      fakePanels.forEach(panel => expect(panel.get('visible')).toEqual(true));
+      fakePanels.forEach((panel) => expect(panel.get('visible')).toEqual(true));
     });
 
     it("should run the 'core:component-outline' command if it was active before run", () => {

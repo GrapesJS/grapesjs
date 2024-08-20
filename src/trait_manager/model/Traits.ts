@@ -39,7 +39,7 @@ export default class Traits extends CollectionWithCategories<Trait> {
   }
 
   handleReset(coll: TraitProperties[], { previousModels = [] }: { previousModels?: Trait[] } = {}) {
-    previousModels.forEach(model => model.trigger('remove'));
+    previousModels.forEach((model) => model.trigger('remove'));
   }
 
   handleAdd(model: Trait) {
@@ -55,7 +55,7 @@ export default class Traits extends CollectionWithCategories<Trait> {
 
   setTarget(target: Component) {
     this.target = target;
-    this.models.forEach(trait => trait.setTarget(target));
+    this.models.forEach((trait) => trait.setTarget(target));
   }
 
   add(model: string | TraitProperties | Trait, options?: AddOptions): Trait;

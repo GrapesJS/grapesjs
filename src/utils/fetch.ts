@@ -20,7 +20,7 @@ export default typeof fetch == 'function'
           req.setRequestHeader(k, options.headers[k]);
         }
 
-        req.onload = e =>
+        req.onload = (e) =>
           res({
             status: req.status,
             statusText: req.statusText,

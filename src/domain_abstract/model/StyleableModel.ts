@@ -154,7 +154,7 @@ export default class StyleableModel<T extends ObjectHash = any> extends Model<T>
         const newValue = dr && dr.get(keyPath);
 
         this.updateStyleProp(styleProp, newValue);
-      })
+      }),
     );
     this.dataListeners = dataListeners;
   }

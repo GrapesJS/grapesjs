@@ -43,7 +43,7 @@ describe('PropertyCompositeView', () => {
         property: propName,
         properties,
       },
-      { em }
+      { em },
     );
     view = new PropertyCompositeView({ model });
     document.body.innerHTML = '<div id="fixtures"></div>';

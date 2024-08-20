@@ -528,7 +528,7 @@ export default class CanvasModule extends Module<CanvasConfig> {
     const docActive = frame && document.activeElement === frame;
     const focused = docActive ? doc && doc.activeElement : document.activeElement;
 
-    return focused && !toIgnore.some(item => focused.matches(item));
+    return focused && !toIgnore.some((item) => focused.matches(item));
   }
 
   /**
@@ -670,7 +670,7 @@ export default class CanvasModule extends Module<CanvasConfig> {
   }
 
   getFrames() {
-    return this.canvas.frames.map(item => item);
+    return this.canvas.frames.map((item) => item);
   }
 
   /**
@@ -861,6 +861,6 @@ export default class CanvasModule extends Module<CanvasConfig> {
     this.canvasView?.remove();
     //[this.canvas, this.canvasView].forEach(i => (i = {}));
     //@ts-ignore
-    ['model', 'droppable'].forEach(i => (this[i] = {}));
+    ['model', 'droppable'].forEach((i) => (this[i] = {}));
   }
 }

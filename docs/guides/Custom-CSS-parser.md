@@ -1,16 +1,16 @@
 ---
 title: Use Custom CSS Parser
 ---
+
 # Use Custom CSS Parser
 
-If you just use GrapesJS for building templates from scratch, so you start from an empty canvas and for editing you strictly rely  on the generated JSON (final HTML/CSS only for end-users) then, probably, you might skip this guide. On the other hand, if you import templates from already defined HTML/CSS or let the user embed custom codes (eg. using the [grapesjs-custom-code](https://github.com/GrapesJS/components-custom-code) plugin), then you have to know that you might face strange behaviors.
+If you just use GrapesJS for building templates from scratch, so you start from an empty canvas and for editing you strictly rely on the generated JSON (final HTML/CSS only for end-users) then, probably, you might skip this guide. On the other hand, if you import templates from already defined HTML/CSS or let the user embed custom codes (eg. using the [grapesjs-custom-code](https://github.com/GrapesJS/components-custom-code) plugin), then you have to know that you might face strange behaviors.
 
 ::: warning
 This guide requires GrapesJS v0.14.33 or higher
 :::
 
 [[toc]]
-
 
 ## Import HTML/CSS
 
@@ -19,13 +19,17 @@ Importing already defined HTML/CSS is a really good feature as it lets you start
 ```html
 <div id="gjs">
   <div class="txt-red">Hello world!</div>
-  <style>.txt-red{color: red}</style>
+  <style>
+    .txt-red {
+      color: red;
+    }
+  </style>
 </div>
 
 <script type="text/javascript">
   const editor = grapesjs.init({
-      container : '#gjs',
-      fromElement: true,
+    container: '#gjs',
+    fromElement: true,
   });
 </script>
 ```
@@ -80,10 +84,10 @@ So, for our case we just take in account a simple rule, we'll parse it and print
     for (var i = 0, len = style.length; i < len; i++) {
       var property = style[i];
       var value = style.getPropertyValue(property);
-      styleStr += "\t" + property + ': ' + value + ";\n";
+      styleStr += '\t' + property + ': ' + value + ';\n';
     }
     var result = document.getElementById('result');
-    result.innerHTML = rule.selectorText + " {\n" + styleStr + "}";
+    result.innerHTML = rule.selectorText + ' {\n' + styleStr + '}';
   }
 
   var css = document.getElementById('css-to-parse').innerText;
@@ -92,6 +96,7 @@ So, for our case we just take in account a simple rule, we'll parse it and print
 ```
 
 ### Results
+
 Here some results (using latest versions + IE11)
 
 <img :src="$withBase('/cssom-result.jpg')">
@@ -115,10 +120,10 @@ The custom parser you have to use it's just a function receiving 2 arguments: `c
 const parserCss = (css, editor) => {
   const result = [];
   // ... parse the CSS string
-    result.push({
-      selectors: '.someclass, div .otherclass',
-      style: { color: 'red' }
-    })
+  result.push({
+    selectors: '.someclass, div .otherclass',
+    style: { color: 'red' },
+  });
   // ...
   return result; // Result should be ALWAYS an array
 };
@@ -129,7 +134,7 @@ const editor = grapesjs.init({
   //...
   parser: {
     parserCss,
-  }
+  },
 });
 
 // Or later, via editor API
@@ -140,12 +145,12 @@ editor.setCustomParserCss(parserCss);
 
 The syntax of rule objects is pretty straightforward, each object might contain following keys
 
-| Key | Description | Example |
-|-|-|-
-| `selectors` | Selectors of the rule. <br> **REQUIRED** return an empty string in case the rule has no selectors | `.class1, div > #someid` |
-| `style` | Style declarations as an object | `{ color: 'red' }` |
-| `atRule` | At-rule name  | `media` |
-| `params` | Parameters of the at-rule | `screen and (min-width: 480px)` |
+| Key         | Description                                                                                       | Example                         |
+| ----------- | ------------------------------------------------------------------------------------------------- | ------------------------------- |
+| `selectors` | Selectors of the rule. <br> **REQUIRED** return an empty string in case the rule has no selectors | `.class1, div > #someid`        |
+| `style`     | Style declarations as an object                                                                   | `{ color: 'red' }`              |
+| `atRule`    | At-rule name                                                                                      | `media`                         |
+| `params`    | Parameters of the at-rule                                                                         | `screen and (min-width: 480px)` |
 
 To make it more clear let's see a few examples
 
@@ -249,4 +254,4 @@ To make it more clear let's see a few examples
 
 Below the list of current available CSS parsers as plugins, if you need to create your own we highly suggest to explore their sources
 
-* [grapesjs-parser-postcss](https://github.com/GrapesJS/parser-postcss) - Using [PostCSS](https://github.com/postcss/postcss) parser
+- [grapesjs-parser-postcss](https://github.com/GrapesJS/parser-postcss) - Using [PostCSS](https://github.com/postcss/postcss) parser

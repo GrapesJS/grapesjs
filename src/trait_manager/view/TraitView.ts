@@ -65,7 +65,7 @@ export default class TraitView extends View<Trait> {
     this.listenTo(model, 'change:label', this.render);
     this.listenTo(model, 'change:placeholder', this.rerender);
     this.events = {};
-    eventCapture.forEach(event => (this.events[event] = 'onChange'));
+    eventCapture.forEach((event) => (this.events[event] = 'onChange'));
     this.delegateEvents();
     this.init();
   }

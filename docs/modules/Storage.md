@@ -7,7 +7,7 @@ title: Storage Manager
 The Storage Manager is a built-in module that allows the persistence of your project data.
 
 ::: warning
-This guide requires GrapesJS v0.19.* or higher
+This guide requires GrapesJS v0.19.\* or higher
 :::
 
 [[toc]]
@@ -36,6 +36,7 @@ const editor = grapesjs.init({
 ```
 
 In case you don't need any persistence, you can disable the module in this way:
+
 ```js
 const editor = grapesjs.init({
   ...
@@ -44,10 +45,6 @@ const editor = grapesjs.init({
 ```
 
 Check the full list of available options here: [Storage Manager Config](https://github.com/GrapesJS/grapesjs/blob/master/src/storage_manager/config/config.ts)
-
-
-
-
 
 ## Project data
 
@@ -63,6 +60,7 @@ const projectData = editor.getProjectData();
 // Load project data
 editor.loadProjectData(projectData);
 ```
+
 :::
 
 ::: danger
@@ -72,9 +70,6 @@ The editor is able to parse and use HTML/CSS code, you can use it as part of you
 :::
 
 <!-- If necessary, the JSON can be also enriched with your data of choice, but as the data schema might differ in time we highly recommend to store them in your domain specific keys-->
-
-
-
 
 ## Storage strategy
 
@@ -90,9 +85,8 @@ const storedProjectData = await editor.store();
 // Load data
 const loadedProjectData = await editor.load();
 ```
+
 :::
-
-
 
 ## Setup local storage
 
@@ -114,8 +108,6 @@ const editor = grapesjs.init({
   },
 });
 ```
-
-
 
 ## Setup remote storage
 
@@ -173,12 +165,9 @@ Be sure to configure properly [CORS](https://developer.mozilla.org/en-US/docs/We
 
 Server configuration might differ case to case so usually, it's up to you to know how to configure it properly.
 The default remote storage follows a simple REST API approach with project data exchanged as a JSON (`Content-Type: application/json`).
-* On **load** (`GET` method), the JSON project data are expected to be returned directly in the response. As from example above, you can use `options.remote.onLoad` to extract the project data if the response contains other metadata.
-* On **store** (`POST` method), the editor doesn't expect any particular result but only a valid response from the server (status code `200`).
 
-
-
-
+- On **load** (`GET` method), the JSON project data are expected to be returned directly in the response. As from example above, you can use `options.remote.onLoad` to extract the project data if the response contains other metadata.
+- On **store** (`POST` method), the editor doesn't expect any particular result but only a valid response from the server (status code `200`).
 
 <!-- ## Store and load templates
 
@@ -212,16 +201,9 @@ const editor = grapesjs.init({
 });
 ``` -->
 
-
-
-
-
-
 ## Storage API
 
 The Storage Manager module has also its own [set of APIs](/api/storage_manager.html) that allows you to extend and add new functionalities.
-
-
 
 ### Define new storage
 
@@ -254,8 +236,6 @@ const editor = grapesjs.init({
 });
 ```
 
-
-
 ### Extend storage
 
 Among other needs, you might need to use existing storages to combine them in a more complex use case.
@@ -285,7 +265,7 @@ Storage.add('remote-local', {
 
 ### Replace storage
 
-You can also replace already defined storages with other implementations by passing the same storage type in the `Storage.add` method. You can switch, for example, the default `local`, which relies on [localStorage API], with something more scalable like [IndexedDB  API].
+You can also replace already defined storages with other implementations by passing the same storage type in the `Storage.add` method. You can switch, for example, the default `local`, which relies on [localStorage API], with something more scalable like [IndexedDB API].
 
 It might also be possible that you're already using some HTTP client library (eg. [axios](https://github.com/axios/axios)) which handles for you all the necessary HTTP headers in your application (CSRF token, session data, etc.), so you can simply replace the default `remote` storage with your implementation of choice without caring about the default configurations.
 
@@ -301,18 +281,12 @@ editor.Storage.add('remote', {
 });
 ```
 
-
-
 <!-- ### Examples
 
 Here you can find some of the plugins extending the Storage Manager
 
 * [grapesjs-indexeddb] - Storage wrapper for IndexedDB
 * [grapesjs-firestore] - Storage wrapper for [Cloud Firestore](https://firebase.google.com/docs/firestore) -->
-
-
-
-
 
 ## Common use cases
 
@@ -343,8 +317,8 @@ grapesjs.init({
   },
 })
 ```
-In case `projectData` is defined, the initial storage load will be automatically skipped.
 
+In case `projectData` is defined, the initial storage load will be automatically skipped.
 
 ### HTML code with project data
 
@@ -360,21 +334,21 @@ grapesjs.init({
       remote: {
         // Enrich the store call
         onStore: (data, editor) => {
-          const pagesHtml = editor.Pages.getAll().map(page => {
+          const pagesHtml = editor.Pages.getAll().map((page) => {
             const component = page.getMainComponent();
             return {
               html: editor.getHtml({ component }),
-              css: editor.getCss({ component })
-            }
+              css: editor.getCss({ component }),
+            };
           });
           return { id: projectID, data, pagesHtml };
         },
         // If on load, you're returning the same JSON from above...
-        onLoad: result => result.data,
-      }
+        onLoad: (result) => result.data,
+      },
     },
   },
-})
+});
 ```
 
 ### Inline project data
@@ -383,19 +357,19 @@ In might be a case where the editor is not connected to any storage but simply r
 
 ```html
 <form id="my-form">
-  <input id="project-html" type="hidden"/>
-  <input id="project-data" type="hidden" value='{"pages": [{"component": "<div>Initial content</div>"}]}'/>
+  <input id="project-html" type="hidden" />
+  <input id="project-data" type="hidden" value='{"pages": [{"component": "<div>Initial content</div>"}]}' />
   <div id="gjs"></div>
   <button type="submit">Submit</button>
 </form>
 
 <script>
   // Show data on submit
-  document.getElementById('my-form').addEventListener('submit', event => {
+  document.getElementById('my-form').addEventListener('submit', (event) => {
     event.preventDefault();
     const projectDataEl = document.getElementById('project-data');
     const projectHtmlEl = document.getElementById('project-html');
-    alert(`HTML: ${projectHtmlEl.value}\n------\nDATA: ${projectDataEl.value}`)
+    alert(`HTML: ${projectHtmlEl.value}\n------\nDATA: ${projectDataEl.value}`);
   });
 
   // Inline storage
@@ -416,7 +390,7 @@ In might be a case where the editor is not connected to any storage but simply r
           </head>
           ${editor.getHtml({ component })}
         <html>`;
-      }
+      },
     });
   };
 
@@ -432,19 +406,12 @@ In might be a case where the editor is not connected to any storage but simply r
 
 In the example above we're relying on two hidden inputs, one for containing the project data and the another one for the HTML/CSS.
 
-
-
-
-
 ## Events
 
 For a complete list of available events, you can check it [here](/api/storage_manager.html#available-events).
 
-
-
-
-[grapesjs-indexeddb]: <https://github.com/GrapesJS/storage-indexeddb>
-[grapesjs-firestore]: <https://github.com/GrapesJS/storage-firestore>
-[localStorage API]: <https://developer.mozilla.org/it/docs/Web/API/Window/localStorage>
-[IndexedDB  API]: <https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API>
-[json-server]: <https://github.com/typicode/json-server>
+[grapesjs-indexeddb]: https://github.com/GrapesJS/storage-indexeddb
+[grapesjs-firestore]: https://github.com/GrapesJS/storage-firestore
+[localStorage API]: https://developer.mozilla.org/it/docs/Web/API/Window/localStorage
+[IndexedDB API]: https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API
+[json-server]: https://github.com/typicode/json-server

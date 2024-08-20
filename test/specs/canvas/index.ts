@@ -119,7 +119,7 @@ describe('Canvas', () => {
     });
 
     describe('Spot Events', () => {
-      test('addSpot() triggers proper events', done => {
+      test('addSpot() triggers proper events', (done) => {
         const eventAdd = jest.fn();
         const eventAll = jest.fn();
         em.on(canvas.events.spotAdd, eventAdd);
@@ -133,7 +133,7 @@ describe('Canvas', () => {
         });
       });
 
-      test('Update of spots triggers proper events', done => {
+      test('Update of spots triggers proper events', (done) => {
         const eventUpdate = jest.fn();
         const eventAll = jest.fn();
         em.on(canvas.events.spotUpdate, eventUpdate);
@@ -149,7 +149,7 @@ describe('Canvas', () => {
         });
       });
 
-      test('removeSpot() triggers proper events', done => {
+      test('removeSpot() triggers proper events', (done) => {
         const eventRemove = jest.fn();
         const eventAll = jest.fn();
         em.on(canvas.events.spotRemove, eventRemove);

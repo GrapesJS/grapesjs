@@ -18,7 +18,7 @@ describe('TraitModels', () => {
         name: modelName,
         target,
       },
-      em
+      em,
     );
   });
 

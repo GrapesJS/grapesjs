@@ -21,7 +21,7 @@ import { isSymbolInstance, isSymbolRoot, updateSymbolComps } from './SymbolUtils
 export const getComponentIds = (cmp?: Component | Component[] | Components, res: string[] = []) => {
   if (!cmp) return [];
   const cmps = (isArray(cmp) || isFunction((cmp as Components).map) ? cmp : [cmp]) as Component[];
-  cmps.map(cmp => {
+  cmps.map((cmp) => {
     res.push(cmp.getId());
     getComponentIds(cmp.components().models, res);
   });
@@ -31,13 +31,13 @@ export const getComponentIds = (cmp?: Component | Component[] | Components, res:
 const getComponentsFromDefs = (
   items: ReturnType<Components['parseString']>,
   all: ReturnType<ComponentManager['allById']> = {},
-  opts: any = {}
+  opts: any = {},
 ) => {
   opts.visitedCmps = opts.visitedCmps || {};
   const { visitedCmps } = opts;
   const itms = isArray(items) ? items : [items];
 
-  return itms.map(item => {
+  return itms.map((item) => {
     const { attributes = {}, components, tagName, style } = item;
     let { id, draggable, ...restAttr } = attributes;
     let result = item;
@@ -118,12 +118,12 @@ Component> {
   resetChildren(models: Components, opts: { previousModels?: Component[]; keepIds?: string[] } = {}) {
     const coll = this;
     const prev = opts.previousModels || [];
-    const toRemove = prev.filter(prev => !models.get(prev.cid));
+    const toRemove = prev.filter((prev) => !models.get(prev.cid));
     const newIds = getComponentIds(models);
-    const idsToKeep = getComponentIds(prev).filter(pr => newIds.indexOf(pr) >= 0);
+    const idsToKeep = getComponentIds(prev).filter((pr) => newIds.indexOf(pr) >= 0);
     opts.keepIds = (opts.keepIds || []).concat(idsToKeep);
-    toRemove.forEach(md => this.removeChildren(md, coll, opts));
-    models.each(model => this.onAdd(model));
+    toRemove.forEach((md) => this.removeChildren(md, coll, opts));
+    models.each((model) => this.onAdd(model));
   }
 
   resetFromString(input = '', opts: { visitedCmps?: Record<string, Component[]>; keepIds?: string[] } = {}) {
@@ -136,15 +136,15 @@ Component> {
     const { visitedCmps = {} } = opts;
 
     // Clone styles for duplicated components
-    Object.keys(visitedCmps).forEach(id => {
+    Object.keys(visitedCmps).forEach((id) => {
       const cmps = visitedCmps[id];
       if (cmps.length) {
         // Get all available rules of the component
         const rulesToClone = cssc?.getRules(`#${id}`) || [];
 
         if (rulesToClone.length) {
-          cmps.forEach(cmp => {
-            rulesToClone.forEach(rule => {
+          cmps.forEach((cmp) => {
+            rulesToClone.forEach((rule) => {
               const newRule = rule.clone();
               // @ts-ignore
               newRule.set('selectors', [`#${cmp.attributes.id}`]);
@@ -184,14 +184,14 @@ Component> {
       const rulesRemoved = (
         canRemoveStyle
           ? rules.remove(
-              rules.filter(r => r.getSelectors().getFullString() === `#${id}`),
-              opts
+              rules.filter((r) => r.getSelectors().getFullString() === `#${id}`),
+              opts,
             )
           : []
       ) as CssRule[];
 
       // Clean selectors
-      sels.remove(rulesRemoved.map(rule => rule.getSelectors().at(0)));
+      sels.remove(rulesRemoved.map((rule) => rule.getSelectors().at(0)));
 
       if (!removed.opt.temporary) {
         em.Commands.run('core:component-style-clear', { target: removed });
@@ -205,7 +205,7 @@ Component> {
       }
 
       const inner = removed.components();
-      inner.forEach(it => {
+      inner.forEach((it) => {
         updateSymbolComps(it, it, inner, { ...opts, skipRefsUp: true });
         this.removeChildren(it, coll, opts);
       });
@@ -387,7 +387,7 @@ Component> {
     if (em && !opts.temporary) {
       const triggerAdd = (model: Component) => {
         em.trigger(ComponentsEvents.add, model, opts);
-        model.components().forEach(comp => triggerAdd(comp));
+        model.components().forEach((comp) => triggerAdd(comp));
       };
       triggerAdd(model);
 

@@ -137,7 +137,7 @@ describe('StyleManager', () => {
         expect(obj.getSelectedParents()).toEqual([]);
       });
 
-      test('Single class, multiple devices', done => {
+      test('Single class, multiple devices', (done) => {
         const cmp = domc.addComponent('<div class="cls"></div>');
         const [rule1, rule2] = cssc.addRules(`
           .cls { color: red; }

@@ -6,13 +6,13 @@ export class Selectable extends Model {}
 
 export default class Selected extends Collection<Selectable> {
   getByComponent(component: Component) {
-    return this.filter(s => this.getComponent(s) === component)[0];
+    return this.filter((s) => this.getComponent(s) === component)[0];
   }
 
   addComponent(component: Component, opts: any) {
     const toAdd = (isArray(component) ? component : [component])
-      .filter(c => !this.hasComponent(c))
-      .map(component => new Selectable({ component }))[0];
+      .filter((c) => !this.hasComponent(c))
+      .map((component) => new Selectable({ component }))[0];
     return this.push(toAdd, opts);
   }
 
@@ -31,11 +31,11 @@ export default class Selected extends Collection<Selectable> {
   }
 
   allComponents() {
-    return this.map(s => this.getComponent(s)).filter(i => i);
+    return this.map((s) => this.getComponent(s)).filter((i) => i);
   }
 
   removeComponent(component: Component | Component[], opts: any) {
-    const toRemove = (isArray(component) ? component : [component]).map(c => this.getByComponent(c));
+    const toRemove = (isArray(component) ? component : [component]).map((c) => this.getByComponent(c));
     return this.remove(toRemove, opts);
   }
 }

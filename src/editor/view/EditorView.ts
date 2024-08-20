@@ -43,7 +43,7 @@ export default class EditorView extends View<EditorModel> {
 
     $el.attr('class', classNames.join(' '));
     contEl.addClass(`${pfx}editor-cont`).empty().append($el);
-    modules.forEach(md => md.postRender?.(this));
+    modules.forEach((md) => md.postRender?.(this));
 
     return this;
   }

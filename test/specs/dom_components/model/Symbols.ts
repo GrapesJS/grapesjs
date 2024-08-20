@@ -88,7 +88,7 @@ describe('Symbols', () => {
   test("Simple clone doesn't create any symbol", () => {
     const comp = wrapper.append(simpleComp)[0];
     const cloned = comp.clone();
-    [comp, cloned].forEach(item => {
+    [comp, cloned].forEach((item) => {
       expect(getSymbolInfo(item).isSymbol).toBeFalsy();
     });
   });
@@ -203,13 +203,13 @@ describe('Symbols', () => {
     const comp = wrapper.append(compMultipleNodes)[0];
     const symbol = createSymbol(comp);
 
-    [comp, ...comp.components().models].forEach(i => {
+    [comp, ...comp.components().models].forEach((i) => {
       expect(getSymbolInfo(i).isInstance).toBe(true);
     });
 
     symbol.remove();
 
-    [comp, ...comp.components().models].forEach(i => {
+    [comp, ...comp.components().models].forEach((i) => {
       expect(getSymbolInfo(i)).toEqual({
         isSymbol: false,
         isMain: false,
@@ -227,7 +227,7 @@ describe('Symbols', () => {
 
     detachSymbol(comp);
 
-    [comp, ...comp.components().models].forEach(i => {
+    [comp, ...comp.components().models].forEach((i) => {
       expect(getSymbolInfo(i)).toEqual({
         isSymbol: false,
         isMain: false,
@@ -507,13 +507,13 @@ describe('Symbols', () => {
     const comp3 = createSymbol(comp2);
     const allInst = [comp, comp2, comp3];
     const all = [...allInst, symbol];
-    all.forEach(cmp => expect(cmp.components().length).toBe(compLen));
+    all.forEach((cmp) => expect(cmp.components().length).toBe(compLen));
     wrapper.append([comp2, comp3]);
     expect(wrapper.components().length).toBe(3);
     // Append new component to one of the instances
     const comp3Added = comp3.append(simpleComp, { at: 0 })[0];
     // The append should be propagated
-    all.forEach(cmp => expect(cmp.components().length).toBe(compLen + 1));
+    all.forEach((cmp) => expect(cmp.components().length).toBe(compLen + 1));
     // The new added component became part of the symbol instance
     const symbAdded = symbol.components().at(0);
     const compAdded = comp.components().at(0);
@@ -571,7 +571,7 @@ describe('Symbols', () => {
     });
 
     test('All the symbols contain the same amount of children', () => {
-      all.forEach(cmp => expect(cmp.components().length).toBe(compInitChild));
+      all.forEach((cmp) => expect(cmp.components().length).toBe(compInitChild));
     });
 
     test('Removing one instance, will remove the reference from the symbol', () => {
@@ -580,7 +580,7 @@ describe('Symbols', () => {
       expect(getSymbolInfo(symbol).instances.length).toBe(allInst.length - 1);
     });
 
-    test('Removing one instance, works with UndoManager', done => {
+    test('Removing one instance, works with UndoManager', (done) => {
       setTimeout(() => {
         // This will commit the undo
         allInst[0].remove();
@@ -593,9 +593,9 @@ describe('Symbols', () => {
 
     test('Adding a new component to a symbol, it will be propogated to all instances', () => {
       const added = symbol.append(simpleComp, { at: 0 })[0];
-      all.forEach(cmp => expect(cmp.components().length).toBe(compInitChild + 1));
+      all.forEach((cmp) => expect(cmp.components().length).toBe(compInitChild + 1));
       // Check symbol references
-      const addedInstances = allInst.map(cmp => cmp.components().at(0));
+      const addedInstances = allInst.map((cmp) => cmp.components().at(0));
       expect(getSymbolInfo(added)).toEqual({
         isSymbol: true,
         isMain: true,
@@ -604,44 +604,44 @@ describe('Symbols', () => {
         instances: addedInstances,
         relatives: addedInstances,
       });
-      allInst.forEach(cmp => expect(getFirstInnSymbol(cmp)).toBe(added));
+      allInst.forEach((cmp) => expect(getFirstInnSymbol(cmp)).toBe(added));
     });
 
     test('Adding a new component to an instance of the symbol, it will be propogated to all symbols', () => {
       const added = comp.append(simpleComp, { at: 0 })[0];
-      all.forEach(cmp => expect(cmp.components().length).toBe(compInitChild + 1));
+      all.forEach((cmp) => expect(cmp.components().length).toBe(compInitChild + 1));
       // Check symbol references
       const addSymb = symbol.components().at(0);
-      const addedInstances = allInst.map(cmp => cmp.components().at(0));
+      const addedInstances = allInst.map((cmp) => cmp.components().at(0));
       expect(getSymbolInfo(added)).toEqual({
         isSymbol: true,
         isMain: false,
         isInstance: true,
         main: addSymb,
         instances: addedInstances,
-        relatives: [addSymb, ...addedInstances.filter(s => s !== added)],
+        relatives: [addSymb, ...addedInstances.filter((s) => s !== added)],
       });
-      allInst.forEach(cmp => expect(getFirstInnSymbol(cmp)).toBe(addSymb));
+      allInst.forEach((cmp) => expect(getFirstInnSymbol(cmp)).toBe(addSymb));
     });
 
     test('Adding a new component to an instance of the symbol, works correctly with Undo Manager', () => {
       const added = comp.append(simpleComp, { at: 0 })[0];
       um.undo();
-      all.forEach(cmp => expect(cmp.components().length).toBe(compInitChild));
+      all.forEach((cmp) => expect(cmp.components().length).toBe(compInitChild));
       um.redo();
       um.undo();
       um.redo(); // check multiple undo/redo
-      all.forEach(cmp => expect(cmp.components().length).toBe(compInitChild + 1));
+      all.forEach((cmp) => expect(cmp.components().length).toBe(compInitChild + 1));
       // Check symbol references
       const addSymb = symbol.components().at(0);
-      const addedInstances = allInst.map(cmp => cmp.components().at(0));
+      const addedInstances = allInst.map((cmp) => cmp.components().at(0));
       expect(getSymbolInfo(added)).toEqual({
         isSymbol: true,
         isMain: false,
         isInstance: true,
         main: addSymb,
         instances: addedInstances,
-        relatives: [addSymb, ...addedInstances.filter(s => s !== added)],
+        relatives: [addSymb, ...addedInstances.filter((s) => s !== added)],
       });
     });
 
@@ -654,7 +654,7 @@ describe('Symbols', () => {
       expect(added.parent()).toBe(comp);
 
       const addSymb = symbol.components().at(0);
-      const addedInstances = allInst.map(cmp => cmp.components().at(0));
+      const addedInstances = allInst.map((cmp) => cmp.components().at(0));
       const commonInfo = {
         isSymbol: true,
         main: addSymb,
@@ -664,7 +664,7 @@ describe('Symbols', () => {
         ...commonInfo,
         isMain: false,
         isInstance: true,
-        relatives: [addSymb, ...addedInstances.filter(s => s !== added)],
+        relatives: [addSymb, ...addedInstances.filter((s) => s !== added)],
       });
       expect(getSymbolInfo(addSymb)).toEqual({
         ...commonInfo,
@@ -674,9 +674,9 @@ describe('Symbols', () => {
       });
 
       // All symbols still have the same amount of components
-      all.forEach(cmp => expect(cmp.components().length).toBe(newChildLen));
+      all.forEach((cmp) => expect(cmp.components().length).toBe(newChildLen));
       // All instances refer to the same symbol
-      allInst.forEach(cmp => expect(getFirstInnSymbol(cmp)).toBe(addSymb));
+      allInst.forEach((cmp) => expect(getFirstInnSymbol(cmp)).toBe(addSymb));
     });
 
     test('Moving a new added component in the symbol, will propagate the action in all instances', () => {
@@ -684,11 +684,11 @@ describe('Symbols', () => {
       const newChildLen = compInitChild + 1;
       addSymb.move(symbol, { at: 0 });
       // All symbols still have the same amount of components
-      all.forEach(cmp => expect(cmp.components().length).toBe(newChildLen));
+      all.forEach((cmp) => expect(cmp.components().length).toBe(newChildLen));
       // All instances refer to the same symbol
-      allInst.forEach(cmp => expect(getFirstInnSymbol(cmp)).toBe(addSymb));
+      allInst.forEach((cmp) => expect(getFirstInnSymbol(cmp)).toBe(addSymb));
       // The moved symbol contains all its instances
-      const addedInstances = allInst.map(cmp => cmp.components().at(0));
+      const addedInstances = allInst.map((cmp) => cmp.components().at(0));
       expect(getSymbolInfo(addSymb)).toEqual({
         isSymbol: true,
         isMain: true,
@@ -701,51 +701,51 @@ describe('Symbols', () => {
 
     test('Adding a class, reflects changes to all symbols', () => {
       const initSel = symbol.getSelectorsString();
-      all.forEach(cmp => expect(cmp.getSelectorsString()).toBe(initSel));
+      all.forEach((cmp) => expect(cmp.getSelectorsString()).toBe(initSel));
       // Adding a class to a symbol
       symbol.addClass('myclass');
       const newSel = symbol.getSelectorsString();
       expect(newSel).not.toBe(initSel);
-      all.forEach(cmp => expect(cmp.getSelectorsString()).toBe(newSel));
+      all.forEach((cmp) => expect(cmp.getSelectorsString()).toBe(newSel));
       // Adding a class to an instance
       comp.addClass('myclass2');
       const newSel2 = comp.getSelectorsString();
       expect(newSel2).not.toBe(newSel);
-      all.forEach(cmp => expect(cmp.getSelectorsString()).toBe(newSel2));
+      all.forEach((cmp) => expect(cmp.getSelectorsString()).toBe(newSel2));
     });
 
     test('Updating some prop, reflects changes to all symbols', () => {
       const propKey = 'someprop';
       const propValue = 'somevalue';
-      all.forEach(cmp => expect(cmp.get(propKey)).toBeFalsy());
+      all.forEach((cmp) => expect(cmp.get(propKey)).toBeFalsy());
       // Updating the symbol
       symbol.set(propKey, propValue);
-      all.forEach(cmp => expect(cmp.get(propKey)).toBe(propValue));
+      all.forEach((cmp) => expect(cmp.get(propKey)).toBe(propValue));
       // Updating the instance
       const propValue2 = 'somevalue2';
       comp.set(propKey, propValue2);
-      all.forEach(cmp => expect(cmp.get(propKey)).toBe(propValue2));
+      all.forEach((cmp) => expect(cmp.get(propKey)).toBe(propValue2));
     });
 
     test('Updating some attribute, reflects changes to all symbols', () => {
       const attrKey = 'data-attr';
       const attrValue = 'somevalue';
-      all.forEach(cmp => expect(cmp.getAttributes()[attrKey]).toBeFalsy());
+      all.forEach((cmp) => expect(cmp.getAttributes()[attrKey]).toBeFalsy());
       // Updating the symbol
       symbol.addAttributes({ [attrKey]: attrValue });
-      all.forEach(cmp => expect(cmp.getAttributes()[attrKey]).toBe(attrValue));
+      all.forEach((cmp) => expect(cmp.getAttributes()[attrKey]).toBe(attrValue));
       // Updating the instance with another attribute
       const attrKey2 = 'data-attr2';
       const attrValue2 = 'somevalue2';
       comp.addAttributes({ [attrKey2]: attrValue2 });
-      all.forEach(cmp => {
+      all.forEach((cmp) => {
         const attrs = cmp.getAttributes();
         expect(attrs[attrKey]).toBe(attrValue);
         expect(attrs[attrKey2]).toBe(attrValue2);
       });
       // All symbols still have the same HTML
       const symbHtml = toHTML(symbol);
-      all.forEach(cmp => expect(toHTML(cmp)).toBe(symbHtml));
+      all.forEach((cmp) => expect(toHTML(cmp)).toBe(symbHtml));
     });
 
     test('Cloning a component in an instance, reflects changes to all symbols', () => {
@@ -754,20 +754,20 @@ describe('Symbols', () => {
       const newLen = comp.components().length;
       expect(newLen).toBe(compInitChild + 1);
       // All symbols have the same amount of components
-      all.forEach(cmp => expect(cmp.components().length).toBe(newLen));
+      all.forEach((cmp) => expect(cmp.components().length).toBe(newLen));
       // All instances refer to the same symbol
-      allInst.forEach(cmp => expect(getInnSymbol(cmp, 1)).toBe(clonedSymb));
+      allInst.forEach((cmp) => expect(getInnSymbol(cmp, 1)).toBe(clonedSymb));
 
       const commonInfo = {
         isSymbol: true,
         main: clonedSymb,
-        instances: allInst.map(cmp => cmp.components().at(1)),
+        instances: allInst.map((cmp) => cmp.components().at(1)),
       };
       expect(getSymbolInfo(cloned)).toEqual({
         ...commonInfo,
         isMain: false,
         isInstance: true,
-        relatives: [clonedSymb, ...commonInfo.instances.filter(i => i !== cloned)],
+        relatives: [clonedSymb, ...commonInfo.instances.filter((i) => i !== cloned)],
       });
       expect(getSymbolInfo(clonedSymb)).toEqual({
         ...commonInfo,
@@ -783,19 +783,19 @@ describe('Symbols', () => {
       const newLen = symbol.components().length;
       // As above
       expect(newLen).toBe(compInitChild + 1);
-      all.forEach(cmp => expect(cmp.components().length).toBe(newLen));
-      allInst.forEach(cmp => expect(getInnSymbol(cmp, 1)).toBe(clonedSymb));
+      all.forEach((cmp) => expect(cmp.components().length).toBe(newLen));
+      allInst.forEach((cmp) => expect(getInnSymbol(cmp, 1)).toBe(clonedSymb));
 
       const commonInfo = {
         isSymbol: true,
         main: clonedSymb,
-        instances: allInst.map(cmp => cmp.components().at(1)),
+        instances: allInst.map((cmp) => cmp.components().at(1)),
       };
       expect(getSymbolInfo(cloned)).toEqual({
         ...commonInfo,
         isMain: false,
         isInstance: true,
-        relatives: [clonedSymb, ...commonInfo.instances.filter(i => i !== cloned)],
+        relatives: [clonedSymb, ...commonInfo.instances.filter((i) => i !== cloned)],
       });
       expect(getSymbolInfo(clonedSymb)).toEqual({
         ...commonInfo,
@@ -830,10 +830,10 @@ describe('Symbols', () => {
         setSymbolOverride(symbol, true);
         // Single prop update
         symbol.set(propKey, propValue);
-        allInst.forEach(cmp => expect(cmp.get(propKey)).toBeFalsy());
+        allInst.forEach((cmp) => expect(cmp.get(propKey)).toBeFalsy());
         // Multiple props
         symbol.set({ prop1: 'value1', prop2: 'value2' });
-        allInst.forEach(cmp => {
+        allInst.forEach((cmp) => {
           expect(cmp.get('prop1')).toBeFalsy();
           expect(cmp.get('prop2')).toBeFalsy();
         });
@@ -843,7 +843,7 @@ describe('Symbols', () => {
         // Override applied on specific properties
         setSymbolOverride(symbol, 'prop1');
         symbol.set({ prop1: 'value1-2', prop2: 'value2-2' });
-        allInst.forEach(cmp => {
+        allInst.forEach((cmp) => {
           expect(cmp.get('prop1')).toBeFalsy();
           expect(cmp.get('prop2')).toBe('value2-2');
         });
@@ -855,7 +855,7 @@ describe('Symbols', () => {
         setSymbolOverride(comp, true);
         symbol.set(propKey, propValue);
         // All symbols are updated except the one with override
-        all.forEach(cmp => {
+        all.forEach((cmp) => {
           if (cmp === comp) {
             expect(cmp.get(propKey)).toBeFalsy();
           } else {
@@ -865,7 +865,7 @@ describe('Symbols', () => {
         setSymbolOverride(comp, ['prop1']);
         symbol.set({ prop1: 'value1', prop2: 'value2' });
         // Only the overrided property is ignored
-        all.forEach(cmp => {
+        all.forEach((cmp) => {
           if (cmp === comp) {
             expect(cmp.get('prop1')).toBeFalsy();
             expect(cmp.get('prop2')).toBe('value2');
@@ -879,16 +879,16 @@ describe('Symbols', () => {
       test('Symbol is not propagating components data if override is set', () => {
         setSymbolOverride(symbol, ['components']);
         const innCompsLen = symbol.components().length;
-        all.forEach(cmp => expect(cmp.components().length).toBe(innCompsLen));
+        all.forEach((cmp) => expect(cmp.components().length).toBe(innCompsLen));
         symbol.components('Test text');
         // The symbol has changed, but istances should remain the same
         expect(symbol.components().length).toBe(1);
-        allInst.forEach(cmp => expect(toHTML(cmp)).toBe(toHTML(comp)));
-        allInst.forEach(cmp => expect(cmp.components().length).toBe(innCompsLen));
+        allInst.forEach((cmp) => expect(toHTML(cmp)).toBe(toHTML(comp)));
+        allInst.forEach((cmp) => expect(cmp.components().length).toBe(innCompsLen));
         // Check for add action
         symbol.append('<div>B</div><div>C</div>');
         expect(symbol.components().length).toBe(3);
-        allInst.forEach(cmp => expect(cmp.components().length).toBe(innCompsLen));
+        allInst.forEach((cmp) => expect(cmp.components().length).toBe(innCompsLen));
       });
 
       test('Symbol is not removing components data if override is set', () => {
@@ -896,14 +896,14 @@ describe('Symbols', () => {
         const innCompsLen = symbol.components().length;
         symbol.components().at(0).remove();
         expect(symbol.components().length).toBe(innCompsLen - 1);
-        allInst.forEach(cmp => expect(cmp.components().length).toBe(innCompsLen));
+        allInst.forEach((cmp) => expect(cmp.components().length).toBe(innCompsLen));
       });
 
       test('Symbol is not propagating remove on instances with ovverride', () => {
         setSymbolOverride(comp, ['components']);
         const innCompsLen = symbol.components().length;
         symbol.components().at(0).remove();
-        all.forEach(cmp => expect(cmp.components().length).toBe(cmp === comp ? innCompsLen : innCompsLen - 1));
+        all.forEach((cmp) => expect(cmp.components().length).toBe(cmp === comp ? innCompsLen : innCompsLen - 1));
       });
 
       test('On symbol components update, those having override are ignored', () => {
@@ -911,25 +911,25 @@ describe('Symbols', () => {
         const innCompsLen = comp.components().length;
         // Check reset action
         symbol.components('Test text');
-        all.forEach(cmp => {
+        all.forEach((cmp) => {
           expect(cmp.components().length).toBe(cmp === comp ? innCompsLen : 1);
         });
         // Align comp with others
         comp.components('Test text');
-        all.forEach(cmp => expect(cmp.components().length).toBe(1));
+        all.forEach((cmp) => expect(cmp.components().length).toBe(1));
 
         // Check add action
         symbol.append('<div>A</div>');
-        all.forEach(cmp => {
+        all.forEach((cmp) => {
           expect(cmp.components().length).toBe(cmp === comp ? 1 : 2);
         });
         // Align comp with others
         comp.append('<div>A</div>');
-        all.forEach(cmp => expect(cmp.components().length).toBe(2));
+        all.forEach((cmp) => expect(cmp.components().length).toBe(2));
 
         // Check remove action
         symbol.components().at(0).remove();
-        all.forEach(cmp => {
+        all.forEach((cmp) => {
           expect(cmp.components().length).toBe(cmp === comp ? 2 : 1);
         });
       });
@@ -974,43 +974,43 @@ describe('Symbols', () => {
       const added = symbol.append(secComp)[0];
       expect(added).toBe(secComp);
 
-      const allAdded = all.map(s => s.components().last());
+      const allAdded = all.map((s) => s.components().last());
       expect(getSymbolInfo(secComp)).toEqual({
         isSymbol: true,
         isMain: false,
         isInstance: true,
         main: secSymbol,
         instances: allAdded,
-        relatives: [secSymbol, ...allAdded.filter(s => s !== secComp)],
+        relatives: [secSymbol, ...allAdded.filter((s) => s !== secComp)],
       });
 
       expect(isSymbolNested(added)).toBe(true);
       // All instances still refer to the second symbol
-      allAdded.forEach(secInst => expect(getSymbolInfo(secInst).main).toBe(secSymbol));
+      allAdded.forEach((secInst) => expect(getSymbolInfo(secInst).main).toBe(secSymbol));
     });
 
     test('Adding the instance, of the second symbol, inside one of the first instances, propagates correctly to all first symbols', () => {
       const added = comp.append(secComp)[0];
       expect(added).toBe(secComp);
 
-      const allAdded = [comp, symbol, comp2, comp3].map(s => s.components().last());
+      const allAdded = [comp, symbol, comp2, comp3].map((s) => s.components().last());
       expect(getSymbolInfo(secComp)).toEqual({
         isSymbol: true,
         isMain: false,
         isInstance: true,
         main: secSymbol,
         instances: allAdded,
-        relatives: [secSymbol, ...allAdded.filter(s => s !== secComp)],
+        relatives: [secSymbol, ...allAdded.filter((s) => s !== secComp)],
       });
 
       // All instances still refer to the second symbol
-      allAdded.forEach(s => expect(getSymbolInfo(s).main).toBe(secSymbol));
+      allAdded.forEach((s) => expect(getSymbolInfo(s).main).toBe(secSymbol));
     });
 
     test('Adding the instance, of the second symbol, inside one of the first instances, and then removing it, will not affect second instances outside', () => {
       const secComp2 = createSymbol(secComp);
       const added = comp.append(secComp)[0];
-      const allAdded = [comp, symbol, comp2, comp3].map(s => s.components().last());
+      const allAdded = [comp, symbol, comp2, comp3].map((s) => s.components().last());
       allAdded.splice(1, 0, secComp2);
       expect(getSymbolInfo(secComp2)).toEqual({
         isSymbol: true,
@@ -1018,7 +1018,7 @@ describe('Symbols', () => {
         isInstance: true,
         main: secSymbol,
         instances: allAdded,
-        relatives: [secSymbol, ...allAdded.filter(s => s !== secComp2)],
+        relatives: [secSymbol, ...allAdded.filter((s) => s !== secComp2)],
       });
       expect(isSymbolNested(secComp2)).toBe(false);
       // Remove the second instance, added in one of the first instances
@@ -1033,23 +1033,23 @@ describe('Symbols', () => {
         relatives: [secComp2],
       });
       // First symbols has the previous number of components inside
-      all.forEach(s => expect(s.components().length).toBe(compInitChild));
+      all.forEach((s) => expect(s.components().length).toBe(compInitChild));
     });
 
     test('Moving the second instance inside first instances, propagates correctly to all other first symbols', () => {
       const added = comp.append(secComp)[0];
       expect(added.parent()).toBe(comp); // extra checks
       expect(added.index()).toBe(compInitChild);
-      const secInstansArr = getSymbolInfo(secSymbol).instances.map(i => i.cid);
+      const secInstansArr = getSymbolInfo(secSymbol).instances.map((i) => i.cid);
       expect(secInstansArr.length).toBe(all.length);
       added.move(comp, { at: 0 });
       // After the move, the symbol still have the same references
-      const secInstansArr2 = getSymbolInfo(secSymbol).instances.map(i => i.cid);
+      const secInstansArr2 = getSymbolInfo(secSymbol).instances.map((i) => i.cid);
       expect(secInstansArr2).toEqual(secInstansArr);
       // All second instances refer to the same second symbol
-      all.forEach(c => expect(getFirstInnSymbol(c)).toBe(secSymbol));
+      all.forEach((c) => expect(getFirstInnSymbol(c)).toBe(secSymbol));
 
-      const allAdded = [comp, symbol, comp2, comp3].map(s => s.components().first());
+      const allAdded = [comp, symbol, comp2, comp3].map((s) => s.components().first());
       expect(getSymbolInfo(secSymbol)).toEqual({
         isSymbol: true,
         isMain: true,

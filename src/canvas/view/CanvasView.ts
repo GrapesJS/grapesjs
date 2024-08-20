@@ -118,7 +118,7 @@ export default class CanvasView extends ModuleView<Canvas> {
       {
         ...config,
         canvasView: this,
-      }
+      },
     );
   }
 
@@ -127,7 +127,7 @@ export default class CanvasView extends ModuleView<Canvas> {
     const currFrame = this.em.getCurrentFrame();
 
     scroll &&
-      component.views?.forEach(view => {
+      component.views?.forEach((view) => {
         view.frameView === currFrame && view.scrollIntoView(scroll);
       });
   }
@@ -525,7 +525,7 @@ export default class CanvasView extends ModuleView<Canvas> {
       'borderBottomWidth',
       'borderLeftWidth',
     ];
-    marginPaddingOffsets.forEach(offset => {
+    marginPaddingOffsets.forEach((offset) => {
       result[offset] = parseFloat(styles[offset]) * zoom;
     });
 

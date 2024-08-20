@@ -70,7 +70,7 @@ export const grapesjs = {
     const em = editor.getModel();
 
     // Load plugins
-    initConfig.plugins!.forEach(pluginId => {
+    initConfig.plugins!.forEach((pluginId) => {
       const plugin = getPlugin(pluginId, plugins);
       const plgOptions = initConfig.pluginsOpts![pluginId as string] || {};
 

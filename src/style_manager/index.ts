@@ -273,11 +273,11 @@ export default class StyleManager extends ItemManagerModule<
   getSectors<T extends { array?: boolean; visible?: boolean }>(opts: T = {} as T) {
     const { sectors } = this;
     const res = sectors && sectors.models ? (opts.array ? [...sectors.models] : sectors) : [];
-    return (opts.visible ? res.filter(s => s.isVisible()) : res) as T['array'] extends true
+    return (opts.visible ? res.filter((s) => s.isVisible()) : res) as T['array'] extends true
       ? Sector[]
       : T['visible'] extends true
-      ? Sector[]
-      : Sectors;
+        ? Sector[]
+        : Sectors;
   }
 
   /**
@@ -331,7 +331,7 @@ export default class StyleManager extends ItemManagerModule<
     let prop;
 
     if (sector) {
-      prop = sector.properties.filter(prop => prop.get('property') === id || prop.get('id') === id)[0];
+      prop = sector.properties.filter((prop) => prop.get('property') === id || prop.get('id') === id)[0];
     }
 
     return prop;
@@ -381,7 +381,7 @@ export default class StyleManager extends ItemManagerModule<
    */
   select(
     target: StyleTarget | string | (StyleTarget | string)[],
-    opts: { stylable?: boolean; component?: Component } = {}
+    opts: { stylable?: boolean; component?: Component } = {},
   ) {
     const { em } = this;
     const trgs = isArray(target) ? target : [target];
@@ -389,7 +389,7 @@ export default class StyleManager extends ItemManagerModule<
     const cssc = em.Css;
     let targets: StyleTarget[] = [];
 
-    trgs.filter(Boolean).forEach(target => {
+    trgs.filter(Boolean).forEach((target) => {
       let model = target;
 
       if (isString(target)) {
@@ -402,8 +402,8 @@ export default class StyleManager extends ItemManagerModule<
       targets.push(model as StyleTarget);
     });
 
-    const component = opts.component || targets.filter(t => isComponent(t)).reverse()[0];
-    targets = targets.map(t => this.getModelToStyle(t));
+    const component = opts.component || targets.filter((t) => isComponent(t)).reverse()[0];
+    targets = targets.map((t) => this.getModelToStyle(t));
     const state = em.getState();
     const lastTarget = targets.slice().reverse()[0];
     const lastTargetParents = this.getParentRules(lastTarget, {
@@ -483,7 +483,7 @@ export default class StyleManager extends ItemManagerModule<
    * styleManager.addStyleTargets({ color: 'red' });
    */
   addStyleTargets(style: StyleProps, opts: any) {
-    this.getSelectedAll().map(t => t.addStyle(style, opts));
+    this.getSelectedAll().map((t) => t.addStyle(style, opts));
     const target = this.getSelected();
 
     // Trigger style changes on selected components
@@ -608,20 +608,20 @@ export default class StyleManager extends ItemManagerModule<
       const rulesBySelectors = (values: string[]) => {
         return !values.length
           ? []
-          : cssC.getRules().filter(rule => {
-              const rSels = rule.getSelectors().map(s => s.getFullName());
+          : cssC.getRules().filter((rule) => {
+              const rSels = rule.getSelectors().map((s) => s.getFullName());
 
               // rSels is equal to 0 when rule selectors contain tagName like : p {}, .logo path {}, ul li {}
               if (rSels.length === 0) {
                 return false;
               }
 
-              return rSels.every(rSel => values.indexOf(rSel) >= 0);
+              return rSels.every((rSel) => values.indexOf(rSel) >= 0);
             });
       };
 
       const rulesByTagName = (tagName: string) => {
-        return !tagName ? [] : cssC.getRules().filter(rule => rule.selectorsToString() === tagName);
+        return !tagName ? [] : cssC.getRules().filter((rule) => rule.selectorsToString() === tagName);
       };
 
       // Componente related rule
@@ -640,7 +640,7 @@ export default class StyleManager extends ItemManagerModule<
             target
               .getSelectors()
               .getFullName(optsSel)
-              .findIndex(sel => sel === item) === -1
+              .findIndex((sel) => sel === item) === -1,
         );
         // Get rules set on active and visible selectors
         invisibleAndOtherRules = rulesBySelectors(invisibleSel.concat(target.getSelectors().getFullName(optsSel)));
@@ -648,7 +648,7 @@ export default class StyleManager extends ItemManagerModule<
       }
 
       const all = rules
-        .filter(rule => (!isUndefined(state) ? rule.get('state') === state : 1))
+        .filter((rule) => (!isUndefined(state) ? rule.get('state') === state : 1))
         .sort(cssGen.sortRules)
         .reverse();
 
@@ -773,9 +773,9 @@ export default class StyleManager extends ItemManagerModule<
       delete newStyles.__p;
 
       cmps.forEach(
-        cmp =>
+        (cmp) =>
           // if cmp is part of selected, the event should already been triggered
-          !allSel.includes(cmp as any) && cmp.__onStyleChange(newStyles)
+          !allSel.includes(cmp as any) && cmp.__onStyleChange(newStyles),
       );
     }
   }
@@ -788,21 +788,21 @@ export default class StyleManager extends ItemManagerModule<
     const component = this.model.get('component');
     const lastTargetParents = this.getSelectedParents();
     const style = lastTarget.getStyle();
-    const parentStyles = lastTargetParents.map(p => ({
+    const parentStyles = lastTargetParents.map((p) => ({
       target: p,
       style: p.getStyle(),
     }));
 
-    sectors.map(sector => {
-      sector.getProperties().map(prop => {
+    sectors.map((sector) => {
+      sector.getProperties().map((prop) => {
         this.__upProp(prop, style, parentStyles, opts);
       });
     });
 
     // Update sectors/properties visibility
-    sectors.forEach(sector => {
+    sectors.forEach((sector) => {
       const props = sector.getProperties();
-      props.forEach(prop => {
+      props.forEach((prop) => {
         const isVisible = prop.__checkVisibility({
           target: lastTarget,
           component,
@@ -811,7 +811,7 @@ export default class StyleManager extends ItemManagerModule<
         });
         prop.set('visible', isVisible);
       });
-      const sectorVisible = props.some(p => p.isVisible());
+      const sectorVisible = props.some((p) => p.isVisible());
       sector.set('visible', sectorVisible);
     });
   }
@@ -833,7 +833,7 @@ export default class StyleManager extends ItemManagerModule<
 
     if ((isStack && newLayers === null) || (isComposite && newProps === null)) {
       const method = isStack ? '__getLayersFromStyle' : '__getPropsFromStyle';
-      const parentItem = parentStyles.filter(p => propStack[method](p.style) !== null)[0];
+      const parentItem = parentStyles.filter((p) => propStack[method](p.style) !== null)[0];
 
       if (parentItem) {
         newValue = parentItem.style[name];
@@ -847,7 +847,7 @@ export default class StyleManager extends ItemManagerModule<
       }
     } else if (!hasVal) {
       newValue = null;
-      const parentItem = parentStyles.filter(p => propDef(p.style[name]))[0];
+      const parentItem = parentStyles.filter((p) => propDef(p.style[name]))[0];
 
       if (parentItem) {
         newValue = parentItem.style[name];
@@ -868,20 +868,20 @@ export default class StyleManager extends ItemManagerModule<
       // Detached has to be treathed as separate properties
       if (propComp.isDetached()) {
         const newStyle = propComp.__getPropsFromStyle(style, { byName: true }) || {};
-        const newParentStyles = parentStyles.map(p => ({
+        const newParentStyles = parentStyles.map((p) => ({
           ...p,
           style: propComp.__getPropsFromStyle(p.style, { byName: true }) || {},
         }));
         props.map((pr: any) => this.__upProp(pr, newStyle, newParentStyles, opts));
       } else {
         propComp.__setProperties(newProps || {}, opt);
-        propComp.getProperties().map(pr => pr.__setParentTarget(parentTarget));
+        propComp.getProperties().map((pr) => pr.__setParentTarget(parentTarget));
       }
     }
   }
 
   destroy() {
-    [this.properties, this.sectors].forEach(coll => {
+    [this.properties, this.sectors].forEach((coll) => {
       coll.reset();
       coll.stopListening();
     });

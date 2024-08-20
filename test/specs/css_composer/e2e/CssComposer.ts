@@ -16,7 +16,7 @@ describe('E2E tests', () => {
     fixtures = document.body.firstElementChild!;
   });
 
-  beforeEach(done => {
+  beforeEach((done) => {
     const gjs = grapesjs.init({
       stylePrefix: '',
       storageManager: { autoload: false, type: 'none' },
@@ -70,7 +70,7 @@ describe('E2E tests', () => {
 
   test('New rules are correctly imported inside selector manager', () => {
     const rules = cssc.getAll();
-    rulesSet.forEach(item => {
+    rulesSet.forEach((item) => {
       rules.add(item);
     });
     const cls = clsm.getAll();

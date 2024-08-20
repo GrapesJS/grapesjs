@@ -22,7 +22,7 @@ describe('TraitView', () => {
         name: modelName,
         target,
       },
-      em
+      em,
     );
     obj = new TraitView({
       model: trait,
@@ -50,14 +50,14 @@ describe('TraitView', () => {
         name: modelName,
         target: target1,
       },
-      em
+      em,
     );
     const trait2 = new Trait(
       {
         name: modelName,
         target: target2,
       },
-      em
+      em,
     );
     const obj1 = new TraitView({ model: trait1 });
     const obj2 = new TraitView({ model: trait2 });

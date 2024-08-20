@@ -54,7 +54,7 @@ export default class Device extends Model<DeviceProperties> {
     this.get('width') === null && this.set('width', this.get('widthMedia'));
     !this.get('priority') && this.set('priority', parseFloat(this.get('widthMedia')!) || 0);
     const toCheck: (keyof DeviceProperties)[] = ['width', 'height', 'widthMedia'];
-    toCheck.forEach(prop => this.checkUnit(prop));
+    toCheck.forEach((prop) => this.checkUnit(prop));
   }
 
   checkUnit(prop: keyof DeviceProperties) {

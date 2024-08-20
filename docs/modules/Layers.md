@@ -14,7 +14,6 @@ This guide is referring to GrapesJS v0.19.5 or higher
 
 [[toc]]
 
-
 ## Configuration
 
 To change the default configurations you have to pass the `layerManager` option with the main configuration object.
@@ -29,7 +28,6 @@ const editor = grapesjs.init({
 ```
 
 You can check here the full list of available configuration options: [Layer Manager Config](https://github.com/GrapesJS/grapesjs/blob/master/src/navigator/config/config.ts)
-
 
 Layers are a direct representation of your components, therefore they will only be available once your components are loaded in the editor (eg. you might load your project data from a remote endpoint).
 
@@ -50,15 +48,9 @@ const editor = grapesjs.init({
 
 The configurations are mainly targeting the default UI provided by GrapesJS core, in case you need more control over the tree of your layers, you can read more in the [Customization](#customization) section below.
 
-
-
 ## Programmatic usage
 
 If you need to manage layers programmatically you can use its [APIs][Layers API].
-
-
-
-
 
 ## Customization
 
@@ -68,35 +60,34 @@ All you have to do is to indicate to the editor your intent to use a custom UI a
 
 ```js
 const editor = grapesjs.init({
+  // ...
+  layerManager: {
+    custom: true,
     // ...
-    layerManager: {
-      custom: true,
-      // ...
-    },
+  },
 });
 
 // Use this event to append your UI in the default container provided by GrapesJS.
 // You can skip this event if you don't rely on the core panels and decide to
 // place the UI in some other place.
 editor.on('layer:custom', (props) => {
-    // props.container (HTMLElement) - The default element where you can append your UI
+  // props.container (HTMLElement) - The default element where you can append your UI
 });
 
 // Triggered when the root layer is changed.
 editor.on('layer:root', (root) => {
-    // Update the root of your UI
+  // Update the root of your UI
 });
 
 // Triggered when a component is updated, this allows you to update specific layers.
 editor.on('layer:component', (component) => {
-    // Update the specific layer of your UI
+  // Update the specific layer of your UI
 });
 ```
 
 In the example below we'll replicate most of the default functionality with our own implementation.
 
 <demo-viewer value="L24hkgm5" height="500" darkcode/>
-
 
 <!-- Demo template, here for reference
 <style>
@@ -376,11 +367,9 @@ const app = new Vue({
 </script>
 -->
 
-
 ## Events
 
 For a complete list of available events, you can check it [here](/api/layer_manager.html#available-events).
 
-
-[Components]: <Components.html>
-[Layers API]: </api/layer_manager.html>
+[Components]: Components.html
+[Layers API]: /api/layer_manager.html

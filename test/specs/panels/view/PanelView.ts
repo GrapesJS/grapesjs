@@ -50,23 +50,4 @@ describe('PanelView', () => {
     model.set('visible', true);
     expect(view.$el.hasClass('gjs-hidden')).toBeFalsy();
   });
-
-  describe('Init with options', () => {
-    beforeEach(() => {
-      model = new Panel(
-        {
-          buttons: [{}],
-        } as any,
-        {} as any
-      );
-      view = new PanelView(model);
-      document.body.innerHTML = '<div id="fixtures"></div>';
-      fixtures = document.body.querySelector('#fixtures')!;
-      fixtures.appendChild(view.render().el);
-    });
-
-    afterEach(() => {
-      view.remove();
-    });
-  });
 });

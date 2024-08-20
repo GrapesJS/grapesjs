@@ -253,10 +253,13 @@ export default class EditorModel extends Model {
     }
 
     this.attrsOrig = el
-      ? toArray(el.attributes).reduce((res, next) => {
-          res[next.nodeName] = next.nodeValue;
-          return res;
-        }, {} as Record<string, any>)
+      ? toArray(el.attributes).reduce(
+          (res, next) => {
+            res[next.nodeName] = next.nodeValue;
+            return res;
+          },
+          {} as Record<string, any>,
+        )
       : '';
 
     // Move components to pages
@@ -265,15 +268,15 @@ export default class EditorModel extends Model {
     }
 
     // Load modules
-    deps.forEach(constr => this.loadModule(constr));
-    storableDeps.forEach(constr => this.loadStorableModule(constr));
+    deps.forEach((constr) => this.loadModule(constr));
+    storableDeps.forEach((constr) => this.loadStorableModule(constr));
     this.on('change:componentHovered', this.componentHovered, this);
     this.on('change:changesCount', this.updateChanges, this);
     this.on('change:readyLoad change:readyCanvas', this._checkReady, this);
-    toLog.forEach(e => this.listenLog(e));
+    toLog.forEach((e) => this.listenLog(e));
 
     // Deprecations
-    [{ from: 'change:selectedComponent', to: 'component:toggled' }].forEach(event => {
+    [{ from: 'change:selectedComponent', to: 'component:toggled' }].forEach((event) => {
       const eventFrom = event.from;
       const eventTo = event.to;
       this.listenTo(this, eventFrom, (...args) => {
@@ -310,7 +313,7 @@ export default class EditorModel extends Model {
    */
   getConfig<
     P extends EditorConfigKeys | undefined = undefined,
-    R = P extends EditorConfigKeys ? EditorConfig[P] : EditorConfig
+    R = P extends EditorConfigKeys ? EditorConfig[P] : EditorConfig,
   >(prop?: P): R {
     const { config } = this;
     // @ts-ignore
@@ -326,11 +329,11 @@ export default class EditorModel extends Model {
     const sm = this.Storage;
 
     // In `onLoad`, the module will try to load the data from its configurations.
-    this.toLoad.reverse().forEach(mdl => mdl.onLoad());
+    this.toLoad.reverse().forEach((mdl) => mdl.onLoad());
 
     // Stuff to do post load
     const postLoad = () => {
-      this.modules.forEach(mdl => mdl.postLoad && mdl.postLoad(this));
+      this.modules.forEach((mdl) => mdl.postLoad && mdl.postLoad(this));
       this.set('readyLoad', 1);
     };
 
@@ -385,7 +388,7 @@ export default class EditorModel extends Model {
     }
 
     if (stm.isAutosave() && changes >= stm.getStepsBeforeSave()) {
-      this.store().catch(err => this.logError(err));
+      this.store().catch((err) => this.logError(err));
     }
   }
 
@@ -492,17 +495,17 @@ export default class EditorModel extends Model {
     const ctrlKey = event && (event.ctrlKey || event.metaKey);
     const { shiftKey } = event || {};
     const models = (isArray(el) ? el : [el])
-      .map(cmp => cmp?.delegate?.select?.(cmp) || cmp)
+      .map((cmp) => cmp?.delegate?.select?.(cmp) || cmp)
       .filter(Boolean) as Component[];
     const selected = this.getSelectedAll();
     const mltSel = this.getConfig().multipleSelection;
     const multiple = isArray(el);
 
     if (multiple || !el) {
-      this.removeSelected(selected.filter(s => !contains(models, s)));
+      this.removeSelected(selected.filter((s) => !contains(models, s)));
     }
 
-    models.forEach(model => {
+    models.forEach((model) => {
       if (model) {
         this.trigger('component:select:before', model, opts);
 
@@ -528,7 +531,7 @@ export default class EditorModel extends Model {
         let min: number | undefined, max: number | undefined;
 
         // Fin min and max siblings
-        this.getSelectedAll().forEach(sel => {
+        this.getSelectedAll().forEach((sel) => {
           const selColl = sel.collection;
           const selIndex = sel.index();
           if (selColl === coll) {
@@ -559,7 +562,7 @@ export default class EditorModel extends Model {
         return this.addSelected(model);
       }
 
-      !multiple && this.removeSelected(selected.filter(s => s !== model));
+      !multiple && this.removeSelected(selected.filter((s) => s !== model));
       this.addSelected(model, opts);
     });
   }
@@ -573,7 +576,7 @@ export default class EditorModel extends Model {
   addSelected(component: Component | Component[], opts: any = {}) {
     const models: Component[] = isArray(component) ? component : [component];
 
-    models.forEach(model => {
+    models.forEach((model) => {
       const { selected } = this;
       if (
         !model ||
@@ -585,8 +588,8 @@ export default class EditorModel extends Model {
       }
       opts.forceChange && this.removeSelected(model, opts);
       // Remove from selection, children of the component to select
-      const toDeselect = selected.allComponents().filter(cmp => contains(cmp.parents(), model));
-      toDeselect.forEach(cmp => this.removeSelected(cmp, opts));
+      const toDeselect = selected.allComponents().filter((cmp) => contains(cmp.parents(), model));
+      toDeselect.forEach((cmp) => this.removeSelected(cmp, opts));
 
       selected.addComponent(model, opts);
       this.trigger('component:select', model, opts);
@@ -606,11 +609,11 @@ export default class EditorModel extends Model {
   removeSelected(component: Component | Component[], opts = {}) {
     this.selected.removeComponent(component, opts);
     const cmps: Component[] = isArray(component) ? component : [component];
-    cmps.forEach(component =>
+    cmps.forEach((component) =>
       this.Canvas.removeSpots({
         type: CanvasSpotBuiltInTypes.Select,
         component,
-      })
+      }),
     );
   }
 
@@ -623,7 +626,7 @@ export default class EditorModel extends Model {
   toggleSelected(component: Component | Component[], opts: any = {}) {
     const models = isArray(component) ? component : [component];
 
-    models.forEach(model => {
+    models.forEach((model) => {
       if (this.selected.hasComponent(model)) {
         this.removeSelected(model, opts);
       } else {
@@ -858,7 +861,7 @@ export default class EditorModel extends Model {
     const editingCmp = this.getEditing();
     editingCmp && editingCmp.trigger('sync:content', { noCount: true });
 
-    this.storables.forEach(m => {
+    this.storables.forEach((m) => {
       result = { ...result, ...m.store(1) };
     });
     return JSON.parse(JSON.stringify(result));
@@ -866,8 +869,8 @@ export default class EditorModel extends Model {
 
   loadData(data: ProjectData = {}): ProjectData {
     if (!isEmptyObj(data)) {
-      this.storables.forEach(module => module.clear());
-      this.storables.forEach(module => module.load(data));
+      this.storables.forEach((module) => module.clear());
+      this.storables.forEach((module) => module.load(data));
     }
     return data;
   }
@@ -902,6 +905,7 @@ export default class EditorModel extends Model {
    */
   stopDefault(opts = {}) {
     const commands = this.get('Commands');
+    if (!commands) return;
     const command = commands.get(this.config.defaultCommand);
     if (!command || !this.defaultRunning) return;
     command.stop(this, this, opts);
@@ -1021,16 +1025,16 @@ export default class EditorModel extends Model {
     shallow?.destroyAll();
     this.stopListening();
     this.stopDefault();
-    this.modules
+    (this.modules || [])
       .slice()
       .reverse()
-      .forEach(mod => mod.destroy());
-    view && view.remove();
+      .forEach((mod) => mod.destroy());
+    view?.remove && view.remove();
     this.clear({ silent: true });
     this.destroyed = true;
     ['_config', 'view', '_previousAttributes', '_events', '_listeners'].forEach(
       //@ts-ignore
-      i => (this[i] = {})
+      (i) => (this[i] = {}),
     );
     editors.splice(editors.indexOf(editor), 1);
     //@ts-ignore

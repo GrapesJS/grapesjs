@@ -4,12 +4,14 @@ import Component from '../../dom_components/model/Component';
 import EditorModel from '../../editor/model/Editor';
 import ItemView from './ItemView';
 import Components from '../../dom_components/model/Components';
+import LayerManager from '..';
 
 export default class ItemsView extends View {
   items: ItemView[];
   opt: any;
   config: any;
   parentView: ItemView;
+  module: LayerManager;
   /** @ts-ignore */
   collection!: Components;
 
@@ -19,6 +21,7 @@ export default class ItemsView extends View {
     this.opt = opt;
     const config = opt.config || {};
     this.config = config;
+    this.module = opt.module;
     this.parentView = opt.parentView;
     const pfx = config.stylePrefix || '';
     const ppfx = config.pStylePrefix || '';
@@ -123,15 +126,17 @@ export default class ItemsView extends View {
 
   remove(...args: []) {
     View.prototype.remove.apply(this, args);
-    this.items.map(i => i.remove());
+    this.items.map((i) => i.remove());
     return this;
   }
 
   render() {
+    const { el, module } = this;
     const frag = document.createDocumentFragment();
-    const el = this.el;
     el.innerHTML = '';
-    this.collection.each(model => this.addToCollection(model, frag));
+    this.collection
+      .map((cmp) => module.__getLayerFromComponent(cmp))
+      .forEach((model) => this.addToCollection(model, frag));
     el.appendChild(frag);
     el.className = this.className!;
     return this;

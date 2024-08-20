@@ -43,7 +43,7 @@ export default {
       'onFrameScroll',
       'onFrameResize',
       'onFrameUpdated',
-      'onContainerChange'
+      'onContainerChange',
     );
   },
 
@@ -98,7 +98,7 @@ export default {
     em[method]('frame:updated', this.onFrameUpdated, this);
     em[method]('canvas:updateTools', this.onFrameUpdated, this);
     em[method](em.Canvas.events.refresh, this.updateAttached, this);
-    em.Canvas.getFrames().forEach(frame => {
+    em.Canvas.getFrames().forEach((frame) => {
       const { view } = frame;
       const win = view?.getWindow();
       win && trigger(win, view?.getBody()!);
@@ -141,7 +141,7 @@ export default {
     let result = {};
 
     if (component) {
-      component.views?.forEach(view => {
+      component.views?.forEach((view) => {
         const el = view.el;
         const pos = this.getElementPos(el);
         result = { el, pos, component, view: getViewEl(el) };
@@ -156,7 +156,7 @@ export default {
       this.currentDoc = null;
       this.elHovered = 0;
       this.updateToolsLocal();
-      this.canvas.getFrames().forEach(frame => {
+      this.canvas.getFrames().forEach((frame) => {
         const { view } = frame;
         const el = view && view.getToolsEl();
         el && this.toggleToolsEl(0, 0, { el });

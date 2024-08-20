@@ -30,7 +30,7 @@ export default class Buttons extends ModuleCollection<Button> {
    * */
   deactivateAll(ctx?: string, sender?: any) {
     const context = ctx || '';
-    this.forEach(model => {
+    this.forEach((model) => {
       if (model.get('context') == context && model !== sender) {
         //@ts-ignore
         model.set('active', false, { fromCollection: true });

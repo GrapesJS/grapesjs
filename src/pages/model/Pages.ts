@@ -10,8 +10,8 @@ export default class Pages extends Collection<Page> {
 
     // @ts-ignore We need to inject `em` for pages created on reset from the Storage load
     this.model = (props: {}, opts = {}) => {
-      return new Page(props, {...opts, em });
-    }
+      return new Page(props, { ...opts, em });
+    };
   }
 
   onReset(m: Page, opts?: { previousModels?: Pages }) {
