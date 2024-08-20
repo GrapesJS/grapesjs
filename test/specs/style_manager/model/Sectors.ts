@@ -41,13 +41,13 @@ describe('Sectors', () => {
     });
 
     test('All sectors should exist', () => {
-      [s1, s2].forEach(sector => expect(sector).toBeTruthy());
+      [s1, s2].forEach((sector) => expect(sector).toBeTruthy());
     });
 
     test('All sectors and properties are visible by default', () => {
-      [s1, s2].forEach(sector => {
+      [s1, s2].forEach((sector) => {
         expect(sector.isVisible()).toBe(true);
-        sector.getProperties().forEach(prop => {
+        sector.getProperties().forEach((prop) => {
           expect(prop.isVisible()).toBe(true);
         });
       });
@@ -61,11 +61,11 @@ describe('Sectors', () => {
 
       expect(s1.isVisible()).toBe(true);
       expect(s2.isVisible()).toBe(false);
-      s1.getProperties().forEach(prop => {
+      s1.getProperties().forEach((prop) => {
         const isVisible = stylable.indexOf(prop.getName()) >= 0;
         expect(prop.isVisible()).toBe(isVisible);
       });
-      s2.getProperties().forEach(prop => {
+      s2.getProperties().forEach((prop) => {
         expect(prop.isVisible()).toBe(false);
       });
     });
@@ -78,10 +78,10 @@ describe('Sectors', () => {
 
       expect(s1.isVisible()).toBe(true);
       expect(s2.isVisible()).toBe(true);
-      s1.getProperties().forEach(prop => {
+      s1.getProperties().forEach((prop) => {
         expect(prop.isVisible()).toBe(true);
       });
-      s2.getProperties().forEach(prop => {
+      s2.getProperties().forEach((prop) => {
         const isVisible = unstylable.indexOf(prop.getName()) < 0;
         expect(prop.isVisible()).toBe(isVisible);
       });

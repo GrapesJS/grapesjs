@@ -43,11 +43,11 @@ const SINGLE_AT_RULE_TYPES = [
   CSS_RULE_TYPES.VIEWPORT_RULE,
 ];
 
-const NESTABLE_AT_RULE_NAMES = AT_RULE_KEYS.filter(i => SINGLE_AT_RULE_TYPES.indexOf(Number(i)) < 0)
-  .map(i => AT_RULE_NAMES[i])
+const NESTABLE_AT_RULE_NAMES = AT_RULE_KEYS.filter((i) => SINGLE_AT_RULE_TYPES.indexOf(Number(i)) < 0)
+  .map((i) => AT_RULE_NAMES[i])
   .concat(['container', 'layer']);
 
-const SINGLE_AT_RULE_NAMES = SINGLE_AT_RULE_TYPES.map(n => AT_RULE_NAMES[n]);
+const SINGLE_AT_RULE_NAMES = SINGLE_AT_RULE_TYPES.map((n) => AT_RULE_NAMES[n]);
 
 /**
  * Parse selector string to array.
@@ -152,7 +152,7 @@ export const createNode = (selectors: string[], style = {}, opts = {}): CssRuleJ
 
 export const getNestableAtRule = (node: CSSRule) => {
   const { cssText = '' } = node;
-  return NESTABLE_AT_RULE_NAMES.find(name => cssText.indexOf(`@${name}`) === 0);
+  return NESTABLE_AT_RULE_NAMES.find((name) => cssText.indexOf(`@${name}`) === 0);
 };
 
 /**

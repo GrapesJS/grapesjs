@@ -99,7 +99,7 @@ export default class CssGenerator extends Model {
         rules = this.matchedRules(model, rules);
       }
 
-      rules.forEach(rule => {
+      rules.forEach((rule) => {
         const atRule = rule.getAtRule();
 
         if (atRule) {
@@ -121,12 +121,12 @@ export default class CssGenerator extends Model {
         }
       });
 
-      this.sortMediaObject(atRules).forEach(item => {
+      this.sortMediaObject(atRules).forEach((item) => {
         let rulesStr = '';
         const atRule = item.key;
         const mRules = item.value;
 
-        mRules.forEach(rule => {
+        mRules.forEach((rule) => {
           const ruleStr = this.buildFromRule(rule, dump, opts);
 
           if (rule.get('singleAtRule')) {
@@ -147,7 +147,7 @@ export default class CssGenerator extends Model {
       em && clearStyles && rules.remove && rules.remove(dump);
     }
 
-    return json ? codeJson.filter(r => r) : code;
+    return json ? codeJson.filter((r) => r) : code;
   }
 
   /**
@@ -164,7 +164,7 @@ export default class CssGenerator extends Model {
     let found;
 
     // This will not render a rule if there is no its component
-    rule.get('selectors')?.forEach(selector => {
+    rule.get('selectors')?.forEach((selector) => {
       const name = selector.getFullName();
       if (this.compCls.indexOf(name) >= 0 || this.ids.indexOf(name) >= 0 || opts.keepUnusedStyles) {
         found = 1;
@@ -191,13 +191,13 @@ export default class CssGenerator extends Model {
     const el = component.getEl();
     let result: CssRule[] = [];
 
-    rules.forEach(rule => {
+    rules.forEach((rule) => {
       try {
         if (
           rule
             .selectorsToString()
             .split(',')
-            .some(selector => el?.matches(this.__cleanSelector(selector)))
+            .some((selector) => el?.matches(this.__cleanSelector(selector)))
         ) {
           result.push(rule);
         }
@@ -235,7 +235,7 @@ export default class CssGenerator extends Model {
     const itemsArr: { key: string; value: CssRule[] }[] = [];
     each(items, (value, key) => itemsArr.push({ key, value }));
     return itemsArr.sort((a, b) => {
-      const isMobFirst = [a.key, b.key].every(mquery => mquery.indexOf('min-width') !== -1);
+      const isMobFirst = [a.key, b.key].every((mquery) => mquery.indexOf('min-width') !== -1);
       const left = isMobFirst ? a.key : b.key;
       const right = isMobFirst ? b.key : a.key;
       return this.getQueryLength(left) - this.getQueryLength(right);
@@ -244,7 +244,7 @@ export default class CssGenerator extends Model {
 
   sortRules(a: CssRule, b: CssRule) {
     const getKey = (rule: CssRule) => rule.get('mediaText') || '';
-    const isMobFirst = [getKey(a), getKey(b)].every(q => q.indexOf('min-width') !== -1);
+    const isMobFirst = [getKey(a), getKey(b)].every((q) => q.indexOf('min-width') !== -1);
     const left = isMobFirst ? getKey(a) : getKey(b);
     const right = isMobFirst ? getKey(b) : getKey(a);
     return this.getQueryLength(left) - this.getQueryLength(right);
@@ -259,7 +259,7 @@ export default class CssGenerator extends Model {
   __cleanSelector(selector: string) {
     return selector
       .split(' ')
-      .map(item => item.split(':')[0])
+      .map((item) => item.split(':')[0])
       .join(' ');
   }
 }

@@ -55,7 +55,7 @@ export default class Page extends Model<PagePropertiesDefined> {
     if (!props.frames) {
       defFrame.component = props.component;
       defFrame.styles = props.styles;
-      ['component', 'styles'].map(i => this.unset(i));
+      ['component', 'styles'].map((i) => this.unset(i));
     }
     const frms: any[] = props.frames || [defFrame];
     const frames = new Frames(em!.Canvas, frms);

@@ -32,7 +32,7 @@ describe('PropertySelectView', () => {
         list: options,
         property: propName,
       },
-      { em }
+      { em },
     );
     view = new PropertySelectView({ model });
     document.body.innerHTML = '<div id="fixtures"></div>';
@@ -90,7 +90,7 @@ describe('PropertySelectView', () => {
     expect(view.model.get('value')).toEqual(propValue);
   });
 
-  test('Update input on value change', done => {
+  test('Update input on value change', (done) => {
     view.model.set('value', propValue);
     setTimeout(() => {
       expect(view.getInputEl().value).toEqual(propValue);

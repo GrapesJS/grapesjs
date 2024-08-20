@@ -185,7 +185,7 @@ export default class ComponentTextView<TComp extends ComponentText = ComponentTe
 
       if (textModel && textModel.is?.('textnode')) {
         const cmps = textModel.collection;
-        cmps.forEach(cmp => {
+        cmps.forEach((cmp) => {
           if (cmp === textModel) {
             const type = 'textnode';
             const cnt = opts.useDomContent ? textNode.textContent || '' : cmp.content;

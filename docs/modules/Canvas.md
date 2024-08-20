@@ -14,7 +14,6 @@ This guide is referring to GrapesJS v0.21.5 or higher
 
 [[toc]]
 
-
 ## Configuration
 
 To change the default configurations you have to pass the `canvas` property with the main configuration object.
@@ -29,7 +28,6 @@ const editor = grapesjs.init({
 ```
 
 Check the full list of available options here: [Canvas Config](https://github.com/GrapesJS/grapesjs/blob/master/src/canvas/config/config.ts)
-
 
 ## Canvas Spots
 
@@ -47,9 +45,11 @@ The `select` type is responsable for showing selected components and rendering t
 
 ::: tip
 Get the toolbar items from the component.
+
 ```js
 const toolbarItems = editor.getSelected().toolbar;
 ```
+
 :::
 
 #### Resize type
@@ -60,9 +60,11 @@ The `resize` type allows resizing of a component, based on the component's resiz
 
 ::: tip
 Get the component resizable options.
+
 ```js
 const resizable = editor.getSelected().resizable;
 ```
+
 :::
 
 #### Target type
@@ -73,17 +75,19 @@ The `target` type is used to highlight the component, like during the drag & dro
 
 ::: warning
 The default green position indicator is not part of the spot but you can easily customize it via CSS.
+
 ```css
 .gjs-placeholder.horizontal {
-   border-color: transparent red;
+  border-color: transparent red;
 }
 .gjs-placeholder.vertical {
-   border-color: red transparent;
+  border-color: red transparent;
 }
 .gjs-placeholder-int {
-   background-color: red;
+  background-color: red;
 }
 ```
+
 :::
 
 #### Hover type
@@ -94,18 +98,16 @@ The `hover` is used to highlight the hovered component and show the component na
 
 ::: tip
 Get the component name.
+
 ```js
 const name = editor.getSelected().getName();
 ```
+
 :::
 
 #### Spacing type
 
 The `spacing` type is used to show component offsets like paddings and margins (visible on the `hover` type image above).
-
-
-
-
 
 ### Disable built-in types
 
@@ -113,21 +115,19 @@ You can disable the rendering of built-in canvas spots (some or all of them) dur
 
 ```js
 grapesjs.init({
-    // ...
-    canvas: {
-        // Disable only the hover type spot
-        customSpots: {
-            hover: true,
-        },
-        // Disable all built-in spots
-        customSpots: true,
+  // ...
+  canvas: {
+    // Disable only the hover type spot
+    customSpots: {
+      hover: true,
     },
-})
+    // Disable all built-in spots
+    customSpots: true,
+  },
+});
 ```
+
 In the next section, we'll see how it's possible to reuse the built-in spots and create your own.
-
-
-
 
 ### Spots customization
 
@@ -139,21 +139,28 @@ In the example below we'll see how to reuse the built-in `hover` canvas spot to 
 
 Worth noting a few important points:
 
-* Our custom container has to be moved inside the GrapesJS spots container.
+- Our custom container has to be moved inside the GrapesJS spots container.
+
 ```js
 editor.onReady(() => {
- Canvas.getSpotsEl().appendChild(this.$el);
+  Canvas.getSpotsEl().appendChild(this.$el);
 });
 ```
-* We pass the `component` to our custom spot, in order to have the style coordinates properly updated when we scroll the page or update the component.
+
+- We pass the `component` to our custom spot, in order to have the style coordinates properly updated when we scroll the page or update the component.
+
 ```js
 Canvas.addSpot({ type: customSpotType, component });
 ```
-* The single spot is placed properly with `spot.getStyle()`
+
+- The single spot is placed properly with `spot.getStyle()`
+
 ```html
 <div ... class="spot" :style="spot.getStyle()">...</div>
 ```
-* The spots container, by default, relies on `pointer-events: none`, in order to prevent the spot from blocking the interaction with the components. This is why we have to re-enable the pointer event on the button in order to make it interactable.
+
+- The spots container, by default, relies on `pointer-events: none`, in order to prevent the spot from blocking the interaction with the components. This is why we have to re-enable the pointer event on the button in order to make it interactable.
+
 ```css
 .spot-text-btn {
   /*...*/
@@ -265,10 +272,6 @@ Canvas.addSpot({ type: customSpotType, component });
   });
 </script>
 -->
-
-
-
-
 
 ## Events
 

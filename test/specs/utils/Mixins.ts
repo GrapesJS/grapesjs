@@ -24,6 +24,7 @@ describe('.buildBase64UrlFromSvg', () => {
     </svg>`;
 
     const output =
+      // eslint-disable-next-line max-len
       'data:image/svg+xml;base64,PHN2ZwogICAgICB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciCiAgICAgIHdpZHRoPSIyNCIKICAgICAgaGVpZ2h0PSIyNCIKICAgICAgdmlld0JveD0iMCAwIDI0IDI0IgogICAgICBmaWxsPSJub25lIgogICAgICBzdHJva2U9ImN1cnJlbnRDb2xvciIKICAgICAgc3Ryb2tlLXdpZHRoPSIyIgogICAgICBzdHJva2UtbGluZWNhcD0icm91bmQiCiAgICAgIHN0cm9rZS1saW5lam9pbj0icm91bmQiCiAgICA+CiAgICAgIDxwb2x5Z29uIHBvaW50cz0iMSA2IDEgMjIgOCAxOCAxNiAyMiAyMyAxOCAyMyAyIDE2IDYgOCAyIDEgNiIgLz4KICAgICAgPGxpbmUgeDE9IjgiIHkxPSIyIiB4Mj0iOCIgeTI9IjE4IiAvPgogICAgICA8bGluZSB4MT0iMTYiIHkxPSI2IiB4Mj0iMTYiIHkyPSIyMiIgLz4KICAgIDwvc3ZnPg==';
     expect(buildBase64UrlFromSvg(input)).toEqual(output);
   });

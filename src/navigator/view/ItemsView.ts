@@ -123,7 +123,7 @@ export default class ItemsView extends View {
 
   remove(...args: []) {
     View.prototype.remove.apply(this, args);
-    this.items.map(i => i.remove());
+    this.items.map((i) => i.remove());
     return this;
   }
 
@@ -131,7 +131,7 @@ export default class ItemsView extends View {
     const frag = document.createDocumentFragment();
     const el = this.el;
     el.innerHTML = '';
-    this.collection.each(model => this.addToCollection(model, frag));
+    this.collection.each((model) => this.addToCollection(model, frag));
     el.appendChild(frag);
     el.className = this.className!;
     return this;

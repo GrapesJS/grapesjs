@@ -1,6 +1,6 @@
 <template>
   <Layout>
-    <CarbonAds slot="sidebar-top"/>
+    <CarbonAds slot="sidebar-top" />
   </Layout>
 </template>
 
@@ -9,13 +9,13 @@
 // var CarbonAds = require('./CarbonAds.vue').default;
 // import Layout from '@vuepress/theme-default/layouts/Layout.vue';
 // import CarbonAds from './CarbonAds.vue';
-import Layout from '@parent-theme/layouts/Layout.vue'
+import Layout from '@parent-theme/layouts/Layout.vue';
 import CarbonAds from './CarbonAds.vue';
 
 export default {
   components: {
     Layout,
     CarbonAds,
-  }
-}
+  },
+};
 </script>

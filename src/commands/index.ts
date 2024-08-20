@@ -82,7 +82,7 @@ export const getOnComponentDrag = (em: Editor) => (data: any) => em.trigger(even
 export const getOnComponentDragEnd =
   (em: Editor, targets: Component[], opts: { altMode?: boolean } = {}) =>
   (a: any, b: any, data: any) => {
-    targets.forEach(trg => trg.set('status', trg.get('selectable') ? 'selected' : ''));
+    targets.forEach((trg) => trg.set('status', trg.get('selectable') ? 'selected' : ''));
     em.setSelected(targets);
     targets[0].emitUpdate();
     em.trigger(`${eventDrag}:end`, data);
@@ -115,7 +115,7 @@ export default class CommandsModule extends Module<CommandsConfig & { pStylePref
     }
 
     // Load commands passed via configuration
-    Object.keys(config.defaults!).forEach(k => {
+    Object.keys(config.defaults!).forEach((k) => {
       const obj = config.defaults![k];
       if (obj.id) this.add(obj.id, obj);
     });
@@ -140,7 +140,7 @@ export default class CommandsModule extends Module<CommandsConfig & { pStylePref
         const { event } = opts;
         const trg = opts.target as Component | undefined;
         const trgs = trg ? [trg] : [...ed.getSelectedAll()];
-        const targets = trgs.map(trg => trg.delegate?.move?.(trg) || trg).filter(Boolean);
+        const targets = trgs.map((trg) => trg.delegate?.move?.(trg) || trg).filter(Boolean);
         const target = targets[targets.length - 1] as Component | undefined;
         const nativeDrag = event?.type === 'dragstart';
         const modes = ['absolute', 'translate'];
@@ -152,7 +152,7 @@ export default class CommandsModule extends Module<CommandsConfig & { pStylePref
         const mode = target.get('dmode') || em.get('dmode');
         const hideTlb = () => em.stopDefault(defComOptions);
         const altMode = includes(modes, mode);
-        targets.forEach(trg => trg.trigger('disable', { fromMove: true }));
+        targets.forEach((trg) => trg.trigger('disable', { fromMove: true }));
 
         // Without setTimeout the ghost image disappears
         nativeDrag ? setTimeout(hideTlb, 0) : hideTlb();
@@ -186,14 +186,14 @@ export default class CommandsModule extends Module<CommandsConfig & { pStylePref
           cmdMove.initSorterFromModels(targets);
         }
 
-        targets.filter(sel => sel.get('selectable')).forEach(sel => sel.set('status', 'freezed-selected'));
+        targets.filter((sel) => sel.get('selectable')).forEach((sel) => sel.set('status', 'freezed-selected'));
       },
     };
 
     // Core commands
-    defaultCommands['core:undo'] = e => e.UndoManager.undo();
-    defaultCommands['core:redo'] = e => e.UndoManager.redo();
-    commandsDef.forEach(item => {
+    defaultCommands['core:undo'] = (e) => e.UndoManager.undo();
+    defaultCommands['core:redo'] = (e) => e.UndoManager.redo();
+    commandsDef.forEach((item) => {
       const oldCmd = item[2];
       const cmd = require(`./view/${item[1]}`).default;
       const cmdName = `core:${item[0]}`;
@@ -201,7 +201,7 @@ export default class CommandsModule extends Module<CommandsConfig & { pStylePref
       if (oldCmd) {
         defaultCommands[oldCmd] = cmd;
         // Propogate old commands (can be removed once we stop to call old commands)
-        ['run', 'stop'].forEach(name => {
+        ['run', 'stop'].forEach((name) => {
           em.on(`${name}:${oldCmd}`, (...args) => em.trigger(`${name}:${cmdName}`, ...args));
         });
       }
@@ -293,7 +293,7 @@ export default class CommandsModule extends Module<CommandsConfig & { pStylePref
       };
       this.add(id, cmdObj);
       // Extend also old name commands if exist
-      const oldCmd = commandsDef.filter(cmd => `core:${cmd[0]}` === id && cmd[2])[0];
+      const oldCmd = commandsDef.filter((cmd) => `core:${cmd[0]}` === id && cmd[2])[0];
       oldCmd && this.add(oldCmd[2], cmdObj);
     }
 

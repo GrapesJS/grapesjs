@@ -55,13 +55,13 @@ export default class Sector extends Model<SectorProperties> {
 
     if (!builded) {
       props = this.get('properties')!
-        .map(prop => (isString(prop) ? this.buildProperties(prop)[0] : prop))
+        .map((prop) => (isString(prop) ? this.buildProperties(prop)[0] : prop))
         .filter(Boolean);
     } else {
       props = this.extendProperties(builded);
     }
 
-    props = props.map(prop => this.checkExtend(prop));
+    props = props.map((prop) => this.checkExtend(prop));
 
     const propsModel = new Properties(props, { em });
     propsModel.sector = this;
@@ -131,7 +131,7 @@ export default class Sector extends Model<SectorProperties> {
   getProperties(opts: { withValue?: boolean; withParentValue?: boolean } = {}) {
     const props = this.properties;
     const res = (props.models ? [...props.models] : props) as Property[];
-    return res.filter(prop => {
+    return res.filter((prop) => {
       let result = true;
 
       if (opts.withValue) {
@@ -148,7 +148,7 @@ export default class Sector extends Model<SectorProperties> {
   }
 
   getProperty(id: string): Property | undefined {
-    return this.getProperties().filter(prop => prop.get('id') === id)[0] || undefined;
+    return this.getProperties().filter((prop) => prop.get('id') === id)[0] || undefined;
   }
 
   addProperty(property: PropertyTypes, opts: AddOptions) {
@@ -195,7 +195,7 @@ export default class Sector extends Model<SectorProperties> {
       }
     }
 
-    return ex ? isolated.filter(i => i) : props;
+    return ex ? isolated.filter((i) => i) : props;
   }
 
   checkExtend(prop: any): PropertyTypes {

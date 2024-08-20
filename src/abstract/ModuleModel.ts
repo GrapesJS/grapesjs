@@ -6,7 +6,7 @@ export default class ModuleModel<
   TModule extends IBaseModule<any> = Module,
   T extends ObjectHash = any,
   S = SetOptions,
-  E = any
+  E = any,
 > extends Model<T, S, E> {
   private _module: TModule;
 

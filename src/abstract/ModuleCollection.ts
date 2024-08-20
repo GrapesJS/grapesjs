@@ -15,7 +15,7 @@ export default class ModuleCollection<TModel extends ModuleModel = ModuleModel> 
     //Note: the undefined case needed because backbonejs not handle the reset() correctly
     var models = isArray(model) ? model : !isUndefined(model) ? [model] : undefined;
 
-    models = models?.map(m => (m instanceof this.newModel ? m : new this.newModel(this.module, m))) ?? [undefined];
+    models = models?.map((m) => (m instanceof this.newModel ? m : new this.newModel(this.module, m))) ?? [undefined];
 
     return super.add(isArray(model) ? models : models[0], options);
   }
@@ -23,7 +23,7 @@ export default class ModuleCollection<TModel extends ModuleModel = ModuleModel> 
   constructor(
     module: ModuleExt<TModel>,
     models: TModel[] | Array<Record<string, any>>,
-    modelConstructor: ModelConstructor<TModel>
+    modelConstructor: ModelConstructor<TModel>,
   ) {
     super(models, { module, modelConstructor });
   }

@@ -94,7 +94,7 @@ describe('Component', () => {
           'data-test2': 'value2',
         },
       },
-      compOpts
+      compOpts,
     );
     expect(obj.toHTML()).toEqual('<article data-test1="value1" data-test2="value2"></article>');
   });
@@ -107,7 +107,7 @@ describe('Component', () => {
           'data-is-a-test': '',
         },
       },
-      compOpts
+      compOpts,
     );
     expect(obj.toHTML()).toEqual('<div data-is-a-test=""></div>');
   });
@@ -117,9 +117,9 @@ describe('Component', () => {
       {
         tagName: 'article',
       },
-      compOpts
+      compOpts,
     );
-    ['class1', 'class2'].forEach(item => {
+    ['class1', 'class2'].forEach((item) => {
       obj.classes.add({ name: item });
     });
     expect(obj.toHTML()).toEqual('<article class="class1 class2"></article>');
@@ -436,7 +436,7 @@ describe('Component', () => {
       expect(model.get('removable')).toEqual(true);
       expect(model.get('draggable')).toEqual(true);
       expect(model.get('propagate')).toEqual(['stop']);
-      model.components().each(model => inhereted(model));
+      model.components().each((model) => inhereted(model));
     };
     const inhereted = (model: Component) => {
       if (model.get('stop')) {
@@ -445,10 +445,10 @@ describe('Component', () => {
         expect(model.get('removable')).toEqual(false);
         expect(model.get('draggable')).toEqual(false);
         expect(model.get('propagate')).toEqual(['removable', 'draggable']);
-        model.components().each(model => inhereted(model));
+        model.components().each((model) => inhereted(model));
       }
     };
-    newObj.components().each(model => inhereted(model));
+    newObj.components().each((model) => inhereted(model));
   });
 
   test('setStyle parses styles correctly', () => {
@@ -505,7 +505,7 @@ describe('Image Component', () => {
         attributes: { alt: 'AltTest' },
         src: 'testPath',
       },
-      compOpts
+      compOpts,
     );
     expect(obj.toHTML()).toEqual('<img alt="AltTest" src="testPath"/>');
   });
@@ -552,7 +552,7 @@ describe('Text Component', () => {
         attributes: { 'data-test': 'value' },
         content: 'test content',
       },
-      compOpts
+      compOpts,
     );
     expect(obj.toHTML()).toEqual('<div data-test="value">test content</div>');
   });
@@ -587,7 +587,7 @@ describe('Text Node Component', () => {
         attributes: { 'data-test': 'value' },
         content: 'test content &<>"\'',
       },
-      compOpts
+      compOpts,
     );
     expect(obj.toHTML()).toEqual('test content &amp;&lt;&gt;"\'');
   });

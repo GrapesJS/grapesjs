@@ -500,7 +500,7 @@ export default class Sorter extends View {
     if (model?.set) {
       const cv = this.em!.Canvas;
       const { Select, Hover, Spacing } = CanvasSpotBuiltInTypes;
-      [Select, Hover, Spacing].forEach(type => cv.removeSpots({ type }));
+      [Select, Hover, Spacing].forEach((type) => cv.removeSpots({ type }));
       cv.addSpot({ ...spotTarget, component: model as any });
       model.set('status', 'selected-parent');
       this.targetModel = model;
@@ -1182,7 +1182,7 @@ export default class Sorter extends View {
       } else {
         toMoveArr
           // add the model's parents
-          .map(model => ({
+          .map((model) => ({
             model,
             parents: this.parents(model),
           }))
@@ -1200,7 +1200,7 @@ export default class Sorter extends View {
                 ...lastPos!,
                 indexEl: lastPos!.indexEl - domPositionOffset,
                 index: lastPos!.index - domPositionOffset,
-              })
+              }),
             );
             // when the element is dragged to the same parent and after its position
             //  it will be removed from the children list
@@ -1238,7 +1238,7 @@ export default class Sorter extends View {
         // @ts-ignore
         index: srcModel && srcModel.index(),
       };
-      moved.length ? moved.forEach(m => onEndMove(m, this, data)) : onEndMove(null, this, { ...data, cancelled: 1 });
+      moved.length ? moved.forEach((m) => onEndMove(m, this, data)) : onEndMove(null, this, { ...data, cancelled: 1 });
     }
 
     isFunction(onEnd) && onEnd({ sorter: this });

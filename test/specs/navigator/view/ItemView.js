@@ -5,7 +5,7 @@ import EditorModel from 'editor/model/Editor';
 describe('ItemView', () => {
   let itemView;
 
-  const isVisible = itemView => {
+  const isVisible = (itemView) => {
     return itemView.module.isVisible(itemView.model);
   };
 

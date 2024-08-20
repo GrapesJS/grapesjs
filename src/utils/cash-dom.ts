@@ -26,8 +26,8 @@ function find(selector, context) {
   return classRe.test(selector)
     ? context.getElementsByClassName(selector.slice(1))
     : tagRe.test(selector)
-    ? context.getElementsByTagName(selector)
-    : context.querySelectorAll(selector);
+      ? context.getElementsByTagName(selector)
+      : context.querySelectorAll(selector);
 } // @require ./find.js
 // @require ./variables.js
 
@@ -45,8 +45,8 @@ function Cash(selector, context) {
     eles = idRe.test(selector)
       ? context.getElementById(selector.slice(1))
       : htmlRe.test(selector)
-      ? parseHTML(selector)
-      : find(selector, context);
+        ? parseHTML(selector)
+        : find(selector, context);
     if (!eles) return;
   } else if (isFunction(selector)) {
     return this.ready(selector); //FIXME: `fn.ready` is not included in `core`, but it's actually a core functionality
@@ -102,7 +102,7 @@ fn.map = function (callback) {
   return cash(
     map.call(this, function (ele, i) {
       return callback.call(ele, i, ele);
-    })
+    }),
   );
 }; // @require core/cash.js
 // @require core/variables.js
@@ -228,12 +228,12 @@ function getCompareFunction(selector) {
         return matches(ele, selector);
       }
     : selector.__cash
-    ? function (i, ele) {
-        return selector.is(ele);
-      }
-    : function (i, ele, selector) {
-        return ele === selector;
-      };
+      ? function (i, ele) {
+          return selector.is(ele);
+        }
+      : function (i, ele, selector) {
+          return ele === selector;
+        };
 } // @require core/cash.js
 // @require core/get_compare_function.js
 // @require core/type_checking.js
@@ -246,7 +246,7 @@ fn.filter = function (selector) {
   return cash(
     filter.call(this, function (ele, i) {
       return comparator.call(ele, i, ele, selector);
-    })
+    }),
   );
 }; // @require ./type_checking.js
 
@@ -1012,7 +1012,7 @@ function insertContent(parent, child, prepend) {
           }
         : function (ele, index) {
             return insertElement(ele, !index ? child : child.cloneNode(true), prepend);
-          }
+          },
     );
   }
 } // @require core/cash.js

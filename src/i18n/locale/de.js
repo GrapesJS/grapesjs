@@ -1,11 +1,11 @@
-const traitInputAttr = { placeholder: 'z.B. Text hier' }
+const traitInputAttr = { placeholder: 'z.B. Text hier' };
 
 export default {
   assetManager: {
     addButton: 'Bild hinzufügen',
     inputPlh: 'http://path/to/the/image.jpg',
     modalTitle: 'Bild auswählen',
-    uploadTitle: 'Dateien hier ablegen oder zum Hochladen anklicken'
+    uploadTitle: 'Dateien hier ablegen oder zum Hochladen anklicken',
   },
   // Here just as a reference, GrapesJS core doesn't contain any block,
   // so this should be omitted from other local files
@@ -15,7 +15,7 @@ export default {
     },
     categories: {
       // 'category-id': 'Kategorie Label',
-    }
+    },
   },
   domComponents: {
     names: {
@@ -33,8 +33,8 @@ export default {
       thead: 'Tabellenkopf',
       table: 'Tabelle',
       row: 'Tabellenzeile',
-      cell: 'Tabellenzelle'
-    }
+      cell: 'Tabellenzelle',
+    },
   },
   deviceManager: {
     device: 'Gerät',
@@ -42,8 +42,8 @@ export default {
       desktop: 'Desktop',
       tablet: 'Tablet',
       mobileLandscape: 'Mobil Landschaft',
-      mobilePortrait: 'Mobil Portrait'
-    }
+      mobilePortrait: 'Mobil Portrait',
+    },
   },
   panels: {
     buttons: {
@@ -55,9 +55,9 @@ export default {
         'open-sm': 'Style Manager öffnen',
         'open-tm': 'Einstellungen',
         'open-layers': 'Ebenen öffnen',
-        'open-blocks': 'Blöcke öffnen'
-      }
-    }
+        'open-blocks': 'Blöcke öffnen',
+      },
+    },
   },
   selectorManager: {
     label: 'Klassen',
@@ -66,8 +66,8 @@ export default {
     states: {
       hover: 'Hover',
       active: 'Click',
-      'nth-of-type(2n)': 'Even/Odd'
-    }
+      'nth-of-type(2n)': 'Even/Odd',
+    },
   },
   styleManager: {
     empty: 'Wählen Sie ein Element aus, bevor Sie den Style Manager verwenden',
@@ -80,7 +80,7 @@ export default {
       decorations: 'Dekorationen',
       extra: 'Extra',
       flex: 'Flex',
-      dimension: 'Größen'
+      dimension: 'Größen',
     },
     // The core library generates the name by their `property` name
     properties: {
@@ -188,8 +188,8 @@ export default {
       'flex-basis': 'Flex Basis',
       'flex-grow': 'Flex Wachsen',
       'flex-shrink': 'Flex Schrumpfen',
-      'align-self': 'Eigene Ausrichtung'
-    }
+      'align-self': 'Eigene Ausrichtung',
+    },
   },
   traitManager: {
     empty: 'Wählen Sie ein Element aus, bevor Sie den Eigenschaftsmanager verwenden',
@@ -200,25 +200,25 @@ export default {
         id: 'ID',
         alt: 'Alternativtext',
         title: 'Titel',
-        href: 'Link'
+        href: 'Link',
       },
       // In a simple trait, like text input, these are used on input attributes
       attributes: {
         id: traitInputAttr,
         alt: traitInputAttr,
         title: traitInputAttr,
-        href: { placeholder: 'z.B. https://google.com' }
+        href: { placeholder: 'z.B. https://google.com' },
       },
       // In a trait like select, these are used to translate option names
       options: {
         target: {
           false: 'Dieses Fenster',
-          _blank: 'Neues Fenster'
-        }
-      }
-    }
+          _blank: 'Neues Fenster',
+        },
+      },
+    },
   },
   storageManager: {
-    recover: 'Möchten Sie ungespeicherte Änderungen wiederherstellen?'
-  }
-}
+    recover: 'Möchten Sie ungespeicherte Änderungen wiederherstellen?',
+  },
+};

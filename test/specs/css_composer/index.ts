@@ -31,7 +31,7 @@ describe('Css Composer', () => {
     const getCSS = (obj: CssComposer) =>
       obj
         .getAll()
-        .map(r => r.toCSS())
+        .map((r) => r.toCSS())
         .join('');
 
     beforeEach(() => {
@@ -297,7 +297,7 @@ describe('Css Composer', () => {
             },
           },
         ];
-        toTest.forEach(test => {
+        toTest.forEach((test) => {
           const { selector, style, opts } = test;
           obj.setRule(selector, style, opts);
           expect(obj.getAll().length).toEqual(1);
@@ -321,7 +321,7 @@ describe('Css Composer', () => {
             opt: { atRuleType: 'media', atRuleParams: '(min-width: 480px)' },
           },
         ];
-        toTest.forEach(test => {
+        toTest.forEach((test) => {
           const { selector, style, opt } = test;
           obj.setRule(selector, style, opt);
           const rule = obj.getRule(selector, opt)!;
@@ -407,7 +407,7 @@ describe('Css Composer', () => {
         expect(result.length).toEqual(2);
         expect(obj.getAll().length).toEqual(2);
 
-        result.forEach(rule => {
+        result.forEach((rule) => {
           expect(rule.getSelectors().length).toBe(0);
           expect(rule.get('selectorsAdd')).toBeFalsy();
           expect(rule.get('mediaText')).toBeFalsy();

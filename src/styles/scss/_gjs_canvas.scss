@@ -19,7 +19,7 @@ $guide_pad: 5px !default;
 
       &::before,
       &::after {
-        content: "";
+        content: '';
         display: block;
         position: absolute;
         background-color: inherit;
@@ -116,7 +116,9 @@ $guide_pad: 5px !default;
     margin: auto;
 
     &--anim {
-      transition: width $frameAnimation, height $frameAnimation;
+      transition:
+        width $frameAnimation,
+        height $frameAnimation;
     }
 
     &__top {
@@ -262,7 +264,8 @@ $guide_pad: 5px !default;
     outline-offset: -2px;
   }
 
-  ##{$app-prefix}tools, .#{$app-prefix}tools {
+  ##{$app-prefix}tools,
+  .#{$app-prefix}tools {
     width: 100%;
     height: 100%;
     position: absolute;
@@ -297,7 +300,9 @@ $guide_pad: 5px !default;
   border: none;
   margin: auto;
   display: block;
-  transition: width $frameAnimation, height $frameAnimation;
+  transition:
+    width $frameAnimation,
+    height $frameAnimation;
   position: absolute;
   top: 0;
   bottom: 0;

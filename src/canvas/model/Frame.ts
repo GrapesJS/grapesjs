@@ -179,7 +179,9 @@ export default class Frame extends ModuleModel<CanvasModule> {
   }
 
   getHeadByAttr(attr: string, value: any, tag: string) {
-    return this.head.filter(item => item.attributes && item.attributes[attr] == value && (!tag || tag === item.tag))[0];
+    return this.head.filter(
+      (item) => item.attributes && item.attributes[attr] == value && (!tag || tag === item.tag),
+    )[0];
   }
 
   removeHeadByAttr(attr: string, value: any, tag: string) {
@@ -262,7 +264,7 @@ export default class Frame extends ModuleModel<CanvasModule> {
       if (obj[key] === value) delete obj[key];
     });
 
-    forEach(['attributes', 'head'], prop => {
+    forEach(['attributes', 'head'], (prop) => {
       if (isEmpty(obj[prop])) delete obj[prop];
     });
 

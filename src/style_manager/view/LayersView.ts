@@ -102,7 +102,7 @@ export default class LayersView extends View<Layer> {
   }
 
   clearItems() {
-    this.items.forEach(item => item.remove());
+    this.items.forEach((item) => item.remove());
     this.items = [];
   }
 
@@ -110,7 +110,7 @@ export default class LayersView extends View<Layer> {
     const { $el, sorter } = this;
     const frag = document.createDocumentFragment();
     $el.empty();
-    this.collection.forEach(m => this.addToCollection(m, frag));
+    this.collection.forEach((m) => this.addToCollection(m, frag));
     $el.append(frag);
     $el.attr('class', this.className!);
     if (sorter) sorter.plh = null;

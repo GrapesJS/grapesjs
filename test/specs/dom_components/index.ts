@@ -78,7 +78,7 @@ describe('DOM Components', () => {
       expect(
         obj.load({
           components: '[{}, {}]',
-        })
+        }),
       ).toEqual(result);
     });
 
@@ -87,7 +87,7 @@ describe('DOM Components', () => {
       expect(
         obj.load({
           components: result,
-        })
+        }),
       ).toEqual(result);
     });
 
@@ -96,7 +96,7 @@ describe('DOM Components', () => {
       expect(
         obj.load({
           components: result,
-        })
+        }),
       ).toEqual(result);
     });
 
@@ -164,7 +164,7 @@ describe('DOM Components', () => {
       const id = 'test-type';
       const testProp = 'testValue';
       obj.addType(id, {
-        isComponent: el => {
+        isComponent: (el) => {
           return el.getAttribute('test-prop') === testProp;
         },
       });
@@ -224,7 +224,7 @@ describe('DOM Components', () => {
       const testProp = 'testValue';
       obj.addType(id, {
         extend: 'image',
-        isComponent: el => el.getAttribute('test-prop') === testProp,
+        isComponent: (el) => el.getAttribute('test-prop') === testProp,
       });
       obj.addComponent(`<img src="##" test-prop="${testProp}"/>`);
       expect(obj.getTypes()[0].id).toEqual(id);
@@ -233,7 +233,7 @@ describe('DOM Components', () => {
       expect(comp.get('editable')).toBe(1);
     });
 
-    test('Remove and undo component with styles', done => {
+    test('Remove and undo component with styles', (done) => {
       const id = 'idtest2';
       const um = em.UndoManager;
       const cc = em.Css;
@@ -320,7 +320,7 @@ describe('DOM Components', () => {
     let fxt: HTMLElement;
     let root: ComponentWrapper;
 
-    beforeEach(done => {
+    beforeEach((done) => {
       fxt = document.createElement('div');
       document.body.appendChild(fxt);
       editor = new Editor({
@@ -390,7 +390,7 @@ describe('DOM Components', () => {
               <h1>H1</h1>
             </body>
           </html>
-          `.replace(/>\s+|\s+</g, m => m.trim());
+          `.replace(/>\s+|\s+</g, (m) => m.trim());
         expect(root.toHTML()).toBe(outputHtml);
       });
     });
