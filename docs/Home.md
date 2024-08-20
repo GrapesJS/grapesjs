@@ -5,19 +5,20 @@ This page will introduce you to the main options of GrapesJS and how it works, i
 The pretty minimalistic way to instantiate the editor could be like this:
 
 ```html
-<link rel="stylesheet" href="path/to/grapes.min.css">
+<link rel="stylesheet" href="path/to/grapes.min.css" />
 <script src="path/to/grapes.min.js"></script>
 
 <div id="gjs"></div>
 
 <script type="text/javascript">
   var editor = grapesjs.init({
-      container : '#gjs',
-      components: '<div class="txt-red">Hello world!</div>',
-      style: '.txt-red{color: red}',
+    container: '#gjs',
+    components: '<div class="txt-red">Hello world!</div>',
+    style: '.txt-red{color: red}',
   });
 </script>
 ```
+
 In just few lines, with the default configurations, you're already able to see something with which play around.
 
 [[img/default-gjs.jpg]]
@@ -27,7 +28,6 @@ You'll see components commands on top left position that come handy to create an
 Of course all those stuff (panels, buttons, commands, etc.) are set just as default so you can overwrite them and add more other. Before you start to create things you should know that GrapesJS UI is composed basically by a canvas (where you will 'draw') and panels (which will contain buttons)
 
 [[img/canvas-panels.jpg]]
-
 
 If you'd like to extend the already instantiated editor you have to check [API Reference]. Check also [how to create plugins](./Creating-plugins) using the same API.
 In this guide we'll focus on how to initialize the editor with all custom UI from scratch.
@@ -48,6 +48,7 @@ var editor = grapesjs.init({
 });
 ...
 ```
+
 In this example we set a panel with 'commands' as an id and after the render we'll see nothing more than an empty div added to our panels. The new panel is already styled as the id 'commands' is one of the default but you can use whatever you like and place it wherever you want with CSS. With refresh we might see something like shown in the image below, with the new panel on the left:
 
 [[img/new-panel.png]]
@@ -78,7 +79,6 @@ On refresh the page might present some changes ('fa fa-smile-o' are from FontAwe
 Yeah, the button is pretty nice and happy, but useless without any command assigned, if you click on it nothing gonna happen.
 
 > Check [Panels API Reference] for more details about Panels and Buttons
-
 
 Assigning commands is pretty easy, but before you should define one or use one of defaults ([Built-in commands](./Built-in-commands)). So in this case we gonna create a new one.
 
@@ -111,16 +111,14 @@ Assigning commands is pretty easy, but before you should define one or use one o
   }
 ...
 ```
+
 As you see we added a new command `helloWorld` and used its `id` as an identifier inside `button.command`. In addition to this we've also implemented two required methods, `run` and `stop`, to make button execute commands.
 
 [[img/btn-clicked.png]]
 
-
 > Check [Commands API Reference]
 
-
 Check the [demo](http://grapesjs.com/demo.html) for more complete usage of panels, buttons and built-in commands.
-
 
 ## Components
 
@@ -136,6 +134,7 @@ Components are elements inside the canvas, which can be drawn by commands or inj
               '<div style="width:500px; min-height:100px; margin: 0 auto"></div>',
 ...
 ```
+
 We added 3 simple components with some basic style. If you refresh probably you'll see the same empty page but are actually there, you only need to highlight them.
 For this purpose already exists a command, so add it to your panel in this way
 
@@ -161,6 +160,7 @@ For this purpose already exists a command, so add it to your panel in this way
   },
 ...
 ```
+
 Worth noting the use of `context` option (try to click 'smile' command without it) and `active` to enable it after the render.
 Now you should be able to see blocks inside canvas.
 
@@ -169,7 +169,6 @@ Now you should be able to see blocks inside canvas.
 You could add other commands to enable interactions with blocks. Check [Built-in commands](./Built-in-commands) to get more information
 
 > Check [Components API Reference]
-
 
 ## Style Manager
 
@@ -377,7 +376,6 @@ As you can see using `buildProps` actually will save you a lot of work. You coul
 
 > Check [Style Manager API Reference]
 
-
 ## Store/load data
 
 In this last part we're gonna see how to store and load template data inside GrapesJS. You may already noticed that even if you refresh the page after changes on canvas your data are not lost and this because GrapesJS comes with some built-in storage implementation.
@@ -448,11 +446,10 @@ If you prefer you could also disable autosaving and do it by yourself using some
 
 > Check [Storage Manager API Reference]
 
-
-[API Reference]: <API-Reference>
-[Panels API Reference]: <API-Panels>
-[Commands API Reference]: <API-Commands>
-[Components API Reference]: <API-Components>
-[Style Manager API Reference]: <API-Style-Manager>
-[Editor API Reference]: <API-Editor>
-[Storage Manager API Reference]: <API-Storage-Manager>
+[API Reference]: API-Reference
+[Panels API Reference]: API-Panels
+[Commands API Reference]: API-Commands
+[Components API Reference]: API-Components
+[Style Manager API Reference]: API-Style-Manager
+[Editor API Reference]: API-Editor
+[Storage Manager API Reference]: API-Storage-Manager

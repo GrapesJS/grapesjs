@@ -23,6 +23,6 @@ export default class Sectors extends Collection<Sector> {
   onReset(models: any, opts: { previousModels?: Sector[] } = {}) {
     const prev = opts.previousModels || [];
     // @ts-ignore
-    prev.forEach(sect => sect.get('properties').reset());
+    prev.forEach((sect) => sect.get('properties').reset());
   }
 }

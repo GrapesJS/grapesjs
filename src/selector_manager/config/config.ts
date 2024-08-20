@@ -1,3 +1,4 @@
+/* eslint-disable */
 export interface SelectorManagerConfig {
   /**
    * Style prefix.

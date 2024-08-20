@@ -77,13 +77,13 @@ describe('CssRulesView', () => {
     expect(foundStylesContainers.length).toEqual(devices.length);
 
     const sortedDevicesWidthMedia = devices
-      .map(dvc => dvc.widthMedia)
+      .map((dvc) => dvc.widthMedia)
       .sort((left, right) => {
         return (
           (Number(right?.replace('px', '')) || Number.MAX_VALUE) - (Number(left?.replace('px', '')) || Number.MAX_VALUE)
         );
       })
-      .map(widthMedia => parseFloat(widthMedia));
+      .map((widthMedia) => parseFloat(widthMedia));
 
     foundStylesContainers.each((idx, $styleC) => {
       const width = sortedDevicesWidthMedia[idx];
@@ -104,13 +104,13 @@ describe('CssRulesView', () => {
     expect(foundStylesContainers.length).toEqual(mobileFirstDevices.length);
 
     const sortedDevicesWidthMedia = mobileFirstDevices
-      .map(dvc => dvc.widthMedia)
+      .map((dvc) => dvc.widthMedia)
       .sort((left, right) => {
         const a = Number(left?.replace('px', '')) || Number.MIN_VALUE;
         const b = Number(right?.replace('px', '')) || Number.MIN_VALUE;
         return a - b;
       })
-      .map(widthMedia => parseFloat(widthMedia));
+      .map((widthMedia) => parseFloat(widthMedia));
 
     foundStylesContainers.each((idx, $styleC) => {
       const width = sortedDevicesWidthMedia[idx];

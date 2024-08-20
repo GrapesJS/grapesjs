@@ -6,7 +6,7 @@ export default {
     if (!ed.Canvas.hasFocus() && !opts.force) return;
     const toSelect: Component[] = [];
 
-    ed.getSelectedAll().forEach(component => {
+    ed.getSelectedAll().forEach((component) => {
       let next = component.parent();
 
       // Recurse through the parent() chain until a selectable parent is found

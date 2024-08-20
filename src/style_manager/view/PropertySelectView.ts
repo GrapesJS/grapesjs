@@ -32,7 +32,7 @@ export default class PropertySelectView extends PropertyView {
     if (!this.input) {
       const optionsRes: string[] = [];
 
-      options.forEach(option => {
+      options.forEach((option) => {
         const id = model.getOptionId(option);
         const name = model.getOptionLabel(id);
         const style = option.style ? option.style.replace(/"/g, '&quot;') : '';

@@ -57,7 +57,7 @@ export default class PropertySelect extends Property<PropertySelectProps> {
    */
   getOption(id?: string): SelectOption {
     const idSel = isDef(id) ? id : this.getValue();
-    return this.getOptions().filter(o => this.getOptionId(o) === idSel)[0] || null;
+    return this.getOptions().filter((o) => this.getOptionId(o) === idSel)[0] || null;
   }
 
   /**

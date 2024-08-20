@@ -8,7 +8,7 @@ const command: CommandObject<{ component?: Component }> = {
     let components = opts.component || ed.getSelectedAll();
     components = isArray(components) ? [...components] : [components];
 
-    components.filter(Boolean).forEach(component => {
+    components.filter(Boolean).forEach((component) => {
       if (!component.get('removable')) {
         return this.em.logWarning('The element is not removable', {
           component,

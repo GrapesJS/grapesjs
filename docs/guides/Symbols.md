@@ -1,11 +1,11 @@
 ---
 title: Symbols
 ---
+
 # Symbols
 
 ::: warning
 This feature is released as a beta from GrapesJS v0.21.11
-
 
 To get a better understanding of the content in this guide we recommend reading [Components] first
 :::
@@ -13,7 +13,6 @@ To get a better understanding of the content in this guide we recommend reading 
 Symbols are a special type of [Component] that allows you to easily reuse common elements across your project. They are particularly useful for components that appear multiple times in your project and need to remain consistent. By using Symbols, you can easily update these components in one place and have the changes reflected everywhere they are used.
 
 [[toc]]
-
 
 ## Concept
 
@@ -29,12 +28,9 @@ Below is a simple representation of the connection between Main and Instance Sym
 This feature operates at a low level, meaning there is no built-in UI for creating and managing symbols. Developers need to implement their own UI to interact with this feature. Below you'll find an example of implementation.
 :::
 
-
 ## Programmatic usage
 
 Let's see how to work with and manage Symbols in your project.
-
-
 
 ### Create symbol
 
@@ -61,8 +57,6 @@ To get all the available Symbols in your project, use `getSymbols`:
 const symbols = editor.Components.getSymbols();
 const symbolMain = symbols[0];
 ```
-
-
 
 ### Symbol details
 
@@ -92,8 +86,6 @@ symbolMainInfo.instances; // [anyComponent, secondInstance]; Reference to Instan
 symbolMainInfo.relatives; // [anyComponent, symbolMain]; Relative Symbols
 ```
 
-
-
 ### Overrides
 
 When you update a Symbol's properties, changes are propagated to all related Symbols. To avoid propagating specific properties, you can specify at the component level which properties to skip:
@@ -109,8 +101,6 @@ anyComponent.set('my-property', false);
 secondInstance.get('my-property'); // true; change didn't propagate
 ```
 
-
-
 ### Detach symbol
 
 Once you have Symbol instances you might need to disconnect one to create a new custom shape with other components inside, in that case you can use `detachSymbol`.
@@ -125,8 +115,6 @@ const infoMain = editor.Components.getSymbolInfo(symbolMain);
 infoMain.instances; // [secondInstance]; Removed the reference
 ```
 
-
-
 ### Remove symbol
 
 To remove a Main Symbol and detach all related instances:
@@ -136,61 +124,61 @@ const symbolMain = editor.Components.getSymbols()[0];
 symbolMain.remove();
 ```
 
-
-
-
 ## Events
 
 The editor triggers several symbol-related events that you can leverage for your integration:
 
+- `symbol:main:add` Added new root main symbol.
 
-* `symbol:main:add`  Added new root main symbol.
 ```js
 editor.on('symbol:main:add', ({ component }) => { ... });
 ```
 
-* `symbol:main:update`  Root main symbol updated.
+- `symbol:main:update` Root main symbol updated.
+
 ```js
 editor.on('symbol:main:update', ({ component }) => { ... });
 ```
 
-* `symbol:main:remove`  Root main symbol removed.
+- `symbol:main:remove` Root main symbol removed.
+
 ```js
 editor.on('symbol:main:remove', ({ component }) => { ... });
 ```
 
-* `symbol:main` Catch-all event related to root main symbol updates.
+- `symbol:main` Catch-all event related to root main symbol updates.
+
 ```js
 editor.on('symbol:main', ({ event, component }) => { ... });
 ```
 
-* `symbol:instance:add` Added new root instance symbol.
+- `symbol:instance:add` Added new root instance symbol.
+
 ```js
 editor.on('symbol:instance:add', ({ component }) => { ... });
 ```
 
-* `symbol:instance:remove` Root instance symbol removed.
+- `symbol:instance:remove` Root instance symbol removed.
+
 ```js
 editor.on('symbol:instance:remove', ({ component }) => { ... });
 ```
 
-* `symbol:instance` Catch-all event related to root instance symbol updates.
+- `symbol:instance` Catch-all event related to root instance symbol updates.
+
 ```js
 editor.on('symbol:instance', ({ event, component }) => { ... });
 ```
 
-* `symbol` Catch-all event for any symbol update (main or instance).
+- `symbol` Catch-all event for any symbol update (main or instance).
+
 ```js
 editor.on('symbol', () => { ... });
 ```
 
-
-
-
 ## Example
 
 Below is a basic UI implementation leveraging the Symbols API:
-
 
 <demo-viewer value="ta19s6go" height="500" darkcode show/>
 
@@ -300,7 +288,6 @@ const app = new Vue({
 </script>
 -->
 
-
-[Component]: </modules/Components.html>
-[Components]: </modules/Components.html>
-[Components API]: </api/component.html>
+[Component]: /modules/Components.html
+[Components]: /modules/Components.html
+[Components API]: /api/component.html

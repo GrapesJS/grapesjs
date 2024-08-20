@@ -1,5 +1,5 @@
 .#{$clm-prefix}field {
-  @extend .#{$sm-prefix}field
+  @extend .#{$sm-prefix}field;
 }
 
 .#{$clm-prefix}select {
@@ -104,7 +104,7 @@
   }
 
   ##{$clm-prefix}new {
-    @extend  .#{$app-prefix}invis-invis;
+    @extend .#{$app-prefix}invis-invis;
 
     color: var(--gjs-font-color);
     padding: var(--gjs-padding-elem-classmanager);
@@ -117,7 +117,7 @@
     line-height: 0;
     cursor: pointer;
     color: rgba(255, 255, 255, 0.9);
-    @extend  .no-select;
+    @extend .no-select;
 
     &:hover {
       @include opacity(1);

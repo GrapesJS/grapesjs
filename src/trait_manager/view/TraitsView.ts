@@ -135,7 +135,7 @@ export default class TraitsView extends DomainViews {
       <div class="${classNoCat} ${traitContClass}" ${ATTR_NO_CATEGORIES}></div>
     `;
 
-    this.collection.forEach(model => this.add(model, frag));
+    this.collection.forEach((model) => this.add(model, frag));
     this.append(frag);
     const cls = `${traitContClass}s ${ppfx}one-bg ${ppfx}two-color`;
     this.$el.addClass(cls);

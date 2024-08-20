@@ -11,7 +11,7 @@ export const isBultInMethod = (key: string) => isFunction(obj[key]);
 
 export const normalizeKey = (key: string) => (isBultInMethod(key) ? `_${key}` : key);
 
-export const wait = (mls: number = 0) => new Promise(res => setTimeout(res, mls));
+export const wait = (mls: number = 0) => new Promise((res) => setTimeout(res, mls));
 
 export const isDef = (value: any) => typeof value !== 'undefined';
 
@@ -28,7 +28,7 @@ const matches = elProt.matches || elProt.webkitMatchesSelector || elProt.mozMatc
 
 export const getUiClass = (em: EditorModel, defCls: string) => {
   const { stylePrefix, customUI } = em.getConfig();
-  return [customUI && `${stylePrefix}cui`, defCls].filter(i => i).join(' ');
+  return [customUI && `${stylePrefix}cui`, defCls].filter((i) => i).join(' ');
 };
 
 /**
@@ -106,7 +106,7 @@ const getUnitFromValue = (value: any) => {
 const upFirst = (value: string) => value[0].toUpperCase() + value.toLowerCase().slice(1);
 
 const camelCase = (value: string) => {
-  return value.replace(/-./g, x => x[1].toUpperCase());
+  return value.replace(/-./g, (x) => x[1].toUpperCase());
 };
 
 const normalizeFloat = (value: any, step = 1, valueDef = 0) => {

@@ -17,25 +17,25 @@ $layerIconSize: 15px !default;
     display: grid;
 
     &-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 5px 10px;
+      border-bottom: 1px solid var(--gjs-main-dark-color);
+      background-color: var(--gjs-secondary-dark-color);
+      gap: var(--gjs-flex-item-gap);
+      cursor: pointer;
+
+      &-left,
+      &-right {
         display: flex;
         align-items: center;
-        justify-content: space-between;
-        padding: 5px 10px;
-        border-bottom: 1px solid var(--gjs-main-dark-color);
-        background-color: var(--gjs-secondary-dark-color);
         gap: var(--gjs-flex-item-gap);
-        cursor: pointer;
+      }
 
-        &-left,
-        &-right {
-            display: flex;
-            align-items: center;
-            gap: var(--gjs-flex-item-gap);
-        }
-
-        &-left {
-            width: 100%;
-        }
+      &-left {
+        width: 100%;
+      }
     }
 
     &-hidden {
@@ -81,7 +81,7 @@ $layerIconSize: 15px !default;
     }
 
     &.open > &-item &-caret {
-        transform: rotate(180deg);
+      transform: rotate(180deg);
     }
 
     &-title {

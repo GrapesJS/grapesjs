@@ -31,7 +31,7 @@ export default class ComponentText extends Component {
       };
 
       if (isFunction(disableTextInnerChilds)) {
-        this.forEachChild(child => {
+        this.forEachChild((child) => {
           disableTextInnerChilds(child) && disableChild(child);
         });
       } else {

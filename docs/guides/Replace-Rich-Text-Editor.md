@@ -1,6 +1,7 @@
 ---
 title: Replace the built-in Rich Text Editor
 ---
+
 # Replace the built-in Rich Text Editor
 
 As you might have noticed the default Rich Text Editor (RTE) is really tiny and so doesn't seem like a complete solution as a text editor. Instead of showing how to add new commands inside the default one we'll show how to completely replace it with another one.
@@ -12,7 +13,6 @@ This guide is referring to GrapesJS v0.21.2 or higher
 :::
 
 [[toc]]
-
 
 ## Interface
 
@@ -71,8 +71,6 @@ const editor = grapesjs.init({
 });
 ```
 
-
-
 ### Disable
 
 Once we know how to enable the RTE let's implement the method which disable it, so let's create the `disable()` function.
@@ -90,8 +88,6 @@ editor.setCustomRte({
 });
 ```
 
-
-
 ### Content
 
 Each third-party library could handle the state of the content differently and what is actually rendered as a DOM in the preview might not rapresent the final HTML output. So, by default, GrapesJS takes the `innerHTML` as the final output directly from the DOM element but is highly recommended to specify the method responsable to return the final state as HTML string (each third-party library might handle it differently).
@@ -106,8 +102,6 @@ editor.setCustomRte({
 });
 ```
 
-
-
 ### Focus
 
 The `focus()` method is just a helper used inside `enable()` and not required by the interface
@@ -120,7 +114,7 @@ const focus = (el, rte) => {
   }
   el.contentEditable = true;
   rte?.focus();
-}
+};
 
 editor.setCustomRte({
   // ...
@@ -132,11 +126,9 @@ editor.setCustomRte({
 });
 ```
 
-
-
 ## Toolbar position
 
-Sometimes the default top-left position of the toolbar is not always what you need. For example, when you scroll the canvas and the toolbar reaches the top,  you'd like to move it down. For this purpose, you can add a listener which applies your logic in this way:
+Sometimes the default top-left position of the toolbar is not always what you need. For example, when you scroll the canvas and the toolbar reaches the top, you'd like to move it down. For this purpose, you can add a listener which applies your logic in this way:
 
 ```js
 editor.on('rteToolbarPosUpdate', (pos) => {
@@ -144,14 +136,11 @@ editor.on('rteToolbarPosUpdate', (pos) => {
 });
 ```
 
-
-
 ## The built-in vs third-party
 
 One thing you have to keep in mind when using a custom RTE is that all the content and its behavior are handled by the library itself, the GrapesJS's component will just store the content as it is.
 For example, when you create a link using the built-in RTE then you'll be able to select it and edit its `href` via Component Settings. With a custom RTE, it will be its own task to show the proper modal for the link editing.
 Obviously, each third-party library has its own APIs and can present some limitations and drawbacks, so, a minimal knowledge of the library is a plus.
-
 
 ### Enable content parser
 
@@ -164,8 +153,6 @@ editor.setCustomRte({
   parseContent: true,
 });
 ```
-
-
 
 ## Plugins
 

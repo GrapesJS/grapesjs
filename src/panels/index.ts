@@ -200,8 +200,8 @@ export default class PanelManager extends Module<PanelsConfig> {
    * @private
    */
   active() {
-    this.getPanels().each(p => {
-      p.buttons.each(btn => {
+    this.getPanels().each((p) => {
+      p.buttons.each((btn) => {
         btn.get('active') && btn.trigger('updateActive');
       });
     });
@@ -212,8 +212,8 @@ export default class PanelManager extends Module<PanelsConfig> {
    * @private
    */
   disableButtons() {
-    this.getPanels().each(p => {
-      p.buttons.each(btn => {
+    this.getPanels().each((p) => {
+      p.buttons.each((btn) => {
         if (btn.get('disable')) btn.trigger('change:disable');
       });
     });

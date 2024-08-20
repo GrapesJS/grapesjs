@@ -51,7 +51,7 @@ export default class ButtonsView extends ModuleView<Buttons> {
     var fragment = document.createDocumentFragment();
     this.$el.empty();
 
-    this.collection.each(model => this.addToCollection(model, fragment));
+    this.collection.each((model) => this.addToCollection(model, fragment));
 
     this.$el.append(fragment);
     this.$el.attr('class', result(this, 'className'));

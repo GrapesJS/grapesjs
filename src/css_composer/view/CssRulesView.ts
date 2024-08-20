@@ -139,10 +139,10 @@ export default class CssRulesView extends View {
 
     // Create devices related DOM structure, ensure also to have a default container
     const prs = em.Devices.getAll().pluck('priority').sort(this.sortRules) as number[];
-    prs.every(pr => pr) && prs.unshift(0);
-    prs.forEach(pr => frag.appendChild(createEl('div', { id: getBlockId(cls, pr) })));
+    prs.every((pr) => pr) && prs.unshift(0);
+    prs.forEach((pr) => frag.appendChild(createEl('div', { id: getBlockId(cls, pr) })));
 
-    collection.each(model => this.addToCollection(model, frag));
+    collection.each((model) => this.addToCollection(model, frag));
     $el.append(frag);
     $el.attr('class', cls);
     return this;

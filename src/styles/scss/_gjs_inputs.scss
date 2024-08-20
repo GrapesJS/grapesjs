@@ -68,7 +68,7 @@
       }
     }
 
-    input[type=number] {
+    input[type='number'] {
       -moz-appearance: textfield;
 
       &::-webkit-outer-spin-button,
@@ -307,31 +307,31 @@
     }
 
     &::-webkit-slider-thumb {
-     -webkit-appearance: none;
-     margin-top: -4px;
+      -webkit-appearance: none;
+      margin-top: -4px;
 
-     @include rangeThumbStyle();
+      @include rangeThumbStyle();
     }
 
     &::-moz-range-thumb {
-     @include rangeThumbStyle();
+      @include rangeThumbStyle();
     }
 
     &::-ms-thumb {
-     @include rangeThumbStyle();
+      @include rangeThumbStyle();
     }
 
     /* -moz-range-progress */
     &::-moz-range-track {
-     @include rangeTrackStyle();
+      @include rangeTrackStyle();
     }
 
     &::-webkit-slider-runnable-track {
-     @include rangeTrackStyle();
+      @include rangeTrackStyle();
     }
 
     &::-ms-track {
-     @include rangeTrackStyle();
+      @include rangeTrackStyle();
     }
   }
 }

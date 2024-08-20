@@ -21,7 +21,7 @@ describe('HtmlGenerator', () => {
       {
         em,
         componentTypes: dcomp.componentTypes,
-      }
+      },
     );
   });
 
@@ -57,7 +57,7 @@ describe('HtmlGenerator', () => {
         'data-test2': 'value2',
       },
     });
-    ['class1', 'class2'].forEach(item => {
+    ['class1', 'class2'].forEach((item) => {
       m1.get('classes').add({ name: item });
     });
     expect(obj.build(m1)).toEqual('<article data-test1="value1" data-test2="value2" class="class1 class2"></article>');
@@ -79,7 +79,7 @@ describe('CssGenerator', () => {
       {
         em,
         componentTypes: dcomp.componentTypes,
-      }
+      },
     );
   });
 
@@ -153,7 +153,7 @@ describe('CssGenerator', () => {
     rule.set('selectorsAdd', '.class1 .class2, div > .class4');
 
     expect(obj.build(comp, { cssc })).toEqual(
-      '.class1.class2, .class1 .class2, div > .class4{prop1:value1;prop2:value2;}'
+      '.class1.class2, .class1 .class2, div > .class4{prop1:value1;prop2:value2;}',
     );
   });
 
@@ -216,7 +216,7 @@ describe('CssGenerator', () => {
     expect(obj.build(comp, { cssc })).toEqual(
       '.class1.class2{prop1:value1;}.class2{prop2:value2;}' +
         '@media (max-width: 999px){.class1{prop3:value3;}.class2{prop4:value4;}}' +
-        '@media (max-width: 100px){.class1{prop5:value5;}}'
+        '@media (max-width: 100px){.class1{prop5:value5;}}',
     );
   });
 
@@ -246,7 +246,7 @@ describe('CssGenerator', () => {
       {
         em,
         componentTypes: dcomp.componentTypes,
-      }
+      },
     );
     comp.setStyle({ color: 'red' });
     const id = comp.getId();
@@ -282,7 +282,7 @@ describe('CssGenerator', () => {
       ['@media (max-width: 999px)', 999],
       ['@media (min-width: 123%)', 123],
       ['@media (min-width: 1040rem)', 1040],
-    ].forEach(item => {
+    ].forEach((item) => {
       expect(obj.getQueryLength(item[0])).toBe(item[1]);
     });
   });
@@ -295,7 +295,7 @@ describe('CssGenerator', () => {
         '@media (max-width: 768px)': 3,
         '@media (max-width: 1020ch)': 4,
         '@media (max-width: 10%)': 5,
-      })
+      }),
     ).toEqual([
       { key: '@font-face', value: 2 },
       { key: '@media (max-width: 1020ch)', value: 4 },
@@ -313,7 +313,7 @@ describe('CssGenerator', () => {
         '@media (min-width: 768px)': 3,
         '@media (min-width: 1020ch)': 4,
         '@media (min-width: 10%)': 5,
-      })
+      }),
     ).toEqual([
       { key: '@font-face', value: 2 },
       { key: '@media (min-width: 10%)', value: 5 },

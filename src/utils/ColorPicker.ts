@@ -178,7 +178,7 @@ export default function ($, undefined?: any) {
             c +
             '"><span class="sp-thumb-inner" style="' +
             swatchStyle +
-            ';"></span></span>'
+            ';"></span></span>',
         );
       } else {
         var cls = 'sp-clear-display';
@@ -187,10 +187,10 @@ export default function ($, undefined?: any) {
             .append(
               $('<span data-color="" style="background-color:transparent;" class="' + cls + '"></span>').attr(
                 'title',
-                opts.noColorSelectedText
-              )
+                opts.noColorSelectedText,
+              ),
             )
-            .html()
+            .html(),
         );
       }
     }
@@ -440,7 +440,7 @@ export default function ($, undefined?: any) {
           move();
         },
         dragStart,
-        dragStop
+        dragStop,
       );
 
       draggable(
@@ -454,7 +454,7 @@ export default function ($, undefined?: any) {
           move();
         },
         dragStart,
-        dragStop
+        dragStop,
       );
 
       draggable(
@@ -489,7 +489,7 @@ export default function ($, undefined?: any) {
           move();
         },
         dragStart,
-        dragStop
+        dragStop,
       );
 
       if (!!initialColor) {
@@ -593,7 +593,7 @@ export default function ($, undefined?: any) {
 
       if (selectionPalette) {
         html.push(
-          paletteTemplate(getUniqueSelectionPalette(), currentColor, 'sp-palette-row sp-palette-row-selection', opts)
+          paletteTemplate(getUniqueSelectionPalette(), currentColor, 'sp-palette-row sp-palette-row-selection', opts),
         );
       }
 
@@ -775,7 +775,7 @@ export default function ($, undefined?: any) {
           v: currentValue,
           a: Math.round(currentAlpha * 100) / 100,
         },
-        { format: opts.format || currentPreferredFormat }
+        { format: opts.format || currentPreferredFormat },
       );
     }
 

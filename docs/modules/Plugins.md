@@ -27,23 +27,21 @@ function myPlugin(editor) {
 
 const editor = grapesjs.init({
   container: '#gjs',
-  plugins: [myPlugin]
+  plugins: [myPlugin],
 });
 ```
 
 This means plugins can be moved to separate folders to keep thing cleaner or imported from NPM.
 
 ```js
-import myPlugin from './plugins/myPlugin'
-import npmPackage from '@npm/package'
+import myPlugin from './plugins/myPlugin';
+import npmPackage from '@npm/package';
 
 const editor = grapesjs.init({
-    container : '#gjs',
-    plugins: [myPlugin, npmPackage]
+  container: '#gjs',
+  plugins: [myPlugin, npmPackage],
 });
 ```
-
-
 
 <!--
 ## Named plugin
@@ -91,9 +89,6 @@ Here is a complete generic example:
 ```
 -->
 
-
-
-
 ## Plugins with options
 
 It's also possible to pass custom parameters to plugins in to make them more flexible.
@@ -123,20 +118,21 @@ export default grapesjs.plugins.add('my-plugin-name', (editor, options) => {
 This also works with plugins that aren't named.
 
 -->
+
 ```js
 const myPluginWithOptions = (editor, options) => {
   console.log(options);
   // { customField: 'customValue' }
-}
+};
 
 const editor = grapesjs.init({
-  container : '#gjs',
+  container: '#gjs',
   plugins: [myPluginWithOptions],
   pluginsOpts: {
     [myPluginWithOptions]: {
-      customField: 'customValue'
-    }
-  }
+      customField: 'customValue',
+    },
+  },
 });
 ```
 
@@ -162,23 +158,22 @@ import grapesjs, { usePlugin } from 'grapesjs';
 import type { Plugin } from 'grapesjs';
 
 interface MyPluginOptions {
-  opt1: string,
-  opt2?: number,
+  opt1: string;
+  opt2?: number;
 }
 
 const myPlugin: Plugin<MyPluginOptions> = (editor, options) => {
-    // ...
-}
+  // ...
+};
 
 grapesjs.init({
   // ...
   plugins: [
     // no need for `pluginsOpts`
-    usePlugin(myPlugin, { opt1: 'A', opt2: 1 })
-  ]
+    usePlugin(myPlugin, { opt1: 'A', opt2: 1 }),
+  ],
 });
 ```
-
 
 ## Boilerplate
 
