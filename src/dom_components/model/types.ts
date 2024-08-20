@@ -65,6 +65,14 @@ export interface ComponentDelegateProps {
    * }
    */
   select?: (cmp: Component) => Component | Nullable;
+  /**
+   * Delegate another component as a layer in the LayerManager.
+   * @example
+   * delegate: {
+   *  layer: (cmp) => cmp.findType('other-type')[0],
+   * }
+   */
+  layer?: (cmp: Component) => Component | Nullable;
 }
 
 export interface ComponentProperties {

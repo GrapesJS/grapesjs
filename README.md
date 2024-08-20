@@ -5,6 +5,8 @@
 [![CDNJS](https://img.shields.io/cdnjs/v/grapesjs.svg)](https://cdnjs.com/libraries/grapesjs)
 [![npm](https://img.shields.io/npm/v/grapesjs.svg)](https://www.npmjs.com/package/grapesjs)
 
+> If you looking to embed the [Studio](https://app.grapesjs.com/studio) editor in your application, we now offer the [Studio SDK](https://app.grapesjs.com/dashboard/sdk/licenses?ref=repo-readme), a ready-to-use visual builder that's easy to embed in external applications, with GrapesJS team support included.
+
 <p align="center"><img src="http://grapesjs.com/assets/images/grapesjs-front-page-m.jpg" alt="GrapesJS" width="500" align="center"/></p>
 
 GrapesJS is a free and open source Web Builder Framework which helps building HTML templates, faster and easily, to be delivered in sites, newsletters or mobile apps. Mainly, GrapesJS was designed to be used inside a [CMS] to speed up the creation of dynamic templates. To better understand this concept check the image below

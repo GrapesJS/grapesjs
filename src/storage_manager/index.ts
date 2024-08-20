@@ -270,11 +270,11 @@ export default class StorageManager extends Module<
     const { onStore, onLoad } = this.getConfig();
     let result;
 
-    this.onStart(ev, data);
-
     if (!storage) {
       return data || {};
     }
+
+    this.onStart(ev, data);
 
     try {
       const editor = this.em?.getEditor();
