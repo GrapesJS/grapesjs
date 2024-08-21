@@ -44,7 +44,7 @@
     "@babel/preset-typescript": "7.24.7",
     "@types/jest": "29.5.12",
     "@types/markdown-it": "14.1.2",
-    "@typescript-eslint/eslint-plugin": "8.0.1",
+    "@typescript-eslint/eslint-plugin": "8.2.0",
     "@typescript-eslint/parser": "8.0.1",
     "@vuepress/plugin-google-analytics": "^1.8.2",
     "@vuepress/types": "^1.9.10",
@@ -62,7 +62,7 @@
     "postcss": "8",
     "prettier": "3.3.3",
     "sass": "^1.42.1",
-    "typescript": "5.4.5",
+    "typescript": "5.5.4",
     "vuepress": "^1.9.10",
     "whatwg-fetch": "^3.6.2"
   },
