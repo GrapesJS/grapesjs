@@ -288,7 +288,7 @@ describe('ParserCss', () => {
   });
 
   // Unsupported by CSSOM parser
-  test.skip('Parse rule with @container at-rule', () => {
+  test('Parse rule with @container at-rule', () => {
     const atRuleType = 'container';
     const atRuleText = 'somename (min-width: 300px)';
     const input = `@${atRuleType} ${atRuleText} {

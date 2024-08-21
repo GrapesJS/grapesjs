@@ -93,25 +93,25 @@ describe('ClassTagsView', () => {
     expect(testContext.input.val()).toBeFalsy();
   });
 
-  test.skip('Check keyup of ESC on input', function () {
-    // this.btnAdd.click();
-    // sinon.stub(view, 'addNewTag');
-    // this.input.trigger({
-    //   type: 'keyup',
-    //   keyCode: 13,
-    // });
-    // expect(view.addNewTag.calledOnce).toEqual(true);
-  });
+  // test.skip('Check keyup of ESC on input', function () {
+  //   this.btnAdd.click();
+  //   sinon.stub(view, 'addNewTag');
+  //   this.input.trigger({
+  //     type: 'keyup',
+  //     keyCode: 13,
+  //   });
+  //   expect(view.addNewTag.calledOnce).toEqual(true);
+  // });
 
-  test.skip('Check keyup on ENTER on input', function () {
-    // this.btnAdd.click();
-    // sinon.stub(view, 'endNewTag');
-    // this.input.trigger({
-    //   type: 'keyup',
-    //   keyCode: 27,
-    // });
-    // expect(view.endNewTag.calledOnce).toEqual(true);
-  });
+  // test.skip('Check keyup on ENTER on input', function () {
+  //   this.btnAdd.click();
+  //   sinon.stub(view, 'endNewTag');
+  //   this.input.trigger({
+  //     type: 'keyup',
+  //     keyCode: 27,
+  //   });
+  //   expect(view.endNewTag.calledOnce).toEqual(true);
+  // });
 
   test('Collection changes on update of target', (done) => {
     coll.add({ name: 'test' });

@@ -54,8 +54,9 @@ describe('ClassTagView', () => {
       expect($el.find('#tag-label')[0]).toBeTruthy();
     });
   });
+
   // To refactor.. the remove method relies on selected component...
-  test.skip('Could be removed', () => {
+  test('Could be removed', () => {
     obj.$el.find('#close').trigger('click');
     expect(fixtures.innerHTML).toBeFalsy();
   });

@@ -86,7 +86,7 @@ describe('GrapesJS', () => {
       expect(editor.getStyle().length).toEqual(0);
     });
 
-    test.skip('Editor canvas baseCSS can be overwritten', () => {
+    test('Editor canvas baseCSS can be overwritten', () => {
       config.components = htmlString;
       config.baseCss = '#wrapper { background-color: #eee; }';
       config.protectedCss = '';
@@ -96,7 +96,7 @@ describe('GrapesJS', () => {
       expect(body.outerHTML.replace(/\s+/g, ' ')).not.toContain('body { margin: 0;');
     });
 
-    test.skip('Editor canvas baseCSS defaults to sensible values if not defined', () => {
+    test('Editor canvas baseCSS defaults to sensible values if not defined', () => {
       config.components = htmlString;
       config.protectedCss = '';
       grapesjs.init(config);
@@ -300,7 +300,7 @@ describe('GrapesJS', () => {
     });
 
     describe('Plugins', () => {
-      test.skip('Adds new storage as plugin and store data there', (done) => {
+      test('Adds new storage as plugin and store data there', (done) => {
         const pluginName = storageId + '-p2';
         grapesjs.plugins.add(pluginName, (e) => e.StorageManager.add(storageId, storageMock));
         config.storageManager.type = storageId;
@@ -315,7 +315,7 @@ describe('GrapesJS', () => {
         });
       });
 
-      test.skip('Adds a new storage and fetch correctly data from it', async () => {
+      test('Adds a new storage and fetch correctly data from it', async () => {
         fixture.innerHTML = documentEl;
         const styleResult = { color: 'white', display: 'block' };
         const style = [

@@ -63,7 +63,7 @@ describe('DOM Components', () => {
       em.destroy();
     });
 
-    test.skip('Store and load data', () => {
+    test('Store and load data', () => {
       setSmConfig();
       setEm();
       // @ts-ignore
