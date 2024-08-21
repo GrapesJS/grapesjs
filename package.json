@@ -48,7 +48,7 @@
     "@typescript-eslint/parser": "8.0.1",
     "@vuepress/plugin-google-analytics": "^1.8.2",
     "@vuepress/types": "^1.9.10",
-    "documentation": "^13.2.5",
+    "documentation": "^14.0.3",
     "eslint": "8.57.0",
     "eslint-config-prettier": "9.1.0",
     "eslint-plugin-jest": "28.8.0",
