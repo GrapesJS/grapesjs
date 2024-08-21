@@ -62,7 +62,7 @@
     "postcss": "8",
     "prettier": "3.3.3",
     "sass": "^1.42.1",
-    "typescript": "5.4.5",
+    "typescript": "5.5.4",
     "vuepress": "^1.9.10",
     "whatwg-fetch": "^3.6.2"
   },
