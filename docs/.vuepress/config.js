@@ -104,6 +104,8 @@ module.exports = {
         ['/api/undo_manager', 'Undo Manager'],
         ['/api/parser', 'Parser'],
         ['/api/data_source_manager', 'Data Source Manager'],
+        ['/api/datasource', `${subDivider}DataSource`],
+        ['/api/datarecord', `${subDivider}DataRecord`],
       ],
       '/': [
         '',

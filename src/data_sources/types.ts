@@ -1,31 +1,4 @@
 import { ObjectAny } from '../common';
-import DataRecord from './model/DataRecord';
-import DataRecords from './model/DataRecords';
-
-export interface DataSourceProps {
-  /**
-   * DataSource id.
-   */
-  id: string;
-
-  /**
-   * DataSource records.
-   */
-  records?: DataRecords | DataRecord[] | DataRecordProps[];
-
-  /**
-   * DataSource validation and transformation factories.
-   */
-
-  transformers?: DataSourceTransformers;
-}
-
-export interface DataSourceTransformers {
-  onRecordAdd?: (args: { record: DataRecordProps }) => DataRecordProps;
-  onRecordSet?: (args: { id: string | number; key: string; value: any }) => any;
-  onRecordDelete?: (args: { record: DataRecord }) => void;
-  onRecordRead?: (args: { record: DataRecord }) => DataRecord;
-}
 
 export interface DataRecordProps extends ObjectAny {
   /**

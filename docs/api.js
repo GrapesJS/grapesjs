@@ -83,6 +83,8 @@ async function generateDocs() {
       ['pages/model/Page.ts', 'page.md'],
       ['parser/index.ts', 'parser.md'],
       ['data_sources/index.ts', 'data_source_manager.md'],
+      ['data_sources/model/DataSource.ts', 'datasource.md'],
+      ['data_sources/model/DataRecord.ts', 'datarecord.md'],
     ].map(async (file) => {
       const filePath = `${srcRoot}/${file[0]}`;
 
@@ -168,6 +170,9 @@ async function generateDocs() {
       ['pages/index.ts', 'pages.md'],
       ['pages/model/Page.ts', 'page.md'],
       ['parser/index.ts', 'parser.md'],
+      ['data_sources/index.ts', 'data_source_manager.md'],
+      ['data_sources/model/DataSource.ts', 'datasource.md'],
+      ['data_sources/model/DataRecord.ts', 'datarecord.md'],
     ].map(async (file) => {
       const filePath = `${srcRoot}/${file[0]}`;
 

@@ -1,3 +1,40 @@
+/**
+ * This module manages data sources within the editor.
+ * You can initialize the module with the editor by passing an instance of `EditorModel`.
+ *
+ * ```js
+ * const editor = new EditorModel();
+ * const dsm = new DataSourceManager(editor);
+ * ```
+ *
+ * Once the editor is instantiated, you can use the following API to manage data sources:
+ *
+ * ```js
+ * const dsm = editor.DataSources;
+ * ```
+ *
+ * * [add](#add) - Add a new data source.
+ * * [get](#get) - Retrieve a data source by its ID.
+ * * [getAll](#getall) - Retrieve all data sources.
+ * * [remove](#remove) - Remove a data source by its ID.
+ * * [clear](#clear) - Remove all data sources.
+ *
+ * Example of adding a data source:
+ *
+ * ```js
+ * const ds = dsm.add({
+ *   id: 'my_data_source_id',
+ *   records: [
+ *     { id: 'id1', name: 'value1' },
+ *     { id: 'id2', name: 'value2' }
+ *   ]
+ * });
+ * ```
+ *
+ * @module DataSources
+ * @param {EditorModel} em - Editor model.
+ */
+
 import { ItemManagerModule, ModuleConfig } from '../abstract/Module';
 import { AddOptions, RemoveOptions } from '../common';
 import EditorModel from '../editor/model/Editor';
