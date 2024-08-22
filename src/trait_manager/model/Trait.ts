@@ -195,11 +195,6 @@ export default class Trait extends Model<TraitProperties> {
     const valueOpts: { avoidStore?: boolean } = {};
     const { setValue } = this.attributes;
 
-    // if (value && typeof value === 'object' && value.type === DataVariableType) {
-    //   value = new TraitDataVariable(value, { em: this.em, trait: this }).initialize();
-    //   this.listenToDataVariable(value);
-    // }
-
     if (setValue) {
       setValue({
         value,
