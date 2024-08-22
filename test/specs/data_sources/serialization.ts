@@ -4,6 +4,7 @@ import { DataSourceProps } from '../../../src/data_sources/types';
 import ComponentWrapper from '../../../src/dom_components/model/ComponentWrapper';
 import { DataVariableType } from '../../../src/data_sources/model/DataVariable';
 import EditorModel from '../../../src/editor/model/Editor';
+import { ProjectData } from '../../../src/storage_manager';
 
 // Filter out the unique ids and selectors replaced with 'data-variable-id'
 // Makes the snapshot more stable
@@ -43,12 +44,20 @@ describe('DataSource Serialization', () => {
   let dsm: DataSourceManager;
   let fixtures: HTMLElement;
   let cmpRoot: ComponentWrapper;
-  const datasource: DataSourceProps = {
+  const componentDataSource: DataSourceProps = {
     id: 'component-serialization',
     records: [
       { id: 'id1', content: 'Hello World' },
       { id: 'id2', color: 'red' },
     ],
+  };
+  const styleDataSource: DataSourceProps = {
+    id: 'colors-data',
+    records: [{ id: 'id1', color: 'red' }],
+  };
+  const traitDataSource: DataSourceProps = {
+    id: 'test-input',
+    records: [{ id: 'id1', value: 'test-value' }],
   };
 
   beforeEach(() => {
@@ -70,7 +79,10 @@ describe('DataSource Serialization', () => {
     wrapperEl.render();
     fixtures = document.body.querySelector('#fixtures')!;
     fixtures.appendChild(wrapperEl.el);
-    dsm.add(datasource);
+
+    dsm.add(componentDataSource);
+    dsm.add(styleDataSource);
+    dsm.add(traitDataSource);
   });
 
   afterEach(() => {
@@ -85,7 +97,7 @@ describe('DataSource Serialization', () => {
         {
           type: DataVariableType,
           value: 'default',
-          path: `${datasource.id}.id1.content`,
+          path: `${componentDataSource.id}.id1.content`,
         },
       ],
     })[0];
@@ -97,18 +109,12 @@ describe('DataSource Serialization', () => {
     expect(html).toMatchInlineSnapshot('"<body><h1><div>Hello World</div></h1></body>"');
   });
 
-  // DataSources TODO
-  test.todo('component .getCss');
-
-  // DataSources TODO
-  test.todo('component .getJs');
-
   describe('.getProjectData', () => {
     test('ComponentDataVariable', () => {
       const dataVariable = {
         type: DataVariableType,
         value: 'default',
-        path: `${datasource.id}.id1.content`,
+        path: `${componentDataSource.id}.id1.content`,
       };
 
       cmpRoot.append({
@@ -128,12 +134,6 @@ describe('DataSource Serialization', () => {
     });
 
     test('StyleDataVariable', () => {
-      const styleDataSource: DataSourceProps = {
-        id: 'colors-data',
-        records: [{ id: 'id1', color: 'red' }],
-      };
-      dsm.add(styleDataSource);
-
       const dataVariable = {
         type: DataVariableType,
         value: 'black',
@@ -166,17 +166,10 @@ describe('DataSource Serialization', () => {
     });
 
     test('TraitDataVariable', () => {
-      const record = { id: 'id1', value: 'test-value' };
-      const inputDataSource: DataSourceProps = {
-        id: 'test-input',
-        records: [record],
-      };
-      dsm.add(inputDataSource);
-
       const dataVariable = {
         type: DataVariableType,
         value: 'default',
-        path: `${inputDataSource.id}.id1.value`,
+        path: `${traitDataSource.id}.id1.value`,
       };
 
       cmpRoot.append({
@@ -201,11 +194,200 @@ describe('DataSource Serialization', () => {
         value: dataVariable,
       });
       expect(component.attributes).toEqual({
-        value: record.value,
+        value: 'test-value',
       });
 
       const snapshot = filterObjectForSnapshot(projectData);
       expect(snapshot).toMatchSnapshot(``);
+    });
+  });
+
+  describe('.loadProjectData', () => {
+    test('ComponentDataVariable', () => {
+      const componentProjectData: ProjectData = {
+        assets: [],
+        pages: [
+          {
+            frames: [
+              {
+                component: {
+                  components: [
+                    {
+                      components: [
+                        {
+                          path: 'component-serialization.id1.content',
+                          type: 'data-variable',
+                          value: 'default',
+                        },
+                      ],
+                      tagName: 'h1',
+                      type: 'text',
+                    },
+                  ],
+                  docEl: {
+                    tagName: 'html',
+                  },
+                  head: {
+                    type: 'head',
+                  },
+                  stylable: [
+                    'background',
+                    'background-color',
+                    'background-image',
+                    'background-repeat',
+                    'background-attachment',
+                    'background-position',
+                    'background-size',
+                  ],
+                  type: 'wrapper',
+                },
+                id: 'data-variable-id',
+              },
+            ],
+            id: 'data-variable-id',
+            type: 'main',
+          },
+        ],
+        styles: [],
+        symbols: [],
+      };
+
+      editor.loadProjectData(componentProjectData);
+      const components = editor.getComponents();
+
+      const component = components.models[0];
+      const html = component.toHTML();
+      expect(html).toContain('Hello World');
+    });
+
+    test('StyleDataVariable', () => {
+      const componentProjectData: ProjectData = {
+        assets: [],
+        pages: [
+          {
+            frames: [
+              {
+                component: {
+                  components: [
+                    {
+                      attributes: {
+                        id: 'selectorid',
+                      },
+                      content: 'Hello World',
+                      tagName: 'h1',
+                      type: 'text',
+                    },
+                  ],
+                  docEl: {
+                    tagName: 'html',
+                  },
+                  head: {
+                    type: 'head',
+                  },
+                  stylable: [
+                    'background',
+                    'background-color',
+                    'background-image',
+                    'background-repeat',
+                    'background-attachment',
+                    'background-position',
+                    'background-size',
+                  ],
+                  type: 'wrapper',
+                },
+                id: 'componentid',
+              },
+            ],
+            id: 'frameid',
+            type: 'main',
+          },
+        ],
+        styles: [
+          {
+            selectors: ['#selectorid'],
+            style: {
+              color: {
+                path: 'colors-data.id1.color',
+                type: 'data-variable',
+                value: 'black',
+              },
+            },
+          },
+        ],
+        symbols: [],
+      };
+
+      editor.loadProjectData(componentProjectData);
+
+      const components = editor.getComponents();
+      const component = components.models[0];
+      const style = component.getStyle();
+
+      expect(style).toEqual({
+        color: 'red',
+      });
+    });
+
+    test('TraitDataVariable', () => {
+      const componentProjectData: ProjectData = {
+        assets: [],
+        pages: [
+          {
+            frames: [
+              {
+                component: {
+                  components: [
+                    {
+                      attributes: {
+                        value: 'default',
+                      },
+                      'attributes-data-variable': {
+                        value: {
+                          path: 'test-input.id1.value',
+                          type: 'data-variable',
+                          value: 'default',
+                        },
+                      },
+                      tagName: 'input',
+                      void: true,
+                    },
+                  ],
+                  docEl: {
+                    tagName: 'html',
+                  },
+                  head: {
+                    type: 'head',
+                  },
+                  stylable: [
+                    'background',
+                    'background-color',
+                    'background-image',
+                    'background-repeat',
+                    'background-attachment',
+                    'background-position',
+                    'background-size',
+                  ],
+                  type: 'wrapper',
+                },
+                id: 'frameid',
+              },
+            ],
+            id: 'pageid',
+            type: 'main',
+          },
+        ],
+        styles: [],
+        symbols: [],
+      };
+
+      editor.loadProjectData(componentProjectData);
+
+      const components = editor.getComponents();
+      const component = components.models[0];
+      const value = component.getAttributes();
+      expect(value).toEqual({
+        value: 'test-value',
+      });
     });
   });
 });

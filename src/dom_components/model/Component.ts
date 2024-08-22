@@ -51,6 +51,7 @@ import {
   updateSymbolComps,
   updateSymbolProps,
 } from './SymbolUtils';
+import TraitDataVariable from '../../data_sources/model/TraitDataVariable';
 
 export interface IComponent extends ExtractMethods<Component> {}
 
@@ -744,6 +745,14 @@ export default class Component extends StyleableModel<ComponentProperties> {
       }
     }
 
+    const attrDataVariable = this.get('attributes-data-variable');
+    if (attrDataVariable) {
+      Object.entries(attrDataVariable).forEach(([key, value]) => {
+        const dataVariable = value instanceof TraitDataVariable ? value : new TraitDataVariable(value, { em });
+        attributes[key] = dataVariable.getDataValue();
+      });
+    }
+
     // Check if we need an ID on the component
     if (!has(attributes, 'id')) {
       let addId = false;
@@ -895,7 +904,6 @@ export default class Component extends StyleableModel<ComponentProperties> {
       }
     });
     traits.length && this.set('attributes', attrs);
-    // store the trait data-variable attributes outside the attributes object so you can load a project with data-variable attributes
     Object.keys(traitDataVariableAttr).length && this.set('attributes-data-variable', traitDataVariableAttr);
     this.on(event, this.initTraits);
     changed && em && em.trigger('component:toggled');

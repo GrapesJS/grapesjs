@@ -171,6 +171,19 @@ export default class StyleableModel<T extends ObjectHash = any> extends Model<T>
     keys(resolvedStyle).forEach((key) => {
       const styleValue = resolvedStyle[key];
 
+      if (typeof styleValue === 'string' || Array.isArray(styleValue)) {
+        return;
+      }
+
+      if (
+        typeof styleValue === 'object' &&
+        styleValue.type === DataVariableType &&
+        !(styleValue instanceof StyleDataVariable)
+      ) {
+        const dataVar = new StyleDataVariable(styleValue, { em: this.em });
+        resolvedStyle[key] = dataVar.getDataValue();
+      }
+
       if (styleValue instanceof StyleDataVariable) {
         const [dsId, drId, keyPath] = stringToPath(styleValue.get('path'));
         const ds = this.em?.DataSources.get(dsId);
