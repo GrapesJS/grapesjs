@@ -1,8 +1,8 @@
 import Editor from '../../../src/editor/model/Editor';
 import DataSourceManager from '../../../src/data_sources';
-import { DataSourceProps } from '../../../src/data_sources/types';
 import ComponentWrapper from '../../../src/dom_components/model/ComponentWrapper';
 import { DataVariableType } from '../../../src/data_sources/model/DataVariable';
+import { DataSourceProps } from '../../../src/data_sources/model/DataSource';
 
 describe('DataSource Transformers', () => {
   let em: Editor;

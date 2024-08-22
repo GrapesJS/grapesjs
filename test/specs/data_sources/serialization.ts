@@ -1,10 +1,10 @@
 import Editor from '../../../src/editor';
 import DataSourceManager from '../../../src/data_sources';
-import { DataSourceProps } from '../../../src/data_sources/types';
 import ComponentWrapper from '../../../src/dom_components/model/ComponentWrapper';
 import { DataVariableType } from '../../../src/data_sources/model/DataVariable';
 import EditorModel from '../../../src/editor/model/Editor';
 import { ProjectData } from '../../../src/storage_manager';
+import { DataSourceProps } from '../../../src/data_sources/model/DataSource';
 
 // Filter out the unique ids and selectors replaced with 'data-variable-id'
 // Makes the snapshot more stable
