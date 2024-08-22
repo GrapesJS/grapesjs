@@ -1,0 +1,164 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`DataSource Serialization .getProjectData ComponentDataVariable 1`] = `
+{
+  "assets": [],
+  "pages": [
+    {
+      "frames": [
+        {
+          "component": {
+            "components": [
+              {
+                "components": [
+                  {
+                    "path": "component-serialization.id1.content",
+                    "type": "data-variable",
+                    "value": "default",
+                  },
+                ],
+                "tagName": "h1",
+                "type": "text",
+              },
+            ],
+            "docEl": {
+              "tagName": "html",
+            },
+            "head": {
+              "type": "head",
+            },
+            "stylable": [
+              "background",
+              "background-color",
+              "background-image",
+              "background-repeat",
+              "background-attachment",
+              "background-position",
+              "background-size",
+            ],
+            "type": "wrapper",
+          },
+          "id": "data-variable-id",
+        },
+      ],
+      "id": "data-variable-id",
+      "type": "main",
+    },
+  ],
+  "styles": [],
+  "symbols": [],
+}
+`;
+
+exports[`DataSource Serialization .getProjectData StyleDataVariable 1`] = `
+{
+  "assets": [],
+  "pages": [
+    {
+      "frames": [
+        {
+          "component": {
+            "components": [
+              {
+                "attributes": {
+                  "id": "data-variable-id",
+                },
+                "content": "Hello World",
+                "tagName": "h1",
+                "type": "text",
+              },
+            ],
+            "docEl": {
+              "tagName": "html",
+            },
+            "head": {
+              "type": "head",
+            },
+            "stylable": [
+              "background",
+              "background-color",
+              "background-image",
+              "background-repeat",
+              "background-attachment",
+              "background-position",
+              "background-size",
+            ],
+            "type": "wrapper",
+          },
+          "id": "data-variable-id",
+        },
+      ],
+      "id": "data-variable-id",
+      "type": "main",
+    },
+  ],
+  "styles": [
+    {
+      "selectors": [
+        "data-variable-id",
+      ],
+      "style": {
+        "color": {
+          "path": "colors-data.id1.color",
+          "type": "data-variable",
+          "value": "black",
+        },
+      },
+    },
+  ],
+  "symbols": [],
+}
+`;
+
+exports[`DataSource Serialization .getProjectData TraitDataVariable 1`] = `
+{
+  "assets": [],
+  "pages": [
+    {
+      "frames": [
+        {
+          "component": {
+            "components": [
+              {
+                "attributes": {
+                  "value": "test-value",
+                },
+                "attributes-data-variable": {
+                  "value": {
+                    "path": "test-input.id1.value",
+                    "type": "data-variable",
+                    "value": "default",
+                  },
+                },
+                "tagName": "input",
+                "void": true,
+              },
+            ],
+            "docEl": {
+              "tagName": "html",
+            },
+            "head": {
+              "type": "head",
+            },
+            "stylable": [
+              "background",
+              "background-color",
+              "background-image",
+              "background-repeat",
+              "background-attachment",
+              "background-position",
+              "background-size",
+            ],
+            "type": "wrapper",
+          },
+          "id": "data-variable-id",
+        },
+      ],
+      "id": "data-variable-id",
+      "type": "main",
+    },
+  ],
+  "styles": [],
+  "symbols": [],
+}
+`;

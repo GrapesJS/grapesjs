@@ -882,15 +882,21 @@ export default class Component extends StyleableModel<ComponentProperties> {
     this.off(event, this.initTraits);
     this.__loadTraits();
     const attrs = { ...this.get('attributes') };
+    const traitDataVariableAttr: ObjectAny = {};
     const traits = this.traits;
     traits.each((trait) => {
       if (!trait.changeProp) {
         const name = trait.getName();
         const value = trait.getInitValue();
+        if (trait.dataVariable) {
+          traitDataVariableAttr[name] = trait.dataVariable;
+        }
         if (name && value) attrs[name] = value;
       }
     });
     traits.length && this.set('attributes', attrs);
+    // store the trait data-variable attributes outside the attributes object so you can load a project with data-variable attributes
+    Object.keys(traitDataVariableAttr).length && this.set('attributes-data-variable', traitDataVariableAttr);
     this.on(event, this.initTraits);
     changed && em && em.trigger('component:toggled');
     return this;
