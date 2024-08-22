@@ -38,9 +38,9 @@
 import { ItemManagerModule, ModuleConfig } from '../abstract/Module';
 import { AddOptions, RemoveOptions } from '../common';
 import EditorModel from '../editor/model/Editor';
-import DataSource from './model/DataSource';
+import DataSource, { DataSourceProps } from './model/DataSource';
 import DataSources from './model/DataSources';
-import { DataSourceProps, DataSourcesEvents } from './types';
+import { DataSourcesEvents } from './types';
 import { Events } from 'backbone';
 
 export default class DataSourceManager extends ItemManagerModule<ModuleConfig, DataSources> {
