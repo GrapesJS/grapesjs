@@ -280,12 +280,6 @@ export default class PropertyComposite<T extends Record<string, any> = PropertyC
 
     const result = this.getStyleFromProps()[this.getName()] || '';
 
-    if (result && typeof result !== 'string' && 'type' in result) {
-      if (result.type === DataVariableType) {
-        console.log('Datasources __getFullValue');
-      }
-    }
-
     return getLastStyleValue(result as string);
   }
 
@@ -311,12 +305,6 @@ export default class PropertyComposite<T extends Record<string, any> = PropertyC
 
   __splitStyleName(style: StyleProps, name: string, sep: string | RegExp) {
     const value = style[name];
-
-    if (value && typeof value !== 'string' && 'type' in value) {
-      if (value.type === DataVariableType) {
-        console.log('Datasources __splitStyleName');
-      }
-    }
 
     return this.__splitValue((value as string) || '', sep);
   }
@@ -359,12 +347,6 @@ export default class PropertyComposite<T extends Record<string, any> = PropertyC
     if (!fromStyle) {
       // Get props from the main property
       const value = style[name];
-
-      if (value && typeof value !== 'string' && 'type' in value) {
-        if (value.type === DataVariableType) {
-          console.log('Datasources __getPropsFromStyle');
-        }
-      }
 
       result = this.__getSplitValue((value as string) || '', { byName });
 
