@@ -215,7 +215,6 @@ export default class Droppable {
     const { dragContent } = this;
     const dt = (ev as DragEvent).dataTransfer;
     const content = this.getContentByData(dt).content;
-    (ev.target as HTMLElement).style.border = '';
     content && dragContent && dragContent(content);
     this.endDrop(!content, ev);
   }
