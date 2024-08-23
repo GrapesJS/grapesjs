@@ -27,4 +27,5 @@ jobs:
       - run: npm run format:check
       - run: yarn build
       - run: npm run ts:build:check
+      - run: npm run docs:api
       - run: npm test
