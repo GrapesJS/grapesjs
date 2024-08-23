@@ -508,6 +508,21 @@ export default class Component extends StyleableModel<ComponentProperties> {
   }
 
   /**
+   * Find the first inner component by component type.
+   * If no component is found, it returns `undefined`.
+   * @param {String} type Component type
+   * @returns {Component|undefined}
+   * @example
+   * const image = component.getType('image');
+   * if (image) {
+   *  console.log(image);
+   * }
+   */
+  getType(type: string): Component | undefined {
+    return this.findType(type).at(0);
+  }
+
+  /**
    * Find the closest parent component by query string.
    * **ATTENTION**: this method works only with already rendered component
    * @param  {string} query Query string
