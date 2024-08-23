@@ -513,12 +513,12 @@ export default class Component extends StyleableModel<ComponentProperties> {
    * @param {String} type Component type
    * @returns {Component|undefined}
    * @example
-   * const image = component.getType('image');
+   * const image = component.findFirstType('image');
    * if (image) {
    *  console.log(image);
    * }
    */
-  getType(type: string): Component | undefined {
+  findFirstType(type: string): Component | undefined {
     return this.findType(type).at(0);
   }
 

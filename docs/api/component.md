@@ -187,7 +187,7 @@ console.log(allImages[0]) // prints the first found component
 
 Returns **[Array][5]\<Component>** 
 
-## getType
+## findFirstType
 
 Find the first inner component by component type.
 If no component is found, it returns `undefined`.
@@ -199,7 +199,7 @@ If no component is found, it returns `undefined`.
 ### Examples
 
 ```javascript
-const image = component.getType('image');
+const image = component.findFirstType('image');
 if (image) console.log(image)
 ```
 
