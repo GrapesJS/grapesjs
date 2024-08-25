@@ -1,4 +1,5 @@
 import Backbone from 'backbone';
+import { HTMLParserOptions } from '../parser/config/config';
 export { default as $ } from '../utils/cash-dom';
 
 interface NOOP {}
@@ -12,6 +13,8 @@ export type AddOptions = Backbone.AddOptions & { temporary?: boolean; action?: s
 export type DisableOptions = { fromMove?: boolean };
 
 export type LocaleOptions = { locale?: boolean };
+
+export type WithHTMLParserOptions = { parserOptions?: HTMLParserOptions; };
 
 export type RemoveOptions = Backbone.Silenceable;
 
