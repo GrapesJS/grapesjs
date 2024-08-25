@@ -1,6 +1,6 @@
 # [GrapesJS](http://grapesjs.com)
 
-[![Build Status](https://github.com/GrapesJS/grapesjs/actions/workflows/build.yml/badge.svg)](https://github.com/GrapesJS/grapesjs/actions)
+[![Build Status](https://github.com/GrapesJS/grapesjs/actions/workflows/quality.yml/badge.svg)](https://github.com/GrapesJS/grapesjs/actions)
 [![Chat](https://img.shields.io/badge/chat-discord-7289da.svg)](https://discord.gg/QAbgGXq)
 [![CDNJS](https://img.shields.io/cdnjs/v/grapesjs.svg)](https://cdnjs.com/libraries/grapesjs)
 [![npm](https://img.shields.io/npm/v/grapesjs.svg)](https://www.npmjs.com/package/grapesjs)

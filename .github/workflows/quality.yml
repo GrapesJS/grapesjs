@@ -7,7 +7,7 @@ on:
     branches: [dev]
 
 jobs:
-  quailty:
+  quality:
     runs-on: ubuntu-latest
 
     strategy:
