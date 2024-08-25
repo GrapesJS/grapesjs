@@ -187,6 +187,24 @@ console.log(allImages[0]) // prints the first found component
 
 Returns **[Array][5]\<Component>** 
 
+## findFirstType
+
+Find the first inner component by component type.
+If no component is found, it returns `undefined`.
+
+### Parameters
+
+*   `type` **[String][1]** Component type
+
+### Examples
+
+```javascript
+const image = component.findFirstType('image');
+if (image) console.log(image)
+```
+
+Returns **Component** Found component, otherwise `undefined`
+
 ## closest
 
 Find the closest parent component by query string.
