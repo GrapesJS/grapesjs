@@ -1,6 +1,6 @@
 import { isEmpty, isArray, isString, isFunction, each, includes, extend, flatten, keys } from 'underscore';
 import Component from './Component';
-import { AddOptions, Collection, OptionAsDocument } from '../../common';
+import { AddOptions, Collection } from '../../common';
 import { DomComponentsConfig } from '../config/config';
 import EditorModel from '../../editor/model/Editor';
 import ComponentManager from '..';
@@ -15,7 +15,7 @@ import {
 } from './types';
 import ComponentText from './ComponentText';
 import ComponentWrapper from './ComponentWrapper';
-import { ComponentsEvents } from '../types';
+import { ComponentsEvents, ParseStringOptions } from '../types';
 import { isSymbolInstance, isSymbolRoot, updateSymbolComps } from './SymbolUtils';
 
 export const getComponentIds = (cmp?: Component | Component[] | Components, res: string[] = []) => {
@@ -252,11 +252,11 @@ Component> {
     return new model(attrs, options) as Component;
   }
 
-  parseString(value: string, opt: AddOptions & OptionAsDocument & { temporary?: boolean; keepIds?: string[] } = {}) {
+  parseString(value: string, opt: ParseStringOptions = {}) {
     const { em, domc, parent } = this;
     const asDocument = opt.asDocument && parent?.is('wrapper');
     const cssc = em.Css;
-    const parsed = em.Parser.parseHtml(value, { asDocument });
+    const parsed = em.Parser.parseHtml(value, { asDocument, ...opt.parserOptions });
     let components = parsed.html;
 
     if (asDocument) {

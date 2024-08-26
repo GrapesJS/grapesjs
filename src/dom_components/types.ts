@@ -1,3 +1,4 @@
+import { AddOptions, OptionAsDocument, WithHTMLParserOptions } from '../common';
 import Component from './model/Component';
 
 export enum ActionLabelComponents {
@@ -14,6 +15,10 @@ export interface SymbolInfo {
   main?: Component;
   instances: Component[];
   relatives: Component[];
+}
+
+export interface ParseStringOptions extends AddOptions, OptionAsDocument, WithHTMLParserOptions {
+  keepIds?: string[];
 }
 
 export enum ComponentsEvents {
