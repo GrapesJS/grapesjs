@@ -1,5 +1,5 @@
 import { bindAll } from 'underscore';
-import { AddOptions, DisableOptions, ObjectAny } from '../../common';
+import { AddOptions, DisableOptions, ObjectAny, WithHTMLParserOptions } from '../../common';
 import RichTextEditorModule from '../../rich_text_editor';
 import RichTextEditor from '../../rich_text_editor/model/RichTextEditor';
 import { off, on } from '../../utils/dom';
@@ -108,7 +108,7 @@ export default class ComponentTextView<TComp extends ComponentText = ComponentTe
    * Disable element content editing
    * @private
    * */
-  async disableEditing(opts: DisableOptions = {}) {
+  async disableEditing(opts: DisableOptions & WithHTMLParserOptions = {}) {
     const { model, rte, activeRte, em } = this;
     // There are rare cases when disableEditing is called when the view is already removed
     // so, we have to check for the model, this will avoid breaking stuff.
