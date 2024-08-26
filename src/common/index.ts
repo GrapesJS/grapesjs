@@ -14,7 +14,7 @@ export type DisableOptions = { fromMove?: boolean };
 
 export type LocaleOptions = { locale?: boolean };
 
-export type WithHTMLParserOptions = { parserOptions?: HTMLParserOptions; };
+export type WithHTMLParserOptions = { parserOptions?: HTMLParserOptions };
 
 export type RemoveOptions = Backbone.Silenceable;
 
