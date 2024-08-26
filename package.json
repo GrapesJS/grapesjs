@@ -48,7 +48,7 @@
     "@typescript-eslint/parser": "8.0.1",
     "@vuepress/plugin-google-analytics": "1.8.2",
     "@vuepress/types": "1.9.10",
-    "documentation": "13.2.5",
+    "documentation": "14.0.3",
     "eslint": "8.57.0",
     "eslint-config-prettier": "9.1.0",
     "eslint-plugin-jest": "28.8.0",
@@ -83,7 +83,7 @@
   ],
   "scripts": {
     "docs": "vuepress dev docs",
-    "docs:api": "node docs/api.js",
+    "docs:api": "node docs/api.mjs",
     "docs:build-vp": "vuepress build docs",
     "docs:build": "npm run docs:api && npm run docs:build-vp",
     "docs:deploy": "docs/deploy.sh",

@@ -42,7 +42,7 @@ editor.on('trait:value', ({ trait, component, value }) => { ... });
 editor.on('trait:category:update', ({ category, changes }) => { ... });
 ```
 
-* `trait:custom` Event to use in case of [custom Trait Manager UI](https://grapesjs.com/docs/modules/Traits.html#custom-trait-manager).
+* `trait:custom` Event to use in case of [custom Trait Manager UI](https\://grapesjs.com/docs/modules/Traits.html#custom-trait-manager).
 
 ```javascript
 editor.on('trait:custom', ({ container }) => { ... });
@@ -62,7 +62,7 @@ editor.on('trait', ({ event, model, ... }) => { ... });
 
 Get configuration object
 
-Returns **[Object][2]** 
+Returns **[Object][2]**&#x20;
 
 ## select
 
@@ -70,7 +70,7 @@ Select traits from a component.
 
 ### Parameters
 
-*   `component` **[Component]** 
+*   `component` **[Component]**&#x20;
 
 ### Examples
 
@@ -88,7 +88,7 @@ Get trait categories from the currently selected component.
 const traitCategories: Category[] = tm.getCategories();
 ```
 
-Returns **[Array][3]\<Category>** 
+Returns **[Array][3]\<Category>**&#x20;
 
 ## getTraits
 
@@ -100,7 +100,7 @@ Get traits from the currently selected component.
 const currentTraits: Trait[] = tm.getTraits();
 ```
 
-Returns **[Array][3]<[Trait]>** 
+Returns **[Array][3]<[Trait]>**&#x20;
 
 ## getTraitsByCategory
 
@@ -108,7 +108,7 @@ Get traits by category from the currently selected component.
 
 ### Parameters
 
-*   `traits` **[Array][3]\<Trait>?** 
+*   `traits` **[Array][3]\<Trait>?**&#x20;
 
 ### Examples
 
@@ -124,7 +124,7 @@ const myFilteredTraits: Trait[] = [...];
 tm.getTraitsByCategory(myFilteredTraits);
 ```
 
-Returns **[Array][3]\<TraitsByCategory>** 
+Returns **[Array][3]\<TraitsByCategory>**&#x20;
 
 ## getComponent
 
