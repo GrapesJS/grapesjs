@@ -38,7 +38,7 @@
 
 Get properties.
 
-Returns **[Array][1]<[Property]>** 
+Returns **[Array][1]<[Property]>**&#x20;
 
 ### getProperty
 
@@ -48,7 +48,7 @@ Get property by id.
 
 *   `id` **[String][4]** Property id.
 
-Returns **([Property] | null)** 
+Returns **([Property] | null)**&#x20;
 
 ### getPropertyAt
 
@@ -56,15 +56,15 @@ Get property at index.
 
 #### Parameters
 
-*   `index` **[Number][7]** 
+*   `index` **[Number][7]**&#x20;
 
-Returns **([Property] | null)** 
+Returns **([Property] | null)**&#x20;
 
 ### isDetached
 
 Check if the property is detached.
 
-Returns **[Boolean][3]** 
+Returns **[Boolean][3]**&#x20;
 
 ### getValues
 
@@ -84,19 +84,19 @@ console.log(property.getValues());
 // { 'margin-top': '10px', 'margin-right': '20px', ... };
 ```
 
-Returns **[Object][2]** 
+Returns **[Object][2]**&#x20;
 
 ### getSeparator
 
 Get property separator.
 
-Returns **[RegExp][5]** 
+Returns **[RegExp][5]**&#x20;
 
 ### getJoin
 
 Get the join value.
 
-Returns **[String][4]** 
+Returns **[String][4]**&#x20;
 
 [1]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array
 

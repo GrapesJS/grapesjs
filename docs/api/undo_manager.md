@@ -28,7 +28,7 @@ const um = editor.UndoManager;
 
 Get configuration object
 
-Returns **[Object][15]** 
+Returns **[Object][15]**&#x20;
 
 ## add
 
@@ -45,7 +45,7 @@ Note: New Components and CSSRules will be added automatically
 um.add(someModelOrCollection);
 ```
 
-Returns **this** 
+Returns **this**&#x20;
 
 ## remove
 
@@ -61,7 +61,7 @@ Remove and stop tracking the entity (Model/Collection)
 um.remove(someModelOrCollection);
 ```
 
-Returns **this** 
+Returns **this**&#x20;
 
 ## removeAll
 
@@ -73,7 +73,7 @@ Remove all entities
 um.removeAll();
 ```
 
-Returns **this** 
+Returns **this**&#x20;
 
 ## start
 
@@ -85,7 +85,7 @@ Start/resume tracking changes
 um.start();
 ```
 
-Returns **this** 
+Returns **this**&#x20;
 
 ## stop
 
@@ -97,7 +97,7 @@ Stop tracking changes
 um.stop();
 ```
 
-Returns **this** 
+Returns **this**&#x20;
 
 ## undo
 
@@ -113,7 +113,7 @@ Undo last change
 um.undo();
 ```
 
-Returns **this** 
+Returns **this**&#x20;
 
 ## undoAll
 
@@ -125,7 +125,7 @@ Undo all changes
 um.undoAll();
 ```
 
-Returns **this** 
+Returns **this**&#x20;
 
 ## redo
 
@@ -141,7 +141,7 @@ Redo last change
 um.redo();
 ```
 
-Returns **this** 
+Returns **this**&#x20;
 
 ## redoAll
 
@@ -153,7 +153,7 @@ Redo all changes
 um.redoAll();
 ```
 
-Returns **this** 
+Returns **this**&#x20;
 
 ## hasUndo
 
@@ -165,7 +165,7 @@ Checks if exists an available undo
 um.hasUndo();
 ```
 
-Returns **[Boolean][16]** 
+Returns **[Boolean][16]**&#x20;
 
 ## hasRedo
 
@@ -177,7 +177,7 @@ Checks if exists an available redo
 um.hasRedo();
 ```
 
-Returns **[Boolean][16]** 
+Returns **[Boolean][16]**&#x20;
 
 ## isRegistered
 
@@ -186,10 +186,10 @@ Note: New Components and CSSRules will be added automatically
 
 ### Parameters
 
-*   `obj` **any** 
+*   `obj` **any**&#x20;
 *   `entity` **(Model | Collection)** Entity to track
 
-Returns **[Boolean][16]** 
+Returns **[Boolean][16]**&#x20;
 
 ## getStack
 
@@ -202,7 +202,7 @@ const stack = um.getStack();
 stack.each(item => ...);
 ```
 
-Returns **Collection** 
+Returns **Collection**&#x20;
 
 ## skip
 
@@ -230,7 +230,7 @@ Clear the stack
 um.clear();
 ```
 
-Returns **this** 
+Returns **this**&#x20;
 
 [1]: #getconfig
 

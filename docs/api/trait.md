@@ -17,19 +17,19 @@
 
 Get the trait id.
 
-Returns **[String][1]** 
+Returns **[String][1]**&#x20;
 
 ## getType
 
 Get the trait type.
 
-Returns **[String][1]** 
+Returns **[String][1]**&#x20;
 
 ## getName
 
 Get the trait name.
 
-Returns **[String][1]** 
+Returns **[String][1]**&#x20;
 
 ## getLabel
 
@@ -41,7 +41,7 @@ Get the trait label.
 
     *   `opts.locale` **[Boolean][2]** Use the locale string from i18n module. (optional, default `true`)
 
-Returns **[String][1]** 
+Returns **[String][1]**&#x20;
 
 ## getValue
 
@@ -54,7 +54,7 @@ The value is taken from component attributes by default or from properties if th
 
     *   `opts.useType` **[Boolean][2]** Get the value based on type (eg. the checkbox will always return a boolean). (optional, default `false`)
 
-Returns **any** 
+Returns **any**&#x20;
 
 ## setValue
 
@@ -76,7 +76,7 @@ Get default value.
 
 Get trait options.
 
-Returns **[Array][4]\<TraitOption>** 
+Returns **[Array][4]\<TraitOption>**&#x20;
 
 ## getOption
 
@@ -86,7 +86,7 @@ Get current selected option or by id.
 
 *   `id` **[String][1]?** Option id.
 
-Returns **([Object][3] | null)** 
+Returns **([Object][3] | null)**&#x20;
 
 ## getOptionId
 
@@ -121,7 +121,7 @@ Get category label.
 
     *   `opts.locale` **[Boolean][2]** Use the locale string from i18n module. (optional, default `true`)
 
-Returns **[String][1]** 
+Returns **[String][1]**&#x20;
 
 ## runCommand
 

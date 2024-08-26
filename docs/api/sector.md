@@ -17,13 +17,13 @@
 
 Get sector id.
 
-Returns **[String][1]** 
+Returns **[String][1]**&#x20;
 
 ### getName
 
 Get sector name.
 
-Returns **[String][1]** 
+Returns **[String][1]**&#x20;
 
 ### setName
 
@@ -37,7 +37,7 @@ Update sector name.
 
 Check if the sector is open
 
-Returns **[Boolean][2]** 
+Returns **[Boolean][2]**&#x20;
 
 ### setOpen
 
@@ -45,13 +45,13 @@ Update Sector open state
 
 #### Parameters
 
-*   `value` **[Boolean][2]** 
+*   `value` **[Boolean][2]**&#x20;
 
 ### isVisible
 
 Check if the sector is visible
 
-Returns **[Boolean][2]** 
+Returns **[Boolean][2]**&#x20;
 
 ### getProperties
 
@@ -64,7 +64,7 @@ Get sector properties.
     *   `opts.withValue` **[Boolean][2]** Get only properties with value (optional, default `false`)
     *   `opts.withParentValue` **[Boolean][2]** Get only properties with parent value (optional, default `false`)
 
-Returns **[Array][3]<[Property]>** 
+Returns **[Array][3]<[Property]>**&#x20;
 
 [1]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
 

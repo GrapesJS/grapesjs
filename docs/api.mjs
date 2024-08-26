@@ -1,23 +1,28 @@
 // This script uses documentation to generate API Reference files
-const path = require('path');
-const documentation = require('documentation');
-const fs = require('fs');
+import { join, basename, dirname } from 'path';
+import { build, formats } from 'documentation';
+import { fileURLToPath } from 'url';
+import { existsSync, writeFileSync } from 'fs';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
 const docRoot = __dirname;
-const srcRoot = path.join(docRoot, '../src/');
-const START_EVENTS = '{START_EVENTS}';
-const END_EVENTS = '{END_EVENTS}';
-const REPLACE_EVENTS = '{REPLACE_EVENTS}';
+const srcRoot = join(docRoot, '../src/');
+const START_EVENTS = '{START\\_EVENTS}';
+const END_EVENTS = '{END\\_EVENTS}';
+const REPLACE_EVENTS = '{REPLACE\\_EVENTS}';
 
 const log = (...args) => console.log(...args);
 
 const getEventsMdFromTypes = async (filePath) => {
-  const dirname = filePath.replace(path.basename(filePath), '');
+  const dirname = filePath.replace(basename(filePath), '');
   const typesFilePath = `${dirname}types.ts`;
 
-  if (fs.existsSync(typesFilePath)) {
-    const resTypes = await documentation
-      .build([typesFilePath], { shallow: true })
-      .then((cm) => documentation.formats.md(cm /*{ markdownToc: true }*/));
+  if (existsSync(typesFilePath)) {
+    const resTypes = await build([typesFilePath], { shallow: true }).then((cm) =>
+      formats.md(cm /*{ markdownToc: true }*/),
+    );
     const indexFrom = resTypes.indexOf(START_EVENTS) + START_EVENTS.length;
     const indexTo = resTypes.indexOf(END_EVENTS);
     // console.log(`${resTypes}`)
@@ -85,13 +90,12 @@ async function generateDocs() {
     ].map(async (file) => {
       const filePath = `${srcRoot}/${file[0]}`;
 
-      if (!fs.existsSync(filePath)) {
+      if (!existsSync(filePath)) {
         throw `File not found '${filePath}'`;
       }
 
-      return documentation
-        .build([filePath], { shallow: true })
-        .then((cm) => documentation.formats.md(cm /*{ markdownToc: true }*/))
+      return build([filePath], { shallow: true })
+        .then((cm) => formats.md(cm /*{ markdownToc: true }*/))
         .then(async (output) => {
           let addLogs = [];
           let result = output
@@ -114,7 +118,7 @@ async function generateDocs() {
             result = eventsMd ? result.replace(REPLACE_EVENTS, `## Available Events\n${eventsMd}`) : result;
           }
 
-          fs.writeFileSync(`${docRoot}/api/${file[1]}`, result);
+          writeFileSync(`${docRoot}/api/${file[1]}`, result);
           log('Created', file[1], addLogs.length ? `(${addLogs.join(', ')})` : '');
         });
     }),
