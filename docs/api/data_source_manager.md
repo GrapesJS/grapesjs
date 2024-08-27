@@ -84,7 +84,7 @@ Remove data source.
 ### Parameters
 
 *   `id` **([String][7] | [DataSource])** Id of the data source.
-*   `opts` **RemoveOptions?** 
+*   `opts` **RemoveOptions?**&#x20;
 
 ### Examples
 

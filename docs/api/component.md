@@ -688,15 +688,6 @@ Update component name.
 *   `name` **[String][1]** New name.
 *   `opts` **SetOptions**  (optional, default `{}`)
 
-## setName
-
-Update component name.
-
-### Parameters
-
-*   `name` **[String][1]** New name.
-*   `opts` **SetOptions**  (optional, default `{}`)
-
 ## getIcon
 
 Get the icon string
