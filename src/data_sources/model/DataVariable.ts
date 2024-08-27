@@ -15,12 +15,10 @@ export default class DataVariable extends Model {
     };
   }
 
-  initialize(attrs: any, options: any) {
-    super.initialize(attrs, options);
+  constructor(attrs: any, options: any) {
+    super(attrs, options);
     this.em = options.em;
     this.listenToDataSource();
-
-    return this;
   }
 
   listenToDataSource() {
