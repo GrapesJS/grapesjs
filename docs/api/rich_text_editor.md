@@ -44,7 +44,7 @@ rte.add(...);
 
 Get configuration object
 
-Returns **[Object][9]** 
+Returns **[Object][9]**&#x20;
 
 ## add
 
@@ -130,13 +130,13 @@ const action = rte.get('bold');
 // {name: 'bold', ...}
 ```
 
-Returns **[Object][9]** 
+Returns **[Object][9]**&#x20;
 
 ## getAll
 
 Get all actions
 
-Returns **[Array][11]** 
+Returns **[Array][11]**&#x20;
 
 ## remove
 
@@ -144,7 +144,7 @@ Remove the action from the toolbar
 
 ### Parameters
 
-*   `name` **[string][10]** 
+*   `name` **[string][10]**&#x20;
 
 ### Examples
 
@@ -174,7 +174,7 @@ rte.run(action) // or rte.run('bold')
 
 Get the toolbar element
 
-Returns **[HTMLElement][12]** 
+Returns **[HTMLElement][12]**&#x20;
 
 [1]: https://developer.mozilla.org/en-US/docs/Web/API/Document/execCommand
 

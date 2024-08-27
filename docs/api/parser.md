@@ -33,7 +33,7 @@ const { Parser } = editor;
 
 Get configuration object
 
-Returns **[Object][5]** 
+Returns **[Object][5]**&#x20;
 
 ## parseHtml
 

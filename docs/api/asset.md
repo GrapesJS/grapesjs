@@ -18,7 +18,7 @@ Get asset type.
 asset.getType(); // -> 'image'
 ```
 
-Returns **[String][1]** 
+Returns **[String][1]**&#x20;
 
 ## getSrc
 
@@ -31,7 +31,7 @@ Get asset URL.
 asset.getSrc(); // -> 'https://.../image.png'
 ```
 
-Returns **[String][1]** 
+Returns **[String][1]**&#x20;
 
 ## getFilename
 
@@ -46,7 +46,7 @@ asset.getFilename(); // -> 'image.png'
 asset.getFilename(); // -> 'image'
 ```
 
-Returns **[String][1]** 
+Returns **[String][1]**&#x20;
 
 ## getExtension
 
@@ -61,6 +61,6 @@ asset.getExtension(); // -> 'png'
 asset.getExtension(); // -> ''
 ```
 
-Returns **[String][1]** 
+Returns **[String][1]**&#x20;
 
 [1]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String

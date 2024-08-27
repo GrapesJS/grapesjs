@@ -37,7 +37,7 @@ Returns **Collection** Collection of panel
 
 Returns panels element
 
-Returns **[HTMLElement][10]** 
+Returns **[HTMLElement][10]**&#x20;
 
 ## addPanel
 
@@ -93,7 +93,7 @@ Get panel by ID
 const myPanel = panelManager.getPanel('myPanel');
 ```
 
-Returns **(Panel | null)** 
+Returns **(Panel | null)**&#x20;
 
 ## addButton
 
@@ -141,7 +141,7 @@ Remove button from the panel
 ### Parameters
 
 *   `panelId` **[String][12]** Panel's ID
-*   `button` **any** 
+*   `button` **any**&#x20;
 *   `buttonId` **[String][12]** Button's ID
 
 ### Examples
@@ -175,7 +175,7 @@ Get button from the panel
 const button = panelManager.getButton('myPanel', 'myButton');
 ```
 
-Returns **(Button | null)** 
+Returns **(Button | null)**&#x20;
 
 [1]: https://github.com/GrapesJS/grapesjs/blob/master/src/panels/config/config.ts
 

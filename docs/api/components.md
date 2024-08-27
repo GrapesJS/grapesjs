@@ -159,7 +159,7 @@ Remove all components
 
 *   `opts`   (optional, default `{}`)
 
-Returns **this** 
+Returns **this**&#x20;
 
 ## addType
 
@@ -171,7 +171,7 @@ Read more about this in [Define New Component][15]
 *   `type` **[string][12]** Component ID
 *   `methods` **[Object][10]** Component methods
 
-Returns **this** 
+Returns **this**&#x20;
 
 ## getType
 
@@ -190,7 +190,7 @@ Remove component type
 
 ### Parameters
 
-*   `id` **[string][12]** 
+*   `id` **[string][12]**&#x20;
 *   `type` **[string][12]** Component ID
 
 Returns **([Object][10] | [undefined][16])** Removed component type, undefined otherwise
@@ -199,7 +199,7 @@ Returns **([Object][10] | [undefined][16])** Removed component type, undefined o
 
 Return the array of all types
 
-Returns **[Array][11]** 
+Returns **[Array][11]**&#x20;
 
 ## isComponent
 
@@ -207,7 +207,7 @@ Check if the object is a \[Component].
 
 ### Parameters
 
-*   `obj` **[Object][10]** 
+*   `obj` **[Object][10]**&#x20;
 
 ### Examples
 
@@ -216,7 +216,7 @@ cmp.isComponent(editor.getSelected()); // true
 cmp.isComponent({}); // false
 ```
 
-Returns **[Boolean][13]** 
+Returns **[Boolean][13]**&#x20;
 
 ## addSymbol
 
@@ -236,7 +236,7 @@ const symbol = cmp.addSymbol(editor.getSelected());
 // cmp.getSymbolInfo(symbol).isSymbol === true;
 ```
 
-Returns **[Component]** 
+Returns **[Component]**&#x20;
 
 ## getSymbols
 
@@ -251,7 +251,7 @@ const symbols = cmp.getSymbols();
 symbols[0].remove();
 ```
 
-Returns **[Array][11]<[Component]>** 
+Returns **[Array][11]<[Component]>**&#x20;
 
 ## detachSymbol
 

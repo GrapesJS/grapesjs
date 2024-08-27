@@ -4,13 +4,13 @@
 
 Get layer id.
 
-Returns **[String][1]** 
+Returns **[String][1]**&#x20;
 
 ## getIndex
 
 Get layer index.
 
-Returns **[Number][2]** 
+Returns **[Number][2]**&#x20;
 
 ## getValues
 
@@ -22,19 +22,19 @@ Get layer values.
 
     *   `opts.camelCase` **[Boolean][4]?** Return property names in camelCase.
 
-Returns **[Object][3]** 
+Returns **[Object][3]**&#x20;
 
 ## getLabel
 
 Get layer label.
 
-Returns **[String][1]** 
+Returns **[String][1]**&#x20;
 
 ## isSelected
 
 Check if the layer is selected.
 
-Returns **[Boolean][4]** 
+Returns **[Boolean][4]**&#x20;
 
 ## select
 
@@ -66,7 +66,7 @@ Returns **[Object][3]** Style object
 
 Check if the property has the preview enabled for this layer.
 
-Returns **[Boolean][4]** 
+Returns **[Boolean][4]**&#x20;
 
 [1]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
 

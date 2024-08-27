@@ -90,7 +90,7 @@ Returns configuration object
 
 ### Parameters
 
-*   `prop` **P?** 
+*   `prop` **P?**&#x20;
 
 Returns **any** Returns the configuration object or the value of the specified property
 
@@ -139,13 +139,13 @@ Returns **[String][18]** JS string
 
 Return the complete tree of components. Use `getWrapper` to include also the wrapper
 
-Returns **Components** 
+Returns **Components**&#x20;
 
 ## getWrapper
 
 Return the wrapper and its all components
 
-Returns **Component** 
+Returns **Component**&#x20;
 
 ## setComponents
 
@@ -168,7 +168,7 @@ editor.setComponents({
 });
 ```
 
-Returns **this** 
+Returns **this**&#x20;
 
 ## addComponents
 
@@ -195,13 +195,13 @@ editor.addComponents({
 });
 ```
 
-Returns **[Array][19]\<Component>** 
+Returns **[Array][19]\<Component>**&#x20;
 
 ## getStyle
 
 Returns style in JSON format object
 
-Returns **[Object][16]** 
+Returns **[Object][16]**&#x20;
 
 ## setStyle
 
@@ -223,7 +223,7 @@ editor.setStyle({
 });
 ```
 
-Returns **this** 
+Returns **this**&#x20;
 
 ## addStyle
 
@@ -246,13 +246,13 @@ Returns **[Array][19]\<CssRule>** Array of created CssRule instances
 
 Returns the last selected component, if there is one
 
-Returns **Model** 
+Returns **Model**&#x20;
 
 ## getSelectedAll
 
 Returns an array of all selected components
 
-Returns **[Array][19]** 
+Returns **[Array][19]**&#x20;
 
 ## getSelectedToStyle
 
@@ -262,7 +262,7 @@ itself and all changes will go inside its 'style' attribute. Otherwise,
 if the selected component has one or more classes, the function will
 return the corresponding CSS Rule
 
-Returns **Model** 
+Returns **Model**&#x20;
 
 ## select
 
@@ -284,7 +284,7 @@ editor.on('block:drag:stop', function(model) {
 });
 ```
 
-Returns **this** 
+Returns **this**&#x20;
 
 ## selectAdd
 
@@ -300,7 +300,7 @@ Add component to selection
 editor.selectAdd(model);
 ```
 
-Returns **this** 
+Returns **this**&#x20;
 
 ## selectRemove
 
@@ -316,7 +316,7 @@ Remove component from selection
 editor.selectRemove(model);
 ```
 
-Returns **this** 
+Returns **this**&#x20;
 
 ## selectToggle
 
@@ -332,7 +332,7 @@ Toggle component selection
 editor.selectToggle(model);
 ```
 
-Returns **this** 
+Returns **this**&#x20;
 
 ## getEditing
 
@@ -347,7 +347,7 @@ if (textComp) {
 }
 ```
 
-Returns **(Component | null)** 
+Returns **(Component | null)**&#x20;
 
 ## setDevice
 
@@ -364,7 +364,7 @@ change the canvas to the proper width
 editor.setDevice('Tablet');
 ```
 
-Returns **this** 
+Returns **this**&#x20;
 
 ## getDevice
 
@@ -461,7 +461,7 @@ console.log(editor.getProjectData());
 // { pages: [...], styles: [...], ... }
 ```
 
-Returns **[Object][16]** 
+Returns **[Object][16]**&#x20;
 
 ## loadProjectData
 
@@ -482,14 +482,14 @@ editor.loadProjectData({ pages: [...], styles: [...], ... })
 Returns container element. The one which was indicated as 'container'
 on init method
 
-Returns **[HTMLElement][21]** 
+Returns **[HTMLElement][21]**&#x20;
 
 ## getDirtyCount
 
 Return the count of changes made to the content and not yet stored.
 This count resets at any `store()`
 
-Returns **[number][22]** 
+Returns **[number][22]**&#x20;
 
 ## clearDirtyCount
 
@@ -505,7 +505,7 @@ refresh you'll get misleading position of tools
 
 ### Parameters
 
-*   `opts` **{tools: [boolean][17]?}?** 
+*   `opts` **{tools: [boolean][17]?}?**&#x20;
 *   `options` **[Object][16]?** Options
 
     *   `options.tools` **[Boolean][17]** Update the position of tools (eg. rich text editor, component highlighter, etc.) (optional, default `false`)
@@ -573,7 +573,7 @@ editor.setCustomParserCss(css => {
 });
 ```
 
-Returns **this** 
+Returns **this**&#x20;
 
 ## setDragMode
 
@@ -584,7 +584,7 @@ To get more about this feature read: [https://github.com/GrapesJS/grapesjs/issue
 
 *   `value` **[String][18]** Drag mode, options: 'absolute' | 'translate'
 
-Returns **this** 
+Returns **this**&#x20;
 
 ## log
 
@@ -609,7 +609,7 @@ editor.log('Something done!', { ns: 'from-plugin-x', level: 'info' });
 // editor.on('log:info', (msg, opts) => console.info(msg, opts))
 ```
 
-Returns **this** 
+Returns **this**&#x20;
 
 ## t
 
@@ -617,7 +617,7 @@ Translate label
 
 ### Parameters
 
-*   `args` **...[Array][19]\<any>** 
+*   `args` **...[Array][19]\<any>**&#x20;
 *   `key` **[String][18]** Label to translate
 *   `opts` **[Object][16]?** Options for the translation
 
@@ -634,7 +634,7 @@ editor.t('msg2', { params: { test: 'hello' } });
 editor.t('msg2', { params: { test: 'hello' } l: 'it' });
 ```
 
-Returns **[String][18]** 
+Returns **[String][18]**&#x20;
 
 ## on
 
@@ -645,7 +645,7 @@ Attach event
 *   `event` **[string][18]** Event name
 *   `callback` **[Function][23]** Callback function
 
-Returns **this** 
+Returns **this**&#x20;
 
 ## once
 
@@ -656,7 +656,7 @@ Attach event and detach it after the first run
 *   `event` **[string][18]** Event name
 *   `callback` **[Function][23]** Callback function
 
-Returns **this** 
+Returns **this**&#x20;
 
 ## off
 
@@ -667,7 +667,7 @@ Detach event
 *   `event` **[string][18]** Event name
 *   `callback` **[Function][23]** Callback function
 
-Returns **this** 
+Returns **this**&#x20;
 
 ## trigger
 
@@ -676,9 +676,9 @@ Trigger event
 ### Parameters
 
 *   `event` **[string][18]** Event to trigger
-*   `args` **...[Array][19]\<any>** 
+*   `args` **...[Array][19]\<any>**&#x20;
 
-Returns **this** 
+Returns **this**&#x20;
 
 ## destroy
 
@@ -688,7 +688,7 @@ Destroy the editor
 
 Render editor
 
-Returns **[HTMLElement][21]** 
+Returns **[HTMLElement][21]**&#x20;
 
 ## onReady
 
@@ -713,8 +713,8 @@ Print safe HTML by using ES6 tagged template strings.
 
 ### Parameters
 
-*   `literals` **[Array][19]<[String][18]>** 
-*   `substs` **[Array][19]<[String][18]>** 
+*   `literals` **[Array][19]<[String][18]>**&#x20;
+*   `substs` **[Array][19]<[String][18]>**&#x20;
 
 ### Examples
 
@@ -725,7 +725,7 @@ const safeStr = '<b>Hello</b>';
 const strHtml = editor.html`Escaped ${unsafeStr} unescaped $${safeStr}`;
 ```
 
-Returns **[String][18]** 
+Returns **[String][18]**&#x20;
 
 [1]: https://github.com/GrapesJS/grapesjs/blob/master/src/editor/config/config.ts
 

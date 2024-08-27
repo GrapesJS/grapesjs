@@ -50,7 +50,7 @@ keymaps.add(...);
 
 Get configuration object
 
-Returns **[Object][7]** 
+Returns **[Object][7]**&#x20;
 
 ## add
 
@@ -115,7 +115,7 @@ keymaps.getAll();
 // -> {id1: {}, id2: {}};
 ```
 
-Returns **[Object][7]** 
+Returns **[Object][7]**&#x20;
 
 ## remove
 
@@ -138,7 +138,7 @@ Returns **[Object][7]** Removed keymap
 
 Remove all binded keymaps
 
-Returns **this** 
+Returns **this**&#x20;
 
 [1]: #getconfig
 

@@ -82,7 +82,7 @@ console.log(JSON.stringify(device));
 // {name: 'Tablet', width: '900px'}
 ```
 
-Returns **([Device] | null)** 
+Returns **([Device] | null)**&#x20;
 
 ## remove
 
@@ -116,7 +116,7 @@ console.log(JSON.stringify(devices));
 // [{name: 'Desktop', width: ''}, ...]
 ```
 
-Returns **[Array][10]<[Device]>** 
+Returns **[Array][10]<[Device]>**&#x20;
 
 ## select
 
@@ -146,7 +146,7 @@ Get the selected device
 const selected = deviceManager.getSelected();
 ```
 
-Returns **[Device]** 
+Returns **[Device]**&#x20;
 
 [1]: https://github.com/GrapesJS/grapesjs/blob/master/src/device_manager/config/config.ts
 

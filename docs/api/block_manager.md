@@ -72,7 +72,7 @@ editor.on('block:drag:stop', (component, block) => { ... });
 editor.on('block:category:update', ({ category, changes }) => { ... });
 ```
 
-* `block:custom` Event to use in case of [custom Block Manager UI](https://grapesjs.com/docs/modules/Blocks.html#customization).
+* `block:custom` Event to use in case of [custom Block Manager UI](https\://grapesjs.com/docs/modules/Blocks.html#customization).
 
 ```javascript
 editor.on('block:custom', ({ container, blocks, ... }) => { ... });
@@ -92,7 +92,7 @@ editor.on('block', ({ event, model, ... }) => { ... });
 
 Get configuration object
 
-Returns **[Object][2]** 
+Returns **[Object][2]**&#x20;
 
 ## add
 
@@ -135,7 +135,7 @@ console.log(JSON.stringify(block));
 // {label: 'Heading', content: '<h1>Put your ...', ...}
 ```
 
-Returns **[Block]** 
+Returns **[Block]**&#x20;
 
 ## getAll
 
@@ -149,13 +149,13 @@ console.log(JSON.stringify(blocks));
 // [{label: 'Heading', content: '<h1>Put your ...'}, ...]
 ```
 
-Returns **Collection<[Block]>** 
+Returns **Collection<[Block]>**&#x20;
 
 ## getAllVisible
 
 Return the visible collection, which containes blocks actually rendered
 
-Returns **Collection<[Block]>** 
+Returns **Collection<[Block]>**&#x20;
 
 ## remove
 
@@ -182,20 +182,20 @@ Returns **[Block]** Removed block
 Get all available categories.
 It's possible to add categories only within blocks via 'add()' method
 
-Returns **([Array][4] | Collection)** 
+Returns **([Array][4] | Collection)**&#x20;
 
 ## getContainer
 
 Return the Blocks container element
 
-Returns **[HTMLElement][5]** 
+Returns **[HTMLElement][5]**&#x20;
 
 ## getDragBlock
 
 Returns currently dragging block.
 Updated when the drag starts and cleared once it's done.
 
-Returns **([Block] | [undefined][6])** 
+Returns **([Block] | [undefined][6])**&#x20;
 
 ## getBlocksByCategory
 
@@ -203,7 +203,7 @@ Get blocks by category.
 
 ### Parameters
 
-*   `blocks` **[Array][4]\<Block>?** 
+*   `blocks` **[Array][4]\<Block>?**&#x20;
 
 ### Examples
 
@@ -219,7 +219,7 @@ const myFilteredBlocks: Block[] = [...];
 blockManager.getBlocksByCategorymyFilteredBlocks
 ```
 
-Returns **[Array][4]\<BlocksByCategory>** 
+Returns **[Array][4]\<BlocksByCategory>**&#x20;
 
 ## render
 

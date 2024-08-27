@@ -273,6 +273,32 @@ describe('Component', () => {
     expect(result.class).toEqual(undefined);
   });
 
+  test('findFirstType returns first component of specified type', () => {
+    const image1 = new ComponentImage({}, compOpts);
+    const text = new ComponentText({}, compOpts);
+    const image2 = new ComponentImage({}, compOpts);
+
+    obj.append([image1, text, image2]);
+
+    const result = obj.findFirstType('image');
+    expect(result).toBe(image1);
+    expect(result instanceof ComponentImage).toBe(true);
+  });
+
+  test('findFirstType returns undefined for non-existent type', () => {
+    const text = new ComponentText({}, compOpts);
+
+    obj.append(text);
+
+    const result = obj.findFirstType('image');
+    expect(result).toBeUndefined();
+  });
+
+  test('findFirstType returns undefined for empty component', () => {
+    const result = obj.findFirstType('div');
+    expect(result).toBeUndefined();
+  });
+
   test('setAttributes', () => {
     obj.setAttributes({
       id: 'test',
