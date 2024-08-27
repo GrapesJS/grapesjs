@@ -61,6 +61,7 @@ describe('TraitDataVariable', () => {
 
       const input = cmp.getEl();
       expect(input?.getAttribute('value')).toBe('test-value');
+      expect(cmp?.getAttributes().value).toBe('test-value');
     });
 
     test('component initializes data-variable placeholder', () => {
@@ -89,10 +90,13 @@ describe('TraitDataVariable', () => {
 
       const input = cmp.getEl();
       expect(input?.getAttribute('placeholder')).toBe('test-value');
+      expect(cmp?.getAttributes().placeholder).toBe('test-value');
 
       const testDs = dsm.get(inputDataSource.id);
       testDs.getRecord('id1')?.set({ value: 'new-value' });
+
       expect(input?.getAttribute('placeholder')).toBe('new-value');
+      expect(cmp?.getAttributes().placeholder).toBe('new-value');
     });
 
     test('component updates with data-variable value', () => {
@@ -122,10 +126,13 @@ describe('TraitDataVariable', () => {
 
       const input = cmp.getEl();
       expect(input?.getAttribute('value')).toBe('test-value');
+      expect(cmp?.getAttributes().value).toBe('test-value');
 
       const testDs = dsm.get(inputDataSource.id);
       testDs.getRecord('id1')?.set({ value: 'new-value' });
+
       expect(input?.getAttribute('value')).toBe('new-value');
+      expect(cmp?.getAttributes().value).toBe('new-value');
     });
   });
 
@@ -159,10 +166,16 @@ describe('TraitDataVariable', () => {
 
       const input = cmp.getEl() as HTMLInputElement;
       expect(input?.checked).toBe(true);
+      expect(input?.getAttribute('checked')).toBe('true');
 
       const testDs = dsm.get(inputDataSource.id);
       testDs.getRecord('id1')?.set({ value: 'false' });
+
       expect(input?.getAttribute('checked')).toBe('false');
+      // Not syncing - related to
+      // https://github.com/GrapesJS/grapesjs/discussions/5868
+      // https://github.com/GrapesJS/grapesjs/discussions/4415
+      // expect(input?.checked).toBe(false);
     });
   });
 
@@ -192,10 +205,13 @@ describe('TraitDataVariable', () => {
 
       const img = cmp.getEl() as HTMLImageElement;
       expect(img?.getAttribute('src')).toBe('url-to-cat-image');
+      expect(cmp?.getAttributes().src).toBe('url-to-cat-image');
 
       const testDs = dsm.get(inputDataSource.id);
       testDs.getRecord('id1')?.set({ value: 'url-to-dog-image' });
+
       expect(img?.getAttribute('src')).toBe('url-to-dog-image');
+      expect(cmp?.getAttributes().src).toBe('url-to-dog-image');
     });
   });
 
@@ -229,7 +245,9 @@ describe('TraitDataVariable', () => {
 
       const testDs = dsm.get(inputDataSource.id);
       testDs.getRecord('id1')?.set({ value: 'url-to-dog-image' });
+
       expect(link?.href).toBe('http://localhost/url-to-dog-image');
+      expect(cmp?.getAttributes().href).toBe('url-to-dog-image');
     });
   });
 });
