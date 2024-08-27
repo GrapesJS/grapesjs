@@ -34,37 +34,12 @@
 
 import { AddOptions, CombinedModelConstructorOptions, Model, RemoveOptions } from '../../common';
 import EditorModel from '../../editor/model/Editor';
-import { DataRecordProps } from '../types';
+import { DataRecordProps, DataSourceProps, DataSourceTransformers } from '../types';
 import DataRecord from './DataRecord';
 import DataRecords from './DataRecords';
 import DataSources from './DataSources';
 
 interface DataSourceOptions extends CombinedModelConstructorOptions<{ em: EditorModel }, DataSource> {}
-
-export interface DataSourceProps {
-  /**
-   * DataSource id.
-   */
-  id: string;
-
-  /**
-   * DataSource records.
-   */
-  records?: DataRecords | DataRecord[] | DataRecordProps[];
-
-  /**
-   * DataSource validation and transformation factories.
-   */
-
-  transformers?: DataSourceTransformers;
-}
-
-export interface DataSourceTransformers {
-  onRecordAdd?: (args: { record: DataRecordProps }) => DataRecordProps;
-  onRecordSet?: (args: { id: string | number; key: string; value: any }) => any;
-  onRecordDelete?: (args: { record: DataRecord }) => void;
-  onRecordRead?: (args: { record: DataRecord }) => DataRecord;
-}
 
 export default class DataSource extends Model<DataSourceProps> {
   transformers: DataSourceTransformers;

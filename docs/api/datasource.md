@@ -34,30 +34,12 @@ dataSource.addRecord({ id: 'id3', name: 'value3' });
 *   `props` **DataSourceProps** Properties to initialize the data source.
 *   `opts` **DataSourceOptions** Options to initialize the data source.
 
-## id
-
-DataSource id.
-
-Type: [string][5]
-
-## records
-
-DataSource records.
-
-Type: (DataRecords | [Array][6]\<DataRecord> | [Array][6]\<DataRecordProps>)
-
-## transformers
-
-DataSource validation and transformation factories.
-
-Type: DataSourceTransformers
-
 ## defaults
 
 Returns the default properties for the data source.
 These include an empty array of records and an empty object of transformers.
 
-Returns **[Object][7]** The default attributes for the data source.
+Returns **[Object][5]** The default attributes for the data source.
 
 ## constructor
 
@@ -101,16 +83,16 @@ If a transformer is provided for the `onRecordRead` event, it will be applied to
 
 ### Parameters
 
-*   `id` **([string][5] | [number][8])** The ID of the record to retrieve.
+*   `id` **([string][6] | [number][7])** The ID of the record to retrieve.
 
-Returns **(DataRecord | [undefined][9])** The data record, or `undefined` if no record is found with the given ID.
+Returns **(DataRecord | [undefined][8])** The data record, or `undefined` if no record is found with the given ID.
 
 ## getRecords
 
 Retrieves all records from the data source.
 Each record is processed with the `getRecord` method to apply any read transformers.
 
-Returns **[Array][6]<(DataRecord | [undefined][9])>** An array of data records.
+Returns **[Array][9]<(DataRecord | [undefined][8])>** An array of data records.
 
 ## removeRecord
 
@@ -119,10 +101,10 @@ If a transformer is provided for the `onRecordDelete` event, it will be applied 
 
 ### Parameters
 
-*   `id` **([string][5] | [number][8])** The ID of the record to remove.
+*   `id` **([string][6] | [number][7])** The ID of the record to remove.
 *   `opts` **RemoveOptions?** Options to apply when removing the record.
 
-Returns **(DataRecord | [undefined][9])** The removed data record, or `undefined` if no record is found with the given ID.
+Returns **(DataRecord | [undefined][8])** The removed data record, or `undefined` if no record is found with the given ID.
 
 [1]: #addrecord
 
@@ -132,12 +114,12 @@ Returns **(DataRecord | [undefined][9])** The removed data record, or `undefined
 
 [4]: #removerecord
 
-[5]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
+[5]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
 
-[6]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array
+[6]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
 
-[7]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
+[7]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number
 
-[8]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number
+[8]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined
 
-[9]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined
+[9]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array

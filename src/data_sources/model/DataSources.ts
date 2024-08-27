@@ -1,6 +1,7 @@
 import { Collection } from '../../common';
 import EditorModel from '../../editor/model/Editor';
-import DataSource, { DataSourceProps } from './DataSource';
+import { DataSourceProps } from '../types';
+import DataSource from './DataSource';
 
 export default class DataSources extends Collection<DataSource> {
   em: EditorModel;
