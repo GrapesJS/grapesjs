@@ -4,7 +4,7 @@ import { DataSourcesEvents } from '../../../../src/data_sources/types';
 import ComponentWrapper from '../../../../src/dom_components/model/ComponentWrapper';
 import ComponentDataVariable from '../../../../src/data_sources/model/ComponentDataVariable';
 import { DataVariableType } from '../../../../src/data_sources/model/DataVariable';
-import { DataSourceProps } from '../../../../src/data_sources/model/DataSource';
+import { DataSourceProps } from '../../../../src/data_sources/types';
 
 describe('ComponentDataVariable', () => {
   let em: Editor;

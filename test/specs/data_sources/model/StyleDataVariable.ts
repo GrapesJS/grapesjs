@@ -2,7 +2,7 @@ import Editor from '../../../../src/editor/model/Editor';
 import DataSourceManager from '../../../../src/data_sources';
 import ComponentWrapper from '../../../../src/dom_components/model/ComponentWrapper';
 import { DataVariableType } from '../../../../src/data_sources/model/DataVariable';
-import { DataSourceProps } from '../../../../src/data_sources/model/DataSource';
+import { DataSourceProps } from '../../../../src/data_sources/types';
 
 describe('StyleDataVariable', () => {
   let em: Editor;
