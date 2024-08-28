@@ -51,7 +51,7 @@ describe('Checkbox Behaviour', () => {
     expect(input?.checked).toBe(true);
     expect(input?.getAttribute('checked')).toBe('true');
 
-    input.checked = false;
+    cmp.getTrait('checked').setValue(false);
 
     expect(input?.checked).toBe(false);
     expect(cmp.getAttributes().checked).toBe('false');
