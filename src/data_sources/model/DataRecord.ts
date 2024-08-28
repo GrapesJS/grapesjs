@@ -139,26 +139,17 @@ export default class DataRecord<T extends DataRecordProps = DataRecordProps> ext
   set(attributeName: unknown, value?: unknown, options?: SetOptions): DataRecord {
     const onRecordSet = this.dataSource?.transformers?.onRecordSet;
 
-    if (options?.avoidTransformers) {
-      // @ts-ignore
-      super.set(attributeName, value, options);
-      return this;
-    }
+    const newValue =
+      options?.avoidTransformers || !onRecordSet
+        ? value
+        : onRecordSet({
+            id: this.id,
+            key: attributeName as string,
+            value,
+          });
 
-    if (onRecordSet) {
-      const newValue = onRecordSet({
-        id: this.id,
-        key: attributeName as string,
-        value,
-      });
+    super.set(attributeName as string, newValue, options);
 
-      // @ts-ignore
-      super.set(attributeName, newValue, options);
-      return this;
-    } else {
-      // @ts-ignore
-      super.set(attributeName, value, options);
-      return this;
-    }
+    return this;
   }
 }
