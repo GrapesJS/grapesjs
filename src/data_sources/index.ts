@@ -36,8 +36,10 @@
  */
 
 import { ItemManagerModule, ModuleConfig } from '../abstract/Module';
-import { AddOptions, RemoveOptions } from '../common';
+import { AddOptions, ObjectAny, RemoveOptions } from '../common';
 import EditorModel from '../editor/model/Editor';
+import { get, stringToPath } from '../utils/mixins';
+import DataRecord from './model/DataRecord';
 import DataSource from './model/DataSource';
 import DataSources from './model/DataSources';
 import { DataSourcesEvents, DataSourceProps } from './types';
@@ -84,6 +86,44 @@ export default class DataSourceManager extends ItemManagerModule<ModuleConfig, D
   }
 
   /**
+   * Get value from data sources by key
+   * @param {String} key Path to value.
+   * @param {any} defValue
+   * @returns {any}
+   * const value = dsm.getValue('ds_id.record_id.propName', 'defaultValue');
+   */
+  getValue(key: string | string[], defValue: any) {
+    return get(this.getContext(), key, defValue);
+  }
+
+  /**
+   * Retrieve the entire context of data sources.
+   * This method aggregates all data records from all data sources and applies any
+   * `onRecordRead` transformers defined within each data source. The result is an
+   * object representing the current state of all data sources, where each data source
+   * ID maps to an object containing its records' attributes. Each record is keyed by
+   * both its index and its ID.
+   *
+   * @returns {ObjectAny} - The context of all data sources, with transformed records.
+   * @example
+   * const context = dsm.getContext();
+   * // e.g., { dataSourceId: { 0: { id: 'record1', name: 'value1' }, record1: { id: 'record1', name: 'value1' } } }
+   */
+  getContext() {
+    return this.all.reduce((acc, ds) => {
+      acc[ds.id] = ds.records.reduce((accR, dr, i) => {
+        const dataRecord = ds.transformers.onRecordRead ? ds.transformers.onRecordRead({ record: dr }) : dr;
+
+        accR[i] = dataRecord.attributes;
+        accR[dataRecord.id || i] = dataRecord.attributes;
+
+        return accR;
+      }, {} as ObjectAny);
+      return acc;
+    }, {} as ObjectAny);
+  }
+
+  /**
    * Remove data source.
    * @param {String|[DataSource]} id Id of the data source.
    * @returns {[DataSource]} Removed data source.
@@ -92,5 +132,33 @@ export default class DataSourceManager extends ItemManagerModule<ModuleConfig, D
    */
   remove(id: string | DataSource, opts?: RemoveOptions) {
     return this.__remove(id, opts);
+  }
+
+  /**
+   * Retrieve a data source, data record, and optional property path based on a string path.
+   * This method parses a string path to identify and retrieve the corresponding data source
+   * and data record. If a property path is included in the input, it will also be returned.
+   * The method is useful for accessing nested data within data sources.
+   *
+   * @param {String} path - The string path in the format 'dataSourceId.recordId.property'.
+   * @returns {[DataSource?, DataRecord?, String?]} - An array containing the data source,
+   * data record, and optional property path.
+   * @example
+   * const [dataSource, dataRecord, propPath] = dsm.fromPath('my_data_source_id.record_id.myProp');
+   * // e.g., [DataSource, DataRecord, 'myProp']
+   */
+  fromPath(path: string) {
+    const result: [DataSource?, DataRecord?, string?] = [];
+    const [dsId, drId, ...resPath] = stringToPath(path || '');
+    const dataSource = this.get(dsId);
+    const dataRecord = dataSource?.records.get(drId);
+    dataSource && result.push(dataSource);
+
+    if (dataRecord) {
+      result.push(dataRecord);
+      resPath.length && result.push(resPath.join('.'));
+    }
+
+    return result;
   }
 }

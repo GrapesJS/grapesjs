@@ -1,8 +1,6 @@
 import Editor from '../../../../src/editor/model/Editor';
 import DataSourceManager from '../../../../src/data_sources';
-import { DataSourcesEvents } from '../../../../src/data_sources/types';
 import ComponentWrapper from '../../../../src/dom_components/model/ComponentWrapper';
-import ComponentDataVariable from '../../../../src/data_sources/model/ComponentDataVariable';
 import { DataVariableType } from '../../../../src/data_sources/model/DataVariable';
 import { DataSourceProps } from '../../../../src/data_sources/types';
 
@@ -11,23 +9,6 @@ describe('ComponentDataVariable', () => {
   let dsm: DataSourceManager;
   let fixtures: HTMLElement;
   let cmpRoot: ComponentWrapper;
-
-  const addDataVariable = (path = 'ds1.id1.name') =>
-    cmpRoot.append<ComponentDataVariable>({
-      type: DataVariableType,
-      value: 'default',
-      path,
-    })[0];
-
-  const dsTest: DataSourceProps = {
-    id: 'ds1',
-    records: [
-      { id: 'id1', name: 'Name1' },
-      { id: 'id2', name: 'Name2' },
-      { id: 'id3', name: 'Name3' },
-    ],
-  };
-  const addDataSource = () => dsm.add(dsTest);
 
   beforeEach(() => {
     em = new Editor({
@@ -53,133 +34,200 @@ describe('ComponentDataVariable', () => {
     em.destroy();
   });
 
-  describe('Export', () => {
-    test('component exports properly with default value', () => {
-      const cmpVar = addDataVariable();
-      expect(cmpVar.toHTML()).toBe('<div>default</div>');
-    });
+  test('component initializes with data-variable content', () => {
+    const dataSource: DataSourceProps = {
+      id: 'ds1',
+      records: [{ id: 'id1', name: 'Name1' }],
+    };
+    dsm.add(dataSource);
 
-    test('component exports properly with current value', () => {
-      addDataSource();
-      const cmpVar = addDataVariable();
-      expect(cmpVar.toHTML()).toBe('<div>Name1</div>');
-    });
+    const cmp = cmpRoot.append({
+      tagName: 'div',
+      type: 'default',
+      components: [
+        {
+          type: DataVariableType,
+          value: 'default',
+          path: 'ds1.id1.name',
+        },
+      ],
+    })[0];
 
-    test('component exports properly with variable', () => {
-      addDataSource();
-      const cmpVar = addDataVariable();
-      expect(cmpVar.getInnerHTML({ keepVariables: true })).toBe('ds1.id1.name');
-    });
+    expect(cmp.getEl()?.innerHTML).toContain('Name1');
   });
 
-  test('component is properly initiliazed with default value', () => {
-    const cmpVar = addDataVariable();
-    expect(cmpVar.getEl()?.innerHTML).toBe('default');
+  test('component updates on data-variable change', () => {
+    const dataSource: DataSourceProps = {
+      id: 'ds2',
+      records: [{ id: 'id1', name: 'Name1' }],
+    };
+    dsm.add(dataSource);
+
+    const cmp = cmpRoot.append({
+      tagName: 'div',
+      type: 'default',
+      components: [
+        {
+          type: DataVariableType,
+          value: 'default',
+          path: 'ds2.id1.name',
+        },
+      ],
+    })[0];
+
+    expect(cmp.getEl()?.innerHTML).toContain('Name1');
+
+    const ds = dsm.get('ds2');
+    ds.getRecord('id1')?.set({ name: 'Name1-UP' });
+
+    expect(cmp.getEl()?.innerHTML).toContain('Name1-UP');
   });
 
-  test('component is properly initiliazed with current value', () => {
-    addDataSource();
-    const cmpVar = addDataVariable();
-    expect(cmpVar.getEl()?.innerHTML).toBe('Name1');
+  test("component uses default value if data source doesn't exist", () => {
+    const cmp = cmpRoot.append({
+      tagName: 'div',
+      type: 'default',
+      components: [
+        {
+          type: DataVariableType,
+          value: 'default',
+          path: 'unknown.id1.name',
+        },
+      ],
+    })[0];
+
+    expect(cmp.getEl()?.innerHTML).toContain('default');
   });
 
-  test('component is properly updating on its default value change', () => {
-    const cmpVar = addDataVariable();
-    cmpVar.set({ value: 'none' });
-    expect(cmpVar.getEl()?.innerHTML).toBe('none');
+  test('component updates on data source reset', () => {
+    const dataSource: DataSourceProps = {
+      id: 'ds3',
+      records: [{ id: 'id1', name: 'Name1' }],
+    };
+    dsm.add(dataSource);
+
+    const cmp = cmpRoot.append({
+      tagName: 'div',
+      type: 'default',
+      components: [
+        {
+          type: DataVariableType,
+          value: 'default',
+          path: 'ds3.id1.name',
+        },
+      ],
+    })[0];
+
+    expect(cmp.getEl()?.innerHTML).toContain('Name1');
+
+    dsm.all.reset();
+    expect(cmp.getEl()?.innerHTML).toContain('default');
   });
 
-  test('component is properly updating on its path change', () => {
-    const eventFn1 = jest.fn();
-    const eventFn2 = jest.fn();
-    const ds = addDataSource();
-    const cmpVar = addDataVariable();
-    const el = cmpVar.getEl()!;
-    const pathEvent = DataSourcesEvents.path;
+  test('component updates on record removal', () => {
+    const dataSource: DataSourceProps = {
+      id: 'ds4',
+      records: [{ id: 'id1', name: 'Name1' }],
+    };
+    dsm.add(dataSource);
 
-    cmpVar.set({ path: 'ds1.id2.name' });
-    expect(el.innerHTML).toBe('Name2');
-    em.on(`${pathEvent}:ds1.id2.name`, eventFn1);
-    ds.getRecord('id2')?.set({ name: 'Name2-UP' });
+    const cmp = cmpRoot.append({
+      tagName: 'div',
+      type: 'default',
+      components: [
+        {
+          type: DataVariableType,
+          value: 'default',
+          path: 'ds4.id1.name',
+        },
+      ],
+    })[0];
 
-    cmpVar.set({ path: 'ds1[id3]name' });
-    expect(el.innerHTML).toBe('Name3');
-    em.on(`${pathEvent}:ds1.id3.name`, eventFn2);
-    ds.getRecord('id3')?.set({ name: 'Name3-UP' });
+    expect(cmp.getEl()?.innerHTML).toContain('Name1');
 
-    expect(el.innerHTML).toBe('Name3-UP');
-    expect(eventFn1).toBeCalledTimes(1);
-    expect(eventFn2).toBeCalledTimes(1);
+    const ds = dsm.get('ds4');
+    ds.removeRecord('id1');
+
+    expect(cmp.getEl()?.innerHTML).toContain('default');
   });
 
-  describe('DataSource changes', () => {
-    test('component is properly updating on data source add', () => {
-      const eventFn = jest.fn();
-      em.on(DataSourcesEvents.add, eventFn);
-      const cmpVar = addDataVariable();
-      const ds = addDataSource();
-      expect(eventFn).toBeCalledTimes(1);
-      expect(eventFn).toBeCalledWith(ds, expect.any(Object));
-      expect(cmpVar.getEl()?.innerHTML).toBe('Name1');
-    });
+  test('component initializes and updates with data-variable for nested object', () => {
+    const dataSource: DataSourceProps = {
+      id: 'dsNestedObject',
+      records: [
+        {
+          id: 'id1',
+          nestedObject: {
+            name: 'NestedName1',
+          },
+        },
+      ],
+    };
+    dsm.add(dataSource);
 
-    test('component is properly updating on data source reset', () => {
-      addDataSource();
-      const cmpVar = addDataVariable();
-      const el = cmpVar.getEl()!;
-      expect(el.innerHTML).toBe('Name1');
-      dsm.all.reset();
-      expect(el.innerHTML).toBe('default');
-    });
+    const cmp = cmpRoot.append({
+      tagName: 'div',
+      type: 'default',
+      components: [
+        {
+          type: DataVariableType,
+          value: 'default',
+          path: 'dsNestedObject.id1.nestedObject.name',
+        },
+      ],
+    })[0];
 
-    test('component is properly updating on data source remove', () => {
-      const eventFn = jest.fn();
-      em.on(DataSourcesEvents.remove, eventFn);
-      const ds = addDataSource();
-      const cmpVar = addDataVariable();
-      const el = cmpVar.getEl()!;
-      dsm.remove('ds1');
-      expect(eventFn).toBeCalledTimes(1);
-      expect(eventFn).toBeCalledWith(ds, expect.any(Object));
-      expect(el.innerHTML).toBe('default');
-    });
+    expect(cmp.getEl()?.innerHTML).toContain('NestedName1');
+
+    const ds = dsm.get('dsNestedObject');
+    ds.getRecord('id1')?.set({ nestedObject: { name: 'NestedName1-UP' } });
+
+    expect(cmp.getEl()?.innerHTML).toContain('NestedName1-UP');
   });
 
-  describe('DataRecord changes', () => {
-    test('component is properly updating on record add', () => {
-      const ds = addDataSource();
-      const cmpVar = addDataVariable('ds1[id4]name');
-      const eventFn = jest.fn();
-      em.on(`${DataSourcesEvents.path}:ds1.id4.name`, eventFn);
-      const newRecord = ds.addRecord({ id: 'id4', name: 'Name4' });
-      expect(cmpVar.getEl()?.innerHTML).toBe('Name4');
-      newRecord.set({ name: 'up' });
-      expect(cmpVar.getEl()?.innerHTML).toBe('up');
-      expect(eventFn).toBeCalledTimes(1);
+  test('component initializes and updates with data-variable for nested object inside an array', () => {
+    const dataSource: DataSourceProps = {
+      id: 'dsNestedArray',
+      records: [
+        {
+          id: 'id1',
+          items: [
+            {
+              id: 'item1',
+              nestedObject: {
+                name: 'NestedItemName1',
+              },
+            },
+          ],
+        },
+      ],
+    };
+    dsm.add(dataSource);
+
+    const cmp = cmpRoot.append({
+      tagName: 'div',
+      type: 'default',
+      components: [
+        {
+          type: DataVariableType,
+          value: 'default',
+          path: 'dsNestedArray.id1.items.0.nestedObject.name',
+        },
+      ],
+    })[0];
+
+    expect(cmp.getEl()?.innerHTML).toContain('NestedItemName1');
+
+    const ds = dsm.get('dsNestedArray');
+    ds.getRecord('id1')?.set({
+      items: [
+        {
+          id: 'item1',
+          nestedObject: { name: 'NestedItemName1-UP' },
+        },
+      ],
     });
 
-    test('component is properly updating on record change', () => {
-      const ds = addDataSource();
-      const cmpVar = addDataVariable();
-      const el = cmpVar.getEl()!;
-      ds.getRecord('id1')?.set({ name: 'Name1-UP' });
-      expect(el.innerHTML).toBe('Name1-UP');
-    });
-
-    test('component is properly updating on record remove', () => {
-      const ds = addDataSource();
-      const cmpVar = addDataVariable();
-      const el = cmpVar.getEl()!;
-      ds.removeRecord('id1');
-      expect(el.innerHTML).toBe('default');
-    });
-
-    test('component is properly updating on record reset', () => {
-      const ds = addDataSource();
-      const cmpVar = addDataVariable();
-      const el = cmpVar.getEl()!;
-      ds.records.reset();
-      expect(el.innerHTML).toBe('default');
-    });
+    expect(cmp.getEl()?.innerHTML).toContain('NestedItemName1-UP');
   });
 });

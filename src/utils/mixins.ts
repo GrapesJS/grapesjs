@@ -20,6 +20,22 @@ export const stringToPath = function (string: string) {
   return result;
 };
 
+function castPath(value: string | string[], object: ObjectAny) {
+  if (isArray(value)) return value;
+  return object.hasOwnProperty(value) ? [value] : stringToPath(value);
+}
+
+export const get = (object: ObjectAny, path: string | string[], def: any) => {
+  const paths = castPath(path, object);
+  const length = paths.length;
+  let index = 0;
+
+  while (object != null && index < length) {
+    object = object[`${paths[index++]}`];
+  }
+  return (index && index == length ? object : undefined) ?? def;
+};
+
 export const isBultInMethod = (key: string) => isFunction(obj[key]);
 
 export const normalizeKey = (key: string) => (isBultInMethod(key) ? `_${key}` : key);

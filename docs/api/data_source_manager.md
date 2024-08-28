@@ -77,6 +77,35 @@ const ds = dsm.get('my_data_source_id');
 
 Returns **[DataSource]** Data source.
 
+## getValue
+
+Get value from data sources by key
+
+### Parameters
+
+*   `key` **[String][7]** Path to value.
+*   `defValue` **any**&#x20;
+
+Returns **any** const value = dsm.getValue('ds\_id.record\_id.propName', 'defaultValue');
+
+## getContext
+
+Retrieve the entire context of data sources.
+This method aggregates all data records from all data sources and applies any
+`onRecordRead` transformers defined within each data source. The result is an
+object representing the current state of all data sources, where each data source
+ID maps to an object containing its records' attributes. Each record is keyed by
+both its index and its ID.
+
+### Examples
+
+```javascript
+const context = dsm.getContext();
+// e.g., { dataSourceId: { 0: { id: 'record1', name: 'value1' }, record1: { id: 'record1', name: 'value1' } } }
+```
+
+Returns **ObjectAny** The context of all data sources, with transformed records.
+
 ## remove
 
 Remove data source.
@@ -93,6 +122,27 @@ const removed = dsm.remove('DS_ID');
 ```
 
 Returns **[DataSource]** Removed data source.
+
+## fromPath
+
+Retrieve a data source, data record, and optional property path based on a string path.
+This method parses a string path to identify and retrieve the corresponding data source
+and data record. If a property path is included in the input, it will also be returned.
+The method is useful for accessing nested data within data sources.
+
+### Parameters
+
+*   `path` **[String][7]** The string path in the format 'dataSourceId.recordId.property'.
+
+### Examples
+
+```javascript
+const [dataSource, dataRecord, propPath] = dsm.fromPath('my_data_source_id.record_id.myProp');
+// e.g., [DataSource, DataRecord, 'myProp']
+```
+
+Returns **[DataSource?, DataRecord?, [String][7]?]** An array containing the data source,
+data record, and optional property path.
 
 [1]: #add
 

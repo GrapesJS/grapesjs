@@ -16,11 +16,8 @@ export default class ComponentDataVariable extends Component {
 
   getInnerHTML(opts: ToHTMLOptions & { keepVariables?: boolean } = {}) {
     const { path, value } = this.attributes;
-    const [dsId, drId, key] = stringToPath(path);
-    const ds = this.em.DataSources.get(dsId);
-    const dr = ds && ds.getRecord(drId);
 
-    return opts.keepVariables ? path : dr ? dr.get(key) : value;
+    return opts.keepVariables ? path : this.em.DataSources.getValue(path, value);
   }
 
   static isComponent(el: HTMLElement) {
