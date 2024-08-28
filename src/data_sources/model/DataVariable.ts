@@ -36,10 +36,9 @@ export default class DataVariable extends Model {
   }
 
   getDataValue() {
-    const { path } = this.attributes;
-    const [dsId, drId, key] = stringToPath(path);
-    const ds = this?.em?.DataSources.get(dsId);
-    const dr = ds && ds.getRecord(drId);
-    return dr?.get(key);
+    const { path, value } = this.attributes;
+    const val = this.em?.DataSources?.getValue?.(path, value);
+
+    return val;
   }
 }

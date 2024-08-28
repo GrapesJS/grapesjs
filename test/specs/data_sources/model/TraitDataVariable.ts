@@ -134,6 +134,42 @@ describe('TraitDataVariable', () => {
       expect(input?.getAttribute('value')).toBe('new-value');
       expect(cmp?.getAttributes().value).toBe('new-value');
     });
+
+    test('component initializes data-variable value for nested object', () => {
+      const inputDataSource: DataSourceProps = {
+        id: 'nested-input-data',
+        records: [
+          {
+            id: 'id1',
+            nestedObject: {
+              value: 'nested-value',
+            },
+          },
+        ],
+      };
+      dsm.add(inputDataSource);
+
+      const cmp = cmpRoot.append({
+        tagName: 'input',
+        traits: [
+          'name',
+          {
+            type: 'text',
+            label: 'Value',
+            name: 'value',
+            value: {
+              type: DataVariableType,
+              value: 'default',
+              path: 'nested-input-data.id1.nestedObject.value',
+            },
+          },
+        ],
+      })[0];
+
+      const input = cmp.getEl();
+      expect(input?.getAttribute('value')).toBe('nested-value');
+      expect(cmp?.getAttributes().value).toBe('nested-value');
+    });
   });
 
   describe('checkbox input component', () => {

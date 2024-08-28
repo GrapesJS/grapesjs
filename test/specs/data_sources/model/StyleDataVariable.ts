@@ -105,4 +105,41 @@ describe('StyleDataVariable', () => {
     const style = cmp.getStyle();
     expect(style).toHaveProperty('color', 'black');
   });
+
+  test('component initializes and updates with data-variable style for nested object', () => {
+    const styleDataSource: DataSourceProps = {
+      id: 'style-data',
+      records: [
+        {
+          id: 'id1',
+          nestedObject: {
+            color: 'red',
+          },
+        },
+      ],
+    };
+    dsm.add(styleDataSource);
+
+    const cmp = cmpRoot.append({
+      tagName: 'h1',
+      type: 'text',
+      content: 'Hello World',
+      style: {
+        color: {
+          type: DataVariableType,
+          value: 'black',
+          path: 'style-data.id1.nestedObject.color',
+        },
+      },
+    })[0];
+
+    const style = cmp.getStyle();
+    expect(style).toHaveProperty('color', 'red');
+
+    const ds = dsm.get('style-data');
+    ds.getRecord('id1')?.set({ nestedObject: { color: 'blue' } });
+
+    const updatedStyle = cmp.getStyle();
+    expect(updatedStyle).toHaveProperty('color', 'blue');
+  });
 });

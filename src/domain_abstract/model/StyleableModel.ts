@@ -148,11 +148,7 @@ export default class StyleableModel<T extends ObjectHash = any> extends Model<T>
 
     dataListeners.forEach((ls) =>
       this.listenTo(ls.obj, ls.event, () => {
-        const [dsId, drId, keyPath] = stringToPath(path);
-        const ds = em?.DataSources.get(dsId);
-        const dr = ds && ds.records.get(drId);
-        const newValue = dr && dr.get(keyPath);
-
+        const newValue = dataVar.getDataValue();
         this.updateStyleProp(styleProp, newValue);
       }),
     );
@@ -185,12 +181,7 @@ export default class StyleableModel<T extends ObjectHash = any> extends Model<T>
       }
 
       if (styleValue instanceof StyleDataVariable) {
-        const [dsId, drId, keyPath] = stringToPath(styleValue.get('path'));
-        const ds = this.em?.DataSources.get(dsId);
-        const dr = ds && ds.records.get(drId);
-        const resolvedValue = dr && dr.get(keyPath);
-
-        resolvedStyle[key] = resolvedValue || styleValue.get('value');
+        resolvedStyle[key] = styleValue.getDataValue();
       }
     });
     return resolvedStyle;

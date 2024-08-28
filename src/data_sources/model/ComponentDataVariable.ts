@@ -1,6 +1,6 @@
 import Component from '../../dom_components/model/Component';
 import { ToHTMLOptions } from '../../dom_components/model/types';
-import { stringToPath, toLowerCase } from '../../utils/mixins';
+import { toLowerCase } from '../../utils/mixins';
 import { DataVariableType } from './DataVariable';
 
 export default class ComponentDataVariable extends Component {
@@ -14,10 +14,11 @@ export default class ComponentDataVariable extends Component {
     };
   }
 
-  getInnerHTML(opts: ToHTMLOptions & { keepVariables?: boolean } = {}) {
+  getInnerHTML(opts: ToHTMLOptions) {
     const { path, value } = this.attributes;
+    const val = this.em.DataSources.getValue(path, value);
 
-    return opts.keepVariables ? path : this.em.DataSources.getValue(path, value);
+    return val;
   }
 
   static isComponent(el: HTMLElement) {
