@@ -175,6 +175,7 @@ describe('TraitDataVariable', () => {
       // Not syncing - related to
       // https://github.com/GrapesJS/grapesjs/discussions/5868
       // https://github.com/GrapesJS/grapesjs/discussions/4415
+      // https://github.com/GrapesJS/grapesjs/pull/6095
       // expect(input?.checked).toBe(false);
     });
   });
