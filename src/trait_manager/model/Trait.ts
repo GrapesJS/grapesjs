@@ -108,11 +108,20 @@ export default class Trait extends Model<TraitProperties> {
     const normPath = stringToPath(path || '').join('.');
     const dataListeners: DataVariableListener[] = [];
     const prevListeners = this.dataListeners || [];
+    const [ds, dr] = this.em.DataSources.fromPath(path);
 
     prevListeners.forEach((ls) => this.stopListening(ls.obj, ls.event, this.updateValueFromDataVariable));
 
+    ds && dataListeners.push({ obj: ds.records, event: 'add remove reset' });
+    dr && dataListeners.push({ obj: dr, event: 'change' });
     dataListeners.push({ obj: dataVar, event: 'change:value' });
     dataListeners.push({ obj: em, event: `${DataSourcesEvents.path}:${normPath}` });
+
+    dataListeners.push(
+      { obj: dataVar, event: 'change:path change:value' },
+      { obj: em.DataSources.all, event: 'add remove reset' },
+      { obj: em, event: `${DataSourcesEvents.path}:${normPath}` },
+    );
 
     dataListeners.forEach((ls) =>
       this.listenTo(ls.obj, ls.event, () => {

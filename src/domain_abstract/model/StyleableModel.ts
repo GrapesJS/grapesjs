@@ -14,7 +14,7 @@ export type StyleProps = Record<
   | string[]
   | {
       type: typeof DataVariableType;
-      value: string;
+      defaultValue: string;
       path: string;
     }
 >;

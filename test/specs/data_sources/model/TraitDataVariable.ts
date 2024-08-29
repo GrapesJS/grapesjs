@@ -99,6 +99,41 @@ describe('TraitDataVariable', () => {
       expect(cmp?.getAttributes().placeholder).toBe('new-value');
     });
 
+    test('component updates to defaultValue on record removal', () => {
+      const inputDataSource: DataSourceProps = {
+        id: 'test-input-removal',
+        records: [{ id: 'id1', value: 'test-value' }],
+      };
+      dsm.add(inputDataSource);
+
+      const cmp = cmpRoot.append({
+        tagName: 'input',
+        traits: [
+          'name',
+          {
+            type: 'text',
+            label: 'Value',
+            name: 'value',
+            value: {
+              type: DataVariableType,
+              defaultValue: 'default',
+              path: `${inputDataSource.id}.id1.value`,
+            },
+          },
+        ],
+      })[0];
+
+      const input = cmp.getEl();
+      expect(input?.getAttribute('value')).toBe('test-value');
+      expect(cmp?.getAttributes().value).toBe('test-value');
+
+      const testDs = dsm.get(inputDataSource.id);
+      testDs.removeRecord('id1');
+
+      expect(input?.getAttribute('value')).toBe('default');
+      expect(cmp?.getAttributes().value).toBe('default');
+    });
+
     test('component updates with data-variable value', () => {
       const inputDataSource: DataSourceProps = {
         id: 'test-input',
