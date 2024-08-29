@@ -96,7 +96,7 @@ describe('DataSource Serialization', () => {
       components: [
         {
           type: DataVariableType,
-          value: 'default',
+          defaultValue: 'default',
           path: `${componentDataSource.id}.id1.content`,
         },
       ],
@@ -113,7 +113,7 @@ describe('DataSource Serialization', () => {
     test('ComponentDataVariable', () => {
       const dataVariable = {
         type: DataVariableType,
-        value: 'default',
+        defaultValue: 'default',
         path: `${componentDataSource.id}.id1.content`,
       };
 
@@ -136,7 +136,7 @@ describe('DataSource Serialization', () => {
     test('StyleDataVariable', () => {
       const dataVariable = {
         type: DataVariableType,
-        value: 'black',
+        defaultValue: 'black',
         path: 'colors-data.id1.color',
       };
 
@@ -168,7 +168,7 @@ describe('DataSource Serialization', () => {
     test('TraitDataVariable', () => {
       const dataVariable = {
         type: DataVariableType,
-        value: 'default',
+        defaultValue: 'default',
         path: `${traitDataSource.id}.id1.value`,
       };
 
@@ -309,7 +309,7 @@ describe('DataSource Serialization', () => {
               color: {
                 path: 'colors-data.id1.color',
                 type: 'data-variable',
-                value: 'black',
+                defaultValue: 'black',
               },
             },
           },
@@ -345,7 +345,7 @@ describe('DataSource Serialization', () => {
                         value: {
                           path: 'test-input.id1.value',
                           type: 'data-variable',
-                          value: 'default',
+                          defaultValue: 'default',
                         },
                       },
                       tagName: 'input',

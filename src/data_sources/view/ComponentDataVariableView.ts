@@ -37,8 +37,8 @@ export default class ComponentDataVariableView extends ComponentView<ComponentDa
 
   postRender() {
     const { model, el, em } = this;
-    const { path, value } = model.attributes;
-    el.innerHTML = em.DataSources.getValue(path, value);
+    const { path, defaultValue } = model.attributes;
+    el.innerHTML = em.DataSources.getValue(path, defaultValue);
     super.postRender();
   }
 }

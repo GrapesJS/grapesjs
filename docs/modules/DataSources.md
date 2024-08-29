@@ -52,7 +52,7 @@ editor.addComponents([
     components: [
       {
         type: 'data-variable',
-        value: 'default',
+        defaultValue: 'default',
         path: 'my-datasource.id1.content',
       },
     ],
@@ -76,14 +76,14 @@ editor.addComponents([
     components: [
       {
         type: 'data-variable',
-        value: 'default',
+        defaultValue: 'default',
         path: 'my-datasource.id1.content',
       },
     ],
     style: {
       color: {
         type: 'data-variable',
-        value: 'red',
+        defaultValue: 'red',
         path: 'my-datasource.id2.color',
       },
     },
@@ -118,7 +118,7 @@ editor.addComponents([
         name: 'value',
         value: {
           type: 'data-variable',
-          value: 'default',
+          defaultValue: 'default',
           path: 'my-datasource.id1.value',
         },
       },
@@ -253,7 +253,7 @@ editor.addComponents([
     components: [
       {
         type: 'data-variable',
-        value: 'default',
+        defaultValue: 'default',
         path: 'my-datasource.id1.counter',
       },
     ],

@@ -48,7 +48,7 @@ describe('StyleDataVariable', () => {
       style: {
         color: {
           type: DataVariableType,
-          value: 'black',
+          defaultValue: 'black',
           path: 'colors-data.id1.color',
         },
       },
@@ -72,7 +72,7 @@ describe('StyleDataVariable', () => {
       style: {
         color: {
           type: DataVariableType,
-          value: 'black',
+          defaultValue: 'black',
           path: 'colors-data.id1.color',
         },
       },
@@ -96,7 +96,7 @@ describe('StyleDataVariable', () => {
       style: {
         color: {
           type: DataVariableType,
-          value: 'black',
+          defaultValue: 'black',
           path: 'unknown.id1.color',
         },
       },
@@ -127,7 +127,7 @@ describe('StyleDataVariable', () => {
       style: {
         color: {
           type: DataVariableType,
-          value: 'black',
+          defaultValue: 'black',
           path: 'style-data.id1.nestedObject.color',
         },
       },

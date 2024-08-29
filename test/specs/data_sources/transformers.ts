@@ -53,7 +53,7 @@ describe('DataSource Transformers', () => {
       components: [
         {
           type: DataVariableType,
-          value: 'default',
+          defaultValue: 'default',
           path: 'test-data-source.id1.content',
         },
       ],
@@ -95,7 +95,7 @@ describe('DataSource Transformers', () => {
       components: [
         {
           type: DataVariableType,
-          value: 'default',
+          defaultValue: 'default',
           path: 'test-data-source.id1.content',
         },
       ],
@@ -135,7 +135,7 @@ describe('DataSource Transformers', () => {
       components: [
         {
           type: DataVariableType,
-          value: 'default',
+          defaultValue: 'default',
           path: 'test-data-source.id1.content',
         },
       ],
@@ -171,7 +171,7 @@ describe('DataSource Transformers', () => {
       components: [
         {
           type: DataVariableType,
-          value: 'default',
+          defaultValue: 'default',
           path: 'test-data-source.id1.content',
         },
       ],

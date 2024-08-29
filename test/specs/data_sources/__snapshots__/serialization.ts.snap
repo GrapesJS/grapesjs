@@ -12,9 +12,9 @@ exports[`DataSource Serialization .getProjectData ComponentDataVariable 1`] = `
               {
                 "components": [
                   {
+                    "defaultValue": "default",
                     "path": "component-serialization.id1.content",
                     "type": "data-variable",
-                    "value": "default",
                   },
                 ],
                 "tagName": "h1",
@@ -99,9 +99,9 @@ exports[`DataSource Serialization .getProjectData StyleDataVariable 1`] = `
       ],
       "style": {
         "color": {
+          "defaultValue": "black",
           "path": "colors-data.id1.color",
           "type": "data-variable",
-          "value": "black",
         },
       },
     },
@@ -125,9 +125,9 @@ exports[`DataSource Serialization .getProjectData TraitDataVariable 1`] = `
                 },
                 "attributes-data-variable": {
                   "value": {
+                    "defaultValue": "default",
                     "path": "test-input.id1.value",
                     "type": "data-variable",
-                    "value": "default",
                   },
                 },
                 "tagName": "input",

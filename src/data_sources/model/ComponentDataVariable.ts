@@ -10,13 +10,13 @@ export default class ComponentDataVariable extends Component {
       ...super.defaults,
       type: DataVariableType,
       path: '',
-      value: '',
+      defaultValue: '',
     };
   }
 
   getInnerHTML(opts: ToHTMLOptions) {
-    const { path, value } = this.attributes;
-    const val = this.em.DataSources.getValue(path, value);
+    const { path, defaultValue } = this.attributes;
+    const val = this.em.DataSources.getValue(path, defaultValue);
 
     return val;
   }

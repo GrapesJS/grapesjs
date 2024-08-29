@@ -4,11 +4,9 @@ import Trait from '../../trait_manager/model/Trait';
 export default class TraitDataVariable extends DataVariable {
   trait?: Trait;
 
-  initialize(attrs: any, options: any) {
-    super.initialize(attrs, options);
+  constructor(attrs: any, options: any) {
+    super(attrs, options);
     this.trait = options.trait;
-
-    return this;
   }
 
   onDataSourceChange() {

@@ -47,7 +47,7 @@ describe('ComponentDataVariable', () => {
       components: [
         {
           type: DataVariableType,
-          value: 'default',
+          defaultValue: 'default',
           path: 'ds1.id1.name',
         },
       ],
@@ -69,7 +69,7 @@ describe('ComponentDataVariable', () => {
       components: [
         {
           type: DataVariableType,
-          value: 'default',
+          defaultValue: 'default',
           path: 'ds2.id1.name',
         },
       ],
@@ -90,7 +90,7 @@ describe('ComponentDataVariable', () => {
       components: [
         {
           type: DataVariableType,
-          value: 'default',
+          defaultValue: 'default',
           path: 'unknown.id1.name',
         },
       ],
@@ -112,7 +112,7 @@ describe('ComponentDataVariable', () => {
       components: [
         {
           type: DataVariableType,
-          value: 'default',
+          defaultValue: 'default',
           path: 'ds3.id1.name',
         },
       ],
@@ -137,7 +137,7 @@ describe('ComponentDataVariable', () => {
       components: [
         {
           type: DataVariableType,
-          value: 'default',
+          defaultValue: 'default',
           path: `${dataSource.id}.id1.name`,
         },
       ],
@@ -164,7 +164,7 @@ describe('ComponentDataVariable', () => {
       components: [
         {
           type: DataVariableType,
-          value: 'default',
+          defaultValue: 'default',
           path: 'ds4.id1.name',
         },
       ],
@@ -198,7 +198,7 @@ describe('ComponentDataVariable', () => {
       components: [
         {
           type: DataVariableType,
-          value: 'default',
+          defaultValue: 'default',
           path: 'dsNestedObject.id1.nestedObject.name',
         },
       ],
@@ -237,7 +237,7 @@ describe('ComponentDataVariable', () => {
       components: [
         {
           type: DataVariableType,
-          value: 'default',
+          defaultValue: 'default',
           path: 'dsNestedArray.id1.items.0.nestedObject.name',
         },
       ],

@@ -52,7 +52,7 @@ describe('TraitDataVariable', () => {
             name: 'value',
             value: {
               type: DataVariableType,
-              value: 'default',
+              defaultValue: 'default',
               path: `${inputDataSource.id}.id1.value`,
             },
           },
@@ -81,7 +81,7 @@ describe('TraitDataVariable', () => {
             name: 'placeholder',
             value: {
               type: DataVariableType,
-              value: 'default',
+              defaultValue: 'default',
               path: `${inputDataSource.id}.id1.value`,
             },
           },
@@ -117,7 +117,7 @@ describe('TraitDataVariable', () => {
             name: 'value',
             value: {
               type: DataVariableType,
-              value: 'default',
+              defaultValue: 'default',
               path: `${inputDataSource.id}.id1.value`,
             },
           },
@@ -159,7 +159,7 @@ describe('TraitDataVariable', () => {
             name: 'value',
             value: {
               type: DataVariableType,
-              value: 'default',
+              defaultValue: 'default',
               path: 'nested-input-data.id1.nestedObject.value',
             },
           },
@@ -191,7 +191,7 @@ describe('TraitDataVariable', () => {
             name: 'checked',
             value: {
               type: 'data-variable',
-              value: 'false',
+              defaultValue: 'false',
               path: `${inputDataSource.id}.id1.value`,
             },
             valueTrue: 'true',
@@ -233,7 +233,7 @@ describe('TraitDataVariable', () => {
             name: 'src',
             value: {
               type: 'data-variable',
-              value: 'default',
+              defaultValue: 'default',
               path: `${inputDataSource.id}.id1.value`,
             },
           },
@@ -269,7 +269,7 @@ describe('TraitDataVariable', () => {
             name: 'href',
             value: {
               type: 'data-variable',
-              value: 'default',
+              defaultValue: 'default',
               path: `${inputDataSource.id}.id1.value`,
             },
           },
@@ -306,7 +306,7 @@ describe('TraitDataVariable', () => {
             changeProp: true,
             value: {
               type: DataVariableType,
-              value: 'default',
+              defaultValue: 'default',
               path: `${inputDataSource.id}.id1.value`,
             },
           },
