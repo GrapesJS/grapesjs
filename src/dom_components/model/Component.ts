@@ -909,13 +909,17 @@ export default class Component extends StyleableModel<ComponentProperties> {
     const traitDataVariableAttr: ObjectAny = {};
     const traits = this.traits;
     traits.each((trait) => {
-      if (!trait.changeProp) {
-        const name = trait.getName();
-        const value = trait.getInitValue();
-        if (trait.dataVariable) {
-          traitDataVariableAttr[name] = trait.dataVariable;
-        }
+      const name = trait.getName();
+      const value = trait.getInitValue();
+
+      if (trait.changeProp) {
+        this.set(name, value);
+      } else {
         if (name && value) attrs[name] = value;
+      }
+
+      if (trait.dataVariable) {
+        traitDataVariableAttr[name] = trait.dataVariable;
       }
     });
     traits.length && this.set('attributes', attrs);

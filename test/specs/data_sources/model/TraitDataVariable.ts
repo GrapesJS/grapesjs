@@ -287,4 +287,40 @@ describe('TraitDataVariable', () => {
       expect(cmp?.getAttributes().href).toBe('url-to-dog-image');
     });
   });
+
+  describe('changeProp', () => {
+    test('component initializes and updates data-variable value using changeProp', () => {
+      const inputDataSource: DataSourceProps = {
+        id: 'test-change-prop-datasource',
+        records: [{ id: 'id1', value: 'I love grapes' }],
+      };
+      dsm.add(inputDataSource);
+
+      const cmp = cmpRoot.append({
+        tagName: 'div',
+        type: 'default',
+        traits: [
+          {
+            name: 'test-change-prop',
+            type: 'text',
+            changeProp: true,
+            value: {
+              type: DataVariableType,
+              value: 'default',
+              path: `${inputDataSource.id}.id1.value`,
+            },
+          },
+        ],
+      })[0];
+
+      let property = cmp.get('test-change-prop');
+      expect(property).toBe('I love grapes');
+
+      const testDs = dsm.get(inputDataSource.id);
+      testDs.getRecord('id1')?.set({ value: 'I really love grapes' });
+
+      property = cmp.get('test-change-prop');
+      expect(property).toBe('I really love grapes');
+    });
+  });
 });
