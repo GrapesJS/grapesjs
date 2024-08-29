@@ -1,15 +1,16 @@
-import { isString, isUndefined, keys } from 'underscore';
+import { isString, isUndefined } from 'underscore';
 import Category from '../../abstract/ModuleCategory';
 import { LocaleOptions, Model, SetOptions } from '../../common';
 import Component from '../../dom_components/model/Component';
 import EditorModel from '../../editor/model/Editor';
-import { isDef, stringToPath } from '../../utils/mixins';
+import { isDef } from '../../utils/mixins';
 import TraitsEvents, { TraitGetValueOptions, TraitOption, TraitProperties, TraitSetValueOptions } from '../types';
 import TraitView from '../view/TraitView';
 import Traits from './Traits';
-import { DataSourcesEvents, DataVariableListener } from '../../data_sources/types';
+import { DataVariableListener } from '../../data_sources/types';
 import TraitDataVariable from '../../data_sources/model/TraitDataVariable';
 import { DataVariableType } from '../../data_sources/model/DataVariable';
+import DataVariableListenerManager from '../../data_sources/model/DataVariableListenerManager';
 
 /**
  * @property {String} id Trait id, eg. `my-trait-id`.
@@ -31,6 +32,7 @@ export default class Trait extends Model<TraitProperties> {
   el?: HTMLElement;
   dataListeners: DataVariableListener[] = [];
   dataVariable?: TraitDataVariable;
+  dataVariableListener?: DataVariableListenerManager;
 
   defaults() {
     return {
@@ -66,7 +68,12 @@ export default class Trait extends Model<TraitProperties> {
 
       const dv = this.dataVariable.getDataValue();
       this.set({ value: dv });
-      this.listenToDataVariable(this.dataVariable);
+      this.dataVariableListener = new DataVariableListenerManager({
+        model: this,
+        em: this.em,
+        dataVariable: this.dataVariable,
+        updateValueFromDataVariable: this.updateValueFromDataVariable.bind(this),
+      });
     }
   }
 
@@ -100,36 +107,6 @@ export default class Trait extends Model<TraitProperties> {
         (!getValue ? this.getValue() : undefined);
       !isUndefined(value) && this.set({ value }, { silent: true });
     }
-  }
-
-  listenToDataVariable(dataVar: TraitDataVariable) {
-    const { em } = this;
-    const { path } = dataVar.attributes;
-    const normPath = stringToPath(path || '').join('.');
-    const dataListeners: DataVariableListener[] = [];
-    const prevListeners = this.dataListeners || [];
-    const [ds, dr] = this.em.DataSources.fromPath(path);
-
-    prevListeners.forEach((ls) => this.stopListening(ls.obj, ls.event, this.updateValueFromDataVariable));
-
-    ds && dataListeners.push({ obj: ds.records, event: 'add remove reset' });
-    dr && dataListeners.push({ obj: dr, event: 'change' });
-    dataListeners.push({ obj: dataVar, event: 'change:value' });
-    dataListeners.push({ obj: em, event: `${DataSourcesEvents.path}:${normPath}` });
-
-    dataListeners.push(
-      { obj: dataVar, event: 'change:path change:value' },
-      { obj: em.DataSources.all, event: 'add remove reset' },
-      { obj: em, event: `${DataSourcesEvents.path}:${normPath}` },
-    );
-
-    dataListeners.forEach((ls) =>
-      this.listenTo(ls.obj, ls.event, () => {
-        const dr = dataVar.getDataValue();
-        this.updateValueFromDataVariable(dr);
-      }),
-    );
-    this.dataListeners = dataListeners;
   }
 
   updateValueFromDataVariable(value: string) {

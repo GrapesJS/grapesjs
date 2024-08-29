@@ -2,11 +2,11 @@ import { isArray, isString, keys } from 'underscore';
 import { Model, ObjectAny, ObjectHash, SetOptions } from '../../common';
 import ParserHtml from '../../parser/model/ParserHtml';
 import Selectors from '../../selector_manager/model/Selectors';
-import { shallowDiff, stringToPath } from '../../utils/mixins';
+import { shallowDiff } from '../../utils/mixins';
 import EditorModel from '../../editor/model/Editor';
 import StyleDataVariable from '../../data_sources/model/StyleDataVariable';
-import { DataSourcesEvents, DataVariableListener } from '../../data_sources/types';
 import { DataVariableType } from '../../data_sources/model/DataVariable';
+import DataVariableListenerManager from '../../data_sources/model/DataVariableListenerManager';
 
 export type StyleProps = Record<
   string,
@@ -34,10 +34,10 @@ export const getLastStyleValue = (value: string | string[]) => {
 
 export default class StyleableModel<T extends ObjectHash = any> extends Model<T> {
   em?: EditorModel;
-  dataListeners: DataVariableListener[] = [];
+  dataVariableListeners: Record<string, DataVariableListenerManager> = {};
 
   /**
-   * Forward style string to `parseStyle` to be parse to an object
+   * Parse style string to an object
    * @param  {string} str
    * @returns
    */
@@ -46,8 +46,7 @@ export default class StyleableModel<T extends ObjectHash = any> extends Model<T>
   }
 
   /**
-   * To trigger the style change event on models I have to
-   * pass a new object instance
+   * Trigger style change event with a new object instance
    * @param {Object} prop
    * @return {Object}
    */
@@ -97,13 +96,14 @@ export default class StyleableModel<T extends ObjectHash = any> extends Model<T>
       // Remove empty style properties
       if (newStyle[key] === '') {
         delete newStyle[key];
-
         return;
       }
 
       const styleValue = newStyle[key];
       if (typeof styleValue === 'object' && styleValue.type === DataVariableType) {
-        newStyle[key] = new StyleDataVariable(styleValue, { em: this.em });
+        const styleDataVariable = new StyleDataVariable(styleValue, { em: this.em });
+        newStyle[key] = styleDataVariable;
+        this.manageDataVariableListener(styleDataVariable, key);
       }
     });
 
@@ -123,38 +123,31 @@ export default class StyleableModel<T extends ObjectHash = any> extends Model<T>
       if (em) {
         em.trigger('styleable:change', this, pr, opts);
         em.trigger(`styleable:change:${pr}`, this, pr, opts);
-
-        const styleValue = newStyle[pr];
-        if (styleValue instanceof StyleDataVariable) {
-          this.listenToDataVariable(styleValue, pr);
-        }
       }
     });
 
     return newStyle;
   }
 
-  listenToDataVariable(dataVar: StyleDataVariable, styleProp: string) {
-    const { em } = this;
-    const { path } = dataVar.attributes;
-    const normPath = stringToPath(path || '').join('.');
-    const dataListeners: DataVariableListener[] = [];
-    const prevListeners = this.dataListeners || [];
-
-    prevListeners.forEach((ls) => this.stopListening(ls.obj, ls.event, this.updateStyleProp));
-
-    dataListeners.push({ obj: dataVar, event: 'change:value' });
-    dataListeners.push({ obj: em, event: `${DataSourcesEvents.path}:${normPath}` });
-
-    dataListeners.forEach((ls) =>
-      this.listenTo(ls.obj, ls.event, () => {
-        const newValue = dataVar.getDataValue();
-        this.updateStyleProp(styleProp, newValue);
-      }),
-    );
-    this.dataListeners = dataListeners;
+  /**
+   * Manage DataVariableListenerManager for a style property
+   */
+  manageDataVariableListener(dataVar: StyleDataVariable, styleProp: string) {
+    if (this.dataVariableListeners[styleProp]) {
+      this.dataVariableListeners[styleProp].listenToDataVariable();
+    } else {
+      this.dataVariableListeners[styleProp] = new DataVariableListenerManager({
+        model: this,
+        em: this.em!,
+        dataVariable: dataVar,
+        updateValueFromDataVariable: (newValue: string) => this.updateStyleProp(styleProp, newValue),
+      });
+    }
   }
 
+  /**
+   * Update a specific style property
+   */
   updateStyleProp(prop: string, value: string) {
     const style = this.getStyle();
     style[prop] = value;
@@ -162,6 +155,9 @@ export default class StyleableModel<T extends ObjectHash = any> extends Model<T>
     this.trigger(`change:style:${prop}`);
   }
 
+  /**
+   * Resolve data variables to their actual values
+   */
   resolveDataVariables(style: StyleProps): StyleProps {
     const resolvedStyle = { ...style };
     keys(resolvedStyle).forEach((key) => {
