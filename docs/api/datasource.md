@@ -106,6 +106,17 @@ If a transformer is provided for the `onRecordDelete` event, it will be applied 
 
 Returns **(DataRecord | [undefined][8])** The removed data record, or `undefined` if no record is found with the given ID.
 
+## setRecords
+
+Replaces the existing records in the data source with a new set of records.
+If a transformer is provided for the `onRecordAdd` event, it will be applied to each record before adding it.
+
+### Parameters
+
+*   `records` **[Array][9]\<DataRecordProps>** An array of data record properties to set.
+
+Returns **[Array][9]\<DataRecord>** An array of the added data records.
+
 [1]: #addrecord
 
 [2]: #getrecord

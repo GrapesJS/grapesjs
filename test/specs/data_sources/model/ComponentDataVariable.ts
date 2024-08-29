@@ -124,6 +124,33 @@ describe('ComponentDataVariable', () => {
     expect(cmp.getEl()?.innerHTML).toContain('default');
   });
 
+  test('component updates on data source setRecords', () => {
+    const dataSource: DataSourceProps = {
+      id: 'component-setRecords',
+      records: [{ id: 'id1', name: 'init name' }],
+    };
+    dsm.add(dataSource);
+
+    const cmp = cmpRoot.append({
+      tagName: 'div',
+      type: 'default',
+      components: [
+        {
+          type: DataVariableType,
+          value: 'default',
+          path: `${dataSource.id}.id1.name`,
+        },
+      ],
+    })[0];
+
+    expect(cmp.getEl()?.innerHTML).toContain('init name');
+
+    const ds = dsm.get(dataSource.id);
+    ds.setRecords([{ id: 'id1', name: 'updated name' }]);
+
+    expect(cmp.getEl()?.innerHTML).toContain('updated name');
+  });
+
   test('component updates on record removal', () => {
     const dataSource: DataSourceProps = {
       id: 'ds4',

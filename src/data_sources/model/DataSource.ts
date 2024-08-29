@@ -177,4 +177,20 @@ export default class DataSource extends Model<DataSourceProps> {
 
     return this.records.remove(id, opts);
   }
+
+  /**
+   * Replaces the existing records in the data source with a new set of records.
+   * If a transformer is provided for the `onRecordAdd` event, it will be applied to each record before adding it.
+   *
+   * @param {Array<DataRecordProps>} records - An array of data record properties to set.
+   * @returns {Array<DataRecord>} An array of the added data records.
+   * @name setRecords
+   */
+  setRecords(records: Array<DataRecordProps>) {
+    this.records.reset([], { silent: true });
+
+    records.forEach((record) => {
+      this.records.add(record, { avoidTransformers: true });
+    });
+  }
 }
