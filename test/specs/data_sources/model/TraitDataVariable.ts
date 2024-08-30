@@ -357,5 +357,23 @@ describe('TraitDataVariable', () => {
       property = cmp.get('test-change-prop');
       expect(property).toBe('I really love grapes');
     });
+
+    test('should cover when changeProp trait value is not set', () => {
+      const cmp = cmpRoot.append({
+        tagName: 'div',
+        type: 'default',
+        'test-change-prop': 'initial-value',
+        traits: [
+          {
+            name: 'test-change-prop',
+            type: 'text',
+            changeProp: true,
+          },
+        ],
+      })[0];
+
+      let property = cmp.get('test-change-prop');
+      expect(property).toBe('initial-value');
+    });
   });
 });
