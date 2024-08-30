@@ -114,6 +114,9 @@ import {
 import { ComponentsEvents, SymbolInfo } from './types';
 import Symbols from './model/Symbols';
 import { BlockProperties } from '../block_manager/model/Block';
+import ComponentDataVariable from '../data_sources/model/ComponentDataVariable';
+import ComponentDataVariableView from '../data_sources/view/ComponentDataVariableView';
+import { DataVariableType } from '../data_sources/model/DataVariable';
 
 export type ComponentEvent =
   | 'component:create'
@@ -179,6 +182,11 @@ export interface CanMoveResult {
 
 export default class ComponentManager extends ItemManagerModule<DomComponentsConfig, any> {
   componentTypes: ComponentStackItem[] = [
+    {
+      id: DataVariableType,
+      model: ComponentDataVariable,
+      view: ComponentDataVariableView,
+    },
     {
       id: 'cell',
       model: ComponentTableCell,

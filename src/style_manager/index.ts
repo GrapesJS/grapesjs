@@ -395,6 +395,7 @@ export default class StyleManager extends ItemManagerModule<
       if (isString(target)) {
         const rule = cssc.getRule(target) || cssc.setRule(target);
         !isUndefined(stylable) && rule.set({ stylable });
+        // @ts-ignore
         model = rule;
       }
 
@@ -652,6 +653,7 @@ export default class StyleManager extends ItemManagerModule<
         .reverse();
 
       // Slice removes rules not related to the current device
+      // @ts-ignore
       result = all.slice(all.indexOf(target as CssRule) + 1);
     }
 

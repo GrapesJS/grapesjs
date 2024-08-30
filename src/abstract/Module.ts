@@ -125,7 +125,7 @@ export abstract class ItemManagerModule<
   TCollection extends Collection = Collection,
 > extends Module<TConf> {
   cls: any[] = [];
-  protected all: TCollection;
+  all: TCollection;
   view?: View;
 
   constructor(

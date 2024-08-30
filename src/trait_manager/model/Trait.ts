@@ -7,6 +7,10 @@ import { isDef } from '../../utils/mixins';
 import TraitsEvents, { TraitGetValueOptions, TraitOption, TraitProperties, TraitSetValueOptions } from '../types';
 import TraitView from '../view/TraitView';
 import Traits from './Traits';
+import { DataVariableListener } from '../../data_sources/types';
+import TraitDataVariable from '../../data_sources/model/TraitDataVariable';
+import { DataVariableType } from '../../data_sources/model/DataVariable';
+import DataVariableListenerManager from '../../data_sources/model/DataVariableListenerManager';
 
 /**
  * @property {String} id Trait id, eg. `my-trait-id`.
@@ -26,6 +30,9 @@ export default class Trait extends Model<TraitProperties> {
   em: EditorModel;
   view?: TraitView;
   el?: HTMLElement;
+  dataListeners: DataVariableListener[] = [];
+  dataVariable?: TraitDataVariable;
+  dataVariableListener?: DataVariableListenerManager;
 
   defaults() {
     return {
@@ -51,6 +58,23 @@ export default class Trait extends Model<TraitProperties> {
       this.setTarget(target);
     }
     this.em = em;
+
+    if (
+      this.attributes.value &&
+      typeof this.attributes.value === 'object' &&
+      this.attributes.value.type === DataVariableType
+    ) {
+      this.dataVariable = new TraitDataVariable(this.attributes.value, { em: this.em, trait: this });
+
+      const dv = this.dataVariable.getDataValue();
+      this.set({ value: dv });
+      this.dataVariableListener = new DataVariableListenerManager({
+        model: this,
+        em: this.em,
+        dataVariable: this.dataVariable,
+        updateValueFromDataVariable: this.updateValueFromDataVariable.bind(this),
+      });
+    }
   }
 
   get parent() {
@@ -83,6 +107,11 @@ export default class Trait extends Model<TraitProperties> {
         (!getValue ? this.getValue() : undefined);
       !isUndefined(value) && this.set({ value }, { silent: true });
     }
+  }
+
+  updateValueFromDataVariable(value: string) {
+    this.setTargetValue(value);
+    this.trigger('change:value');
   }
 
   /**
@@ -130,6 +159,12 @@ export default class Trait extends Model<TraitProperties> {
    * @returns {any}
    */
   getValue(opts?: TraitGetValueOptions) {
+    if (this.dataVariable) {
+      const dValue = this.dataVariable.getDataValue();
+
+      return dValue;
+    }
+
     return this.getTargetValue(opts);
   }
 

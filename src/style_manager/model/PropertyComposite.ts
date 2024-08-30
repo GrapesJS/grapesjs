@@ -5,6 +5,7 @@ import Properties from './Properties';
 import Property, { OptionsStyle, OptionsUpdate, PropertyProps } from './Property';
 import { PropertyNumberProps } from './PropertyNumber';
 import { PropertySelectProps } from './PropertySelect';
+import { DataVariableType } from '../../data_sources/model/DataVariable';
 
 export const isNumberType = (type: string) => type === 'integer' || type === 'number';
 
@@ -279,7 +280,7 @@ export default class PropertyComposite<T extends Record<string, any> = PropertyC
 
     const result = this.getStyleFromProps()[this.getName()] || '';
 
-    return getLastStyleValue(result);
+    return getLastStyleValue(result as string);
   }
 
   __getJoin() {
@@ -303,7 +304,9 @@ export default class PropertyComposite<T extends Record<string, any> = PropertyC
   }
 
   __splitStyleName(style: StyleProps, name: string, sep: string | RegExp) {
-    return this.__splitValue(style[name] || '', sep);
+    const value = style[name];
+
+    return this.__splitValue((value as string) || '', sep);
   }
 
   __getSplitValue(value: string | string[] = '', { byName }: OptionByName = {}) {
@@ -343,7 +346,9 @@ export default class PropertyComposite<T extends Record<string, any> = PropertyC
 
     if (!fromStyle) {
       // Get props from the main property
-      result = this.__getSplitValue(style[name] || '', { byName });
+      const value = style[name];
+
+      result = this.__getSplitValue((value as string) || '', { byName });
 
       // Get props from the inner properties
       props.forEach((prop) => {

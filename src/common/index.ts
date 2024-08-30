@@ -6,7 +6,7 @@ interface NOOP {}
 
 export type Debounced = Function & { cancel(): void };
 
-export type SetOptions = Backbone.ModelSetOptions & { avoidStore?: boolean };
+export type SetOptions = Backbone.ModelSetOptions & { avoidStore?: boolean; avoidTransformers?: boolean };
 
 export type AddOptions = Backbone.AddOptions & { temporary?: boolean; action?: string };
 
