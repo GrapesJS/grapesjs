@@ -3,19 +3,21 @@ import { stringToPath } from '../../utils/mixins';
 import { Model } from '../../common';
 import EditorModel from '../../editor/model/Editor';
 import DataVariable from './DataVariable';
+import ComponentView from '../../dom_components/view/ComponentView';
+import ComponentDataVariable from './ComponentDataVariable';
 
 export interface DataVariableListenerManagerOptions {
-  model: Model;
+  model: Model | ComponentView;
   em: EditorModel;
-  dataVariable: DataVariable;
+  dataVariable: DataVariable | ComponentDataVariable;
   updateValueFromDataVariable: (value: any) => void;
 }
 
 export default class DataVariableListenerManager {
   private dataListeners: DataVariableListener[] = [];
   private em: EditorModel;
-  private model: Model;
-  private dataVariable: DataVariable;
+  private model: Model | ComponentView;
+  private dataVariable: DataVariable | ComponentDataVariable;
   private updateValueFromDataVariable: (value: any) => void;
 
   constructor(options: DataVariableListenerManagerOptions) {
