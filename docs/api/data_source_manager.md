@@ -88,24 +88,6 @@ Get value from data sources by key
 
 Returns **any** const value = dsm.getValue('ds\_id.record\_id.propName', 'defaultValue');
 
-## getContext
-
-Retrieve the entire context of data sources.
-This method aggregates all data records from all data sources and applies any
-`onRecordRead` transformers defined within each data source. The result is an
-object representing the current state of all data sources, where each data source
-ID maps to an object containing its records' attributes. Each record is keyed by
-both its index and its ID.
-
-### Examples
-
-```javascript
-const context = dsm.getContext();
-// e.g., { dataSourceId: { 0: { id: 'record1', name: 'value1' }, record1: { id: 'record1', name: 'value1' } } }
-```
-
-Returns **ObjectAny** The context of all data sources, with transformed records.
-
 ## remove
 
 Remove data source.

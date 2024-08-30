@@ -34,14 +34,17 @@ describe('DataSource Transformers', () => {
     em.destroy();
   });
 
-  test('onRecordAdd', () => {
+  test('should assert that onRecordSetValue is called when adding a record', () => {
     const testDataSource: DataSourceProps = {
       id: 'test-data-source',
       records: [],
       transformers: {
-        onRecordAdd: ({ record }) => {
-          record.content = record.content.toUpperCase();
-          return record;
+        onRecordSetValue: ({ key, value }) => {
+          if (key !== 'content') {
+            return value;
+          }
+
+          return (value as string).toUpperCase();
         },
       },
     };
@@ -69,7 +72,7 @@ describe('DataSource Transformers', () => {
     expect(result).toBe('I LOVE GRAPES');
   });
 
-  test('onRecordSetValue', () => {
+  test('should assert that onRecordSetValue is called when setting a value on a record', () => {
     const testDataSource: DataSourceProps = {
       id: 'test-data-source',
       records: [],
@@ -114,76 +117,5 @@ describe('DataSource Transformers', () => {
 
     const result = ds.getRecord('id1')?.get('content');
     expect(result).toBe('I LOVE GRAPES');
-  });
-
-  test('onRecordRead', () => {
-    const testDataSource: DataSourceProps = {
-      id: 'test-data-source',
-      records: [],
-      transformers: {
-        onRecordRead: ({ record }) => {
-          const content = record.get('content');
-
-          return record.set('content', content.toUpperCase(), { avoidTransformers: true });
-        },
-      },
-    };
-    dsm.add(testDataSource);
-
-    const cmp = cmpRoot.append({
-      tagName: 'h1',
-      type: 'text',
-      components: [
-        {
-          type: DataVariableType,
-          defaultValue: 'default',
-          path: 'test-data-source.id1.content',
-        },
-      ],
-    })[0];
-
-    const ds = dsm.get('test-data-source');
-    ds.addRecord({ id: 'id1', content: 'i love grapes' });
-
-    const el = cmp.getEl();
-    expect(el?.innerHTML).toContain('I LOVE GRAPES');
-
-    const result = ds.getRecord('id1')?.get('content');
-    expect(result).toBe('I LOVE GRAPES');
-  });
-
-  test('onRecordDelete', () => {
-    const testDataSource: DataSourceProps = {
-      id: 'test-data-source',
-      records: [],
-      transformers: {
-        onRecordDelete: ({ record }) => {
-          if (record.get('content') === 'i love grapes') {
-            throw new Error('Cannot delete record with content "i love grapes"');
-          }
-        },
-      },
-    };
-    dsm.add(testDataSource);
-
-    const cmp = cmpRoot.append({
-      tagName: 'h1',
-      type: 'text',
-      components: [
-        {
-          type: DataVariableType,
-          defaultValue: 'default',
-          path: 'test-data-source.id1.content',
-        },
-      ],
-    })[0];
-
-    const ds = dsm.get('test-data-source');
-    ds.addRecord({ id: 'id1', content: 'i love grapes' });
-
-    let el = cmp.getEl();
-    expect(el?.innerHTML).toContain('i love grapes');
-
-    expect(() => ds.removeRecord('id1')).toThrowError('Cannot delete record with content "i love grapes"');
   });
 });

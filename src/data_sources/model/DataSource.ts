@@ -18,9 +18,6 @@
  *     { id: 'id1', name: 'value1' },
  *     { id: 'id2', name: 'value2' }
  *   ],
- *   transformers: {
- *     onRecordAdd: ({ record }) => ({ ...record, added: true }),
- *   }
  * }, { em: editor });
  *
  * dataSource.addRecord({ id: 'id3', name: 'value3' });
@@ -113,7 +110,6 @@ export default class DataSource extends Model<DataSourceProps> {
 
   /**
    * Adds a new record to the data source.
-   * If a transformer is provided for the `onRecordAdd` event, it will be applied to the record before adding it.
    *
    * @param {DataRecordProps} record - The properties of the record to add.
    * @param {AddOptions} [opts] - Options to apply when adding the record.
@@ -121,29 +117,18 @@ export default class DataSource extends Model<DataSourceProps> {
    * @name addRecord
    */
   addRecord(record: DataRecordProps, opts?: AddOptions) {
-    const onRecordAdd = this.transformers.onRecordAdd;
-    if (onRecordAdd) {
-      record = onRecordAdd({ record });
-    }
-
     return this.records.add(record, opts);
   }
 
   /**
    * Retrieves a record from the data source by its ID.
-   * If a transformer is provided for the `onRecordRead` event, it will be applied to the record before returning it.
    *
    * @param {string | number} id - The ID of the record to retrieve.
    * @returns {DataRecord | undefined} The data record, or `undefined` if no record is found with the given ID.
    * @name getRecord
    */
   getRecord(id: string | number): DataRecord | undefined {
-    const onRecordRead = this.transformers.onRecordRead;
     const record = this.records.get(id);
-    if (record && onRecordRead) {
-      return onRecordRead({ record });
-    }
-
     return record;
   }
 
@@ -160,7 +145,6 @@ export default class DataSource extends Model<DataSourceProps> {
 
   /**
    * Removes a record from the data source by its ID.
-   * If a transformer is provided for the `onRecordDelete` event, it will be applied before the record is removed.
    *
    * @param {string | number} id - The ID of the record to remove.
    * @param {RemoveOptions} [opts] - Options to apply when removing the record.
@@ -168,19 +152,11 @@ export default class DataSource extends Model<DataSourceProps> {
    * @name removeRecord
    */
   removeRecord(id: string | number, opts?: RemoveOptions): DataRecord | undefined {
-    const onRecordDelete = this.transformers.onRecordDelete;
-    const record = this.getRecord(id);
-
-    if (record && onRecordDelete) {
-      onRecordDelete({ record });
-    }
-
     return this.records.remove(id, opts);
   }
 
   /**
    * Replaces the existing records in the data source with a new set of records.
-   * If a transformer is provided for the `onRecordAdd` event, it will be applied to each record before adding it.
    *
    * @param {Array<DataRecordProps>} records - An array of data record properties to set.
    * @returns {Array<DataRecord>} An array of the added data records.
@@ -190,7 +166,7 @@ export default class DataSource extends Model<DataSourceProps> {
     this.records.reset([], { silent: true });
 
     records.forEach((record) => {
-      this.records.add(record, { avoidTransformers: true });
+      this.records.add(record);
     });
   }
 }

@@ -133,30 +133,9 @@ In this case, the value of the input field is bound to the DataSource value at `
 
 Transformers in DataSources allow you to customize how data is processed during various stages of interaction with the data. The primary transformer functions include:
 
-### 1. `onRecordAdd`
+### 1. `onRecordSetValue`
 
-This transformer is triggered when a new record is added to the data source. It allows for modification or enrichment of the record before it is stored.
-
-#### Example Usage
-
-```javascript
-const testDataSource = {
-  id: 'test-data-source',
-  records: [],
-  transformers: {
-    onRecordAdd: ({ record }) => {
-      record.content = record.content.toUpperCase();
-      return record;
-    },
-  },
-};
-```
-
-In this example, every record added will have its `content` field converted to uppercase.
-
-### 2. `onRecordSetValue`
-
-This transformer is invoked when a record's property is updated. It provides an opportunity to validate or transform the new value.
+This transformer is invoked when a record's property is added or updated. It provides an opportunity to validate or transform the new value.
 
 #### Example Usage
 
@@ -178,54 +157,7 @@ const testDataSource = {
 };
 ```
 
-Here, the transformer ensures that the `content` field is always a string and transforms it to uppercase.
-
-### 3. `onRecordRead`
-
-This transformer is used when a record is read from the data source. It allows for post-processing of the data before it is returned.
-
-#### Example Usage
-
-```javascript
-const testDataSource = {
-  id: 'test-data-source',
-  records: [],
-  transformers: {
-    onRecordRead: ({ record }) => {
-      const content = record.get('content');
-      return record.set('content', content.toUpperCase(), { avoidTransformers: true });
-    },
-  },
-};
-```
-
-In this example, the `content` field of a record is converted to uppercase when read.
-
-### 4. `onRecordDelete`
-
-This transformer is invoked when a record is about to be deleted. It can be used to prevent deletion or to perform additional actions before the record is removed.
-
-#### Example Usage
-
-```javascript
-const testDataSource = {
-  id: 'test-data-source',
-  records: [],
-  transformers: {
-    onRecordDelete: ({ record }) => {
-      if (record.get('content') === 'i love grapes') {
-        throw new Error('Cannot delete record with content "i love grapes"');
-      }
-    },
-  },
-};
-```
-
-In this scenario, a record with the `content` of `"i love grapes"` cannot be deleted.
-
----
-
-These transformers can be customized to meet specific needs, ensuring that data is managed and manipulated in a way that fits your application requirements.
+In this example, the `onRecordSetValue` transformer ensures that the `content` property is always an uppercase string.
 
 ## Benefits of Using DataSources
 

@@ -96,23 +96,10 @@ export default class DataSourceManager extends ItemManagerModule<ModuleConfig, D
     return get(this.getContext(), key, defValue);
   }
 
-  /**
-   * Retrieve the entire context of data sources.
-   * This method aggregates all data records from all data sources and applies any
-   * `onRecordRead` transformers defined within each data source. The result is an
-   * object representing the current state of all data sources, where each data source
-   * ID maps to an object containing its records' attributes. Each record is keyed by
-   * both its index and its ID.
-   *
-   * @returns {ObjectAny} - The context of all data sources, with transformed records.
-   * @example
-   * const context = dsm.getContext();
-   * // e.g., { dataSourceId: { 0: { id: 'record1', name: 'value1' }, record1: { id: 'record1', name: 'value1' } } }
-   */
-  getContext() {
+  private getContext() {
     return this.all.reduce((acc, ds) => {
       acc[ds.id] = ds.records.reduce((accR, dr, i) => {
-        const dataRecord = ds.transformers.onRecordRead ? ds.transformers.onRecordRead({ record: dr }) : dr;
+        const dataRecord = dr;
 
         accR[i] = dataRecord.attributes;
         accR[dataRecord.id || i] = dataRecord.attributes;

@@ -21,9 +21,6 @@ const dataSource = new DataSource({
     { id: 'id1', name: 'value1' },
     { id: 'id2', name: 'value2' }
   ],
-  transformers: {
-    onRecordAdd: ({ record }) => ({ ...record, added: true }),
-  }
 }, { em: editor });
 
 dataSource.addRecord({ id: 'id3', name: 'value3' });
@@ -67,7 +64,6 @@ Returns **EditorModel** The editor model.
 ## addRecord
 
 Adds a new record to the data source.
-If a transformer is provided for the `onRecordAdd` event, it will be applied to the record before adding it.
 
 ### Parameters
 
@@ -79,7 +75,6 @@ Returns **DataRecord** The added data record.
 ## getRecord
 
 Retrieves a record from the data source by its ID.
-If a transformer is provided for the `onRecordRead` event, it will be applied to the record before returning it.
 
 ### Parameters
 
@@ -97,7 +92,6 @@ Returns **[Array][9]<(DataRecord | [undefined][8])>** An array of data records.
 ## removeRecord
 
 Removes a record from the data source by its ID.
-If a transformer is provided for the `onRecordDelete` event, it will be applied before the record is removed.
 
 ### Parameters
 
@@ -109,7 +103,6 @@ Returns **(DataRecord | [undefined][8])** The removed data record, or `undefined
 ## setRecords
 
 Replaces the existing records in the data source with a new set of records.
-If a transformer is provided for the `onRecordAdd` event, it will be applied to each record before adding it.
 
 ### Parameters
 
