@@ -314,6 +314,7 @@ describe('TraitDataVariable', () => {
 
       const link = cmp.getEl() as HTMLLinkElement;
       expect(link?.href).toBe('http://localhost/url-to-cat-image');
+      expect(cmp?.getAttributes().href).toBe('url-to-cat-image');
 
       const testDs = dsm.get(inputDataSource.id);
       testDs.getRecord('id1')?.set({ value: 'url-to-dog-image' });
