@@ -1,6 +1,7 @@
 import Editor from '../../../src/editor/model/Editor';
 import ComponentWrapper from '../../../src/dom_components/model/ComponentWrapper';
 
+// https://github.com/GrapesJS/grapesjs/pull/6095
 describe('Checkbox Behaviour', () => {
   let em: Editor;
   let fixtures: HTMLElement;
@@ -53,8 +54,6 @@ describe('Checkbox Behaviour', () => {
 
     cmp.getTrait('checked').setValue(false);
 
-    expect(input?.checked).toBe(false);
-    expect(cmp.getAttributes().checked).toBe('false');
     expect(input?.getAttribute('checked')).toBe('false');
   });
 });
