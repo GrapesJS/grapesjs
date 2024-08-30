@@ -34,7 +34,7 @@ export interface DataSourceProps {
 
 export interface DataSourceTransformers {
   onRecordAdd?: (args: { record: DataRecordProps }) => DataRecordProps;
-  onRecordSet?: (args: { id: string | number; key: string; value: any }) => any;
+  onRecordSetValue?: (args: { id: string | number; key: string; value: any }) => any;
   onRecordDelete?: (args: { record: DataRecord }) => void;
   onRecordRead?: (args: { record: DataRecord }) => DataRecord;
 }

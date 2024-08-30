@@ -69,12 +69,12 @@ describe('DataSource Transformers', () => {
     expect(result).toBe('I LOVE GRAPES');
   });
 
-  test('onRecordSet', () => {
+  test('onRecordSetValue', () => {
     const testDataSource: DataSourceProps = {
       id: 'test-data-source',
       records: [],
       transformers: {
-        onRecordSet: ({ id, key, value }) => {
+        onRecordSetValue: ({ id, key, value }) => {
           if (key !== 'content') {
             return value;
           }

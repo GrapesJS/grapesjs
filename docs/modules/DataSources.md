@@ -154,7 +154,7 @@ const testDataSource = {
 
 In this example, every record added will have its `content` field converted to uppercase.
 
-### 2. `onRecordSet`
+### 2. `onRecordSetValue`
 
 This transformer is invoked when a record's property is updated. It provides an opportunity to validate or transform the new value.
 
@@ -165,7 +165,7 @@ const testDataSource = {
   id: 'test-data-source',
   records: [],
   transformers: {
-    onRecordSet: ({ id, key, value }) => {
+    onRecordSetValue: ({ id, key, value }) => {
       if (key !== 'content') {
         return value;
       }

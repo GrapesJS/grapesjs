@@ -137,13 +137,13 @@ export default class DataRecord<T extends DataRecordProps = DataRecordProps> ext
     options?: SetOptions | undefined,
   ): this;
   set(attributeName: unknown, value?: unknown, options?: SetOptions): DataRecord {
-    const onRecordSet = this.dataSource?.transformers?.onRecordSet;
+    const onRecordSetValue = this.dataSource?.transformers?.onRecordSetValue;
 
     const applySet = (key: string, val: unknown) => {
       const newValue =
-        options?.avoidTransformers || !onRecordSet
+        options?.avoidTransformers || !onRecordSetValue
           ? val
-          : onRecordSet({
+          : onRecordSetValue({
               id: this.id,
               key,
               value: val,
