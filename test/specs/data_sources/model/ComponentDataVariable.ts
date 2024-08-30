@@ -257,4 +257,42 @@ describe('ComponentDataVariable', () => {
 
     expect(cmp.getEl()?.innerHTML).toContain('NestedItemName1-UP');
   });
+
+  test('component initalizes and updates data on datarecord set object', () => {
+    const dataSource: DataSourceProps = {
+      id: 'setObject',
+      records: [{ id: 'id1', content: 'Hello World', color: 'red' }],
+    };
+    dsm.add(dataSource);
+
+    const cmp = cmpRoot.append({
+      tagName: 'h1',
+      type: 'text',
+      components: [
+        {
+          type: DataVariableType,
+          defaultValue: 'default',
+          path: `${dataSource.id}.id1.content`,
+        },
+      ],
+      style: {
+        color: {
+          type: DataVariableType,
+          defaultValue: 'black',
+          path: `${dataSource.id}.id1.color`,
+        },
+      },
+    })[0];
+
+    const style = cmp.getStyle();
+    expect(style).toHaveProperty('color', 'red');
+    expect(cmp.getEl()?.innerHTML).toContain('Hello World');
+
+    const ds = dsm.get('setObject');
+    ds.getRecord('id1')?.set({ content: 'Hello World UP', color: 'blue' });
+
+    const updatedStyle = cmp.getStyle();
+    expect(updatedStyle).toHaveProperty('color', 'blue');
+    expect(cmp.getEl()?.innerHTML).toContain('Hello World UP');
+  });
 });

@@ -105,8 +105,9 @@ describe('DataSource Transformers', () => {
     const dr = ds.addRecord({ id: 'id1', content: 'i love grapes' });
 
     expect(() => dr.set('content', 123)).toThrowError('Value must be a string');
+    expect(() => dr.set({ content: 123 })).toThrowError('Value must be a string');
 
-    dr.set('content', 'I LOVE GRAPES');
+    dr.set({ content: 'I LOVE GRAPES' });
 
     const el = cmp.getEl();
     expect(el?.innerHTML).toContain('I LOVE GRAPES');
