@@ -5,6 +5,7 @@ import { DataVariableType } from '../../../src/data_sources/model/DataVariable';
 import EditorModel from '../../../src/editor/model/Editor';
 import { ProjectData } from '../../../src/storage_manager';
 import { DataSourceProps } from '../../../src/data_sources/types';
+import { setupTestEditor } from '../../common';
 
 // Filter out the unique ids and selectors replaced with 'data-variable-id'
 // Makes the snapshot more stable
@@ -61,24 +62,7 @@ describe('DataSource Serialization', () => {
   };
 
   beforeEach(() => {
-    editor = new Editor({
-      mediaCondition: 'max-width',
-      avoidInlineStyle: true,
-    });
-    em = editor.getModel();
-    dsm = em.DataSources;
-    document.body.innerHTML = '<div id="fixtures"></div>';
-    const { Pages, Components } = em;
-    Pages.onLoad();
-    cmpRoot = Components.getWrapper()!;
-    const View = Components.getType('wrapper')!.view;
-    const wrapperEl = new View({
-      model: cmpRoot,
-      config: { ...cmpRoot.config, em },
-    });
-    wrapperEl.render();
-    fixtures = document.body.querySelector('#fixtures')!;
-    fixtures.appendChild(wrapperEl.el);
+    ({ editor, em, dsm, cmpRoot, fixtures } = setupTestEditor());
 
     dsm.add(componentDataSource);
     dsm.add(styleDataSource);
