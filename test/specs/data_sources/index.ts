@@ -1,13 +1,11 @@
-import Editor from '../../../src/editor/model/Editor';
 import DataSourceManager from '../../../src/data_sources';
-import ComponentWrapper from '../../../src/dom_components/model/ComponentWrapper';
 import { DataSourceProps } from '../../../src/data_sources/types';
+import { setupTestEditor } from '../../common';
+import EditorModel from '../../../src/editor/model/Editor';
 
 describe('DataSourceManager', () => {
-  let em: Editor;
+  let em: EditorModel;
   let dsm: DataSourceManager;
-  let fixtures: HTMLElement;
-  let cmpRoot: ComponentWrapper;
   const dsTest: DataSourceProps = {
     id: 'ds1',
     records: [
@@ -20,23 +18,7 @@ describe('DataSourceManager', () => {
   const addDataSource = () => dsm.add(dsTest);
 
   beforeEach(() => {
-    em = new Editor({
-      mediaCondition: 'max-width',
-      avoidInlineStyle: true,
-    });
-    dsm = em.DataSources;
-    document.body.innerHTML = '<div id="fixtures"></div>';
-    const { Pages, Components } = em;
-    Pages.onLoad();
-    cmpRoot = Components.getWrapper()!;
-    const View = Components.getType('wrapper')!.view;
-    const wrapperEl = new View({
-      model: cmpRoot,
-      config: { ...cmpRoot.config, em },
-    });
-    wrapperEl.render();
-    fixtures = document.body.querySelector('#fixtures')!;
-    fixtures.appendChild(wrapperEl.el);
+    ({ em, dsm } = setupTestEditor());
   });
 
   afterEach(() => {
