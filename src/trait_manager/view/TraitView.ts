@@ -123,7 +123,7 @@ export default class TraitView extends View<Trait> {
       this.postUpdate();
     } else {
       const val = this.getValueForTarget();
-      model.setTargetValue(val, opts);
+      model?.setTargetValue(val, opts);
     }
   }
 

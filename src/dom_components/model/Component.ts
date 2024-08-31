@@ -51,6 +51,7 @@ import {
   updateSymbolComps,
   updateSymbolProps,
 } from './SymbolUtils';
+import TraitDataVariable from '../../data_sources/model/TraitDataVariable';
 
 export interface IComponent extends ExtractMethods<Component> {}
 
@@ -713,7 +714,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
     if (avoidInline(em) && !opt.temporary && !opts.inline) {
       const style = this.get('style') || {};
       prop = isString(prop) ? this.parseStyle(prop) : prop;
-      prop = { ...prop, ...style };
+      prop = { ...prop, ...(style as any) };
       const state = em.get('state');
       const cc = em.Css;
       const propOrig = this.getStyle(opts);
@@ -757,6 +758,14 @@ export default class Component extends StyleableModel<ComponentProperties> {
       if (isObject(style) && !isEmptyObj(style)) {
         attributes.style = this.styleToString({ inline: true });
       }
+    }
+
+    const attrDataVariable = this.get('attributes-data-variable');
+    if (attrDataVariable) {
+      Object.entries(attrDataVariable).forEach(([key, value]) => {
+        const dataVariable = value instanceof TraitDataVariable ? value : new TraitDataVariable(value, { em });
+        attributes[key] = dataVariable.getDataValue();
+      });
     }
 
     // Check if we need an ID on the component
@@ -897,15 +906,24 @@ export default class Component extends StyleableModel<ComponentProperties> {
     this.off(event, this.initTraits);
     this.__loadTraits();
     const attrs = { ...this.get('attributes') };
+    const traitDataVariableAttr: ObjectAny = {};
     const traits = this.traits;
     traits.each((trait) => {
-      if (!trait.changeProp) {
-        const name = trait.getName();
-        const value = trait.getInitValue();
+      const name = trait.getName();
+      const value = trait.getInitValue();
+
+      if (trait.changeProp) {
+        this.set(name, value);
+      } else {
         if (name && value) attrs[name] = value;
+      }
+
+      if (trait.dataVariable) {
+        traitDataVariableAttr[name] = trait.dataVariable;
       }
     });
     traits.length && this.set('attributes', attrs);
+    Object.keys(traitDataVariableAttr).length && this.set('attributes-data-variable', traitDataVariableAttr);
     this.on(event, this.initTraits);
     changed && em && em.trigger('component:toggled');
     return this;
@@ -947,7 +965,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
    * // append at specific index (eg. at the beginning)
    * someComponent.append(otherComponent, { at: 0 });
    */
-  append(components: ComponentAdd, opts: AddOptions = {}): Component[] {
+  append<T extends Component = Component>(components: ComponentAdd, opts: AddOptions = {}): T[] {
     const compArr = isArray(components) ? [...components] : [components];
     const toAppend = compArr.map((comp) => {
       if (isString(comp)) {
@@ -962,7 +980,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
       action: ActionLabelComponents.add,
       ...opts,
     });
-    return isArray(result) ? result : [result];
+    return result as T[];
   }
 
   /**

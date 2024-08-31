@@ -3,7 +3,7 @@ import Backbone from 'backbone';
 import $ from '../../utils/cash-dom';
 import Extender from '../../utils/extender';
 import { hasWin, isEmptyObj, wait } from '../../utils/mixins';
-import { AddOptions, Model, ObjectAny } from '../../common';
+import { AddOptions, Model, Collection, ObjectAny } from '../../common';
 import Selected from './Selected';
 import FrameView from '../../canvas/view/FrameView';
 import Editor from '..';
@@ -42,6 +42,7 @@ import CssRules from '../../css_composer/model/CssRules';
 import { ComponentAdd, DragMode } from '../../dom_components/model/types';
 import ComponentWrapper from '../../dom_components/model/ComponentWrapper';
 import { CanvasSpotBuiltInTypes } from '../../canvas/model/CanvasSpot';
+import DataSourceManager from '../../data_sources';
 
 Backbone.$ = $;
 
@@ -64,6 +65,7 @@ const deps: (new (em: EditorModel) => IModule)[] = [
   CanvasModule,
   CommandsModule,
   BlockManager,
+  DataSourceManager,
 ];
 const storableDeps: (new (em: EditorModel) => IModule & IStorableModule)[] = [
   AssetManager,
@@ -104,6 +106,8 @@ export default class EditorModel extends Model {
     };
   }
 
+  Model = Model;
+  Collection = Collection;
   __skip = false;
   defaultRunning = false;
   destroyed = false;
@@ -224,6 +228,10 @@ export default class EditorModel extends Model {
 
   get Styles(): StyleManager {
     return this.get('StyleManager');
+  }
+
+  get DataSources(): DataSourceManager {
+    return this.get('DataSources');
   }
 
   constructor(conf: EditorConfig = {}) {
