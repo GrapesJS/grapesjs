@@ -51,6 +51,7 @@ describe('DataSource Transformers', () => {
 
     const el = cmp.getEl();
     expect(el?.innerHTML).toContain('I LOVE GRAPES');
+    expect(cmp.getInnerHTML()).toContain('I LOVE GRAPES');
 
     const result = ds.getRecord('id1')?.get('content');
     expect(result).toBe('I LOVE GRAPES');
@@ -98,6 +99,7 @@ describe('DataSource Transformers', () => {
 
     const el = cmp.getEl();
     expect(el?.innerHTML).toContain('I LOVE GRAPES');
+    expect(cmp.getInnerHTML()).toContain('I LOVE GRAPES');
 
     const result = ds.getRecord('id1')?.get('content');
     expect(result).toBe('I LOVE GRAPES');
