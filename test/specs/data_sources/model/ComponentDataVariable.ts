@@ -1,33 +1,17 @@
-import Editor from '../../../../src/editor/model/Editor';
 import DataSourceManager from '../../../../src/data_sources';
 import ComponentWrapper from '../../../../src/dom_components/model/ComponentWrapper';
 import { DataVariableType } from '../../../../src/data_sources/model/DataVariable';
 import { DataSourceProps } from '../../../../src/data_sources/types';
+import { setupTestEditor } from '../../../common';
+import EditorModel from '../../../../src/editor/model/Editor';
 
 describe('ComponentDataVariable', () => {
-  let em: Editor;
+  let em: EditorModel;
   let dsm: DataSourceManager;
-  let fixtures: HTMLElement;
   let cmpRoot: ComponentWrapper;
 
   beforeEach(() => {
-    em = new Editor({
-      mediaCondition: 'max-width',
-      avoidInlineStyle: true,
-    });
-    dsm = em.DataSources;
-    document.body.innerHTML = '<div id="fixtures"></div>';
-    const { Pages, Components } = em;
-    Pages.onLoad();
-    cmpRoot = Components.getWrapper()!;
-    const View = Components.getType('wrapper')!.view;
-    const wrapperEl = new View({
-      model: cmpRoot,
-      config: { ...cmpRoot.config, em },
-    });
-    wrapperEl.render();
-    fixtures = document.body.querySelector('#fixtures')!;
-    fixtures.appendChild(wrapperEl.el);
+    ({ em, dsm, cmpRoot } = setupTestEditor());
   });
 
   afterEach(() => {
@@ -54,6 +38,7 @@ describe('ComponentDataVariable', () => {
     })[0];
 
     expect(cmp.getEl()?.innerHTML).toContain('Name1');
+    expect(cmp.getInnerHTML()).toContain('Name1');
   });
 
   test('component updates on data-variable change', () => {
@@ -76,11 +61,13 @@ describe('ComponentDataVariable', () => {
     })[0];
 
     expect(cmp.getEl()?.innerHTML).toContain('Name1');
+    expect(cmp.getInnerHTML()).toContain('Name1');
 
     const ds = dsm.get('ds2');
     ds.getRecord('id1')?.set({ name: 'Name1-UP' });
 
     expect(cmp.getEl()?.innerHTML).toContain('Name1-UP');
+    expect(cmp.getInnerHTML()).toContain('Name1-UP');
   });
 
   test("component uses default value if data source doesn't exist", () => {
@@ -119,9 +106,11 @@ describe('ComponentDataVariable', () => {
     })[0];
 
     expect(cmp.getEl()?.innerHTML).toContain('Name1');
+    expect(cmp.getInnerHTML()).toContain('Name1');
 
     dsm.all.reset();
     expect(cmp.getEl()?.innerHTML).toContain('default');
+    expect(cmp.getInnerHTML()).toContain('default');
   });
 
   test('component updates on data source setRecords', () => {
@@ -144,11 +133,13 @@ describe('ComponentDataVariable', () => {
     })[0];
 
     expect(cmp.getEl()?.innerHTML).toContain('init name');
+    expect(cmp.getInnerHTML()).toContain('init name');
 
     const ds = dsm.get(dataSource.id);
     ds.setRecords([{ id: 'id1', name: 'updated name' }]);
 
     expect(cmp.getEl()?.innerHTML).toContain('updated name');
+    expect(cmp.getInnerHTML()).toContain('updated name');
   });
 
   test('component updates on record removal', () => {
@@ -171,11 +162,13 @@ describe('ComponentDataVariable', () => {
     })[0];
 
     expect(cmp.getEl()?.innerHTML).toContain('Name1');
+    expect(cmp.getInnerHTML()).toContain('Name1');
 
     const ds = dsm.get('ds4');
     ds.removeRecord('id1');
 
     expect(cmp.getEl()?.innerHTML).toContain('default');
+    expect(cmp.getInnerHTML()).toContain('default');
   });
 
   test('component initializes and updates with data-variable for nested object', () => {
@@ -205,11 +198,13 @@ describe('ComponentDataVariable', () => {
     })[0];
 
     expect(cmp.getEl()?.innerHTML).toContain('NestedName1');
+    expect(cmp.getInnerHTML()).toContain('NestedName1');
 
     const ds = dsm.get('dsNestedObject');
     ds.getRecord('id1')?.set({ nestedObject: { name: 'NestedName1-UP' } });
 
     expect(cmp.getEl()?.innerHTML).toContain('NestedName1-UP');
+    expect(cmp.getInnerHTML()).toContain('NestedName1-UP');
   });
 
   test('component initializes and updates with data-variable for nested object inside an array', () => {
@@ -244,6 +239,7 @@ describe('ComponentDataVariable', () => {
     })[0];
 
     expect(cmp.getEl()?.innerHTML).toContain('NestedItemName1');
+    expect(cmp.getInnerHTML()).toContain('NestedItemName1');
 
     const ds = dsm.get('dsNestedArray');
     ds.getRecord('id1')?.set({
@@ -256,6 +252,7 @@ describe('ComponentDataVariable', () => {
     });
 
     expect(cmp.getEl()?.innerHTML).toContain('NestedItemName1-UP');
+    expect(cmp.getInnerHTML()).toContain('NestedItemName1-UP');
   });
 
   test('component initalizes and updates data on datarecord set object', () => {

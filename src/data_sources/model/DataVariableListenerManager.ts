@@ -41,10 +41,8 @@ export default class DataVariableListenerManager {
     const dataListeners: DataVariableListener[] = [];
     ds && dataListeners.push({ obj: ds.records, event: 'add remove reset' });
     dr && dataListeners.push({ obj: dr, event: 'change' });
-    dataListeners.push({ obj: dataVariable, event: 'change:value' });
-    dataListeners.push({ obj: em, event: `${DataSourcesEvents.path}:${normPath}` });
     dataListeners.push(
-      { obj: dataVariable, event: 'change:path change:value' },
+      { obj: dataVariable, event: 'change:path change:defaultValue' },
       { obj: em.DataSources.all, event: 'add remove reset' },
       { obj: em, event: `${DataSourcesEvents.path}:${normPath}` },
     );

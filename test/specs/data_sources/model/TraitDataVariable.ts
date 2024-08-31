@@ -3,31 +3,15 @@ import DataSourceManager from '../../../../src/data_sources';
 import ComponentWrapper from '../../../../src/dom_components/model/ComponentWrapper';
 import { DataVariableType } from '../../../../src/data_sources/model/DataVariable';
 import { DataSourceProps } from '../../../../src/data_sources/types';
+import { setupTestEditor } from '../../../common';
 
 describe('TraitDataVariable', () => {
   let em: Editor;
   let dsm: DataSourceManager;
-  let fixtures: HTMLElement;
   let cmpRoot: ComponentWrapper;
 
   beforeEach(() => {
-    em = new Editor({
-      mediaCondition: 'max-width',
-      avoidInlineStyle: true,
-    });
-    dsm = em.DataSources;
-    document.body.innerHTML = '<div id="fixtures"></div>';
-    const { Pages, Components } = em;
-    Pages.onLoad();
-    cmpRoot = Components.getWrapper()!;
-    const View = Components.getType('wrapper')!.view;
-    const wrapperEl = new View({
-      model: cmpRoot,
-      config: { ...cmpRoot.config, em },
-    });
-    wrapperEl.render();
-    fixtures = document.body.querySelector('#fixtures')!;
-    fixtures.appendChild(wrapperEl.el);
+    ({ em, dsm, cmpRoot } = setupTestEditor());
   });
 
   afterEach(() => {
@@ -314,6 +298,7 @@ describe('TraitDataVariable', () => {
 
       const link = cmp.getEl() as HTMLLinkElement;
       expect(link?.href).toBe('http://localhost/url-to-cat-image');
+      expect(cmp?.getAttributes().href).toBe('url-to-cat-image');
 
       const testDs = dsm.get(inputDataSource.id);
       testDs.getRecord('id1')?.set({ value: 'url-to-dog-image' });
