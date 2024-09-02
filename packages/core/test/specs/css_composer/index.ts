@@ -1,6 +1,6 @@
 import CssComposer from '../../../src/css_composer';
 import Editor from '../../../src/editor/model/Editor';
-import utils from './../../test_utils.js';
+import utils from '../../test_utils.js';
 
 describe('Css Composer', () => {
   describe('Main', () => {

@@ -1,4 +1,4 @@
-name: Tests
+name: Core Package Tests
 
 on:
   push:
@@ -9,6 +9,9 @@ on:
 jobs:
   quality:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./packages/core
 
     strategy:
       matrix:
@@ -20,7 +23,8 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
-          cache: 'yarn'
+          cache: "yarn"
+          cache-dependency-path: "./packages/core/yarn.lock"
       - run: yarn --frozen-lockfile
       - run: npm run lint
       - run: npm run lint:ts

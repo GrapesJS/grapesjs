@@ -1,4 +1,4 @@
-import { DataSourcesEvents, DataVariableListener } from '../../data_sources/types';
+import { DataSourcesEvents, DataVariableListener } from '../types';
 import { stringToPath } from '../../utils/mixins';
 import { Model } from '../../common';
 import EditorModel from '../../editor/model/Editor';
