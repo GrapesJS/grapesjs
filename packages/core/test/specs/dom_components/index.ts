@@ -1,7 +1,7 @@
 import Components from '../../../src/dom_components/model/Components';
 import EditorModel from '../../../src/editor/model/Editor';
 import Editor from '../../../src/editor';
-import utils from './../../test_utils.js';
+import utils from '../../test_utils.js';
 import { Component } from '../../../src';
 import ComponentWrapper from '../../../src/dom_components/model/ComponentWrapper';
 

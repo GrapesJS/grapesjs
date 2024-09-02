@@ -1,7 +1,7 @@
 import { Collection } from '../../common';
 import Asset from './Asset';
 import AssetImage from './AssetImage';
-import AssetImageView from './../view/AssetImageView';
+import AssetImageView from '../view/AssetImageView';
 import TypeableCollection from '../../domain_abstract/model/TypeableCollection';
 
 const TypeableCollectionExt = Collection.extend(TypeableCollection);
