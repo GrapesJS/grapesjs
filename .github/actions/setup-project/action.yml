@@ -1,0 +1,36 @@
+name: Setup Project
+description: 'Sets up the project by installing dependencies, building the project, and installing Turbo.'
+
+inputs:
+  pnpm-version:
+    description: 'The version of pnpm to use for installing dependencies.'
+    required: false
+    default: 8.6.3
+  node-version:
+    description: 'The version of Node.js to use for building the project.'
+    required: false
+    default: '20.16.0'
+  turbo-version:
+    description: 'The version of Turbo to install globally.'
+    required: false
+    default: 2.0.14
+
+runs:
+  using: composite
+  steps:
+    - uses: pnpm/action-setup@v4
+      with:
+        version: ${{ inputs.pnpm-version }}
+    - uses: actions/setup-node@v4
+      with:
+        node-version: ${{ inputs.node-version }}
+        cache: 'pnpm'
+    - name: Install Turbo
+      run: npm i -g turbo@${{ inputs.turbo-version }}
+      shell: bash
+    - name: Install dependencies
+      run: pnpm install
+      shell: bash
+    - name: Build project
+      run: pnpm build --force
+      shell: bash
