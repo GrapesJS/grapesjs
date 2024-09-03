@@ -1,5 +1,5 @@
 name: Setup Project
-description: 'Sets up the project by installing dependencies, building the project, and installing Turbo.'
+description: 'Sets up the project by installing dependencies and building the project.'
 
 inputs:
   pnpm-version:
