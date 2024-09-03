@@ -36,7 +36,7 @@ module.exports = ({ config, pkg, webpack }) => {
       modules: [...(config.resolve && config.resolve.modules), 'src'],
       alias: {
         ...(config.resolve && config.resolve.alias),
-        jquery: 'utils/cash-dom',
+        jquery: `${rootDir}/src/utils/cash-dom`,
         backbone: `${rootDir}/node_modules/backbone`,
         underscore: `${rootDir}/node_modules/underscore`,
       },

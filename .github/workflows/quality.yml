@@ -1,5 +1,4 @@
-name: Core Package Tests
-
+name: GrapesJS Qualty Checks
 on:
   push:
     branches: [dev]
@@ -7,29 +6,18 @@ on:
     branches: [dev]
 
 jobs:
-  quality:
+  quality-checks:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./packages/core
-
-    strategy:
-      matrix:
-        node-version: [18.x, 20.x]
-
     steps:
       - uses: actions/checkout@v4
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ matrix.node-version }}
-          cache: "yarn"
-          cache-dependency-path: "./packages/core/yarn.lock"
-      - run: yarn --frozen-lockfile
-      - run: npm run lint
-      - run: npm run lint:ts
-      - run: npm run format:check
-      - run: yarn build
-      - run: npm run ts:build:check
-      - run: npm run docs:api
-      - run: npm test
+      - uses: ./.github/actions/setup-project
+      - name: Lint
+        run: pnpm lint
+      - name: Format Check
+        run: pnpm format:check
+      - name: Build
+        run: pnpm build --force
+      - name: Test
+        run: pnpm test
+      - name: Docs
+        run: pnpm docs:api

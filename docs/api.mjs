@@ -8,7 +8,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 const docRoot = __dirname;
-const srcRoot = join(docRoot, '../src/');
+const srcRoot = join(docRoot, '../packages/core/src');
 const START_EVENTS = '{START\\_EVENTS}';
 const END_EVENTS = '{END\\_EVENTS}';
 const REPLACE_EVENTS = '{REPLACE\\_EVENTS}';
@@ -130,4 +130,7 @@ async function generateDocs() {
   log('API Reference generation done!');
 }
 
-generateDocs();
+generateDocs().catch((err) => {
+  console.error(err);
+  process.exit(1);
+});

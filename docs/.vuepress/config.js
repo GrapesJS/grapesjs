@@ -1,4 +1,4 @@
-const version = require('./../../package.json').version;
+const version = require('../package.json').version;
 const isDev = process.argv[2] === 'dev';
 const devPath = 'http://localhost:8080';
 const baseUrl = 'https://grapesjs.com';
