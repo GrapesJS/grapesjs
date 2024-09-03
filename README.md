@@ -89,21 +89,7 @@ For a more practical example I'd suggest looking up the code inside this demo: h
 
 ## Development
 
-Clone the repository and install all the necessary dependencies (`yarn` is highly recommended)
-
-```sh
-$ git clone https://github.com/GrapesJS/grapesjs.git
-$ cd grapesjs
-$ yarn
-```
-
-Start the dev server
-
-```sh
-$ yarn start
-```
-
-Once the development server is started you should be able to reach the demo page (eg. `http://localhost:8080`)
+Follow the [Contributing Guide](https://github.com/GrapesJS/grapesjs/blob/master/CONTRIBUTING.md).
 
 ## Documentation
 
@@ -116,7 +102,7 @@ API References could be found here: [API-Reference]
 ## Testing
 
 ```sh
-$ yarn test
+$ pnpm test
 ```
 
 ## Plugins
