@@ -3,13 +3,13 @@
   "version": "0.0.0",
   "packageManager": "pnpm@8.6.3",
   "scripts": {
-    "start": "turbo start --filter \"grapesjs\"",
-    "test": "turbo test --filter \"grapesjs\"",
-    "docs": "cd ./docs && pnpm run docs",
-    "docs:api": "cd ./docs && pnpm run docs:api",
+    "start": "pnpm --filter grapesjs start",
+    "test": "pnpm --filter grapesjs test",
+    "docs": "pnpm --filter @grapesjs/docs docs",
+    "docs:api": "pnpm --filter @grapesjs/docs docs:api",
     "lint": "eslint .",
-    "build": "turbo --filter \"!@grapesjs/docs\" build",
-    "clean": "find . -type d \\( -name \"node_modules\" -o -name \"build\" -o -name \".turbo\" -o -name \"dist\" \\) -exec rm -rf {} + && rm ./pnpm-lock.yaml",
+    "build": "pnpm --filter \"!@grapesjs/docs\" build",
+    "clean": "find . -type d \\( -name \"node_modules\" -o -name \"build\" -o -name \"dist\" \\) -exec rm -rf {} + && rm ./pnpm-lock.yaml",
     "format": "prettier . --write",
     "format:check": "prettier . --check"
   },
@@ -41,7 +41,6 @@
     "ts-jest": "29.2.4",
     "ts-loader": "9.5.1",
     "ts-node": "10.9.2",
-    "turbo": "2.0.14",
     "typescript": "5.5.4"
   },
   "pnpm": {

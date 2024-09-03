@@ -10,10 +10,6 @@ inputs:
     description: 'The version of Node.js to use for building the project.'
     required: false
     default: '20.16.0'
-  turbo-version:
-    description: 'The version of Turbo to install globally.'
-    required: false
-    default: 2.0.14
 
 runs:
   using: composite
@@ -25,9 +21,6 @@ runs:
       with:
         node-version: ${{ inputs.node-version }}
         cache: 'pnpm'
-    - name: Install Turbo
-      run: npm i -g turbo@${{ inputs.turbo-version }}
-      shell: bash
     - name: Install dependencies
       run: pnpm install
       shell: bash
