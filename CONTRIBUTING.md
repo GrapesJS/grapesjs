@@ -12,28 +12,33 @@ Thank you for your interest in contributing to GrapesJS! We welcome all types of
 ### Setup
 
 1. Install Node.js 20 LTS:
+
    ```bash
    nvm install 20
    nvm use 20
    ```
 
 2. Install pnpm globally:
+
    ```bash
    npm install -g pnpm@8.6.3
    ```
 
 3. Clone the repository:
+
    ```bash
    git clone https://github.com/GrapesJS/grapesjs.git
    cd grapesjs
    ```
 
 4. Install dependencies:
+
    ```bash
    pnpm install
    ```
 
 5. Start the development server:
+
    ```bash
    pnpm start
    ```
@@ -63,11 +68,13 @@ Code style is enforced at the CI level. We recommend using Prettier extensions i
 To generate and view the documentation:
 
 1. Generate API documentation:
+
    ```bash
    pnpm run docs:api
    ```
 
 2. Run the VuePress documentation server:
+
    ```bash
    pnpm run docs
    ```

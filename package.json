@@ -5,10 +5,10 @@
   "scripts": {
     "start": "turbo start --filter \"grapesjs\"",
     "test": "turbo test --filter \"grapesjs\"",
-    "docs": "cd ./packages/core && pnpm run docs",
-    "docs:api": "cd ./packages/core && pnpm run docs:api",
+    "docs": "cd ./docs && pnpm run docs",
+    "docs:api": "cd ./docs && pnpm run docs:api",
     "lint": "eslint .",
-    "build": "turbo build",
+    "build": "turbo --filter \"!@grapesjs/docs\" build",
     "clean": "find . -type d \\( -name \"node_modules\" -o -name \"build\" -o -name \".turbo\" -o -name \"dist\" \\) -exec rm -rf {} + && rm ./pnpm-lock.yaml",
     "format": "prettier . --write",
     "format:check": "prettier . --check"
@@ -55,7 +55,9 @@
         "jest",
         "@jest/*",
         "supertest",
-        "prettier"
+        "prettier",
+        "webpack",
+        "grapesjs-cli"
       ]
     }
   },
