@@ -1,2 +1,3 @@
-./packages/core/docs/api/*.md
-**/dist/
+*.md
+dist/
+pnpm-lock.yaml
