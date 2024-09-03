@@ -11,9 +11,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup-project
-      - name: Line
+      - name: Lint
         run: pnpm lint
-      - name: Format
+      - name: Format Check
         run: pnpm format:check
       - name: Build
         run: pnpm build --force

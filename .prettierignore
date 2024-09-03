@@ -1,2 +1,2 @@
-docs/api/*.md
-dist/
+./packages/core/docs/api/*.md
+**/dist/
