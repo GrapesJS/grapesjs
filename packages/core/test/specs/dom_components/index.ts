@@ -388,7 +388,7 @@ describe('DOM Components', () => {
       });
     });
 
-    describe('load document components', () => {
+    describe('load with document components', () => {
       let projectData: ProjectData;
       const docHtml = `
         <!DOCTYPE html>
@@ -402,7 +402,7 @@ describe('DOM Components', () => {
         </html>
         `;
 
-      test('editor loads properly document data from projectData', () => {
+      test('imports properly HTML with document data', () => {
         editor.setComponents(docHtml, { asDocument: true });
         projectData = editor.getProjectData();
         expect(root.toHTML()).toBe(flattenHTML(docHtml));
