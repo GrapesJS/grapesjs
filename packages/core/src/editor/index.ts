@@ -71,7 +71,7 @@ import ComponentManager, { ComponentEvent } from '../dom_components';
 import Component from '../dom_components/model/Component';
 import Components from '../dom_components/model/Components';
 import ComponentWrapper from '../dom_components/model/ComponentWrapper';
-import { ComponentAdd, DragMode } from '../dom_components/model/types';
+import { AddComponentsOption, ComponentAdd, DragMode } from '../dom_components/model/types';
 import I18nModule from '../i18n';
 import KeymapsModule, { KeymapEvent } from '../keymaps';
 import ModalModule, { ModalEvent } from '../modal_dialog';
@@ -326,7 +326,7 @@ export default class Editor implements IBaseModule<EditorConfig> {
    *   content: 'New component'
    * });
    */
-  setComponents(components: ComponentAdd, opt: AddOptions = {}) {
+  setComponents(components: ComponentAdd, opt: AddComponentsOption = {}) {
     this.em.setComponents(components, opt);
     return this;
   }

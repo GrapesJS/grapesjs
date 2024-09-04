@@ -4,6 +4,8 @@ import Editor from '../../../src/editor';
 import utils from '../../test_utils.js';
 import { Component } from '../../../src';
 import ComponentWrapper from '../../../src/dom_components/model/ComponentWrapper';
+import { flattenHTML, setupTestEditor } from '../../common';
+import { ProjectData } from '../../../src/storage_manager';
 
 describe('DOM Components', () => {
   describe('Main', () => {
@@ -320,21 +322,12 @@ describe('DOM Components', () => {
     let fxt: HTMLElement;
     let root: ComponentWrapper;
 
-    beforeEach((done) => {
-      fxt = document.createElement('div');
-      document.body.appendChild(fxt);
-      editor = new Editor({
-        el: fxt,
-        avoidInlineStyle: true,
-        storageManager: false,
-      });
-      em = editor.getModel();
-      fxt.appendChild(em.Canvas.render());
-      em.loadOnStart();
-      editor.on('change:ready', () => {
-        root = editor.Components.getWrapper()!;
-        done();
-      });
+    beforeEach(() => {
+      const testEditor = setupTestEditor();
+      editor = testEditor.editor;
+      em = testEditor.em;
+      fxt = testEditor.fixtures;
+      root = testEditor.cmpRoot;
     });
 
     afterEach(() => {
@@ -376,8 +369,7 @@ describe('DOM Components', () => {
         expect(docEl.get('htmlp')).toBe(true);
         expect(root.get('bodyp')).toBe(true);
         expect(root.doctype).toBe('<!DOCTYPE html>');
-
-        const outputHtml = `
+        expect(root.toHTML()).toBe(flattenHTML(`
           <!DOCTYPE html>
           <html lang="en" class="cls-html">
             <head class="cls-head">
@@ -390,8 +382,40 @@ describe('DOM Components', () => {
               <h1>H1</h1>
             </body>
           </html>
-          `.replace(/>\s+|\s+</g, (m) => m.trim());
-        expect(root.toHTML()).toBe(outputHtml);
+        `))
+      });
+    });
+
+    describe('load document components', () => {
+      let projectData: ProjectData;
+      const docHtml = `
+        <!DOCTYPE html>
+        <html>
+          <head>
+            <title>ABC</title>
+          </head>
+          <body>
+            <span>Test</span>
+          </body>
+        </html>
+        `;
+
+      test('editor loads properly document data from projectData', () => {
+        editor.setComponents(docHtml, { asDocument: true });
+        projectData = editor.getProjectData();
+        expect(root.toHTML()).toBe(flattenHTML(docHtml));
+      });
+
+      // https://github.com/GrapesJS/grapesjs/issues/6116
+      test('editor loads properly document data from projectData', () => {
+        editor.loadProjectData(projectData);
+        const newRoot = editor.getWrapper()!;
+
+        const { head, doctype } = newRoot;
+        // expect(head.components().length).toBe(1);
+        // expect(doctype).toBe('<!DOCTYPE html>');
+
+        expect(newRoot.toHTML()).toBe(flattenHTML(docHtml));
       });
     });
   });
