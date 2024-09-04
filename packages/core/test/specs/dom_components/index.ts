@@ -369,7 +369,8 @@ describe('DOM Components', () => {
         expect(docEl.get('htmlp')).toBe(true);
         expect(root.get('bodyp')).toBe(true);
         expect(root.doctype).toBe('<!DOCTYPE html>');
-        expect(root.toHTML()).toBe(flattenHTML(`
+        expect(root.toHTML()).toBe(
+          flattenHTML(`
           <!DOCTYPE html>
           <html lang="en" class="cls-html">
             <head class="cls-head">
@@ -382,7 +383,8 @@ describe('DOM Components', () => {
               <h1>H1</h1>
             </body>
           </html>
-        `))
+        `),
+        );
       });
     });
 

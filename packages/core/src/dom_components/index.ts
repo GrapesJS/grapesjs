@@ -80,7 +80,13 @@ import ComponentTextNode from './model/ComponentTextNode';
 import ComponentVideo from './model/ComponentVideo';
 import ComponentWrapper from './model/ComponentWrapper';
 import Components from './model/Components';
-import { AddComponentsOption, ComponentAdd, ComponentDefinition, ComponentDefinitionDefined, ComponentStackItem } from './model/types';
+import {
+  AddComponentsOption,
+  ComponentAdd,
+  ComponentDefinition,
+  ComponentDefinitionDefined,
+  ComponentStackItem,
+} from './model/types';
 import ComponentCommentView from './view/ComponentCommentView';
 import ComponentFrameView from './view/ComponentFrameView';
 import ComponentImageView from './view/ComponentImageView';
