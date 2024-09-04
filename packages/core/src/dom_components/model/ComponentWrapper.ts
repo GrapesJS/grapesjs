@@ -32,15 +32,17 @@ export default class ComponentWrapper extends Component {
 
   constructor(...args: ConstructorParameters<typeof Component>) {
     super(...args);
+    const props = args[0] || {};
     const opts = args[1];
+
     const cmp = opts?.em?.Components;
     const CmpHead = cmp?.getType(typeHead)?.model;
     const CmpDef = cmp?.getType('default').model;
     if (CmpHead) {
       this.set(
         {
-          head: new CmpHead({}, opts),
-          docEl: new CmpDef({ tagName: 'html' }, opts),
+          head: new CmpHead({ ...props.head }, opts),
+          docEl: new CmpDef({ tagName: 'html', ...props.docEl }, opts),
         },
         { silent: true },
       );

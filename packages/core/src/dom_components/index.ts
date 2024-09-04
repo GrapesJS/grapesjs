@@ -80,7 +80,13 @@ import ComponentTextNode from './model/ComponentTextNode';
 import ComponentVideo from './model/ComponentVideo';
 import ComponentWrapper from './model/ComponentWrapper';
 import Components from './model/Components';
-import { ComponentAdd, ComponentDefinition, ComponentDefinitionDefined, ComponentStackItem } from './model/types';
+import {
+  AddComponentsOption,
+  ComponentAdd,
+  ComponentDefinition,
+  ComponentDefinitionDefined,
+  ComponentStackItem,
+} from './model/types';
 import ComponentCommentView from './view/ComponentCommentView';
 import ComponentFrameView from './view/ComponentFrameView';
 import ComponentImageView from './view/ComponentImageView';
@@ -480,7 +486,7 @@ export default class ComponentManager extends ItemManagerModule<DomComponentsCon
    *   attributes: { title: 'here' }
    * });
    */
-  addComponent(component: ComponentAdd, opt: AddOptions = {}): Component | Component[] {
+  addComponent(component: ComponentAdd, opt: AddComponentsOption = {}): Component | Component[] {
     return this.getComponents().add(component, opt);
   }
 
@@ -514,7 +520,7 @@ export default class ComponentManager extends ItemManagerModule<DomComponentsCon
    * @return {this}
    * @private
    */
-  setComponents(components: ComponentAdd, opt: AddOptions = {}) {
+  setComponents(components: ComponentAdd, opt: AddComponentsOption = {}) {
     this.clear(opt).addComponent(components, opt);
   }
 

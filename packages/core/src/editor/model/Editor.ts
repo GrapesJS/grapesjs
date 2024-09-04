@@ -39,7 +39,7 @@ import { CssGeneratorBuildOptions } from '../../code_manager/model/CssGenerator'
 import ComponentView from '../../dom_components/view/ComponentView';
 import { ProjectData, StorageOptions } from '../../storage_manager/model/IStorage';
 import CssRules from '../../css_composer/model/CssRules';
-import { ComponentAdd, DragMode } from '../../dom_components/model/types';
+import { AddComponentsOption, ComponentAdd, DragMode } from '../../dom_components/model/types';
 import ComponentWrapper from '../../dom_components/model/ComponentWrapper';
 import { CanvasSpotBuiltInTypes } from '../../canvas/model/CanvasSpot';
 import DataSourceManager from '../../data_sources';
@@ -699,7 +699,7 @@ export default class EditorModel extends Model {
    * @return {this}
    * @public
    */
-  setComponents(components: ComponentAdd, opt: AddOptions = {}) {
+  setComponents(components: ComponentAdd, opt: AddComponentsOption = {}) {
     return this.Components.setComponents(components, opt);
   }
 

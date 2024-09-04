@@ -24,3 +24,7 @@ export function setupTestEditor() {
   fixtures.appendChild(wrapperEl.el);
   return { editor, em, dsm, cmpRoot, fixtures: fixtures as HTMLElement };
 }
+
+export function flattenHTML(html: string) {
+  return html.replace(/>\s+|\s+</g, (m) => m.trim());
+}
