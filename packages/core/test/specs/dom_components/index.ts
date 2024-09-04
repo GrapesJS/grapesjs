@@ -390,8 +390,8 @@ describe('DOM Components', () => {
       let projectData: ProjectData;
       const docHtml = `
         <!DOCTYPE html>
-        <html>
-          <head>
+        <html lang="en">
+          <head class="cls-head">
             <title>ABC</title>
           </head>
           <body>
@@ -412,8 +412,8 @@ describe('DOM Components', () => {
         const newRoot = editor.getWrapper()!;
 
         const { head, doctype } = newRoot;
-        // expect(head.components().length).toBe(1);
-        // expect(doctype).toBe('<!DOCTYPE html>');
+        expect(head.components().length).toBe(1);
+        expect(doctype).toBe('<!DOCTYPE html>');
 
         expect(newRoot.toHTML()).toBe(flattenHTML(docHtml));
       });
