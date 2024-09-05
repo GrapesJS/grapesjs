@@ -56,9 +56,7 @@ const config: Configuration = {
     }),
   ],
   externalsPresets: { node: true },
-  externals: [
-    NodeExternals(),
-  ],
+  externals: [NodeExternals()],
 };
 
 export default config;

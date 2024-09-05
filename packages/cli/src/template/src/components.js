@@ -7,8 +7,6 @@ export default (editor, opts = {}) => {
         // Default props
       },
     },
-    view: {
-
-    },
+    view: {},
   });
 };

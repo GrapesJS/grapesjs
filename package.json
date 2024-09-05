@@ -10,8 +10,8 @@
     "lint": "eslint .",
     "build": "pnpm --filter \"!@grapesjs/docs\" build",
     "clean": "find . -type d \\( -name \"node_modules\" -o -name \"build\" -o -name \"dist\" \\) -exec rm -rf {} + && rm ./pnpm-lock.yaml",
-    "format": "prettier . --write",
-    "format:check": "prettier . --check"
+    "format": "prettier . --write --ignore-path .prettierignore",
+    "format:check": "prettier . --check --ignore-path .prettierignore"
   },
   "devDependencies": {
     "@babel/cli": "7.24.8",

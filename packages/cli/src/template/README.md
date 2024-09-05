@@ -11,7 +11,7 @@ Below, you'll find the necessary HTML, CSS, and JavaScript. Copy and paste this 
 ### HTML
 
 ```html
-<link href="https://unpkg.com/grapesjs/dist/css/grapes.min.css" rel="stylesheet">
+<link href="https://unpkg.com/grapesjs/dist/css/grapes.min.css" rel="stylesheet" />
 <script src="https://unpkg.com/grapesjs"></script>
 <script src="https://unpkg.com/<%= rName %>"></script>
 
@@ -22,7 +22,7 @@ Below, you'll find the necessary HTML, CSS, and JavaScript. Copy and paste this 
 
 ```js
 const editor = grapesjs.init({
- container: '#gjs',
+  container: '#gjs',
   height: '100%',
   fromElement: true,
   storageManager: false,
@@ -33,7 +33,8 @@ const editor = grapesjs.init({
 ### CSS
 
 ```css
-body, html {
+body,
+html {
   margin: 0;
   height: 100%;
 }
@@ -41,39 +42,37 @@ body, html {
 
 ## Summary
 
-* Plugin name: `<%= rName %>`
-* Components
-  * `component-id-1`
-  * `component-id-2`
-  * ...
-* Blocks
-  * `block-id-1`
-  * `block-id-2`
-  * ...
+- Plugin name: `<%= rName %>`
+- Components
+  - `component-id-1`
+  - `component-id-2`
+  - ...
+- Blocks
+  - `block-id-1`
+  - `block-id-2`
+  - ...
 
 ## Options
 
-| Option | Description | Default |
-|-|-|-|
+| Option    | Description        | Default         |
+| --------- | ------------------ | --------------- |
 | `option1` | Description option | `default value` |
 
 ## Download
 
-* CDN
-  * `https://unpkg.com/<%= rName %>`
-* NPM
-  * `npm i <%= rName %>`
-* GIT
-  * `git clone https://github.com/<%= user %>/<%= rName %>.git`
-
-
+- CDN
+  - `https://unpkg.com/<%= rName %>`
+- NPM
+  - `npm i <%= rName %>`
+- GIT
+  - `git clone https://github.com/<%= user %>/<%= rName %>.git`
 
 ## Usage
 
 Directly in the browser
 
 ```html
-<link href="https://unpkg.com/grapesjs/dist/css/grapes.min.css" rel="stylesheet"/>
+<link href="https://unpkg.com/grapesjs/dist/css/grapes.min.css" rel="stylesheet" />
 <script src="https://unpkg.com/grapesjs"></script>
 <script src="path/to/<%= rName %>.min.js"></script>
 
@@ -81,12 +80,14 @@ Directly in the browser
 
 <script type="text/javascript">
   var editor = grapesjs.init({
-      container: '#gjs',
-      // ...
-      plugins: ['<%= rName %>'],
-      pluginsOpts: {
-        '<%= rName %>': { /* options */ }
-      }
+    container: '#gjs',
+    // ...
+    plugins: ['<%= rName %>'],
+    pluginsOpts: {
+      '<%= rName %>': {
+        /* options */
+      },
+    },
   });
 </script>
 ```

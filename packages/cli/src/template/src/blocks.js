@@ -6,4 +6,4 @@ export default (editor, opts = {}) => {
     content: { type: 'MY-COMPONENT' },
     // media: '<svg>...</svg>',
   });
-}
+};

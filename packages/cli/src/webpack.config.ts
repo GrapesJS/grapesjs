@@ -31,60 +31,66 @@ export default (opts: Record<string, any> = {}) => {
       template = index;
     }
 
-    plugins.push(new HtmlWebpackPlugin({
-      inject: 'head',
-      template,
-      ...htmlWebpack,
-      templateParameters: {
-        name,
-        title: name,
-        gjsVersion: 'latest',
-        pathGjs: '',
-        pathGjsCss: '',
-        ...htmlWebpack.templateParameters || {},
-      },
-    }));
+    plugins.push(
+      new HtmlWebpackPlugin({
+        inject: 'head',
+        template,
+        ...htmlWebpack,
+        templateParameters: {
+          name,
+          title: name,
+          gjsVersion: 'latest',
+          pathGjs: '',
+          pathGjsCss: '',
+          ...(htmlWebpack.templateParameters || {}),
+        },
+      }),
+    );
   }
 
   const outPath = path.resolve(dirCwd, args.output);
-  const modulesPaths = [ 'node_modules', path.join(__dirname, '../node_modules')];
+  const modulesPaths = ['node_modules', path.join(__dirname, '../node_modules')];
 
   let config = {
     entry: path.resolve(dirCwd, args.entry),
     mode: isProd ? 'production' : 'development',
     devtool: isProd ? 'source-map' : 'eval',
     optimization: {
-      minimizer: [new TerserPlugin({
-        extractComments: false,
-        terserOptions: {
-          compress: {
-            evaluate: false, // Avoid breaking gjs scripts
+      minimizer: [
+        new TerserPlugin({
+          extractComments: false,
+          terserOptions: {
+            compress: {
+              evaluate: false, // Avoid breaking gjs scripts
+            },
+            output: {
+              comments: false,
+              quote_style: 3, // Preserve original quotes
+              preamble: banner, // banner here instead of BannerPlugin
+            },
           },
-          output: {
-            comments: false,
-            quote_style: 3, // Preserve original quotes
-            preamble: banner, // banner here instead of BannerPlugin
-          }
-        }
-      })],
+        }),
+      ],
     },
     output: {
-        path: outPath,
-        filename: 'index.js',
-        library: name,
-        libraryTarget: 'umd',
-        globalObject: `typeof globalThis !== 'undefined' ? globalThis : (typeof window !== 'undefined' ? window : this)`,
+      path: outPath,
+      filename: 'index.js',
+      library: name,
+      libraryTarget: 'umd',
+      globalObject: `typeof globalThis !== 'undefined' ? globalThis : (typeof window !== 'undefined' ? window : this)`,
     },
     module: {
-      rules: [{
-        test: /\.tsx?$/,
-        loader: resolve('ts-loader'),
-        exclude: /node_modules/,
-        options: {
-          context: rootResolve(''),
-          configFile: rootResolve('tsconfig.json'),
-        }
-      }, {
+      rules: [
+        {
+          test: /\.tsx?$/,
+          loader: resolve('ts-loader'),
+          exclude: /node_modules/,
+          options: {
+            context: rootResolve(''),
+            configFile: rootResolve('tsconfig.json'),
+          },
+        },
+        {
           test: /\.js$/,
           loader: resolve('babel-loader'),
           include: /src/,
@@ -93,7 +99,8 @@ export default (opts: Record<string, any> = {}) => {
             cacheDirectory: true,
             ...args.babel,
           },
-      }],
+        },
+      ],
     },
     resolve: {
       extensions: ['.tsx', '.ts', '.js'],
@@ -112,11 +119,11 @@ export default (opts: Record<string, any> = {}) => {
   }
 
   if (isFunction(localWebpackConf)) {
-      const fnRes = localWebpackConf({ config, webpack, pkg });
-      config = isObject(fnRes) ? fnRes : config;
+    const fnRes = localWebpackConf({ config, webpack, pkg });
+    config = isObject(fnRes) ? fnRes : config;
   }
 
   cmdOpts.verbose && log(chalk.yellow('Webpack config:\n'), config, '\n');
 
   return config;
-}
+};

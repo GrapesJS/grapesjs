@@ -52,5 +52,5 @@ module.exports = {
     'max-len': ['error', { code: 300 }],
     'no-multiple-empty-lines': ['error', { max: 1, maxEOF: 1 }],
   },
-  ignorePatterns: ['*/docs/api/*', 'dist'],
+  ignorePatterns: ['*/docs/api/*', 'dist', 'packages/cli/src/template/**/*.*'],
 };
