@@ -25,5 +25,5 @@ runs:
       run: pnpm install
       shell: bash
     - name: Build project
-      run: pnpm build --force
+      run: pnpm build
       shell: bash
