@@ -16,7 +16,7 @@ jobs:
       - name: Format Check
         run: pnpm format:check
       - name: Build
-        run: pnpm build --force
+        run: pnpm build
       - name: Test
         run: pnpm test
       - name: Docs
