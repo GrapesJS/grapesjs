@@ -55,7 +55,7 @@ export interface SorterOptions {
   scale?: number;
 }
 
-const noop = () => { };
+const noop = () => {};
 
 const targetSpotType = CanvasSpotBuiltInTypes.Target;
 
