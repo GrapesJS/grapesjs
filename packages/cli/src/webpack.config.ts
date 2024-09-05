@@ -9,7 +9,7 @@ import webpack from 'webpack';
 const dirCwd = process.cwd();
 let plugins = [];
 
-export default (opts: Record<string, any> = {}) => {
+export default (opts: Record<string, any> = {}): any => {
   const pkgPath = path.join(dirCwd, 'package.json');
   const rawPackageJson = fs.readFileSync(pkgPath) as unknown as string;
   const pkg = JSON.parse(rawPackageJson);
