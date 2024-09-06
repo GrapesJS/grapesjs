@@ -697,7 +697,14 @@ export default class Sorter extends View {
       return result;
     }
 
-    const index = pos ? (pos.method === 'after' ? pos.indexEl + 1 : pos.indexEl) : trgModel.components().length;
+    let length = -1;
+    const isCollection = trgModel instanceof Collection;
+    if (isFunction(trgModel.components)) {
+      length = trgModel.components().length;
+    } else if (isCollection) {
+      length = trgModel.models.length;
+    }
+    const index = pos ? (pos.method === 'after' ? pos.indexEl + 1 : pos.indexEl) : length;
 
     // Check if the source is draggable in target
     let draggable = srcModel.get('draggable');
