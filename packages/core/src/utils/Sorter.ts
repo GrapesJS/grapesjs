@@ -29,6 +29,8 @@ interface Pos {
 export interface SorterOptions {
   borderOffset?: number;
   container?: HTMLElement;
+  canMove: (targetModel: Model<any>, sourceModel: Model<any>, index: number) => boolean;
+  getChildren: (model: Model<any>) => Model<any>[];
   containerSel?: string;
   itemSel?: string;
   draggable?: boolean | string[];
@@ -55,7 +57,7 @@ export interface SorterOptions {
   scale?: number;
 }
 
-const noop = () => {};
+const noop = () => { };
 
 const targetSpotType = CanvasSpotBuiltInTypes.Target;
 
@@ -65,6 +67,10 @@ const spotTarget = {
 };
 
 export default class Sorter extends View {
+  // the use of !
+  // function location
+  canMove!: (targetModel: Model<any>, sourceModel: Model<any>, index: number) => boolean;
+  getChildren!: (model: Model<any>) => Model<any>[];
   opt!: SorterOptions;
   elT!: number;
   elL!: number;
@@ -131,6 +137,8 @@ export default class Sorter extends View {
     this.$el = $(this.el); // TODO check if necessary
 
     this.containerSel = o.containerSel || 'div';
+    this.canMove = o.canMove;
+    this.getChildren = o.getChildren;
     this.itemSel = o.itemSel || 'div';
     this.draggable = o.draggable || true;
     this.nested = !!o.nested;
@@ -678,69 +686,31 @@ export default class Sorter extends View {
     const trgModel = this.getTargetModel(trg);
     const srcModel = this.getSourceModel(src, { target: trgModel });
     // @ts-ignore
+    if (!trgModel?.view?.el || !srcModel?.view?.el) {
+      return {
+        valid: false,
+        src,
+        srcModel,
+        trg,
+        trgModel
+      };
+    }
+
+    // @ts-ignore
     src = srcModel?.view?.el;
-    trg = trgModel?.view?.el;
-    let result = {
-      valid: true,
+    trg = trgModel.view.el;
+
+    const length = this.getChildren(trgModel).length;
+    const index = pos ? (pos.method === 'after' ? pos.indexEl + 1 : pos.indexEl) : length;
+    const canMove = this.canMove(trgModel, srcModel, index);
+
+    return {
+      valid: canMove,
       src,
       srcModel,
       trg,
-      trgModel,
-      draggable: false,
-      droppable: false,
-      dragInfo: '',
-      dropInfo: '',
+      trgModel
     };
-
-    if (!src || !trg) {
-      result.valid = false;
-      return result;
-    }
-
-    let length = -1;
-    const isCollection = trgModel instanceof Collection;
-    if (isFunction(trgModel.components)) {
-      length = trgModel.components().length;
-    } else if (isCollection) {
-      length = trgModel.models.length;
-    }
-    const index = pos ? (pos.method === 'after' ? pos.indexEl + 1 : pos.indexEl) : length;
-
-    // Check if the source is draggable in target
-    let draggable = srcModel.get('draggable');
-    if (isFunction(draggable)) {
-      const res = draggable(srcModel, trgModel, index);
-      result.dragInfo = res;
-      result.draggable = res;
-      draggable = res;
-    } else {
-      draggable = draggable instanceof Array ? draggable.join(', ') : draggable;
-      result.dragInfo = draggable;
-      draggable = isString(draggable) ? this.matches(trg, draggable) : draggable;
-      result.draggable = draggable;
-    }
-
-    // Check if the target could accept the source
-    let droppable = trgModel.get('droppable');
-    if (isFunction(droppable)) {
-      const res = droppable(srcModel, trgModel, index);
-      result.droppable = res;
-      result.dropInfo = res;
-      droppable = res;
-    } else {
-      droppable = droppable instanceof Collection ? 1 : droppable;
-      droppable = droppable instanceof Array ? droppable.join(', ') : droppable;
-      result.dropInfo = droppable;
-      droppable = isString(droppable) ? this.matches(src, droppable) : droppable;
-      droppable = draggable && this.isTextableActive(srcModel, trgModel) ? 1 : droppable;
-      result.droppable = droppable;
-    }
-
-    if (!droppable || !draggable) {
-      result.valid = false;
-    }
-
-    return result;
   }
 
   /**
@@ -1264,11 +1234,10 @@ export default class Sorter extends View {
     const index = pos.method === 'after' ? pos.indexEl + 1 : pos.indexEl;
     const validResult = this.validTarget(dst, srcEl);
     const targetCollection = $(dst).data('collection');
-    const { trgModel, srcModel, draggable } = validResult;
-    const droppable = trgModel instanceof Collection ? 1 : validResult.droppable;
+    const { trgModel, srcModel } = validResult;
     let modelToDrop, created;
 
-    if (targetCollection && droppable && draggable) {
+    if (targetCollection) {
       const opts: any = { at: index, action: 'move-component' };
       const isTextable = this.isTextableActive(srcModel, trgModel);
 
@@ -1305,12 +1274,12 @@ export default class Sorter extends View {
       delete this.dropContent;
       delete this.prevTarget; // This will recalculate children dimensions
     } else if (em) {
-      const dropInfo = validResult.dropInfo || trgModel?.get('droppable');
-      const dragInfo = validResult.dragInfo || srcModel?.get('draggable');
+      // const dropInfo = validResult.dropInfo || trgModel?.get('droppable');
+      // const dragInfo = validResult.dragInfo || srcModel?.get('draggable');
 
       !targetCollection && warns.push('Target collection not found');
-      !droppable && dropInfo && warns.push(`Target is not droppable, accepts [${dropInfo}]`);
-      !draggable && dragInfo && warns.push(`Component not draggable, acceptable by [${dragInfo}]`);
+      // !droppable && dropInfo && warns.push(`Target is not droppable, accepts [${dropInfo}]`);
+      // !draggable && dragInfo && warns.push(`Component not draggable, acceptable by [${dragInfo}]`);
       em.logWarning('Invalid target position', {
         errors: warns,
         model: srcModel,
