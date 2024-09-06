@@ -1,6 +1,7 @@
 import { View } from '../../common';
 import EditorModel from '../../editor/model/Editor';
 import Layer from '../model/Layer';
+import Layers from '../model/Layers';
 import LayerView from './LayerView';
 import PropertyStackView from './PropertyStackView';
 
@@ -34,6 +35,12 @@ export default class LayersView extends View<Layer> {
       ? new utils.Sorter({
           // @ts-ignore
           container: this.el,
+          canMove: (targetModel: any) => {
+            return targetModel.view.el === this.el
+          },
+          getChildren: (model: Layer | Layers) => {
+            return model instanceof Layers ? model.toArray() : [];
+          },
           ignoreViewChildren: 1,
           containerSel: `.${pfx}layers`,
           itemSel: `.${pfx}layer`,
