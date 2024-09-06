@@ -1,4 +1,5 @@
 import { $ } from '../../common';
+import Component from '../../dom_components/model/Component';
 import { CommandObject } from './CommandAbstract';
 
 export default {
@@ -16,6 +17,8 @@ export default {
       this.sorter = new utils.Sorter({
         // @ts-ignore
         container,
+        canMove: this.em.Components.canMove,
+        getChildren: (model: Component) => model.components(),
         placer: this.canvas.getPlacerEl(),
         containerSel: '*',
         itemSel: '*',
