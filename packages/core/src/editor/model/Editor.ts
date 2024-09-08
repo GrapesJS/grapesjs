@@ -43,6 +43,7 @@ import { AddComponentsOption, ComponentAdd, DragMode } from '../../dom_component
 import ComponentWrapper from '../../dom_components/model/ComponentWrapper';
 import { CanvasSpotBuiltInTypes } from '../../canvas/model/CanvasSpot';
 import DataSourceManager from '../../data_sources';
+import { ComponentsEvents } from '../../dom_components/types';
 
 Backbone.$ = $;
 
@@ -507,7 +508,7 @@ export default class EditorModel extends Model {
 
     models.forEach((model) => {
       if (model) {
-        this.trigger('component:select:before', model, opts);
+        this.trigger(ComponentsEvents.selectBefore, model, opts);
 
         // Check for valid selectable
         if (!model.get('selectable') || opts.abort) {
@@ -592,7 +593,7 @@ export default class EditorModel extends Model {
       toDeselect.forEach((cmp) => this.removeSelected(cmp, opts));
 
       selected.addComponent(model, opts);
-      this.trigger('component:select', model, opts);
+      this.trigger(ComponentsEvents.select, model, opts);
       this.Canvas.addSpot({
         type: CanvasSpotBuiltInTypes.Select,
         component: model,
