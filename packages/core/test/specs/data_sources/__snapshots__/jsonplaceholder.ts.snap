@@ -1,0 +1,76 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`JsonPlaceholder Usage should render a list of comments from jsonplaceholder api 1`] = `
+"<body>
+  <div>
+    <h4>
+      <div>id labore ex et quam laborum</div>
+    </h4>
+    <p>
+    <div>1</div>
+    </p>
+    <p>
+    <div>laudantium enim quasi est quidem magnam voluptate ipsam eos
+      tempora quo necessitatibus
+      dolor quam autem quasi
+      reiciendis et nam sapiente accusantium</div>
+    </p>
+  </div>
+  <div>
+    <h4>
+      <div>quo vero reiciendis velit similique earum</div>
+    </h4>
+    <p>
+    <div>2</div>
+    </p>
+    <p>
+    <div>est natus enim nihil est dolore omnis voluptatem numquam
+      et omnis occaecati quod ullam at
+      voluptatem error expedita pariatur
+      nihil sint nostrum voluptatem reiciendis et</div>
+    </p>
+  </div>
+  <div>
+    <h4>
+      <div>odio adipisci rerum aut animi</div>
+    </h4>
+    <p>
+    <div>3</div>
+    </p>
+    <p>
+    <div>quia molestiae reprehenderit quasi aspernatur
+      aut expedita occaecati aliquam eveniet laudantium
+      omnis quibusdam delectus saepe quia accusamus maiores nam est
+      cum et ducimus et vero voluptates excepturi deleniti ratione</div>
+    </p>
+  </div>
+  <div>
+    <h4>
+      <div>alias odio sit</div>
+    </h4>
+    <p>
+    <div>4</div>
+    </p>
+    <p>
+    <div>non et atque
+      occaecati deserunt quas accusantium unde odit nobis qui voluptatem
+      quia voluptas consequuntur itaque dolor
+      et qui rerum deleniti ut occaecati</div>
+    </p>
+  </div>
+  <div>
+    <h4>
+      <div>vero eaque aliquid doloribus et culpa</div>
+    </h4>
+    <p>
+    <div>5</div>
+    </p>
+    <p>
+    <div>harum non quasi et ratione
+      tempore iure ex voluptates in ratione
+      harum architecto fugit inventore cupiditate
+      voluptates magni quo et</div>
+    </p>
+  </div>
+</body>"
+`;
