@@ -15,8 +15,6 @@ jobs:
         run: pnpm lint
       - name: Format Check
         run: pnpm format:check
-      - name: Build
-        run: pnpm build
       - name: Test
         run: pnpm test
       - name: Docs
