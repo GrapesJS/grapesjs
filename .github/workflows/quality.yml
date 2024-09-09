@@ -11,6 +11,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup-project
+      - name: TS Check
+        run: pnpm ts:check
       - name: Lint
         run: pnpm lint
       - name: Format Check

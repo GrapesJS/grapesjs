@@ -9,6 +9,7 @@
     "docs:api": "pnpm --filter @grapesjs/docs docs:api",
     "lint": "eslint .",
     "build": "pnpm --filter \"!@grapesjs/docs\" build",
+    "ts:check": "pnpm --filter grapesjs ts:check",
     "clean": "find . -type d \\( -name \"node_modules\" -o -name \"build\" -o -name \"dist\" \\) -exec rm -rf {} + && rm ./pnpm-lock.yaml",
     "format": "prettier . --write",
     "format:check": "prettier . --check"
