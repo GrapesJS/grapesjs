@@ -28,6 +28,11 @@
   "author": "Artur Arseniev",
   "license": "BSD-3-Clause",
   "dependencies": {
+    "@babel/core": "^7.20.12",
+    "@babel/plugin-transform-runtime": "^7.19.6",
+    "@babel/preset-env": "^7.20.2",
+    "@babel/runtime": "^7.20.13",
+    "babel-loader": "^9.1.2",
     "chalk": "^4.1.2",
     "core-js": "^3.27.2",
     "dts-bundle-generator": "^8.0.1",
