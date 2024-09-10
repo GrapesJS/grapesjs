@@ -24,7 +24,7 @@ export default {
         containerSel: '*',
         itemSel: '*',
         pfx: this.ppfx,
-        direction: SorterDirection.All,
+        dragDirection: SorterDirection.All,
         document: doc,
         wmargin: 1,
         nested: 1,
