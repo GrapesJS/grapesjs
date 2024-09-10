@@ -1,7 +1,7 @@
 {
   "name": "@grapesjs/monorepo",
   "version": "0.0.0",
-  "packageManager": "pnpm@8.6.3",
+  "packageManager": "pnpm@9.10.0",
   "scripts": {
     "start": "pnpm --filter grapesjs start",
     "test": "pnpm --filter grapesjs test",
@@ -65,6 +65,6 @@
   },
   "engines": {
     "node": ">=20",
-    "pnpm": ">=8"
+    "pnpm": ">=9"
   }
 }
