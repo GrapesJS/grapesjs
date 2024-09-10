@@ -21,7 +21,7 @@ interface Dim {
   indexEl?: number;
 }
 
-interface Pos {
+interface Position {
   index: number;
   indexEl: number;
   method: string;
@@ -297,7 +297,7 @@ export default class Sorter<T> extends View {
   cacheDims?: Dim[];
   targetP?: HTMLElement;
   targetPrev?: HTMLElement;
-  lastPos?: Pos;
+  lastPos?: Position;
   lastDims?: Dim[];
   $placeholderElement?: any;
   toMove?: Model | Model[];
@@ -862,7 +862,7 @@ export default class Sorter<T> extends View {
    * @param {Object} dims - The dimensions of the target element.
    * @private
    */
-  private handleTextable(sourceModel: Model, targetModel: Model, ev: MouseEvent, pos: any,  dims: any): void {
+  private handleTextable(sourceModel: Model, targetModel: Model, ev: MouseEvent, pos: any, dims: any): void {
     if (this.isTextableActive(sourceModel, targetModel)) {
       this.activateTextable(targetModel, ev, pos, this.containerContext.placeholderElement);
     } else {
@@ -920,11 +920,7 @@ export default class Sorter<T> extends View {
     }
   }
 
-  private hidePlaceholder() {
-    this.containerContext.placeholderElement!.style.display = 'none';
-  }
-
-  private activateTextable(targetModel: Model<any, SetOptions, any> | undefined, mouseEvent: MouseEvent, pos: Pos | undefined, placeholderElement: HTMLElement | undefined) {
+  private activateTextable(targetModel: Model<any, SetOptions, any> | undefined, mouseEvent: MouseEvent, pos: Position | undefined, placeholderElement: HTMLElement | undefined) {
     this.activeTextModel = targetModel;
     if (placeholderElement) placeholderElement.style.display = 'none';
     this.lastPos = pos;
@@ -936,11 +932,11 @@ export default class Sorter<T> extends View {
     delete this.activeTextModel;
   }
 
-  private isPointerPositionChanged(pos: Pos) {
+  private isPointerPositionChanged(pos: Position) {
     return !this.lastPos || this.lastPos.index !== pos.index || this.lastPos.method !== pos.method;
   }
 
-  private updatePlaceholderPosition(dims: Dim[], pos: Pos | undefined) {
+  private updatePlaceholderPosition(dims: Dim[], pos: Position | undefined) {
     const { placeholderElement } = this.containerContext;
     //@ts-ignore
     this.movePlaceholder(placeholderElement!, dims, pos, this.prevTargetDim);
@@ -1137,60 +1133,107 @@ export default class Sorter<T> extends View {
   }
 
   /**
-   * Get dimensions of nodes relative to the coordinates
-   * @param  {HTMLElement} target
-   * @param {number} rX Relative X position
-   * @param {number} rY Relative Y position
-   * @return {Array<Array>}
+   * Get dimensions of nodes relative to the coordinates.
+   *
+   * @param {HTMLElement} target - The target element.
+   * @param {number} [rX=0] - Relative X position.
+   * @param {number} [rY=0] - Relative Y position.
+   * @return {Dim[]} - The dimensions array of the target and its valid parents.
+   * @private
    */
-  dimsFromTarget(target: HTMLElement, rX = 0, rY = 0): Dim[] {
+  private dimsFromTarget(target: HTMLElement, rX = 0, rY = 0): Dim[] {
     const em = this.em;
     let dims: Dim[] = [];
 
-    if (!target) {
-      return dims;
+    if (!target) return dims;
+
+    target = this.getValidTarget(target)!;
+
+    if (!target) return dims;
+
+    if (this.isNewTarget(target)) {
+      this.handleNewTarget(target, rX, rY);
     }
 
-    // Select the first valuable target
+    dims = this.getTargetDimensions(target, rX, rY);
+
+    this.clearLastPosition();
+
+    return dims;
+  }
+
+  /**
+   * Get a valid target by checking if the target matches specific selectors
+   * and if not, find the closest valid target.
+   *
+   * @param {HTMLElement} target - The target element.
+   * @return {HTMLElement | null} - The valid target element or null if none found.
+   * @private
+   */
+  private getValidTarget(target: HTMLElement): HTMLElement | null {
     if (!this.matches(target, `${this.containerContext.itemSel}, ${this.containerContext.containerSel}`)) {
       target = this.closest(target, this.containerContext.itemSel)!;
     }
 
-    if (!target) {
-      return dims;
-    }
+    return target;
+  }
 
-    // Check if the target is different from the previous one
-    if (this.prevTargetElement && this.prevTargetElement != target) {
+  /**
+   * Checks if the provided target is different from the previous one.
+   *
+   * @param {HTMLElement} target - The target element.
+   * @return {boolean} - Whether the target is a new one.
+   * @private
+   */
+  private isNewTarget(target: HTMLElement): boolean {
+    if (this.prevTargetElement && this.prevTargetElement !== target) {
       delete this.prevTargetElement;
     }
 
-    // New target found
-    if (!this.prevTargetElement) {
-      this.targetP = this.closest(target, this.containerContext.containerSel);
+    return !this.prevTargetElement;
+  }
 
-      // Check if the source is valid with the target
-      let validResult = this.validTarget(target);
-      em && em.trigger('sorter:drag:validation', validResult);
+  /**
+   * Handle the initialization of a new target, caching dimensions and validating
+   * if the target is valid for sorting.
+   *
+   * @param {HTMLElement} target - The new target element.
+   * @param {number} rX - Relative X position.
+   * @param {number} rY - Relative Y position.
+   * @private
+   */
+  private handleNewTarget(target: HTMLElement, rX: number, rY: number): void {
+    const em = this.em;
 
-      if (!validResult.valid && this.targetP) {
-        return this.dimsFromTarget(this.targetP, rX, rY);
-      }
+    this.targetP = this.closest(target, this.containerContext.containerSel);
 
-      this.prevTargetElement = target;
-      this.prevTargetDim = this.getDim(target);
-      this.cacheDimsP = this.getChildrenDim(this.targetP!);
-      this.cacheDims = this.getChildrenDim(target);
+    const validResult = this.validTarget(target);
+    em && em.trigger('sorter:drag:validation', validResult);
+
+    if (!validResult.valid && this.targetP) {
+      this.dimsFromTarget(this.targetP, rX, rY);
+      return;
     }
 
-    // If the target is the previous one will return the cached dims
-    if (this.prevTargetElement == target) dims = this.cacheDims!;
+    this.prevTargetElement = target;
+    this.prevTargetDim = this.getDim(target);
+    this.cacheDimsP = this.getChildrenDim(this.targetP!);
+    this.cacheDims = this.getChildrenDim(target);
+  }
 
-    // Target when I will drop element to sort
-    this.targetElement = this.prevTargetElement;
+  /**
+   * Retrieve and return the dimensions for the target, considering any potential
+   * parent element dimensions if necessary.
+   *
+   * @param {HTMLElement} target - The target element.
+   * @param {number} rX - Relative X position.
+   * @param {number} rY - Relative Y position.
+   * @return {Dim[]} - The dimensions array of the target.
+   * @private
+   */
+  private getTargetDimensions(target: HTMLElement, rX: number, rY: number): Dim[] {
+    let dims = this.cacheDims!;
 
-    // Generally, on any new target the poiner enters inside its area and
-    // triggers nearBorders(), so have to take care of this
     if (this.nearBorders(this.prevTargetDim!, rX, rY) || (!this.dragBehavior.nested && !this.cacheDims!.length)) {
       const targetParent = this.targetP;
 
@@ -1200,8 +1243,18 @@ export default class Sorter<T> extends View {
       }
     }
 
-    delete this.lastPos;
+    this.targetElement = this.prevTargetElement;
+
     return dims;
+  }
+
+  /**
+   * Clears the last known position data.
+   *
+   * @private
+   */
+  private clearLastPosition(): void {
+    delete this.lastPos;
   }
 
   /**
@@ -1387,8 +1440,8 @@ export default class Sorter<T> extends View {
    * @param {number} posY Y coordindate
    * @return {Object}
    * */
-  findPosition(dims: Dim[], posX: number, posY: number): Pos {
-    const result: Pos = { index: 0, indexEl: 0, method: 'before' };
+  findPosition(dims: Dim[], posX: number, posY: number): Position {
+    const result: Position = { index: 0, indexEl: 0, method: 'before' };
     let leftLimit = 0;
     let xLimit = 0;
     let dimRight = 0;
@@ -1449,7 +1502,7 @@ export default class Sorter<T> extends View {
    * @param {Object} pos Position object
    * @param {Array<number>} trgDim target dimensions ([top, left, height, width])
    * */
-  movePlaceholder(plh: HTMLElement, dims: Dim[], pos: Pos, trgDim?: Dim) {
+  movePlaceholder(plh: HTMLElement, dims: Dim[], pos: Position, trgDim?: Dim) {
     let marg = 0;
     let t = 0;
     let l = 0;
@@ -1537,102 +1590,168 @@ export default class Sorter<T> extends View {
   }
 
   /**
-   * Leave item
-   * @param event
-   *
-   * @return void
-   * */
-  endMove() {
-    const src = this.sourceElement;
-    const moved = [];
-    const docs = this.getDocuments();
+   * End the move action.
+   * Handles the cleanup and final steps after an item is moved.
+   */
+  endMove(): void {
+    const { sourceElement: src, eventHandlers, targetElement: target, lastPos } = this;
     const container = this.getContainerEl();
-    const onEndMove = this.eventHandlers?.onEndMove;
-    const onEnd = this.eventHandlers?.onEnd;
-    const { targetElement: target, lastPos } = this;
+    const docs = this.getDocuments();
     let srcModel;
-    off(container, 'mousemove dragover', this.onMove as any);
-    off(docs, 'mouseup dragend touchend', this.endMove);
-    off(docs, 'keydown', this.rollback);
-    if (this.containerContext.placeholderElement) this.containerContext.placeholderElement.style.display = 'none';
+
+    this.cleanupEventListeners(container, docs);
+    this.hidePlaceholder();
 
     if (src) {
       srcModel = this.getSourceModel();
     }
 
-    if (this.moved && target) {
-      const toMove = this.toMove;
-      const toMoveArr = isArray(toMove) ? toMove : toMove ? [toMove] : [src];
-      let domPositionOffset = 0;
-      if (toMoveArr.length === 1) {
-        // do not sort the array in this case
-        // there are cases for the sorter where toMoveArr is [undefined]
-        // which allows the drop from blocks, native D&D and sort of layers in Style Manager
-        moved.push(this.move(target, toMoveArr[0]!, lastPos!));
-      } else {
-        toMoveArr
-          // add the model's parents
-          .map((model) => ({
-            model,
-            parents: this.parents(model),
-          }))
-          // sort based on elements positions in the dom
-          .sort(this.sort)
-          // move each component to the new parent and position
-          .forEach(({ model }) => {
-            // @ts-ignore store state before move
-            const index = model.index();
-            // @ts-ignore
-            const parent = model.parent().getEl();
-            // move the component to the desired position
-            moved.push(
-              this.move(target, model!, {
-                ...lastPos!,
-                indexEl: lastPos!.indexEl - domPositionOffset,
-                index: lastPos!.index - domPositionOffset,
-              }),
-            );
-            // when the element is dragged to the same parent and after its position
-            //  it will be removed from the children list
-            //  in that case we need to adjust the following elements target position
-            if (parent === target && index <= lastPos!.index) {
-              // the next elements will be inserted 1 element before this one
-              domPositionOffset++;
-            }
-          });
-      }
+    console.log("🚀 ~ Sorter<T> ~ endMove ~ target, src, lastPos:", target, src, lastPos)
+    const moved = this.handleMove(target!, src!, lastPos!);
+
+    this.finalizeMove(moved, srcModel);
+    this.cleanupAfterMove();
+
+    if (isFunction(eventHandlers?.onEndMove)) {
+      this.triggerEndMoveEvent(srcModel, moved);
     }
 
-    if (this.containerContext.placeholderElement) this.containerContext.placeholderElement.style.display = 'none';
+    isFunction(eventHandlers?.onEnd) && eventHandlers?.onEnd({ sorter: this });
+  }
+
+  /**
+   * Clean up event listeners that were attached during the move.
+   *
+   * @param {HTMLElement} container - The container element.
+   * @param {Document[]} docs - List of documents.
+   * @private
+   */
+  private cleanupEventListeners(container: HTMLElement, docs: Document[]): void {
+    off(container, 'mousemove dragover', this.onMove as any);
+    off(docs, 'mouseup dragend touchend', this.endMove);
+    off(docs, 'keydown', this.rollback);
+  }
+
+  /**
+   * Hide the placeholder element if it exists.
+   * 
+   * @private
+   */
+  private hidePlaceholder(): void {
+    if (this.containerContext.placeholderElement) {
+      this.containerContext.placeholderElement.style.display = 'none';
+    }
+  }
+
+  /**
+   * Handle the actual move of the element(s).
+   *
+   * @param {HTMLElement | null} target - The target element.
+   * @param {HTMLElement | null} src - The source element.
+   * @param {Position | null} lastPos - The last known position of the element.
+   * @return {HTMLElement[]} - An array of moved elements.
+   * @private
+   */
+  private handleMove(target: HTMLElement | null, src: HTMLElement | null, lastPos: Position | null): HTMLElement[] {
+    const moved: HTMLElement[] = [];
+    const toMove = this.toMove;
+    const toMoveArr = isArray(toMove) ? toMove : toMove ? [toMove] : [src];
+    let domPositionOffset = 0;
+
+    if (toMoveArr.length === 1) {
+      moved.push(this.move(target!, toMoveArr[0]!, lastPos!));
+    } else {
+      toMoveArr
+        .map((model) => ({
+          model,
+          parents: this.parents(model),
+        }))
+        .sort(this.sort)
+        .forEach(({ model }) => {
+          // @ts-ignore
+          const index = model.index();
+          // @ts-ignore
+          const parent = model.parent().getEl();
+
+          moved.push(
+            this.move(target!, model!, {
+              ...lastPos!,
+              indexEl: lastPos!.indexEl - domPositionOffset,
+              index: lastPos!.index - domPositionOffset,
+            }),
+          );
+
+          if (parent === target && index <= lastPos!.index) {
+            domPositionOffset++;
+          }
+        });
+    }
+
+    return moved;
+  }
+
+  /**
+   * Finalize the move by removing any helpers and selecting the target model.
+   * 
+   * @private
+   */
+  private finalizeMove(moved: HTMLElement[], srcModel: any): void {
+    this.removeDropTargetIndicator();
+    this.disableTextable();
+    this.selectTargetModel();
+    this.clearFreeze();
+    this.toggleSortCursor();
+    // @ts-ignore
+    this.em?.Canvas.removeSpots(this.spotTarget);
+
+    delete this.toMove;
+    delete this.eventMove;
+    delete this.dropModel;
+  }
+
+  /**
+   * Remove the drag helper or drop target indicator.
+   * 
+   * @private
+   */
+  private removeDropTargetIndicator(): void {
     const dragHelper = this.dropTargetIndicator;
 
     if (dragHelper) {
       dragHelper.parentNode!.removeChild(dragHelper);
       delete this.dropTargetIndicator;
     }
+  }
 
-    this.disableTextable();
-    this.selectTargetModel();
-    this.clearFreeze();
-    this.toggleSortCursor();
-    this.em?.Canvas.removeSpots(spotTarget);
+  /**
+   * Trigger the `onEndMove` event with the relevant data.
+   * 
+   * @param {any} srcModel - The source model.
+   * @param {HTMLElement[]} moved - The moved elements.
+   * @private
+   */
+  private triggerEndMoveEvent(srcModel: any, moved: HTMLElement[]): void {
+    const onEndMove = this.eventHandlers?.onEndMove;
+    const data = {
+      target: srcModel,
+      parent: srcModel?.parent(),
+      index: srcModel?.index(),
+    };
 
+    moved.length
+      ? moved.forEach((m) => onEndMove!(m, this, data))
+      : onEndMove!(null, this, { ...data, cancelled: 1 });
+  }
+
+  /**
+   * Clean up after the move operation is completed.
+   *
+   * @private
+   */
+  private cleanupAfterMove(): void {
     delete this.toMove;
     delete this.eventMove;
     delete this.dropModel;
-
-    if (isFunction(onEndMove)) {
-      const data = {
-        target: srcModel,
-        // @ts-ignore
-        parent: srcModel && srcModel.parent(),
-        // @ts-ignore
-        index: srcModel && srcModel.index(),
-      };
-      moved.length ? moved.forEach((m) => onEndMove(m, this, data)) : onEndMove(null, this, { ...data, cancelled: 1 });
-    }
-
-    isFunction(onEnd) && onEnd({ sorter: this });
   }
 
   /**
@@ -1641,7 +1760,7 @@ export default class Sorter<T> extends View {
    * @param {HTMLElement} src Element to move
    * @param {Object} pos Object with position coordinates
    * */
-  move(dst: HTMLElement, src: HTMLElement | Model, pos: Pos) {
+  move(dst: HTMLElement, src: HTMLElement | Model, pos: Position) {
     const { em, dropContent } = this;
     const srcEl = getElement(src as HTMLElement);
     const warns: string[] = [];
