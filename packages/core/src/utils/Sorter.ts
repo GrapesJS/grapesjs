@@ -2,7 +2,7 @@ import { bindAll, each, isArray, isFunction, isUndefined, result } from 'undersc
 import { BlockProperties } from '../block_manager/model/Block';
 import CanvasModule from '../canvas';
 import { CanvasSpotBuiltInTypes } from '../canvas/model/CanvasSpot';
-import { $, Model, View } from '../common';
+import { $, Model, SetOptions, View } from '../common';
 import EditorModel from '../editor/model/Editor';
 import { getPointerEvent, isTextNode, off, on } from './dom';
 import { getElement, getModel, matches } from './mixins';
@@ -27,6 +27,12 @@ interface Pos {
   method: string;
 }
 
+export enum SorterDirection {
+  Vertical,
+  Horizontal,
+  All
+}
+
 export interface SorterOptions<T> {
   em?: EditorModel;
   treeClass: new (model: T) => TreeSorterBase<T>;
@@ -42,7 +48,7 @@ export interface SorterOptions<T> {
   canvasRelative?: boolean;
   scale?: number;
   relative?: boolean;
-  direction?: 'v' | 'h' | 'a';
+  direction?: SorterDirection;
   nested?: boolean;
   onStart?: Function;
   onMove?: Function;
@@ -81,7 +87,7 @@ export default class Sorter<T> extends View {
   customTarget?: Function;
   onEnd?: Function;
   onMoveClb?: Function;
-  dragDirection!: 'v' | 'h' | 'a';
+  dragDirection!: SorterDirection;
   relative!: boolean;
   ignoreViewChildren!: boolean;
   placeholderElement?: HTMLElement;
@@ -117,9 +123,8 @@ export default class Sorter<T> extends View {
   $placeholderElement?: any;
   toMove?: Model | Model[];
 
-  /** @ts-ignore */
-  initialize(opt: SorterOptions = {}) {
-    this.options = opt || {};
+  // @ts-ignore
+  initialize(opt: SorterOptions<T>= {}) {
     bindAll(this, 'startSort', 'onMove', 'endMove', 'rollback', 'updateOffset', 'moveDragHelper');
     var o = opt || {};
     this.elT = 0;
@@ -128,7 +133,6 @@ export default class Sorter<T> extends View {
 
     var el = o.container;
     this.el = typeof el === 'string' ? document.querySelector(el)! : el!;
-    this.$el = $(this.el); // TODO check if necessary
     this.treeClass = o.treeClass;
 
     this.containerSel = o.containerSel || 'div';
@@ -140,11 +144,11 @@ export default class Sorter<T> extends View {
     this.onEndMove = o.onEndMove;
     this.customTarget = o.customTarget;
     this.onEnd = o.onEnd;
-    this.dragDirection = o.direction || 'v'; // v (vertical), h (horizontal), a (auto)
+    this.dragDirection = o.direction || SorterDirection.Vertical;
     this.onMoveClb = o.onMove;
     this.relative = o.relative || false;
     this.ignoreViewChildren = !!o.ignoreViewChildren;
-    this.placeholderElement = o.placer;
+    this.placeholderElement = o.placeholderElement;
     // Frame offset
     this.wmargin = o.wmargin || 0;
     this.offTop = o.offsetTop || 0;
@@ -172,7 +176,6 @@ export default class Sorter<T> extends View {
     if (!this.el) {
       var el = this.options.container;
       this.el = typeof el === 'string' ? document.querySelector(el)! : el!;
-      this.$el = $(this.el); // TODO check if necessary
     }
 
     return this.el;
@@ -933,8 +936,8 @@ export default class Sorter<T> extends View {
       let dir = this.dragDirection;
       let dirValue: boolean;
 
-      if (dir == 'v') dirValue = true;
-      else if (dir == 'h') dirValue = false;
+      if (dir === SorterDirection.Vertical) dirValue = true;
+      else if (dir === SorterDirection.Horizontal) dirValue = false;
       else dirValue = this.isInFlow(el, trg);
 
       dim.dir = dirValue;

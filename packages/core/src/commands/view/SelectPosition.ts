@@ -1,5 +1,6 @@
 import { $ } from '../../common';
 import Component from '../../dom_components/model/Component';
+import { SorterDirection } from '../../utils/Sorter';
 import { CommandObject } from './CommandAbstract';
 import { ComponentTreeSorter } from './ComponentTreeSorter';
 export default {
@@ -19,11 +20,11 @@ export default {
         // @ts-ignore
         container,
         treeClass: ComponentTreeSorter,
-        placer: this.canvas.getPlacerEl(),
+        placeholderElement: this.canvas.getPlacerEl(),
         containerSel: '*',
         itemSel: '*',
         pfx: this.ppfx,
-        direction: 'a',
+        direction: SorterDirection.All,
         document: doc,
         wmargin: 1,
         nested: 1,
