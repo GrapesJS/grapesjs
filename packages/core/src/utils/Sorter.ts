@@ -48,7 +48,7 @@ export interface SorterOptions<T> {
   canvasRelative?: boolean;
   scale: number;
   relative: boolean;
-  dragDirection?: SorterDirection;
+  dragDirection: SorterDirection;
   nested?: boolean;
   onStart: Function;
   onMove?: Function;
@@ -58,7 +58,7 @@ export interface SorterOptions<T> {
   ignoreViewChildren?: boolean;
   placeholderElement?: HTMLElement;
   document: Document;
-  avoidSelectOnEnd?: boolean;
+  selectOnEnd: boolean;
 }
 
 const noop = () => { };
@@ -139,7 +139,8 @@ export default class Sorter<T> extends View {
     wmargin: 0,
     offsetTop: 0,
     offsetLeft: 0,
-    scale: 1
+    scale: 1,
+    selectOnEnd: true
   }) {
     bindAll(this, 'startSort', 'onMove', 'endMove', 'rollback', 'updateOffset', 'moveDragHelper');
     this.elT = 0;
@@ -159,7 +160,7 @@ export default class Sorter<T> extends View {
     this.onEndMove = sorterOptions.onEndMove;
     this.customTarget = sorterOptions.customTarget;
     this.onEnd = sorterOptions.onEnd;
-    this.dragDirection = sorterOptions.dragDirection || SorterDirection.Vertical;
+    this.dragDirection = sorterOptions.dragDirection;
     this.onMoveClb = sorterOptions.onMove;
     this.relative = sorterOptions.relative;
     this.ignoreViewChildren = !!sorterOptions.ignoreViewChildren;
@@ -171,13 +172,12 @@ export default class Sorter<T> extends View {
     this.document = sorterOptions.document;
     this.em = sorterOptions.em;
     this.canvasRelative = !!sorterOptions.canvasRelative;
-    this.selectOnEnd = !sorterOptions.avoidSelectOnEnd;
+    this.selectOnEnd = sorterOptions.selectOnEnd;
     this.scale = sorterOptions.scale;
-    const { em } = this;
 
-    if (em?.on) {
-      em.on(em.Canvas.events.refresh, this.updateOffset);
-      this.updateOffset();
+    this.updateOffset();
+    if (this.em?.on) {
+      this.em.on(this.em.Canvas.events.refresh, this.updateOffset);
     }
   }
 
