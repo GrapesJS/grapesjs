@@ -173,96 +173,6 @@ class DropLocationDeterminer<T> {
       elem = elem.parentNode;
     }
   }
-
-  /**
- * During move
- * @param {Event} e
- * */
-  // onMove(e: MouseEvent) {
-  //   const ev = e;
-  //   const { em } = this;
-  //   const onMoveCallback = this.eventHandlers?.onMove
-  //   const placeholderElement = this.containerContext.placeholderElement
-  //   const customTarget = this.sorterConfig.customTarget;
-  //   this.moved = true;
-
-  //   // Turn placeholder visibile
-  //   const dsp = placeholderElement!.style.display;
-  //   if (!dsp || dsp === 'none') placeholderElement!.style.display = 'block';
-
-  //   // Cache all necessary positions
-  //   var eO = this.offset(this.getContainerEl());
-  //   this.elT = this.positionOptions.wmargin ? Math.abs(eO.top) : eO.top;
-  //   this.elL = this.positionOptions.wmargin ? Math.abs(eO.left) : eO.left;
-  //   var rY = e.pageY - this.elT + this.getContainerEl().scrollTop;
-  //   var rX = e.pageX - this.elL + this.getContainerEl().scrollLeft;
-
-  //   if (this.positionOptions.canvasRelative && em) {
-  //     const mousePos = em.Canvas.getMouseRelativeCanvas(e, { noScroll: 1 });
-  //     rX = mousePos.x;
-  //     rY = mousePos.y;
-  //   }
-
-  //   this.mouseXRelativeToContainer = rX;
-  //   this.mouseYRelativeToContainer = rY;
-  //   this.eventMove = e;
-
-  //   //var targetNew = this.getTargetFromEl(e.target);
-  //   const sourceModel = this.getSourceModel();
-  //   const targetEl = customTarget ? customTarget({ sorter: this, event: e }) : e.target;
-  //   const dims = this.dimsFromTarget(targetEl as HTMLElement, rX, rY);
-  //   const target = this.targetElement;
-  //   const targetModel = target && this.getTargetModel(target);
-  //   this.selectTargetModel(targetModel, sourceModel);
-  //   if (!targetModel) placeholderElement!.style.display = 'none';
-  //   if (!target) return;
-  //   this.lastDims = dims;
-  //   const pos = this.findPosition(dims, rX, rY);
-
-  //   if (this.isTextableActive(sourceModel, targetModel)) {
-  //     this.activeTextModel = targetModel;
-  //     placeholderElement!.style.display = 'none';
-  //     this.lastPos = pos;
-  //     this.updateTextViewCursorPosition(ev);
-  //   } else {
-  //     this.disableTextable();
-  //     delete this.activeTextModel;
-
-  //     // If there is a significant changes with the pointer
-  //     if (!this.lastPos || this.lastPos.index != pos.index || this.lastPos.method != pos.method) {
-  //       this.movePlaceholder(this.containerContext.placeholderElement!, dims, pos, this.prevTargetDim);
-  //       this.ensure$PlaceholderElement();
-
-  //       // With canvasRelative the offset is calculated automatically for
-  //       // each element
-  //       if (!this.positionOptions.canvasRelative) {
-  //         if (this.positionOptions.offsetTop) this.$placeholderElement.css('top', '+=' + this.positionOptions.offsetTop + 'px');
-  //         if (this.positionOptions.offsetLeft) this.$placeholderElement.css('left', '+=' + this.positionOptions.offsetLeft + 'px');
-  //       }
-
-  //       this.lastPos = pos;
-  //     }
-  //   }
-
-  //   isFunction(onMoveCallback) &&
-  //     onMoveCallback({
-  //       event: e,
-  //       target: sourceModel,
-  //       parent: targetModel,
-  //       index: pos.index + (pos.method == 'after' ? 1 : 0),
-  //     });
-
-  //   em &&
-  //     em.trigger('sorter:drag', {
-  //       target,
-  //       targetModel,
-  //       sourceModel,
-  //       dims,
-  //       pos,
-  //       x: rX,
-  //       y: rY,
-  //     });
-  // }
 }
 
 export default class Sorter<T> extends View {
@@ -1606,7 +1516,6 @@ export default class Sorter<T> extends View {
       srcModel = this.getSourceModel();
     }
 
-    console.log("🚀 ~ Sorter<T> ~ endMove ~ target, src, lastPos:", target, src, lastPos)
     const moved = this.handleMove(target!, src!, lastPos!);
 
     this.finalizeMove(moved, srcModel);
@@ -1845,15 +1754,15 @@ export default class Sorter<T> extends View {
   }
 
   /**
-   * Rollback to previous situation
-   * @param {Event}
-   * @param {Bool} Indicates if rollback in anycase
-   * */
-  rollback(e: any) {
+   * Rollback to previous situation.
+   *
+   * @param {KeyboardEvent} e - The keyboard event object.
+   */
+  rollback(e: KeyboardEvent) {
     off(this.getDocuments(), 'keydown', this.rollback);
-    const key = e.which || e.keyCode;
+    const ESC_KEY = 'Escape';
 
-    if (key == 27) {
+    if (e.key === ESC_KEY) {
       this.moved = false;
       this.endMove();
     }
