@@ -571,7 +571,7 @@ export default class Sorter<T> extends View {
       // If there is a significant changes with the pointer
       if (!this.lastPos || this.lastPos.index != pos.index || this.lastPos.method != pos.method) {
         this.movePlaceholder(this.placeholderElement!, dims, pos, this.prevTargetDim);
-        if (!this.$placeholderElement) this.$placeholderElement = $(this.placeholderElement!);
+        this.ensure$PlaceholderElement();
 
         // With canvasRelative the offset is calculated automatically for
         // each element
@@ -602,6 +602,10 @@ export default class Sorter<T> extends View {
         x: rX,
         y: rY,
       });
+  }
+
+  private ensure$PlaceholderElement() {
+    if (!this.$placeholderElement) this.$placeholderElement = $(this.placeholderElement!);
   }
 
   isTextableActive(src: any, trg: any): boolean {
