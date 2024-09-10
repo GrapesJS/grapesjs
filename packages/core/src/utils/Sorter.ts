@@ -38,13 +38,12 @@ interface SorterContainerContext {
   containerSel: string;
   itemSel: string;
   pfx: string;
-  ppfx: string;
   document: Document;
   placeholderElement?: HTMLElement;
 }
 
 interface PositionOptions {
-  wmargin: number;
+  windowMargin: number;
   borderOffset: number;
   offsetTop: number;
   offsetLeft: number;
@@ -94,18 +93,192 @@ type RequiredEmAndTreeClassPartialSorterOptions<T> = Partial<SorterOptions<T>> &
   treeClass: new (model: T) => TreeSorterBase<T>;
 };
 
-export default class Sorter<T> extends View {
+interface DropLocationDeterminerOptions {
+  containerContext: SorterContainerContext;
+  positionOptions: PositionOptions;
+  dragBehavior: SorterDragBehaviorOptions;
+  eventHandlers?: SorterEventHandlers;
+}
+
+class DropLocationDeterminer<T> {
+  em?: EditorModel;
   treeClass!: new (model: any) => TreeSorterBase<T>;
-  options!: SorterOptions<T>;
-  elT!: number;
-  elL!: number;
+
   positionOptions!: PositionOptions;
   containerContext!: SorterContainerContext;
   dragBehavior!: SorterDragBehaviorOptions;
   eventHandlers?: SorterEventHandlers;
   sorterConfig!: SorterConfigurationOptions;
-  dropContent?: DropContent;
+
+  dropModel?: Model;
+  targetElement?: HTMLElement;
+  prevTargetElement?: HTMLElement;
+  sourceElement?: HTMLElement;
+  moved?: boolean;
+  docs!: Document[];
+  constructor(options: DropLocationDeterminerOptions) {
+    this.containerContext = options.containerContext;
+    this.positionOptions = options.positionOptions;
+    this.dragBehavior = options.dragBehavior;
+    this.eventHandlers = options.eventHandlers;
+  }
+
+  /**
+   * Picking component to move
+   * @param {HTMLElement} src
+   * */
+  startSort(src?: HTMLElement, opts: { container?: HTMLElement } = {}) {
+    const { itemSel } = this.containerContext;
+    this.resetDragStates();
+    src = src ? this.closest(src, itemSel) : src;
+  }
+
+  private resetDragStates() {
+    delete this.dropModel;
+    delete this.targetElement;
+    delete this.prevTargetElement;
+    this.moved = false;
+  }
+
+  updateContainer(container: HTMLElement) {
+    this.containerContext.container = container;
+  }
+
+  updateDocs(docs: Document[]) {
+    this.docs = docs;
+  }
+
+  /**
+ * Returns true if the element matches with selector
+ * @param {Element} el
+ * @param {String} selector
+ * @return {Boolean}
+ */
+  matches(el: HTMLElement, selector: string): boolean {
+    return matches.call(el, selector);
+  }
+
+  /**
+   * Closest parent
+   * @param {Element} el
+   * @param {String} selector
+   * @return {Element|null}
+   */
+  closest(el: HTMLElement, selector: string): HTMLElement | undefined {
+    if (!el) return;
+    let elem = el.parentNode;
+
+    while (elem && elem.nodeType === 1) {
+      if (this.matches(elem as HTMLElement, selector)) return elem as HTMLElement;
+      elem = elem.parentNode;
+    }
+  }
+
+  /**
+ * During move
+ * @param {Event} e
+ * */
+  // onMove(e: MouseEvent) {
+  //   const ev = e;
+  //   const { em } = this;
+  //   const onMoveCallback = this.eventHandlers?.onMove
+  //   const placeholderElement = this.containerContext.placeholderElement
+  //   const customTarget = this.sorterConfig.customTarget;
+  //   this.moved = true;
+
+  //   // Turn placeholder visibile
+  //   const dsp = placeholderElement!.style.display;
+  //   if (!dsp || dsp === 'none') placeholderElement!.style.display = 'block';
+
+  //   // Cache all necessary positions
+  //   var eO = this.offset(this.getContainerEl());
+  //   this.elT = this.positionOptions.wmargin ? Math.abs(eO.top) : eO.top;
+  //   this.elL = this.positionOptions.wmargin ? Math.abs(eO.left) : eO.left;
+  //   var rY = e.pageY - this.elT + this.getContainerEl().scrollTop;
+  //   var rX = e.pageX - this.elL + this.getContainerEl().scrollLeft;
+
+  //   if (this.positionOptions.canvasRelative && em) {
+  //     const mousePos = em.Canvas.getMouseRelativeCanvas(e, { noScroll: 1 });
+  //     rX = mousePos.x;
+  //     rY = mousePos.y;
+  //   }
+
+  //   this.mouseXRelativeToContainer = rX;
+  //   this.mouseYRelativeToContainer = rY;
+  //   this.eventMove = e;
+
+  //   //var targetNew = this.getTargetFromEl(e.target);
+  //   const sourceModel = this.getSourceModel();
+  //   const targetEl = customTarget ? customTarget({ sorter: this, event: e }) : e.target;
+  //   const dims = this.dimsFromTarget(targetEl as HTMLElement, rX, rY);
+  //   const target = this.targetElement;
+  //   const targetModel = target && this.getTargetModel(target);
+  //   this.selectTargetModel(targetModel, sourceModel);
+  //   if (!targetModel) placeholderElement!.style.display = 'none';
+  //   if (!target) return;
+  //   this.lastDims = dims;
+  //   const pos = this.findPosition(dims, rX, rY);
+
+  //   if (this.isTextableActive(sourceModel, targetModel)) {
+  //     this.activeTextModel = targetModel;
+  //     placeholderElement!.style.display = 'none';
+  //     this.lastPos = pos;
+  //     this.updateTextViewCursorPosition(ev);
+  //   } else {
+  //     this.disableTextable();
+  //     delete this.activeTextModel;
+
+  //     // If there is a significant changes with the pointer
+  //     if (!this.lastPos || this.lastPos.index != pos.index || this.lastPos.method != pos.method) {
+  //       this.movePlaceholder(this.containerContext.placeholderElement!, dims, pos, this.prevTargetDim);
+  //       this.ensure$PlaceholderElement();
+
+  //       // With canvasRelative the offset is calculated automatically for
+  //       // each element
+  //       if (!this.positionOptions.canvasRelative) {
+  //         if (this.positionOptions.offsetTop) this.$placeholderElement.css('top', '+=' + this.positionOptions.offsetTop + 'px');
+  //         if (this.positionOptions.offsetLeft) this.$placeholderElement.css('left', '+=' + this.positionOptions.offsetLeft + 'px');
+  //       }
+
+  //       this.lastPos = pos;
+  //     }
+  //   }
+
+  //   isFunction(onMoveCallback) &&
+  //     onMoveCallback({
+  //       event: e,
+  //       target: sourceModel,
+  //       parent: targetModel,
+  //       index: pos.index + (pos.method == 'after' ? 1 : 0),
+  //     });
+
+  //   em &&
+  //     em.trigger('sorter:drag', {
+  //       target,
+  //       targetModel,
+  //       sourceModel,
+  //       dims,
+  //       pos,
+  //       x: rX,
+  //       y: rY,
+  //     });
+  // }
+}
+
+export default class Sorter<T> extends View {
   em?: EditorModel;
+  treeClass!: new (model: any) => TreeSorterBase<T>;
+
+  positionOptions!: PositionOptions;
+  containerContext!: SorterContainerContext;
+  dragBehavior!: SorterDragBehaviorOptions;
+  eventHandlers?: SorterEventHandlers;
+  sorterConfig!: SorterConfigurationOptions;
+
+  dropContent?: DropContent;
+  options!: SorterOptions<T>;
+  elT!: number;
+  elL!: number;
   dropTargetIndicator?: HTMLElement;
   activeTextModel?: Model;
   dropModel?: Model;
@@ -128,6 +301,8 @@ export default class Sorter<T> extends View {
   lastDims?: Dim[];
   $placeholderElement?: any;
   toMove?: Model | Model[];
+  drop!: DropLocationDeterminer<unknown>;
+  docs!: Document[];
 
   // @ts-ignore
   initialize(sorterOptions: RequiredEmAndTreeClassPartialSorterOptions<T> = {}) {
@@ -136,13 +311,12 @@ export default class Sorter<T> extends View {
         containerSel: '*',
         itemSel: '*',
         pfx: '',
-        ppfx: '',
         document,
       },
       positionOptions: {
         borderOffset: 10,
         relative: false,
-        wmargin: 0,
+        windowMargin: 0,
         offsetTop: 0,
         offsetLeft: 0,
         scale: 1,
@@ -197,6 +371,13 @@ export default class Sorter<T> extends View {
     if (this.em?.on) {
       this.em.on(this.em.Canvas.events.refresh, this.updateOffset);
     }
+
+    this.drop = new DropLocationDeterminer({
+      containerContext: this.containerContext,
+      positionOptions: this.positionOptions,
+      dragBehavior: this.dragBehavior,
+      eventHandlers: this.eventHandlers,
+    });
   }
 
   getContainerEl(elem?: HTMLElement) {
@@ -357,7 +538,7 @@ export default class Sorter<T> extends View {
    * @param {String} selector
    * @return {Boolean}
    */
-  matches(el: HTMLElement, selector: string) {
+  matches(el: HTMLElement, selector: string): boolean {
     return matches.call(el, selector);
   }
 
@@ -412,15 +593,20 @@ export default class Sorter<T> extends View {
    * @param {HTMLElement} src
    * */
   startSort(src?: HTMLElement, opts: { container?: HTMLElement } = {}) {
+    if (!!opts.container) {
+      this.updateContainer(opts.container);
+    }
+    if (!!src) {
+      const elementDoc = this.getElementDoc(src);
+      elementDoc && this.appendDoc(elementDoc);
+    }
+    this.drop.startSort();
+
     const { em } = this;
-    const { itemSel, containerSel, placeholderElement: placeholderElement } = this.containerContext;
-    const container = this.getContainerEl(opts.container);
+    const { itemSel, containerSel, placeholderElement } = this.containerContext;
+    /*---*/
     const docs = this.getDocuments(src);
-    let srcModel;
-    delete this.dropModel;
-    delete this.targetElement;
-    delete this.prevTargetElement;
-    this.moved = false;
+    this.resetDragStates();
 
     // Check if the start element is a valid one, if not, try the closest valid one
     if (src && !this.matches(src, `${itemSel}, ${containerSel}`)) {
@@ -428,35 +614,74 @@ export default class Sorter<T> extends View {
     }
 
     this.sourceElement = src;
-
-    // Create placeholder if doesn't exist yet
-    if (!placeholderElement) {
-      this.containerContext.placeholderElement = this.createPlaceholder();
-      container.appendChild(this.containerContext.placeholderElement);
-    }
-
+    this.ensurePlaceholder();
     if (src) {
-      srcModel = this.getSourceModel(src);
-      srcModel?.set && srcModel.set('status', 'freezed');
-      this.sourceModel = srcModel;
+      this.sourceModel = this.getSourceModel(src);
     }
 
-    on(container, 'mousemove dragover', this.onMove as any);
+    on(this.containerContext.container!, 'mousemove dragover', this.onMove);
     on(docs, 'mouseup dragend touchend', this.endMove);
     on(docs, 'keydown', this.rollback);
-    isFunction(this.eventHandlers?.onStart) && this.eventHandlers?.onStart({
-      sorter: this,
-      target: srcModel,
-      // @ts-ignore
-      parent: srcModel && srcModel.parent?.(),
-      // @ts-ignore
-      index: srcModel && srcModel.index?.(),
-    });
+    this.envokeOnStartCallback();
+    /*---*/
 
     // Avoid strange effects on dragging
     em?.clearSelection();
     this.toggleSortCursor(true);
-    em?.trigger('sorter:drag:start', src, srcModel);
+    this.emitSorterStart(src);
+  }
+
+  private emitSorterStart(src: HTMLElement | undefined) {
+    this.em?.trigger('sorter:drag:start', src, this.sourceModel);
+  }
+
+  private envokeOnStartCallback() {
+    isFunction(this.eventHandlers?.onStart) && this.eventHandlers.onStart({
+      sorter: this,
+      target: this.sourceModel,
+      //@ts-ignore
+      parent: this.sourceModel && this.sourceModel.parent?.(),
+      //@ts-ignore
+      index: this.sourceModel && this.sourceModel.index?.(),
+    });
+  }
+
+  private ensurePlaceholder() {
+    if (!this.containerContext.placeholderElement) {
+      this.containerContext.placeholderElement = this.createPlaceholder();
+      this.containerContext.container!.appendChild(this.containerContext.placeholderElement);
+    }
+  }
+
+  private resetDragStates() {
+    delete this.dropModel;
+    delete this.targetElement;
+    delete this.prevTargetElement;
+    this.moved = false;
+  }
+
+  updateContainer(container: HTMLElement) {
+    const newContainer = this.getContainerEl(container);
+
+    this.drop.updateContainer(newContainer);
+  }
+
+  getElementDoc(el: HTMLElement) {
+    const em = this.em;
+    const elementDocument = el ? el.ownerDocument : em?.Canvas.getBody().ownerDocument;
+    const docs = [document];
+    elementDocument && docs.push(elementDocument);
+
+    return elementDocument
+  }
+
+  appendDoc(doc: Document) {
+    this.updateDocs([document, doc])
+  }
+
+  updateDocs(docs: Document[]) {
+    this.docs = docs
+    this.drop.updateDocs(docs);
   }
 
   /**
@@ -553,48 +778,46 @@ export default class Sorter<T> extends View {
 
   /**
    * During move
-   * @param {Event} e
+   * @param {Event} mouseEvent
    * */
-  onMove(e: MouseEvent) {
-    const ev = e;
+  onMove(mouseEvent: MouseEvent) {
+    const ev = mouseEvent;
     const { em } = this;
     const onMoveCallback = this.eventHandlers?.onMove
     const placeholderElement = this.containerContext.placeholderElement
     const customTarget = this.sorterConfig.customTarget;
     this.moved = true;
 
-    // Turn placeholder visibile
-    const dsp = placeholderElement!.style.display;
-    if (!dsp || dsp === 'none') placeholderElement!.style.display = 'block';
+    this.showPlaceholder();
 
     // Cache all necessary positions
-    var eO = this.offset(this.getContainerEl());
-    this.elT = this.positionOptions.wmargin ? Math.abs(eO.top) : eO.top;
-    this.elL = this.positionOptions.wmargin ? Math.abs(eO.left) : eO.left;
-    var rY = e.pageY - this.elT + this.getContainerEl().scrollTop;
-    var rX = e.pageX - this.elL + this.getContainerEl().scrollLeft;
+    var containerOffset = this.offset(this.getContainerEl());
+    this.elT = this.positionOptions.windowMargin ? Math.abs(containerOffset.top) : containerOffset.top;
+    this.elL = this.positionOptions.windowMargin ? Math.abs(containerOffset.left) : containerOffset.left;
+    var mouseYRelativeToContainer = mouseEvent.pageY - this.elT + this.getContainerEl().scrollTop;
+    var mouseXRelativeToContainer = mouseEvent.pageX - this.elL + this.getContainerEl().scrollLeft;
 
     if (this.positionOptions.canvasRelative && em) {
-      const mousePos = em.Canvas.getMouseRelativeCanvas(e, { noScroll: 1 });
-      rX = mousePos.x;
-      rY = mousePos.y;
+      const mousePos = em.Canvas.getMouseRelativeCanvas(mouseEvent, { noScroll: 1 });
+      mouseXRelativeToContainer = mousePos.x;
+      mouseYRelativeToContainer = mousePos.y;
     }
 
-    this.mouseXRelativeToContainer = rX;
-    this.mouseYRelativeToContainer = rY;
-    this.eventMove = e;
+    this.mouseXRelativeToContainer = mouseXRelativeToContainer;
+    this.mouseYRelativeToContainer = mouseYRelativeToContainer;
+    this.eventMove = mouseEvent;
 
     //var targetNew = this.getTargetFromEl(e.target);
     const sourceModel = this.getSourceModel();
-    const targetEl = customTarget ? customTarget({ sorter: this, event: e }) : e.target;
-    const dims = this.dimsFromTarget(targetEl as HTMLElement, rX, rY);
+    const targetEl = customTarget ? customTarget({ sorter: this, event: mouseEvent }) : mouseEvent.target;
+    const dims = this.dimsFromTarget(targetEl as HTMLElement, mouseXRelativeToContainer, mouseYRelativeToContainer);
     const target = this.targetElement;
     const targetModel = target && this.getTargetModel(target);
     this.selectTargetModel(targetModel, sourceModel);
     if (!targetModel) placeholderElement!.style.display = 'none';
     if (!target) return;
     this.lastDims = dims;
-    const pos = this.findPosition(dims, rX, rY);
+    const pos = this.findPosition(dims, mouseXRelativeToContainer, mouseYRelativeToContainer);
 
     if (this.isTextableActive(sourceModel, targetModel)) {
       this.activeTextModel = targetModel;
@@ -623,7 +846,7 @@ export default class Sorter<T> extends View {
 
     isFunction(onMoveCallback) &&
       onMoveCallback({
-        event: e,
+        event: mouseEvent,
         target: sourceModel,
         parent: targetModel,
         index: pos.index + (pos.method == 'after' ? 1 : 0),
@@ -636,9 +859,13 @@ export default class Sorter<T> extends View {
         sourceModel,
         dims,
         pos,
-        x: rX,
-        y: rY,
+        x: mouseXRelativeToContainer,
+        y: mouseYRelativeToContainer,
       });
+  }
+
+  private showPlaceholder() {
+    this.containerContext.placeholderElement!.style.display = 'block';
   }
 
   private ensure$PlaceholderElement() {
@@ -940,8 +1167,8 @@ export default class Sorter<T> extends View {
       width = pos.width; // + offsets.marginLeft + offsets.marginRight;
     } else {
       var o = this.offset(el);
-      top = this.positionOptions.relative ? el.offsetTop : o.top - (this.positionOptions.wmargin ? -1 : 1) * this.elT;
-      left = this.positionOptions.relative ? el.offsetLeft : o.left - (this.positionOptions.wmargin ? -1 : 1) * this.elL;
+      top = this.positionOptions.relative ? el.offsetTop : o.top - (this.positionOptions.windowMargin ? -1 : 1) * this.elT;
+      left = this.positionOptions.relative ? el.offsetLeft : o.left - (this.positionOptions.windowMargin ? -1 : 1) * this.elL;
       height = el.offsetHeight;
       width = el.offsetWidth;
     }
