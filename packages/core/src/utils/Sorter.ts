@@ -60,7 +60,6 @@ interface SorterEventHandlers {
   onEnd?: Function;
 }
 
-
 interface SorterDragBehaviorOptions {
   dragDirection: SorterDirection;
   ignoreViewChildren?: boolean;
@@ -82,8 +81,6 @@ export interface SorterOptions<T> {
   eventHandlers?: SorterEventHandlers;
   sorterConfig: SorterConfigurationOptions;
 }
-
-const noop = () => { };
 
 const targetSpotType = CanvasSpotBuiltInTypes.Target;
 
@@ -548,6 +545,10 @@ export default class Sorter<T> extends View {
       model.set('status', 'selected-parent');
       this.targetModel = model;
     }
+  }
+
+  clearFreeze() {
+    this.sourceModel?.set && this.sourceModel.set('status', '');
   }
 
   /**
@@ -1174,7 +1175,6 @@ export default class Sorter<T> extends View {
    * @return void
    * */
   endMove() {
-    console.trace("here")
     const src = this.sourceElement;
     const moved = [];
     const docs = this.getDocuments();
@@ -1186,7 +1186,7 @@ export default class Sorter<T> extends View {
     off(container, 'mousemove dragover', this.onMove as any);
     off(docs, 'mouseup dragend touchend', this.endMove);
     off(docs, 'keydown', this.rollback);
-    this.containerContext.placeholderElement!.style.display = 'none';
+    if (this.containerContext.placeholderElement) this.containerContext.placeholderElement.style.display = 'none';
 
     if (src) {
       srcModel = this.getSourceModel();
@@ -1245,6 +1245,7 @@ export default class Sorter<T> extends View {
 
     this.disableTextable();
     this.selectTargetModel();
+    this.clearFreeze();
     this.toggleSortCursor();
     this.em?.Canvas.removeSpots(spotTarget);
 
