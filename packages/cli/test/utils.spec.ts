@@ -85,12 +85,12 @@ describe('utils', () => {
       const color = 'blue';
       const lineDown = 1;
 
-      console.log = jest.fn();
+      console.log = jest.fn() as jest.Mock;
 
       printRow(str, { color, lineDown });
 
       expect(console.log).toHaveBeenCalledTimes(3); // 1 for empty line, 1 for colored string, 1 for line break
-      expect(console.log.mock.calls[1][0]).toEqual(chalk[color].bold(str));
+      expect((console.log as jest.Mock).mock.calls[1][0]).toEqual(chalk[color].bold(str));
     });
 
     it('should not add a line break if lineDown is false', () => {
@@ -110,12 +110,12 @@ describe('utils', () => {
     it('should print the given string in red', () => {
       const str = 'Error message';
 
-      console.log = jest.fn();
+      (console.log as jest.Mock).mockImplementation(() => {});
 
       printError(str);
 
       expect(console.log).toHaveBeenCalledTimes(3); // 1 for empty line, 1 for red string, 1 for line break
-      expect(console.log.mock.calls[1][0]).toEqual(chalk.red.bold(str));
+      expect((console.log as jest.Mock).mock.calls[1][0]).toEqual(chalk.red.bold(str));
     });
   });
 
