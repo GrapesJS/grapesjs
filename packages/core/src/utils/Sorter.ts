@@ -2,7 +2,7 @@ import { bindAll, each, isArray, isFunction, isUndefined, result } from 'undersc
 import { BlockProperties } from '../block_manager/model/Block';
 import CanvasModule from '../canvas';
 import { CanvasSpotBuiltInTypes } from '../canvas/model/CanvasSpot';
-import { $, Model, View } from '../common';
+import { $, Model, SetOptions, View } from '../common';
 import EditorModel from '../editor/model/Editor';
 import { getPointerEvent, isTextNode, off, on } from './dom';
 import { getElement, getModel, matches } from './mixins';
@@ -417,7 +417,7 @@ export default class Sorter<T> extends View {
     this.dropContent = content;
   }
 
-  updateTextViewCursorPosition(e: any) {
+  updateTextViewCursorPosition(mouseEvent: any) {
     const { em } = this;
     if (!em) return;
     const Canvas = em.Canvas;
@@ -426,12 +426,12 @@ export default class Sorter<T> extends View {
 
     if (targetDoc.caretRangeFromPoint) {
       // Chrome
-      const poiner = getPointerEvent(e);
+      const poiner = getPointerEvent(mouseEvent);
       range = targetDoc.caretRangeFromPoint(poiner.clientX, poiner.clientY);
-    } else if (e.rangeParent) {
+    } else if (mouseEvent.rangeParent) {
       // Firefox
       range = targetDoc.createRange();
-      range.setStart(e.rangeParent, e.rangeOffset);
+      range.setStart(mouseEvent.rangeParent, mouseEvent.rangeOffset);
     }
 
     const sel = Canvas.getWindow().getSelection();
@@ -777,25 +777,71 @@ export default class Sorter<T> extends View {
   }
 
   /**
-   * During move
-   * @param {Event} mouseEvent
-   * */
-  onMove(mouseEvent: MouseEvent) {
+   * Handles the mouse move event during a drag operation.
+   * It updates positions, manages placeholders, and triggers necessary events.
+   *
+   * @param {MouseEvent} mouseEvent - The mouse move event.
+   * @private
+   */
+  private onMove(mouseEvent: MouseEvent): void {
     const ev = mouseEvent;
     const { em } = this;
-    const onMoveCallback = this.eventHandlers?.onMove
-    const placeholderElement = this.containerContext.placeholderElement
+    const onMoveCallback = this.eventHandlers?.onMove;
+    const placeholderElement = this.containerContext.placeholderElement;
     const customTarget = this.sorterConfig.customTarget;
     this.moved = true;
 
     this.showPlaceholder();
+    this.cacheContainerPosition(mouseEvent);
 
-    // Cache all necessary positions
-    var containerOffset = this.offset(this.getContainerEl());
+    const { mouseXRelativeToContainer, mouseYRelativeToContainer } = this.getMousePositionRelativeToContainer(mouseEvent);
+    this.mouseXRelativeToContainer = mouseXRelativeToContainer;
+    this.mouseYRelativeToContainer = mouseYRelativeToContainer;
+    this.eventMove = mouseEvent;
+
+    const sourceModel = this.getSourceModel();
+    const targetEl = customTarget ? customTarget({ sorter: this, event: mouseEvent }) : mouseEvent.target;
+    const dims = this.dimsFromTarget(targetEl as HTMLElement, mouseXRelativeToContainer, mouseYRelativeToContainer);
+    const target = this.targetElement;
+    const targetModel = target && this.getTargetModel(target);
+
+    this.selectTargetModel(targetModel, sourceModel);
+    if (!targetModel) this.hidePlaceholder();
+    if (!target) return;
+
+    this.lastDims = dims;
+    const pos = this.findPosition(dims, mouseXRelativeToContainer, mouseYRelativeToContainer);
+
+    this.handleTextable(sourceModel, targetModel, ev, pos, dims);
+
+    this.triggerOnMoveCallback(mouseEvent, sourceModel, targetModel, pos);
+
+    this.triggerDragEvent(target, targetModel, sourceModel, dims, pos, mouseXRelativeToContainer, mouseYRelativeToContainer);
+  }
+
+  /**
+   * Caches the container position and updates relevant variables for position calculation.
+   *
+   * @param {MouseEvent} mouseEvent - The current mouse event.
+   * @private
+   */
+  private cacheContainerPosition(mouseEvent: MouseEvent): void {
+    const containerOffset = this.offset(this.getContainerEl());
     this.elT = this.positionOptions.windowMargin ? Math.abs(containerOffset.top) : containerOffset.top;
     this.elL = this.positionOptions.windowMargin ? Math.abs(containerOffset.left) : containerOffset.left;
-    var mouseYRelativeToContainer = mouseEvent.pageY - this.elT + this.getContainerEl().scrollTop;
-    var mouseXRelativeToContainer = mouseEvent.pageX - this.elL + this.getContainerEl().scrollLeft;
+  }
+
+  /**
+   * Gets the mouse position relative to the container, adjusting for scroll and canvas relative options.
+   *
+   * @param {MouseEvent} mouseEvent - The current mouse event.
+   * @return {{ mouseXRelativeToContainer: number, mouseYRelativeToContainer: number }} - The mouse X and Y positions relative to the container.
+   * @private
+   */
+  private getMousePositionRelativeToContainer(mouseEvent: MouseEvent): { mouseXRelativeToContainer: number, mouseYRelativeToContainer: number } {
+    const { em } = this;
+    let mouseYRelativeToContainer = mouseEvent.pageY - this.elT + this.getContainerEl().scrollTop;
+    let mouseXRelativeToContainer = mouseEvent.pageX - this.elL + this.getContainerEl().scrollLeft;
 
     if (this.positionOptions.canvasRelative && em) {
       const mousePos = em.Canvas.getMouseRelativeCanvas(mouseEvent, { noScroll: 1 });
@@ -803,57 +849,66 @@ export default class Sorter<T> extends View {
       mouseYRelativeToContainer = mousePos.y;
     }
 
-    this.mouseXRelativeToContainer = mouseXRelativeToContainer;
-    this.mouseYRelativeToContainer = mouseYRelativeToContainer;
-    this.eventMove = mouseEvent;
+    return { mouseXRelativeToContainer, mouseYRelativeToContainer };
+  }
 
-    //var targetNew = this.getTargetFromEl(e.target);
-    const sourceModel = this.getSourceModel();
-    const targetEl = customTarget ? customTarget({ sorter: this, event: mouseEvent }) : mouseEvent.target;
-    const dims = this.dimsFromTarget(targetEl as HTMLElement, mouseXRelativeToContainer, mouseYRelativeToContainer);
-    const target = this.targetElement;
-    const targetModel = target && this.getTargetModel(target);
-    this.selectTargetModel(targetModel, sourceModel);
-    if (!targetModel) placeholderElement!.style.display = 'none';
-    if (!target) return;
-    this.lastDims = dims;
-    const pos = this.findPosition(dims, mouseXRelativeToContainer, mouseYRelativeToContainer);
-
+  /**
+   * Handles the activation or deactivation of the textable state during a drag operation.
+   *
+   * @param {Model} sourceModel - The source model being dragged.
+   * @param {Model} targetModel - The target model being dragged over.
+   * @param {MouseEvent} ev - The mouse event.
+   * @param {Object} pos - The position data of the placeholder.
+   * @param {Object} dims - The dimensions of the target element.
+   * @private
+   */
+  private handleTextable(sourceModel: Model, targetModel: Model, ev: MouseEvent, pos: any,  dims: any): void {
     if (this.isTextableActive(sourceModel, targetModel)) {
-      this.activeTextModel = targetModel;
-      placeholderElement!.style.display = 'none';
-      this.lastPos = pos;
-      this.updateTextViewCursorPosition(ev);
+      this.activateTextable(targetModel, ev, pos, this.containerContext.placeholderElement);
     } else {
-      this.disableTextable();
-      delete this.activeTextModel;
+      this.deactivateTextable();
 
-      // If there is a significant changes with the pointer
-      if (!this.lastPos || this.lastPos.index != pos.index || this.lastPos.method != pos.method) {
-        this.movePlaceholder(this.containerContext.placeholderElement!, dims, pos, this.prevTargetDim);
-        this.ensure$PlaceholderElement();
-
-        // With canvasRelative the offset is calculated automatically for
-        // each element
-        if (!this.positionOptions.canvasRelative) {
-          if (this.positionOptions.offsetTop) this.$placeholderElement.css('top', '+=' + this.positionOptions.offsetTop + 'px');
-          if (this.positionOptions.offsetLeft) this.$placeholderElement.css('left', '+=' + this.positionOptions.offsetLeft + 'px');
-        }
-
-        this.lastPos = pos;
+      if (this.isPointerPositionChanged(pos)) {
+        this.updatePlaceholderPosition(dims, pos);
       }
     }
+  }
 
-    isFunction(onMoveCallback) &&
-      onMoveCallback({
+  /**
+   * Triggers the `onMove` callback function if it exists.
+   *
+   * @param {MouseEvent} mouseEvent - The current mouse event.
+   * @param {Model} sourceModel - The source model being dragged.
+   * @param {Model} targetModel - The target model being dragged over.
+   * @param {Object} pos - The position data.
+   * @private
+   */
+  private triggerOnMoveCallback(mouseEvent: MouseEvent, sourceModel: Model, targetModel: Model, pos: any): void {
+    if (isFunction(this.eventHandlers?.onMove)) {
+      this.eventHandlers?.onMove({
         event: mouseEvent,
         target: sourceModel,
         parent: targetModel,
-        index: pos.index + (pos.method == 'after' ? 1 : 0),
+        index: pos.index + (pos.method === 'after' ? 1 : 0),
       });
+    }
+  }
 
-    em &&
-      em.trigger('sorter:drag', {
+  /**
+   * Triggers the `sorter:drag` event on the event manager (em).
+   *
+   * @param {HTMLElement} target - The target element being dragged over.
+   * @param {Model} targetModel - The target model being dragged over.
+   * @param {Model} sourceModel - The source model being dragged.
+   * @param {Object} dims - The dimensions of the target element.
+   * @param {Object} pos - The position data.
+   * @param {number} mouseXRelativeToContainer - The mouse X position relative to the container.
+   * @param {number} mouseYRelativeToContainer - The mouse Y position relative to the container.
+   * @private
+   */
+  private triggerDragEvent(target: HTMLElement, targetModel: Model, sourceModel: Model, dims: any, pos: any, mouseXRelativeToContainer: number, mouseYRelativeToContainer: number): void {
+    if (this.em) {
+      this.em.trigger('sorter:drag', {
         target,
         targetModel,
         sourceModel,
@@ -862,6 +917,49 @@ export default class Sorter<T> extends View {
         x: mouseXRelativeToContainer,
         y: mouseYRelativeToContainer,
       });
+    }
+  }
+
+  private hidePlaceholder() {
+    this.containerContext.placeholderElement!.style.display = 'none';
+  }
+
+  private activateTextable(targetModel: Model<any, SetOptions, any> | undefined, mouseEvent: MouseEvent, pos: Pos | undefined, placeholderElement: HTMLElement | undefined) {
+    this.activeTextModel = targetModel;
+    if (placeholderElement) placeholderElement.style.display = 'none';
+    this.lastPos = pos;
+    this.updateTextViewCursorPosition(mouseEvent);
+  }
+
+  private deactivateTextable() {
+    this.disableTextable();
+    delete this.activeTextModel;
+  }
+
+  private isPointerPositionChanged(pos: Pos) {
+    return !this.lastPos || this.lastPos.index !== pos.index || this.lastPos.method !== pos.method;
+  }
+
+  private updatePlaceholderPosition(dims: Dim[], pos: Pos | undefined) {
+    const { placeholderElement } = this.containerContext;
+    //@ts-ignore
+    this.movePlaceholder(placeholderElement!, dims, pos, this.prevTargetDim);
+    this.ensure$PlaceholderElement();
+
+    if (!this.positionOptions.canvasRelative) {
+      this.adjustPlaceholderOffset();
+    }
+
+    this.lastPos = pos;
+  }
+
+  private adjustPlaceholderOffset() {
+    if (this.positionOptions.offsetTop) {
+      this.$placeholderElement.css('top', '+=' + this.positionOptions.offsetTop + 'px');
+    }
+    if (this.positionOptions.offsetLeft) {
+      this.$placeholderElement.css('left', '+=' + this.positionOptions.offsetLeft + 'px');
+    }
   }
 
   private showPlaceholder() {
@@ -884,67 +982,110 @@ export default class Sorter<T> extends View {
   }
 
   /**
-   * Returns true if the elements is in flow, so is not in flow where
-   * for example the component is with float:left
-   * @param  {HTMLElement} el
-   * @param  {HTMLElement} parent
-   * @return {Boolean}
+   * Determines if an element is in the normal flow of the document.
+   * This checks whether the element is not floated or positioned in a way that removes it from the flow.
+   *
+   * @param  {HTMLElement} el - The element to check.
+   * @param  {HTMLElement} [parent=document.body] - The parent element for additional checks (defaults to `document.body`).
+   * @return {boolean} Returns `true` if the element is in flow, otherwise `false`.
    * @private
-   * */
-  isInFlow(el: HTMLElement, parent?: HTMLElement) {
+   */
+  private isInFlow(el: HTMLElement, parent: HTMLElement = document.body): boolean {
     if (!el) return false;
 
-    parent = parent || document.body;
-    var ch = -1,
-      h;
-    var elem = el;
-    h = elem.offsetHeight;
-    if (/*h < ch || */ !this.styleInFlow(elem, parent)) return false;
-    else return true;
+    const elementHeight = el.offsetHeight;
+    if (!this.isStyleInFlow(el, parent)) return false;
+
+    return true;
   }
 
   /**
-   * Check if el has style to be in flow
-   * @param  {HTMLElement} el
-   * @param  {HTMLElement} parent
-   * @return {Boolean}
+   * Checks if an element has styles that keep it in the document flow.
+   * Considers properties like `float`, `position`, and certain display types.
+   *
+   * @param  {HTMLElement} el - The element to check.
+   * @param  {HTMLElement} parent - The parent element for additional style checks.
+   * @return {boolean} Returns `true` if the element is styled to be in flow, otherwise `false`.
    * @private
    */
-  styleInFlow(el: HTMLElement, parent: HTMLElement) {
-    if (isTextNode(el)) return;
-    const style = el.style || {};
-    const $el = $(el);
-    const $parent = parent && $(parent);
+  private isStyleInFlow(el: HTMLElement, parent: HTMLElement): boolean {
+    if (this.isTextNode(el)) return false;
 
-    if (style.overflow && style.overflow !== 'visible') return;
-    const propFloat = $el.css('float');
-    if (propFloat && propFloat !== 'none') return;
-    if ($parent && $parent.css('display') == 'flex' && $parent.css('flex-direction') !== 'column') return;
-    switch (style.position) {
+    const elementStyles = el.style || {};
+    const $el = $(el);
+    const $parent = $(parent);
+
+    // Check overflow property
+    if (elementStyles.overflow && elementStyles.overflow !== 'visible') return false;
+
+    // Check float property
+    const elementFloat = $el.css('float');
+    if (elementFloat && elementFloat !== 'none') return false;
+
+    // Check parent for flexbox display and non-column flex-direction
+    if ($parent.css('display') === 'flex' && $parent.css('flex-direction') !== 'column') return false;
+
+    // Check position property
+    if (!this.isInFlowPosition(elementStyles.position)) return false;
+
+    // Check tag and display properties
+    return this.isFlowElementTag(el) || this.isFlowElementDisplay($el);
+  }
+
+  /**
+   * Determines if the element's `position` style keeps it in the flow.
+   *
+   * @param {string} position - The position style of the element.
+   * @return {boolean} Returns `true` if the position keeps the element in flow.
+   * @private
+   */
+  private isInFlowPosition(position: string): boolean {
+    switch (position) {
       case 'static':
       case 'relative':
       case '':
-        break;
+        return true;
       default:
-        return;
+        return false;
     }
-    switch (el.tagName) {
-      case 'TR':
-      case 'TBODY':
-      case 'THEAD':
-      case 'TFOOT':
-        return true;
-    }
-    switch ($el.css('display')) {
-      case 'block':
-      case 'list-item':
-      case 'table':
-      case 'flex':
-      case 'grid':
-        return true;
-    }
-    return;
   }
+
+  /**
+   * Checks if the element's tag name represents an element typically in flow.
+   *
+   * @param {HTMLElement} el - The element to check.
+   * @return {boolean} Returns `true` if the tag name represents a flow element.
+   * @private
+   */
+  private isFlowElementTag(el: HTMLElement): boolean {
+    const flowTags = ['TR', 'TBODY', 'THEAD', 'TFOOT'];
+    return flowTags.includes(el.tagName);
+  }
+
+  /**
+   * Checks if the element's display style keeps it in flow.
+   *
+   * @param {JQuery} $el - The jQuery-wrapped element to check.
+   * @return {boolean} Returns `true` if the display style represents a flow element.
+   * @private
+   */
+  private isFlowElementDisplay($el: JQuery): boolean {
+    const display = $el.css('display');
+    const flowDisplays = ['block', 'list-item', 'table', 'flex', 'grid'];
+    return flowDisplays.includes(display);
+  }
+
+  /**
+   * Checks if the node is a text node.
+   *
+   * @param {Node} node - The node to check.
+   * @return {boolean} Returns `true` if the node is a text node, otherwise `false`.
+   * @private
+   */
+  private isTextNode(node: Node): boolean {
+    return node.nodeType === Node.TEXT_NODE;
+  }
+
 
   /**
    * Check if the target is valid with the actual source
@@ -1117,7 +1258,7 @@ export default class Sorter<T> extends View {
   }
 
   /**
-   * Check if the current pointer is neare to element borders
+   * Check if the current pointer is near to element borders
    * @return {Boolen}
    */
   nearElBorders(el: HTMLElement) {
