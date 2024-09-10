@@ -1,7 +1,7 @@
 import { $ } from '../../common';
 import Component from '../../dom_components/model/Component';
 import { CommandObject } from './CommandAbstract';
-
+import { ComponentTreeSorter } from './ComponentTreeSorter';
 export default {
   /**
    * Start select position event
@@ -9,16 +9,16 @@ export default {
    * @private
    * */
   startSelectPosition(trg: HTMLElement, doc: Document, opts: any = {}) {
+
     this.isPointed = false;
     const utils = this.em.Utils;
     const container = trg.ownerDocument.body;
 
     if (utils && !this.sorter)
-      this.sorter = new utils.Sorter({
+      this.sorter = new utils.Sorter<Component>({
         // @ts-ignore
         container,
-        canMove: this.em.Components.canMove,
-        getChildren: (model: Component) => model.components(),
+        treeClass: ComponentTreeSorter,
         placer: this.canvas.getPlacerEl(),
         containerSel: '*',
         itemSel: '*',

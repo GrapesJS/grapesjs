@@ -1,11 +1,12 @@
-import { bindAll, each, isArray, isFunction, isString, result } from 'underscore';
+import { bindAll, each, isArray, isFunction, isUndefined, result } from 'underscore';
 import { BlockProperties } from '../block_manager/model/Block';
 import CanvasModule from '../canvas';
 import { CanvasSpotBuiltInTypes } from '../canvas/model/CanvasSpot';
-import { $, Collection, Model, View } from '../common';
+import { $, Model, View } from '../common';
 import EditorModel from '../editor/model/Editor';
 import { getPointerEvent, isTextNode, off, on } from './dom';
 import { getElement, getModel, matches } from './mixins';
+import { TreeSorterBase } from './TreeSorterBase';
 
 type DropContent = BlockProperties['content'];
 
@@ -26,35 +27,33 @@ interface Pos {
   method: string;
 }
 
-export interface SorterOptions {
-  borderOffset?: number;
-  container?: HTMLElement;
-  canMove: (targetModel: Model<any>, sourceModel: Model<any>, index: number) => boolean;
-  getChildren: (model: Model<any>) => Model<any>[];
-  containerSel?: string;
-  itemSel?: string;
-  draggable?: boolean | string[];
-  nested?: boolean;
+export interface SorterOptions<T> {
+  em?: EditorModel;
+  treeClass: new (model: T) => TreeSorterBase<T>;
   pfx?: string;
   ppfx?: string;
-  freezeClass?: string;
-  onStart?: Function;
-  onEndMove?: Function;
-  customTarget?: Function;
-  onEnd?: Function;
-  onMove?: Function;
-  direction?: 'v' | 'h' | 'a';
-  relative?: boolean;
-  ignoreViewChildren?: boolean;
-  placer?: HTMLElement;
-  document?: Document;
+  container?: HTMLElement;
+  containerSel?: string;
+  itemSel?: string;
   wmargin?: number;
+  borderOffset?: number;
   offsetTop?: number;
   offsetLeft?: number;
-  em?: EditorModel;
   canvasRelative?: boolean;
-  avoidSelectOnEnd?: boolean;
   scale?: number;
+  relative?: boolean;
+  direction?: 'v' | 'h' | 'a';
+  nested?: boolean;
+  freezeClass?: string;
+  onStart?: Function;
+  onMove?: Function;
+  onEndMove?: Function;
+  onEnd?: Function;
+  customTarget?: Function;
+  ignoreViewChildren?: boolean;
+  placeholderElement?: HTMLElement;
+  document?: Document;
+  avoidSelectOnEnd?: boolean;
 }
 
 const noop = () => { };
@@ -66,52 +65,48 @@ const spotTarget = {
   type: targetSpotType,
 };
 
-export default class Sorter extends View {
-  // the use of !
-  // function location
-  canMove!: (targetModel: Model<any>, sourceModel: Model<any>, index: number) => boolean;
-  getChildren!: (model: Model<any>) => Model<any>[];
-  opt!: SorterOptions;
+export default class Sorter<T> extends View {
+  treeClass!: new (model: any) => TreeSorterBase<T>;
+  options!: SorterOptions<T>;
   elT!: number;
   elL!: number;
   borderOffset!: number;
   containerSel!: string;
   itemSel!: string;
-  draggable!: SorterOptions['draggable'];
   nested!: boolean;
   pfx!: string;
   ppfx?: string;
-  freezeClass?: string;
+
   onStart!: Function;
   onEndMove?: Function;
   customTarget?: Function;
   onEnd?: Function;
   onMoveClb?: Function;
-  direction!: 'v' | 'h' | 'a';
+  dragDirection!: 'v' | 'h' | 'a';
   relative!: boolean;
   ignoreViewChildren!: boolean;
-  plh?: HTMLElement;
+  placeholderElement?: HTMLElement;
   document!: Document;
   wmargin!: number;
   offTop!: number;
   offLeft!: number;
   dropContent?: DropContent;
   em?: EditorModel;
-  dragHelper?: HTMLElement;
+  dropTargetIndicator?: HTMLElement;
   canvasRelative!: boolean;
   selectOnEnd!: boolean;
   scale?: number;
   activeTextModel?: Model;
   dropModel?: Model;
 
-  target?: HTMLElement;
-  prevTarget?: HTMLElement;
-  sourceEl?: HTMLElement;
+  targetElement?: HTMLElement;
+  prevTargetElement?: HTMLElement;
+  sourceElement?: HTMLElement;
   moved?: boolean;
-  srcModel?: Model;
+  sourceModel?: Model;
   targetModel?: Model;
-  rX?: number;
-  rY?: number;
+  mouseXRelativeToContainer?: number;
+  mouseYRelativeToContainer?: number;
   eventMove?: MouseEvent;
   prevTargetDim?: Dim;
   cacheDimsP?: Dim[];
@@ -120,12 +115,12 @@ export default class Sorter extends View {
   targetPrev?: HTMLElement;
   lastPos?: Pos;
   lastDims?: Dim[];
-  $plh?: any;
+  $placeholderElement?: any;
   toMove?: Model | Model[];
 
   /** @ts-ignore */
   initialize(opt: SorterOptions = {}) {
-    this.opt = opt || {};
+    this.options = opt || {};
     bindAll(this, 'startSort', 'onMove', 'endMove', 'rollback', 'updateOffset', 'moveDragHelper');
     var o = opt || {};
     this.elT = 0;
@@ -135,25 +130,22 @@ export default class Sorter extends View {
     var el = o.container;
     this.el = typeof el === 'string' ? document.querySelector(el)! : el!;
     this.$el = $(this.el); // TODO check if necessary
+    this.treeClass = o.treeClass;
 
     this.containerSel = o.containerSel || 'div';
-    this.canMove = o.canMove;
-    this.getChildren = o.getChildren;
     this.itemSel = o.itemSel || 'div';
-    this.draggable = o.draggable || true;
     this.nested = !!o.nested;
     this.pfx = o.pfx || '';
     this.ppfx = o.ppfx || '';
-    this.freezeClass = o.freezeClass || this.pfx + 'freezed';
     this.onStart = o.onStart || noop;
     this.onEndMove = o.onEndMove;
     this.customTarget = o.customTarget;
     this.onEnd = o.onEnd;
-    this.direction = o.direction || 'v'; // v (vertical), h (horizontal), a (auto)
+    this.dragDirection = o.direction || 'v'; // v (vertical), h (horizontal), a (auto)
     this.onMoveClb = o.onMove;
     this.relative = o.relative || false;
     this.ignoreViewChildren = !!o.ignoreViewChildren;
-    this.plh = o.placer;
+    this.placeholderElement = o.placer;
     // Frame offset
     this.wmargin = o.wmargin || 0;
     this.offTop = o.offsetTop || 0;
@@ -179,7 +171,7 @@ export default class Sorter extends View {
     if (elem) this.el = elem;
 
     if (!this.el) {
-      var el = this.opt.container;
+      var el = this.options.container;
       this.el = typeof el === 'string' ? document.querySelector(el)! : el!;
       this.$el = $(this.el); // TODO check if necessary
     }
@@ -196,7 +188,7 @@ export default class Sorter extends View {
   }
 
   /**
-   * Triggered when the offset of the editro is changed
+   * Triggered when the offset of the editor is changed
    */
   updateOffset() {
     const offset = this.em?.get('canvasOffset') || {};
@@ -278,7 +270,7 @@ export default class Sorter extends View {
     document.body.appendChild(clonedEl);
     clonedEl.className += ` ${this.pfx}bdrag`;
     clonedEl.setAttribute('style', style);
-    this.dragHelper = clonedEl;
+    this.dropTargetIndicator = clonedEl;
     clonedEl.style.width = `${rect.width}px`;
     clonedEl.style.height = `${rect.height}px`;
     ev && this.moveDragHelper(ev);
@@ -298,7 +290,7 @@ export default class Sorter extends View {
   moveDragHelper(e: any) {
     const doc = (e.target as HTMLElement).ownerDocument;
 
-    if (!this.dragHelper || !doc) {
+    if (!this.dropTargetIndicator || !doc) {
       return;
     }
 
@@ -309,7 +301,7 @@ export default class Sorter extends View {
     // @ts-ignore
     const window = doc.defaultView || (doc.parentWindow as Window);
     const frame = window.frameElement;
-    const dragHelperStyle = this.dragHelper.style;
+    const dragHelperStyle = this.dropTargetIndicator.style;
 
     // If frame is present that means mouse has moved over the editor's canvas,
     // which is rendered inside the iframe and the mouse move event comes from
@@ -389,13 +381,13 @@ export default class Sorter extends View {
    * @param {HTMLElement} src
    * */
   startSort(src?: HTMLElement, opts: { container?: HTMLElement } = {}) {
-    const { em, itemSel, containerSel, plh } = this;
+    const { em, itemSel, containerSel, placeholderElement: plh } = this;
     const container = this.getContainerEl(opts.container);
     const docs = this.getDocuments(src);
     let srcModel;
     delete this.dropModel;
-    delete this.target;
-    delete this.prevTarget;
+    delete this.targetElement;
+    delete this.prevTargetElement;
     this.moved = false;
 
     // Check if the start element is a valid one, if not, try the closest valid one
@@ -403,18 +395,18 @@ export default class Sorter extends View {
       src = this.closest(src, itemSel)!;
     }
 
-    this.sourceEl = src;
+    this.sourceElement = src;
 
     // Create placeholder if doesn't exist yet
     if (!plh) {
-      this.plh = this.createPlaceholder();
-      container.appendChild(this.plh);
+      this.placeholderElement = this.createPlaceholder();
+      container.appendChild(this.placeholderElement);
     }
 
     if (src) {
       srcModel = this.getSourceModel(src);
       srcModel?.set && srcModel.set('status', 'freezed');
-      this.srcModel = srcModel;
+      this.sourceModel = srcModel;
     }
 
     on(container, 'mousemove dragover', this.onMove as any);
@@ -440,8 +432,16 @@ export default class Sorter extends View {
    * @return {Model|null}
    */
   getTargetModel(el: HTMLElement) {
-    const elem = el || this.target;
+    const elem = el || this.targetElement;
     return $(elem).data('model');
+  }
+
+  getTargetNode(el: HTMLElement) {
+    return new this.treeClass(this.getTargetModel(el));
+  }
+
+  getSourceNode(el: HTMLElement) {
+    return new this.treeClass(this.getTargetModel(el));
   }
 
   /**
@@ -449,7 +449,7 @@ export default class Sorter extends View {
    * @return {Model}
    */
   getSourceModel(source?: HTMLElement, { target, avoidChildren = 1 }: any = {}): Model {
-    const { em, sourceEl } = this;
+    const { em, sourceElement: sourceEl } = this;
     const src = source || sourceEl;
     let { dropModel, dropContent } = this;
     const isTextable = (src: any) =>
@@ -489,9 +489,9 @@ export default class Sorter extends View {
    * @param  {Model|null} model
    */
   selectTargetModel(model?: Model, source?: Model) {
-    if (model instanceof Collection) {
-      return;
-    }
+    // if (model instanceof Collection) {
+    //   return;
+    // }
 
     // Prevents loops in Firefox
     // https://github.com/GrapesJS/grapesjs/issues/2911
@@ -501,8 +501,8 @@ export default class Sorter extends View {
 
     // Reset the previous model but not if it's the same as the source
     // https://github.com/GrapesJS/grapesjs/issues/2478#issuecomment-570314736
-    if (targetModel && targetModel !== this.srcModel) {
-      targetModel.set('status', '');
+    if (targetModel && targetModel !== this.sourceModel) {
+      targetModel.set && targetModel.set('status', '');
     }
 
     if (model?.set) {
@@ -521,7 +521,7 @@ export default class Sorter extends View {
    * */
   onMove(e: MouseEvent) {
     const ev = e;
-    const { em, onMoveClb, plh, customTarget } = this;
+    const { em, onMoveClb, placeholderElement: plh, customTarget } = this;
     this.moved = true;
 
     // Turn placeholder visibile
@@ -541,15 +541,15 @@ export default class Sorter extends View {
       rY = mousePos.y;
     }
 
-    this.rX = rX;
-    this.rY = rY;
+    this.mouseXRelativeToContainer = rX;
+    this.mouseYRelativeToContainer = rY;
     this.eventMove = e;
 
     //var targetNew = this.getTargetFromEl(e.target);
     const sourceModel = this.getSourceModel();
     const targetEl = customTarget ? customTarget({ sorter: this, event: e }) : e.target;
     const dims = this.dimsFromTarget(targetEl as HTMLElement, rX, rY);
-    const target = this.target;
+    const target = this.targetElement;
     const targetModel = target && this.getTargetModel(target);
     this.selectTargetModel(targetModel, sourceModel);
     if (!targetModel) plh!.style.display = 'none';
@@ -568,14 +568,14 @@ export default class Sorter extends View {
 
       // If there is a significant changes with the pointer
       if (!this.lastPos || this.lastPos.index != pos.index || this.lastPos.method != pos.method) {
-        this.movePlaceholder(this.plh!, dims, pos, this.prevTargetDim);
-        if (!this.$plh) this.$plh = $(this.plh!);
+        this.movePlaceholder(this.placeholderElement!, dims, pos, this.prevTargetDim);
+        if (!this.$placeholderElement) this.$placeholderElement = $(this.placeholderElement!);
 
         // With canvasRelative the offset is calculated automatically for
         // each element
         if (!this.canvasRelative) {
-          if (this.offTop) this.$plh.css('top', '+=' + this.offTop + 'px');
-          if (this.offLeft) this.$plh.css('left', '+=' + this.offLeft + 'px');
+          if (this.offTop) this.$placeholderElement.css('top', '+=' + this.offTop + 'px');
+          if (this.offLeft) this.$placeholderElement.css('left', '+=' + this.offLeft + 'px');
         }
 
         this.lastPos = pos;
@@ -602,8 +602,8 @@ export default class Sorter extends View {
       });
   }
 
-  isTextableActive(src: any, trg: any) {
-    return src?.get?.('textable') && trg?.isInstanceOf('text');
+  isTextableActive(src: any, trg: any): boolean {
+    return !!(src?.get?.('textable') && trg?.isInstanceOf('text'));
   }
 
   disableTextable() {
@@ -699,10 +699,22 @@ export default class Sorter extends View {
     // @ts-ignore
     src = srcModel?.view?.el;
     trg = trgModel.view.el;
+    const targetNode = new this.treeClass(trgModel);
+    const sourceNode = new this.treeClass(srcModel);
 
-    const length = this.getChildren(trgModel).length;
+    const targetChildren = targetNode.getChildren();
+    if (!targetChildren) {
+      return {
+        valid: false,
+        src,
+        srcModel,
+        trg,
+        trgModel
+      };
+    }
+    const length = targetChildren.length;
     const index = pos ? (pos.method === 'after' ? pos.indexEl + 1 : pos.indexEl) : length;
-    const canMove = this.canMove(trgModel, srcModel, index);
+    const canMove = targetNode.canMove(sourceNode, index);
 
     return {
       valid: canMove,
@@ -733,22 +745,17 @@ export default class Sorter extends View {
       target = this.closest(target, this.itemSel)!;
     }
 
-    // If draggable is an array the target will be one of those
-    if (this.draggable instanceof Array) {
-      target = this.closest(target, this.draggable.join(','))!;
-    }
-
     if (!target) {
       return dims;
     }
 
     // Check if the target is different from the previous one
-    if (this.prevTarget && this.prevTarget != target) {
-      delete this.prevTarget;
+    if (this.prevTargetElement && this.prevTargetElement != target) {
+      delete this.prevTargetElement;
     }
 
     // New target found
-    if (!this.prevTarget) {
+    if (!this.prevTargetElement) {
       this.targetP = this.closest(target, this.containerSel);
 
       // Check if the source is valid with the target
@@ -759,17 +766,17 @@ export default class Sorter extends View {
         return this.dimsFromTarget(this.targetP, rX, rY);
       }
 
-      this.prevTarget = target;
+      this.prevTargetElement = target;
       this.prevTargetDim = this.getDim(target);
       this.cacheDimsP = this.getChildrenDim(this.targetP!);
       this.cacheDims = this.getChildrenDim(target);
     }
 
     // If the target is the previous one will return the cached dims
-    if (this.prevTarget == target) dims = this.cacheDims!;
+    if (this.prevTargetElement == target) dims = this.cacheDims!;
 
     // Target when I will drop element to sort
-    this.target = this.prevTarget;
+    this.targetElement = this.prevTargetElement;
 
     // Generally, on any new target the poiner enters inside its area and
     // triggers nearBorders(), so have to take care of this
@@ -778,7 +785,7 @@ export default class Sorter extends View {
 
       if (targetParent && this.validTarget(targetParent).valid) {
         dims = this.cacheDimsP!;
-        this.target = targetParent;
+        this.targetElement = targetParent;
       }
     }
 
@@ -803,12 +810,6 @@ export default class Sorter extends View {
     // Select the first valuable target
     if (!this.matches(target, `${itemSel}, ${containerSel}`)) {
       target = this.closest(target, itemSel)!;
-    }
-
-    // If draggable is an array the target will be one of those
-    // TODO check if this options is used somewhere
-    if (this.draggable instanceof Array) {
-      target = this.closest(target, this.draggable.join(','))!;
     }
 
     // Check if the target is different from the previous one
@@ -930,7 +931,7 @@ export default class Sorter extends View {
       }
 
       const dim = this.getDim(el);
-      let dir = this.direction;
+      let dir = this.dragDirection;
       let dirValue: boolean;
 
       if (dir == 'v') dirValue = true;
@@ -1130,18 +1131,19 @@ export default class Sorter extends View {
    * @return void
    * */
   endMove() {
-    const src = this.sourceEl;
+    console.trace("here")
+    const src = this.sourceElement;
     const moved = [];
     const docs = this.getDocuments();
     const container = this.getContainerEl();
     const onEndMove = this.onEndMove;
     const onEnd = this.onEnd;
-    const { target, lastPos } = this;
+    const { targetElement: target, lastPos } = this;
     let srcModel;
     off(container, 'mousemove dragover', this.onMove as any);
     off(docs, 'mouseup dragend touchend', this.endMove);
     off(docs, 'keydown', this.rollback);
-    this.plh!.style.display = 'none';
+    this.placeholderElement!.style.display = 'none';
 
     if (src) {
       srcModel = this.getSourceModel();
@@ -1190,12 +1192,12 @@ export default class Sorter extends View {
       }
     }
 
-    if (this.plh) this.plh.style.display = 'none';
-    const dragHelper = this.dragHelper;
+    if (this.placeholderElement) this.placeholderElement.style.display = 'none';
+    const dragHelper = this.dropTargetIndicator;
 
     if (dragHelper) {
       dragHelper.parentNode!.removeChild(dragHelper);
-      delete this.dragHelper;
+      delete this.dropTargetIndicator;
     }
 
     this.disableTextable();
@@ -1230,50 +1232,17 @@ export default class Sorter extends View {
   move(dst: HTMLElement, src: HTMLElement | Model, pos: Pos) {
     const { em, dropContent } = this;
     const srcEl = getElement(src as HTMLElement);
-    const warns = [];
+    const warns: string[] = [];
     const index = pos.method === 'after' ? pos.indexEl + 1 : pos.indexEl;
     const validResult = this.validTarget(dst, srcEl);
-    const targetCollection = $(dst).data('collection');
     const { trgModel, srcModel } = validResult;
+    const targetNode = new this.treeClass(trgModel);
+    const sourceNode = new this.treeClass(srcModel);
+    const targetCollection = targetNode.getChildren();
+    const sourceParent = sourceNode.getParent();
     let modelToDrop, created;
 
-    if (targetCollection) {
-      const opts: any = { at: index, action: 'move-component' };
-      const isTextable = this.isTextableActive(srcModel, trgModel);
-
-      if (!dropContent) {
-        const srcIndex = srcModel.collection.indexOf(srcModel);
-        const sameCollection = targetCollection === srcModel.collection;
-        const sameIndex = srcIndex === index || srcIndex === index - 1;
-        const canRemove = !sameCollection || !sameIndex || isTextable;
-
-        if (canRemove) {
-          modelToDrop = srcModel.collection.remove(srcModel, {
-            temporary: true,
-          } as any);
-          if (sameCollection && index > srcIndex) {
-            opts.at = index - 1;
-          }
-        }
-      } else {
-        // @ts-ignore
-        modelToDrop = isFunction(dropContent) ? dropContent() : dropContent;
-        opts.avoidUpdateStyle = true;
-        opts.action = 'add-component';
-      }
-
-      if (modelToDrop) {
-        if (isTextable) {
-          delete opts.at;
-          created = trgModel.getView().insertComponent(modelToDrop, opts);
-        } else {
-          created = targetCollection.add(modelToDrop, opts);
-        }
-      }
-
-      delete this.dropContent;
-      delete this.prevTarget; // This will recalculate children dimensions
-    } else if (em) {
+    if (!targetCollection && em) {
       // const dropInfo = validResult.dropInfo || trgModel?.get('droppable');
       // const dragInfo = validResult.dragInfo || srcModel?.get('draggable');
 
@@ -1286,8 +1255,52 @@ export default class Sorter extends View {
         context: 'sorter',
         target: trgModel,
       });
+
+      em?.trigger('sorter:drag:end', {
+        targetCollection,
+        modelToDrop,
+        warns,
+        validResult,
+        dst,
+        srcEl,
+      });
+
+      return
     }
 
+    const opts: any = { at: index, action: 'move-component' };
+    const isTextable = this.isTextableActive(srcModel, trgModel);
+
+    if (!dropContent) {
+      const srcIndex = sourceParent?.indexOfChild(sourceNode);
+      const trgIndex = targetNode?.indexOfChild(sourceNode);
+      const isDraggingIntoSameCollection = trgIndex !== -1;
+      if (isUndefined(srcIndex)) {
+        return;
+      }
+
+      if (isDraggingIntoSameCollection && index > srcIndex) {
+        opts.at = index - 1;
+      }
+      modelToDrop = sourceParent?.removeChildAt(srcIndex)
+    } else {
+      // @ts-ignore
+      modelToDrop = isFunction(dropContent) ? dropContent() : dropContent;
+      opts.avoidUpdateStyle = true;
+      opts.action = 'add-component';
+    }
+
+    if (modelToDrop) {
+      if (isTextable) {
+        delete opts.at;
+        created = trgModel.getView().insertComponent(modelToDrop, opts);
+      } else {
+        created = targetNode.addChildAt(modelToDrop, opts.at).model;
+      }
+    }
+
+    delete this.dropContent;
+    delete this.prevTargetElement; // This will recalculate children dimensions
     em?.trigger('sorter:drag:end', {
       targetCollection,
       modelToDrop,
