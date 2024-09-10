@@ -44,7 +44,6 @@ export interface SorterOptions<T> {
   relative?: boolean;
   direction?: 'v' | 'h' | 'a';
   nested?: boolean;
-  freezeClass?: string;
   onStart?: Function;
   onMove?: Function;
   onEndMove?: Function;
