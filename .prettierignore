@@ -2,3 +2,4 @@ docs/**/*.md
 dist/
 pnpm-lock.yaml
 packages/cli/src/template/**/*.*
+**/locale/**
