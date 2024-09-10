@@ -92,6 +92,11 @@ const spotTarget = {
   type: targetSpotType,
 };
 
+type RequiredEmAndTreeClassPartialSorterOptions<T> = Partial<SorterOptions<T>> & {
+  em: EditorModel;
+  treeClass: new (model: T) => TreeSorterBase<T>;
+};
+
 export default class Sorter<T> extends View {
   treeClass!: new (model: any) => TreeSorterBase<T>;
   options!: SorterOptions<T>;
@@ -128,43 +133,66 @@ export default class Sorter<T> extends View {
   toMove?: Model | Model[];
 
   // @ts-ignore
-  initialize(sorterOptions: SorterOptions<T> = {
-    containerContext: {
-      containerSel: '*',
-      itemSel: '*',
-      pfx: '',
-      ppfx: '',
-      document,
-    },
-    positionOptions: {
-      borderOffset: 10,
-      relative: false,
-      wmargin: 0,
-      offsetTop: 0,
-      offsetLeft: 0,
-      scale: 1,
-      canvasRelative: false
-    },
-    dragBehavior: {
-      dragDirection: SorterDirection.Vertical,
-      nested: false,
-      ignoreViewChildren: false,
-    },
-    sorterConfig: {
-      selectOnEnd: true,
+  initialize(sorterOptions: RequiredEmAndTreeClassPartialSorterOptions<T> = {}) {
+    const defaultOptions: Omit<SorterOptions<T>, 'em' | 'treeClass'> = {
+      containerContext: {
+        containerSel: '*',
+        itemSel: '*',
+        pfx: '',
+        ppfx: '',
+        document,
+      },
+      positionOptions: {
+        borderOffset: 10,
+        relative: false,
+        wmargin: 0,
+        offsetTop: 0,
+        offsetLeft: 0,
+        scale: 1,
+        canvasRelative: false
+      },
+      dragBehavior: {
+        dragDirection: SorterDirection.Vertical,
+        nested: false,
+        ignoreViewChildren: false,
+      },
+      sorterConfig: {
+        selectOnEnd: true,
+      }
     }
-  }) {
+
+    const mergedOptions: Omit<SorterOptions<T>, 'em' | 'treeClass'> = {
+      ...defaultOptions,
+      ...sorterOptions,
+      containerContext: {
+        ...defaultOptions.containerContext,
+        ...sorterOptions.containerContext,
+      },
+      positionOptions: {
+        ...defaultOptions.positionOptions,
+        ...sorterOptions.positionOptions,
+      },
+      dragBehavior: {
+        ...defaultOptions.dragBehavior,
+        ...sorterOptions.dragBehavior,
+      },
+      sorterConfig: {
+        ...defaultOptions.sorterConfig,
+        ...sorterOptions.sorterConfig,
+      }
+    };
+
     bindAll(this, 'startSort', 'onMove', 'endMove', 'rollback', 'updateOffset', 'moveDragHelper');
-    this.containerContext = sorterOptions.containerContext;
-    this.positionOptions = sorterOptions.positionOptions;
-    this.dragBehavior = sorterOptions.dragBehavior;
-    this.eventHandlers = sorterOptions.eventHandlers;
-    this.sorterConfig = sorterOptions.sorterConfig;
+    this.containerContext = mergedOptions.containerContext;
+    this.positionOptions = mergedOptions.positionOptions;
+    this.dragBehavior = mergedOptions.dragBehavior;
+    this.eventHandlers = mergedOptions.eventHandlers;
+    this.sorterConfig = mergedOptions.sorterConfig;
 
     this.elT = 0;
     this.elL = 0;
     this.em = sorterOptions.em;
-    var el = sorterOptions.containerContext.container;
+    var el = mergedOptions.containerContext.container;
     this.el = typeof el === 'string' ? document.querySelector(el)! : el!;
     this.treeClass = sorterOptions.treeClass;
 

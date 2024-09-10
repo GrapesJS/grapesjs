@@ -18,19 +18,25 @@ export default {
     if (utils && !this.sorter)
       this.sorter = new utils.Sorter<Component>({
         // @ts-ignore
-        container,
-        treeClass: ComponentTreeSorter,
-        placeholderElement: this.canvas.getPlacerEl(),
-        containerSel: '*',
-        itemSel: '*',
-        pfx: this.ppfx,
-        dragDirection: SorterDirection.All,
-        document: doc,
-        wmargin: 1,
-        nested: 1,
         em: this.em,
-        canvasRelative: 1,
-        scale: () => this.em.getZoomDecimal(),
+        treeClass: ComponentTreeSorter,
+        containerContext: {
+          container,
+          containerSel: '*',
+          itemSel: '*',
+          pfx: this.ppfx,
+          document: doc,
+          placeholderElement: this.canvas.getPlacerEl(),
+        },
+        positionOptions: {
+          wmargin: 1,
+          scale: () => this.em.getZoomDecimal(),
+          canvasRelative: true,
+        },
+        dragBehavior: {
+          dragDirection: SorterDirection.All,
+          nested: true,
+        }
       });
 
     if (opts.onStart) this.sorter.onStart = opts.onStart;
