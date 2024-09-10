@@ -73,7 +73,7 @@ editor.on('asset:upload:error', (error) => { ... });
 editor.on('asset:upload:response', (res) => { ... });
 ```
 
-* `asset:custom` Event to use in case of [custom Asset Manager UI](https://grapesjs.com/docs/modules/Assets.html#customization).
+* `asset:custom` Event to use in case of [custom Asset Manager UI](https\://grapesjs.com/docs/modules/Assets.html#customization).
 
 ```javascript
 editor.on('asset:custom', ({ container, assets, ... }) => { ... });
@@ -148,7 +148,7 @@ Checks if the asset manager is open
 assetManager.isOpen(); // true | false
 ```
 
-Returns **[Boolean][15]** 
+Returns **[Boolean][15]**&#x20;
 
 ## add
 
@@ -176,7 +176,7 @@ width: 200,
 assetManager.add([{ src: 'img2.jpg' }, { src: 'img2.png' }]);
 ```
 
-Returns **[Asset]** 
+Returns **[Asset]**&#x20;
 
 ## get
 
@@ -192,19 +192,19 @@ Return asset by URL
 const asset = assetManager.get('http://img.jpg');
 ```
 
-Returns **([Asset] | null)** 
+Returns **([Asset] | null)**&#x20;
 
 ## getAll
 
 Return the global collection, containing all the assets
 
-Returns **Collection<[Asset]>** 
+Returns **Collection<[Asset]>**&#x20;
 
 ## getAllVisible
 
 Return the visible collection, which contains assets actually rendered
 
-Returns **Collection<[Asset]>** 
+Returns **Collection<[Asset]>**&#x20;
 
 ## remove
 
@@ -213,7 +213,7 @@ Remove asset
 ### Parameters
 
 *   `asset` **([String][13] | [Asset])** Asset or asset URL
-*   `opts` **RemoveOptions?** 
+*   `opts` **RemoveOptions?**&#x20;
 
 ### Examples
 
@@ -230,7 +230,7 @@ Returns **[Asset]** Removed asset
 
 Return the Asset Manager Container
 
-Returns **[HTMLElement][16]** 
+Returns **[HTMLElement][16]**&#x20;
 
 [1]: https://github.com/GrapesJS/grapesjs/blob/master/src/asset_manager/config/config.ts
 

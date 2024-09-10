@@ -1,8 +1,8 @@
-const version = require('./../../package.json').version;
+const version = require('../package.json').version;
 const isDev = process.argv[2] === 'dev';
 const devPath = 'http://localhost:8080';
 const baseUrl = 'https://grapesjs.com';
-const subDivider = " ‍  ‍  ‍ ";
+const subDivider = ' ‍  ‍  ‍ ';
 
 module.exports = {
   title: 'GrapesJS',
@@ -11,8 +11,19 @@ module.exports = {
   serviceWorker: false, // Enable Service Worker for offline usage
   head: [
     ['link', { rel: 'icon', href: '/logo-icon.png' }],
-    ['link', { rel: 'stylesheet', href: isDev ? `${devPath}/dist/css/grapes.min.css` : `${baseUrl}/assets/styles/grapesjs/grapes.min.css?${version}` }],
-    ['script', { src: isDev ? `${devPath}/grapes.min.js` : `${baseUrl}/assets/scripts/grapesjs/grapes.min.js?${version}` }],
+    [
+      'link',
+      {
+        rel: 'stylesheet',
+        href: isDev
+          ? `${devPath}/dist/css/grapes.min.css`
+          : `${baseUrl}/assets/styles/grapesjs/grapes.min.css?${version}`,
+      },
+    ],
+    [
+      'script',
+      { src: isDev ? `${devPath}/grapes.min.js` : `${baseUrl}/assets/scripts/grapesjs/grapes.min.js?${version}` },
+    ],
   ],
   localesSKIP: {
     '/': {
@@ -21,7 +32,7 @@ module.exports = {
     '/it/': {
       lang: 'it-IT',
       description: 'GrapesJS documentazione',
-    }
+    },
   },
   themeConfig: {
     editLinks: true,
@@ -40,14 +51,9 @@ module.exports = {
       '/it/': {
         selectText: 'IT',
         label: 'Italiano',
-        nav: [
-          { text: 'Supportaci', link: 'https://opencollective.com/grapesjs' },
-        ],
-        sidebar: [
-          '/',
-          ['/getting-started', 'Getting Started'],
-        ]
-      }
+        nav: [{ text: 'Supportaci', link: 'https://opencollective.com/grapesjs' }],
+        sidebar: ['/', ['/getting-started', 'Getting Started']],
+      },
     },
     nav: [
       { text: 'Docs', link: '/' },
@@ -97,6 +103,9 @@ module.exports = {
         ['/api/keymaps', 'Keymaps'],
         ['/api/undo_manager', 'Undo Manager'],
         ['/api/parser', 'Parser'],
+        ['/api/data_source_manager', 'Data Source Manager'],
+        ['/api/datasource', `${subDivider}DataSource`],
+        ['/api/datarecord', `${subDivider}DataRecord`],
       ],
       '/': [
         '',
@@ -120,20 +129,20 @@ module.exports = {
             ['/modules/Storage', 'Storage Manager'],
             ['/modules/Modal', 'Modal'],
             ['/modules/Plugins', 'Plugins'],
-          ]
-        }, {
+            ['/modules/DataSources', 'Data Sources'],
+          ],
+        },
+        {
           title: 'Guides',
           collapsable: false,
           children: [
             ['/guides/Symbols', 'Symbols'],
             ['/guides/Replace-Rich-Text-Editor', 'Replace Rich Text Editor'],
             ['/guides/Custom-CSS-parser', 'Use Custom CSS Parser'],
-          ]
-        }
+          ],
+        },
       ],
-    }
+    },
   },
-  plugins: [
-    [ '@vuepress/google-analytics', { ga: 'UA-74284223-1' } ],
-  ],
-}
+  plugins: [['@vuepress/google-analytics', { ga: 'UA-74284223-1' }]],
+};

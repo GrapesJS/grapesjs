@@ -1,0 +1,39 @@
+{
+  "name": "@grapesjs/docs",
+  "private": true,
+  "description": "Free and Open Source Web Builder Framework",
+  "version": "0.21.13",
+  "license": "BSD-3-Clause",
+  "homepage": "http://grapesjs.com",
+  "files": [
+    "dist",
+    "locale",
+    "src/styles"
+  ],
+  "sideEffects": [
+    "*.vue",
+    "*.css",
+    "*.scss"
+  ],
+  "dependencies": {
+    "codemirror": "5.63.0",
+    "codemirror-formatting": "1.0.0",
+    "html-entities": "~1.4.0"
+  },
+  "devDependencies": {
+    "@types/markdown-it": "14.1.2",
+    "@vuepress/plugin-google-analytics": "1.8.2",
+    "@vuepress/types": "1.9.10",
+    "documentation": "14.0.3",
+    "postcss": "8",
+    "sass": "1.42.1",
+    "vuepress": "1.9.10",
+    "whatwg-fetch": "3.6.20"
+  },
+  "scripts": {
+    "docs": "vuepress dev .",
+    "docs:api": "node ./api.mjs",
+    "build": "vuepress build .",
+    "docs:deploy": "./deploy.sh"
+  }
+}

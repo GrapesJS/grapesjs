@@ -1,0 +1,505 @@
+$frameAnimation: 0.35s ease !default;
+$guide_pad: 5px !default;
+
+.#{$prefix} {
+  &guide-info {
+    position: absolute;
+
+    &__content {
+      position: absolute;
+      height: 100%;
+      display: flex;
+      width: 100%;
+      padding: 5px;
+    }
+
+    &__line {
+      position: relative;
+      margin: auto;
+
+      &::before,
+      &::after {
+        content: '';
+        display: block;
+        position: absolute;
+        background-color: inherit;
+      }
+    }
+
+    &__y {
+      padding: 0 $guide_pad;
+
+      .#{$prefix}guide-info {
+        &__content {
+          justify-content: center;
+        }
+
+        &__line {
+          width: 100%;
+          height: 1px;
+
+          &::before,
+          &::after {
+            width: 1px;
+            height: 10px;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            margin: auto;
+          }
+
+          &::after {
+            left: auto;
+            right: 0;
+          }
+        }
+      }
+    }
+
+    &__x {
+      padding: $guide_pad 0;
+
+      .#{$prefix}guide-info {
+        &__content {
+          align-items: center;
+        }
+
+        &__line {
+          height: 100%;
+          width: 1px;
+
+          &::before,
+          &::after {
+            width: 10px;
+            height: 1px;
+            left: 0;
+            right: 0;
+            top: 0;
+            margin: auto;
+            transform: translateX(-50%);
+          }
+
+          &::after {
+            top: auto;
+            bottom: 0;
+          }
+        }
+      }
+    }
+  }
+
+  &badge {
+    white-space: nowrap;
+
+    &__icon {
+      vertical-align: middle;
+      display: inline-block;
+      width: 15px;
+      height: 15px;
+
+      svg {
+        fill: currentColor;
+      }
+    }
+    &__name {
+      display: inline-block;
+      vertical-align: middle;
+    }
+  }
+
+  &frame-wrapper {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    left: 0;
+    right: 0;
+    margin: auto;
+
+    &--anim {
+      transition:
+        width $frameAnimation,
+        height $frameAnimation;
+    }
+
+    &__top {
+      transform: translateY(-100%) translateX(-50%);
+      display: flex;
+      padding: 5px 0;
+      position: absolute;
+      width: 100%;
+      left: 50%;
+      top: 0;
+
+      &-r {
+        margin-left: auto;
+      }
+    }
+
+    &__left {
+      position: absolute;
+      left: 0;
+      transform: translateX(-100%) translateY(-50%);
+      height: 100%;
+      top: 50%;
+    }
+
+    &__bottom {
+      position: absolute;
+      bottom: 0;
+      transform: translateY(100%) translateX(-50%);
+      width: 100%;
+      left: 50%;
+    }
+
+    &__right {
+      position: absolute;
+      right: 0;
+      transform: translateX(100%) translateY(-50%);
+      height: 100%;
+      top: 50%;
+    }
+
+    &__icon {
+      width: 24px;
+      cursor: pointer;
+
+      > svg {
+        fill: currentColor;
+      }
+    }
+  }
+}
+
+.#{$app-prefix} {
+  &padding-v,
+  &fixedpadding-v {
+    &-top {
+      width: 100%;
+      top: 0;
+      left: 0;
+    }
+    &-right {
+      right: 0;
+    }
+    &-bottom {
+      width: 100%;
+      left: 0;
+      bottom: 0;
+    }
+    &-left {
+      left: 0;
+    }
+  }
+}
+
+.#{$cv-prefix}canvas {
+  box-sizing: border-box;
+  width: calc(100% - var(--gjs-left-width));
+  height: calc(100% - var(--gjs-canvas-top));
+  bottom: 0;
+  overflow: hidden;
+  z-index: 1;
+  position: absolute;
+  left: 0;
+  top: var(--gjs-canvas-top);
+
+  &-bg {
+    background-color: rgba(0, 0, 0, 0.15);
+  }
+
+  &.#{$cui-cls} {
+    width: 100%;
+    height: 100%;
+    top: 0;
+  }
+
+  &#{gjs-is(grab)},
+  &#{gjs-is(grabbing)} {
+    .#{$cv-prefix}canvas__frames {
+      pointer-events: none; // Need this in multi-frame mode
+    }
+  }
+
+  &__frames {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  &__spots {
+    position: absolute;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .#{$app-prefix}ghost {
+    display: none;
+    pointer-events: none;
+    background-color: #5b5b5b;
+    border: 2px dashed #ccc;
+    position: absolute;
+    z-index: 10;
+
+    @include opacity(0.55);
+  }
+
+  .#{$app-prefix}highlighter,
+  .#{$app-prefix}highlighter-sel {
+    position: absolute;
+    outline: 1px solid var(--gjs-color-blue);
+    outline-offset: -1px;
+    pointer-events: none;
+    width: 100%;
+    height: 100%;
+  }
+
+  .#{$app-prefix}highlighter-warning {
+    outline: 3px solid var(--gjs-color-yellow);
+  }
+
+  .#{$app-prefix}highlighter-sel {
+    outline: 2px solid var(--gjs-color-blue);
+    outline-offset: -2px;
+  }
+
+  ##{$app-prefix}tools,
+  .#{$app-prefix}tools {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    outline: none;
+    z-index: 1;
+  }
+  /* Always place the tools above the highlighter */
+  ##{$app-prefix}tools {
+    z-index: 2;
+  }
+
+  /* This simulate body behaviour */
+  // > div:first-child {
+  //   background-color: #fff;
+  //   position: relative;
+  //   height: 100%;
+  //   overflow: auto;
+  //   width: 100%;
+  // }
+}
+
+.#{$cv-prefix}canvas * {
+  box-sizing: border-box;
+}
+
+.#{$app-prefix}frame {
+  outline: medium none;
+  height: 100%;
+  width: 100%;
+  border: none;
+  margin: auto;
+  display: block;
+  transition:
+    width $frameAnimation,
+    height $frameAnimation;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+
+.#{$app-prefix}toolbar {
+  position: absolute;
+  background-color: var(--gjs-color-blue);
+  white-space: nowrap;
+  color: white;
+  z-index: 10;
+  top: 0;
+  left: 0;
+}
+
+.#{$app-prefix}toolbar-item {
+  width: 26px;
+  padding: 5px;
+  cursor: pointer;
+  display: inline-block;
+
+  svg {
+    fill: currentColor;
+    vertical-align: middle;
+  }
+}
+
+.#{$app-prefix}resizer-c {
+  @extend .#{$app-prefix}no-pointer-events;
+
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 9;
+}
+
+.#{$app-prefix}margin-v-el,
+.#{$app-prefix}padding-v-el,
+.#{$app-prefix}fixedmargin-v-el,
+.#{$app-prefix}fixedpadding-v-el {
+  @extend .#{$app-prefix}no-pointer-events;
+
+  @include opacity(0.1);
+
+  position: absolute;
+  background-color: yellow;
+}
+
+.#{$app-prefix}fixedmargin-v-el,
+.#{$app-prefix}fixedpadding-v-el {
+  @include opacity(0.2);
+}
+
+.#{$app-prefix}padding-v-el,
+.#{$app-prefix}fixedpadding-v-el {
+  background-color: navy;
+}
+
+.#{$app-prefix}resizer-h {
+  pointer-events: all;
+  position: absolute;
+  border: 3px solid var(--gjs-color-blue);
+  width: 10px;
+  height: 10px;
+  background-color: #fff;
+  margin: var(--gjs-handle-margin);
+}
+
+.#{$app-prefix}resizer-h-tl {
+  top: 0;
+  left: 0;
+  cursor: nwse-resize;
+}
+
+.#{$app-prefix}resizer-h-tr {
+  top: 0;
+  right: 0;
+  cursor: nesw-resize;
+}
+
+.#{$app-prefix}resizer-h-tc {
+  top: 0;
+  margin: var(--gjs-handle-margin) auto;
+  left: 0;
+  right: 0;
+  cursor: ns-resize;
+}
+
+.#{$app-prefix}resizer-h-cl {
+  left: 0;
+  margin: auto var(--gjs-handle-margin);
+  top: 0;
+  bottom: 0;
+  cursor: ew-resize;
+}
+
+.#{$app-prefix}resizer-h-cr {
+  margin: auto var(--gjs-handle-margin);
+  top: 0;
+  bottom: 0;
+  right: 0;
+  cursor: ew-resize;
+}
+
+.#{$app-prefix}resizer-h-bl {
+  bottom: 0;
+  left: 0;
+  cursor: nesw-resize;
+}
+
+.#{$app-prefix}resizer-h-bc {
+  bottom: 0;
+  margin: var(--gjs-handle-margin) auto;
+  left: 0;
+  right: 0;
+  cursor: ns-resize;
+}
+
+.#{$app-prefix}resizer-h-br {
+  bottom: 0;
+  right: 0;
+  cursor: nwse-resize;
+}
+
+.#{$pn-prefix}panel {
+  .#{$app-prefix}resizer-h {
+    background-color: rgba(0, 0, 0, 0.2);
+    border: none;
+    opacity: 0;
+    transition: opacity 0.25s;
+
+    &:hover {
+      opacity: 1;
+    }
+  }
+
+  .#{$app-prefix}resizer-h-tc,
+  .#{$app-prefix}resizer-h-bc {
+    margin: 0 auto;
+    width: 100%;
+  }
+
+  .#{$app-prefix}resizer-h-cr,
+  .#{$app-prefix}resizer-h-cl {
+    margin: auto 0;
+    height: 100%;
+  }
+}
+
+.#{$app-prefix}resizing .#{$app-prefix}highlighter,
+.#{$app-prefix}resizing .#{$app-prefix}badge {
+  display: none !important;
+}
+
+.#{$app-prefix}resizing-tl * {
+  cursor: nwse-resize !important;
+}
+
+.#{$app-prefix}resizing-tr * {
+  cursor: nesw-resize !important;
+}
+
+.#{$app-prefix}resizing-tc * {
+  cursor: ns-resize !important;
+}
+
+.#{$app-prefix}resizing-cl * {
+  cursor: ew-resize !important;
+}
+
+.#{$app-prefix}resizing-cr * {
+  cursor: ew-resize !important;
+}
+
+.#{$app-prefix}resizing-bl * {
+  cursor: nesw-resize !important;
+}
+
+.#{$app-prefix}resizing-bc * {
+  cursor: ns-resize !important;
+}
+
+.#{$app-prefix}resizing-br * {
+  cursor: nwse-resize !important;
+}
+
+.btn-cl {
+  @include opacity(0.3);
+
+  font-size: 25px;
+  cursor: pointer;
+
+  &:hover {
+    @include opacity(0.7);
+  }
+}

@@ -28,7 +28,7 @@ Get current selected option or by id.
 
 *   `id` **[String][3]?** Option id.
 
-Returns **([Object][2] | null)** 
+Returns **([Object][2] | null)**&#x20;
 
 ### setOptions
 

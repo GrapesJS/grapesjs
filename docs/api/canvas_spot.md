@@ -59,7 +59,7 @@ Check the spot type.
 
 #### Parameters
 
-*   `type` **[String][2]** 
+*   `type` **[String][2]**&#x20;
 
 #### Examples
 
@@ -67,7 +67,7 @@ Check the spot type.
 canvasSpot.isType('select');
 ```
 
-Returns **[Boolean][4]** 
+Returns **[Boolean][4]**&#x20;
 
 [1]: https://grapesjs.com/docs/modules/Canvas.html#canvas-spots
 

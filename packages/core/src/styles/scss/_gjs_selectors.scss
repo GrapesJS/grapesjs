@@ -1,0 +1,141 @@
+.#{$clm-prefix}field {
+  @extend .#{$sm-prefix}field;
+}
+
+.#{$clm-prefix}select {
+  @extend .#{$sm-prefix}field, .#{$sm-prefix}select;
+}
+
+##{$clm-prefix}add-tag,
+.#{$clm-prefix}tags-btn {
+  background-color: rgba(255, 255, 255, 0.15);
+  border-radius: 2px;
+  padding: 3px;
+  margin-right: 3px;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  width: 24px;
+  height: 24px;
+  box-sizing: border-box;
+  cursor: pointer;
+}
+
+.#{$clm-prefix} {
+  &tags-btn svg {
+    fill: currentColor;
+    display: block;
+  }
+
+  &header {
+    display: flex;
+    align-items: center;
+    margin: 7px 0;
+
+    &-status {
+      flex-shrink: 1;
+      margin-left: auto;
+    }
+  }
+
+  &tag {
+    display: flex;
+    overflow: hidden;
+    align-items: center;
+    border-radius: 3px;
+    margin: 0 3px 3px 0;
+    padding: 5px;
+    cursor: default;
+
+    &-status,
+    &-close {
+      width: 12px;
+      height: 12px;
+      flex-shrink: 1;
+
+      svg {
+        vertical-align: middle;
+        fill: currentColor;
+      }
+    }
+  }
+
+  &sels-info {
+    margin: 7px 0;
+    text-align: left;
+  }
+
+  &sel-id {
+    font-size: 0.9em;
+    @include opacity(0.5);
+  }
+
+  &label-sel {
+    float: left;
+    padding-right: 5px;
+  }
+}
+
+.#{$clm-prefix}tags {
+  font-size: var(--gjs-font-size);
+  padding: 10px 5px;
+
+  ##{$clm-prefix}sel {
+    padding: 7px 0;
+    float: left;
+  }
+
+  ##{$clm-prefix}sel {
+    font-style: italic;
+    margin-left: 5px;
+  }
+
+  ##{$clm-prefix}tags-field {
+    clear: both;
+    padding: 5px;
+    margin-bottom: 5px;
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  ##{$clm-prefix}tags-c {
+    display: flex;
+    flex-wrap: wrap;
+    vertical-align: top;
+    overflow: hidden;
+  }
+
+  ##{$clm-prefix}new {
+    @extend .#{$app-prefix}invis-invis;
+
+    color: var(--gjs-font-color);
+    padding: var(--gjs-padding-elem-classmanager);
+    display: none;
+  }
+
+  ##{$clm-prefix}close {
+    @include opacity(0.85);
+    font-size: 20px;
+    line-height: 0;
+    cursor: pointer;
+    color: rgba(255, 255, 255, 0.9);
+    @extend .no-select;
+
+    &:hover {
+      @include opacity(1);
+    }
+  }
+
+  ##{$clm-prefix}checkbox {
+    color: rgba(255, 255, 255, 0.9);
+    vertical-align: middle;
+    cursor: pointer;
+    font-size: 9px;
+  }
+
+  ##{$clm-prefix}tag-label {
+    flex-grow: 1;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    padding: 0 3px;
+    cursor: text;
+  }
+}

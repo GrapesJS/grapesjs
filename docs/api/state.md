@@ -13,12 +13,12 @@
 
 Get state name
 
-Returns **[String][1]** 
+Returns **[String][1]**&#x20;
 
 ### getLabel
 
 Get state label. If label was not provided, the name will be returned.
 
-Returns **[String][1]** 
+Returns **[String][1]**&#x20;
 
 [1]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String

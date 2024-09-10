@@ -4,13 +4,13 @@
 
 Get page id
 
-Returns **[String][1]** 
+Returns **[String][1]**&#x20;
 
 ## getName
 
 Get page name
 
-Returns **[String][1]** 
+Returns **[String][1]**&#x20;
 
 ## setName
 
@@ -36,7 +36,7 @@ Get all frames
 const arrayOfFrames = page.getAllFrames();
 ```
 
-Returns **[Array][2]\<Frame>** 
+Returns **[Array][2]\<Frame>**&#x20;
 
 ## getMainFrame
 
@@ -48,7 +48,7 @@ Get the first frame of the page (identified always as the main one)
 const mainFrame = page.getMainFrame();
 ```
 
-Returns **Frame** 
+Returns **Frame**&#x20;
 
 ## getMainComponent
 
@@ -61,7 +61,7 @@ const rootComponent = page.getMainComponent();
 console.log(rootComponent.toHTML());
 ```
 
-Returns **Component** 
+Returns **Component**&#x20;
 
 [1]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
 

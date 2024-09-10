@@ -21,7 +21,7 @@
 
 Get property id.
 
-Returns **[String][1]** 
+Returns **[String][1]**&#x20;
 
 ### getType
 
@@ -29,13 +29,13 @@ Get the property type.
 The type of the property is defined on property creation and based on its value the proper Property class is assigned.
 The default type is `base`.
 
-Returns **[String][1]** 
+Returns **[String][1]**&#x20;
 
 ### getName
 
 Get name (the CSS property name).
 
-Returns **[String][1]** 
+Returns **[String][1]**&#x20;
 
 ### getLabel
 
@@ -47,7 +47,7 @@ Get property label.
 
     *   `opts.locale` **[Boolean][4]** Use the locale string from i18n module (optional, default `true`)
 
-Returns **[String][1]** 
+Returns **[String][1]**&#x20;
 
 ### getValue
 
@@ -59,7 +59,7 @@ Get property value.
 
     *   `opts.noDefault` **[Boolean][4]** Avoid returning the default value (optional, default `false`)
 
-Returns **[String][1]** 
+Returns **[String][1]**&#x20;
 
 ### hasValue
 
@@ -71,13 +71,13 @@ Check if the property has value.
 
     *   `opts.noParent` **[Boolean][4]** Ignore the value if it comes from the parent target. (optional, default `false`)
 
-Returns **[Boolean][4]** 
+Returns **[Boolean][4]**&#x20;
 
 ### hasValueParent
 
 Indicates if the current value is coming from a parent target (eg. another CSSRule).
 
-Returns **[Boolean][4]** 
+Returns **[Boolean][4]**&#x20;
 
 ### getStyle
 
@@ -97,13 +97,13 @@ console.log(property.getStyle());
 // { color: 'red' };
 ```
 
-Returns **[Object][3]** 
+Returns **[Object][3]**&#x20;
 
 ### getDefaultValue
 
 Get the default value.
 
-Returns **[string][1]** 
+Returns **[string][1]**&#x20;
 
 ### upValue
 
@@ -122,7 +122,7 @@ The change is also propagated to the selected targets (eg. CSS rule).
 
 Check if the property is visible
 
-Returns **[Boolean][4]** 
+Returns **[Boolean][4]**&#x20;
 
 ### clear
 
@@ -139,19 +139,19 @@ The change is also propagated to the selected targets (eg. the css property is c
 
 Indicates if the current value comes directly from the selected target and so can be cleared.
 
-Returns **[Boolean][4]** 
+Returns **[Boolean][4]**&#x20;
 
 ### getParent
 
 If the current property is a sub-property, this will return the parent Property.
 
-Returns **([[Property][5]] | null)** 
+Returns **([[Property][5]] | null)**&#x20;
 
 ### isFull
 
 Indicates if the property is full-width in UI.
 
-Returns **[Boolean][4]** 
+Returns **[Boolean][4]**&#x20;
 
 [1]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
 

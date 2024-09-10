@@ -4,7 +4,7 @@ title: Trait Manager
 
 # Trait Manager
 
-In GrapesJS, Traits define different parameters and behaviors of a component. The user generally will see traits as the *Settings* of a component. A common use of traits is to customize element attributes (eg. `placeholder` for `<input>`) or you can also bind them to the properties of your components and react to their changes.
+In GrapesJS, Traits define different parameters and behaviors of a component. The user generally will see traits as the _Settings_ of a component. A common use of traits is to customize element attributes (eg. `placeholder` for `<input>`) or you can also bind them to the properties of your components and react to their changes.
 
 ::: warning
 This guide is referring to GrapesJS v0.21.9 or higher.<br><br>
@@ -12,9 +12,6 @@ To get a better understanding of the content in this guide we recommend reading 
 :::
 
 [[toc]]
-
-
-
 
 ## Add Traits to Components
 
@@ -28,32 +25,34 @@ We can start by creating a new custom `input` component in this way:
 
 ```js
 editor.Components.addType('input', {
-    isComponent: el => el.tagName === 'INPUT',
-    model: {
-      defaults: {
-        traits: [
-          // Strings are automatically converted to text types
-          'name', // Same as: { type: 'text', name: 'name' }
-          'placeholder',
-          {
-            type: 'select', // Type of the trait
-            name: 'type', // (required) The name of the attribute/property to use on component
-            label: 'Type', // The label you will see in Settings
-            options: [
-              { id: 'text', label: 'Text'},
-              { id: 'email', label: 'Email'},
-              { id: 'password', label: 'Password'},
-              { id: 'number', label: 'Number'},
-            ]
-          }, {
-            type: 'checkbox',
-            name: 'required',
-        }],
-        // As by default, traits are bound to attributes, so to define
-        // their initial value we can use attributes
-        attributes: { type: 'text', required: true },
-      },
+  isComponent: (el) => el.tagName === 'INPUT',
+  model: {
+    defaults: {
+      traits: [
+        // Strings are automatically converted to text types
+        'name', // Same as: { type: 'text', name: 'name' }
+        'placeholder',
+        {
+          type: 'select', // Type of the trait
+          name: 'type', // (required) The name of the attribute/property to use on component
+          label: 'Type', // The label you will see in Settings
+          options: [
+            { id: 'text', label: 'Text' },
+            { id: 'email', label: 'Email' },
+            { id: 'password', label: 'Password' },
+            { id: 'number', label: 'Number' },
+          ],
+        },
+        {
+          type: 'checkbox',
+          name: 'required',
+        },
+      ],
+      // As by default, traits are bound to attributes, so to define
+      // their initial value we can use attributes
+      attributes: { type: 'text', required: true },
     },
+  },
 });
 ```
 
@@ -65,26 +64,26 @@ If you want you can also define traits dynamically via functions, which will be 
 
 ```js
 editor.Components.addType('input', {
-    isComponent: el => el.tagName === 'INPUT',
-    model: {
-      defaults: {
-        traits(component) {
-          const result = [];
+  isComponent: (el) => el.tagName === 'INPUT',
+  model: {
+    defaults: {
+      traits(component) {
+        const result = [];
 
-          // Example of some logic
-          if (component.get('draggable')) {
-            result.push('name');
-          } else {
-            result.push({
-              type: 'select',
-              // ....
-            });
-          }
-
-          return result;
+        // Example of some logic
+        if (component.get('draggable')) {
+          result.push('name');
+        } else {
+          result.push({
+            type: 'select',
+            // ....
+          });
         }
+
+        return result;
       },
     },
+  },
 });
 ```
 
@@ -104,8 +103,8 @@ editor.Components.addType('input', {
     handleTypeChange() {
       console.log('Input type changed to: ', this.getAttributes().type);
     },
-  }
-})
+  },
+});
 ```
 
 As already mentioned, by default, traits modify attributes of the model, but you can also bind them to the properties by using `changeProp` options.
@@ -119,7 +118,7 @@ editor.Components.addType('input', {
         {
           name: 'placeholder',
           changeProp: 1,
-        }
+        },
         // ...
       ],
       // As we switched from attributes to properties the
@@ -132,8 +131,8 @@ editor.Components.addType('input', {
       this.on('change:placeholder', this.handlePlhChange);
     },
     // ...
-  }
-})
+  },
+});
 ```
 
 ### Categories
@@ -160,18 +159,18 @@ editor.Components.addType('input', {
         { name: 'trait-6' },
       ],
     },
-  }
-})
+  },
+});
 ```
-
-
 
 ## Built-in trait types
 
 GrapesJS comes along with few built-in types that you can use to define your traits:
 
 ### Text
+
 Simple text input
+
 ```js
 {
   type: 'text', // If you don't specify the type, the `text` is the default one
@@ -181,8 +180,11 @@ Simple text input
   placeholder: 'Insert text', // Placeholder to show inside the input
 }
 ```
+
 ### Number
+
 Input for numbers
+
 ```js
 {
   type: 'number',
@@ -193,8 +195,11 @@ Input for numbers
   step: 5, // Number of steps
 }
 ```
+
 ### Checkbox
+
 Simple checkbox input
+
 ```js
 {
   type: 'checkbox',
@@ -203,8 +208,11 @@ Simple checkbox input
   valueFalse: 'NO', // Value to assign when is unchecked, default: `false`
 }
 ```
+
 ### Select
+
 Select input with options
+
 ```js
 {
   type: 'select',
@@ -215,16 +223,22 @@ Select input with options
   ]
 }
 ```
+
 ### Color
+
 Color picker
+
 ```js
 {
   type: 'color',
   // ...
 }
 ```
+
 ### Button
+
 Button with a command to assign
+
 ```js
 {
   type: 'button',
@@ -247,7 +261,7 @@ The trait is a simple property of the component so to get the complete list of c
 ```js
 const component = editor.getSelected(); // Component selected in canvas
 const traits = component.get('traits');
-traits.forEach(trait => console.log(trait.props()))
+traits.forEach((trait) => console.log(trait.props()));
 ```
 
 In case you need a single one:
@@ -289,9 +303,6 @@ component.addTrait({
 component.removeTrait('type');
 ```
 
-
-
-
 ## I18n
 
 To leverage the [I18n module](I18n.html), you can refer to this schema
@@ -327,10 +338,6 @@ To leverage the [I18n module](I18n.html), you can refer to this schema
 }
 ```
 
-
-
-
-
 ## Customization
 
 The default types should cover most of the common properties but in case you need a more advanced UI you can [define your own types](#define-new-trait-type) or even create a completely [custom Trait Manager UI](#custom-trait-manager) from scratch.
@@ -359,9 +366,9 @@ editor.Components.addType('link', {
           name: 'href',
           label: 'New href',
         },
-      ]
-    }
-  }
+      ],
+    },
+  },
 });
 ```
 
@@ -373,16 +380,18 @@ editor.Traits.addType('href-next', {
   createInput({ trait }) {
     // Here we can decide to use properties from the trait
     const traitOpts = trait.get('options') || [];
-    const options = traitOpts.length ? traitOpts : [
-      { id: 'url', label: 'URL' },
-      { id: 'email', label: 'Email' },
-    ];
+    const options = traitOpts.length
+      ? traitOpts
+      : [
+          { id: 'url', label: 'URL' },
+          { id: 'email', label: 'Email' },
+        ];
 
     // Create a new element container and add some content
     const el = document.createElement('div');
     el.innerHTML = `
       <select class="href-next__type">
-        ${options.map(opt => `<option value="${opt.id}">${opt.label}</option>`).join('')}
+        ${options.map((opt) => `<option value="${opt.id}">${opt.label}</option>`).join('')}
       </select>
       <div class="href-next__url-inputs">
         <input class="href-next__url" placeholder="Insert URL"/>
@@ -397,7 +406,7 @@ editor.Traits.addType('href-next', {
     const inputsUrl = el.querySelector('.href-next__url-inputs');
     const inputsEmail = el.querySelector('.href-next__email-inputs');
     const inputType = el.querySelector('.href-next__type');
-    inputType.addEventListener('change', ev => {
+    inputType.addEventListener('change', (ev) => {
       switch (ev.target.value) {
         case 'url':
           inputsUrl.style.display = '';
@@ -498,7 +507,7 @@ editor.Traits.addType('href-next', {
         break;
     }
 
-    component.addAttributes({ href })
+    component.addAttributes({ href });
   },
 });
 ```
@@ -550,15 +559,16 @@ editor.Traits.addType('href-next', {
 ```
 
 Now the trait will update even on component change like:
+
 ```js
-editor.getSelected().addAttributes({ href: 'mailto:new-email@test.com?subject=NewSubject' })
+editor.getSelected().addAttributes({ href: 'mailto:new-email@test.com?subject=NewSubject' });
 ```
 
 To recap what we have done so far, to create a custom trait type all you will need are 3 methods:
 
-* `createInput` - Where we define our custom HTML element
-* `onEvent` - How to update the component on inputs changes
-* `onUpdate` - How to update inputs on component changes
+- `createInput` - Where we define our custom HTML element
+- `onEvent` - How to update the component on inputs changes
+- `onUpdate` - How to update inputs on component changes
 
 #### Result
 
@@ -572,9 +582,9 @@ By looking at the example above might seems like a lot of code, but at the end, 
 ```js
 editor.Traits.addType('slider', {
   createInput({ trait }) {
-    const vueInst = new Vue({ render: h => h(VueSlider) }).$mount();
+    const vueInst = new Vue({ render: (h) => h(VueSlider) }).$mount();
     const sliderInst = vueInst.$children[0];
-    sliderInst.$on('change', ev => this.onChange(ev)); // Use onChange to trigger onEvent
+    sliderInst.$on('change', (ev) => this.onChange(ev)); // Use onChange to trigger onEvent
     this.sliderInst = sliderInst;
     return vueInst.$el;
   },
@@ -596,13 +606,12 @@ editor.Traits.addType('slider', {
 The integration with external components is possible by following these simple core points:
 
 1. **Component rendering**: `new Vue({ render: ...`<br/>
-  Depends on the framework, for example, in React it should be `ReactDOM.render(element, ...`
+   Depends on the framework, for example, in React it should be `ReactDOM.render(element, ...`
 1. **Change propagation**: `sliderInst.$on('change', ev => this.onChange(ev))`<br/>
-  The framework should have a mechanism to subscribe to changes and the component [should expose that change](https://nightcatsama.github.io/vue-slider-component/#/api/events)<br/>
-  We've also used `onChange` method which comes handy when you need to trigger manually the `onEvent` event (you should never call directly `onEvent` method, but only via `onChange` when you need)
+   The framework should have a mechanism to subscribe to changes and the component [should expose that change](https://nightcatsama.github.io/vue-slider-component/#/api/events)<br/>
+   We've also used `onChange` method which comes handy when you need to trigger manually the `onEvent` event (you should never call directly `onEvent` method, but only via `onChange` when you need)
 1. **Property getters/setters**: [`sliderInst.getValue()`](https://nightcatsama.github.io/vue-slider-component/#/api/methods?hash=getvalue)/ [`sliderInst.setValue(value)`](https://nightcatsama.github.io/vue-slider-component/#/api/methods?hash=setvaluevalue)<br/>
-  The component should allow to read and write data from the instance
-
+   The component should allow to read and write data from the instance
 
 ### Custom Trait Manager
 
@@ -612,17 +621,16 @@ All you have to do is to indicate to the editor your intent to use a custom UI a
 
 ```js
 const editor = grapesjs.init({
+  // ...
+  traitManager: {
+    custom: true,
     // ...
-    traitManager: {
-      custom: true,
-      // ...
-    },
+  },
 });
 
-editor.on('trait:custom', props => {
-    // props.container (HTMLElement) - The default element where you can append your custom UI
-
-    // Here you would put the logic to render/update your UI.
+editor.on('trait:custom', (props) => {
+  // props.container (HTMLElement) - The default element where you can append your custom UI
+  // Here you would put the logic to render/update your UI.
 });
 ```
 
@@ -911,11 +919,8 @@ In the example below we'll replicate most of the default functionality by using 
 </script>
 -->
 
-
-
 ## Events
 
 For a complete list of available events, you can check it [here](/api/trait_manager.html#available-events).
 
-
-[Traits API]: </api/trait_manager.html>
+[Traits API]: /api/trait_manager.html

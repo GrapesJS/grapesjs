@@ -15,9 +15,10 @@ images/
 private/
 vendor/
 coverage/
-/locale/
+locale/
 node_modules/
 bower_components/
 grapesjs-*.tgz
 _index.html
 docs/.vuepress/dist
+dist/

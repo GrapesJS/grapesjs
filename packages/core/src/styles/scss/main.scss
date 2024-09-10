@@ -1,0 +1,585 @@
+/* stylelint-disable */
+@import 'codemirror/lib/codemirror';
+@import 'codemirror/theme/hopscotch';
+
+@import 'spectrum.scss';
+@import 'gjs_variables.scss';
+
+@function darken-color($color, $percentage) {
+  @return color-mix(in srgb, $color, black $percentage);
+}
+
+@function lighten-color($color, $percentage) {
+  @return color-mix(in srgb, $color, white $percentage);
+}
+
+@mixin user-select($v) {
+  -moz-user-select: $v;
+  -khtml-user-select: $v;
+  -webkit-user-select: $v;
+  -ms-user-select: $v;
+  -o-user-select: $v;
+  user-select: $v;
+}
+
+@mixin opacity($v) {
+  opacity: $v;
+  filter: alpha(opacity=$v * 100);
+}
+
+@mixin appearance($v) {
+  -webkit-appearance: $v;
+  -moz-appearance: $v;
+  appearance: $v;
+}
+
+@mixin transform($v) {
+  -ms-transform: $v;
+  -webkit-transform: $v;
+  -moz-transform: $v;
+  transform: $v;
+}
+
+$prefix: $app-prefix;
+
+@import 'gjs_status';
+
+$colorsAll: (one, var(--gjs-primary-color)), (two, var(--gjs-secondary-color)), (three, var(--gjs-tertiary-color)),
+  (four, var(--gjs-quaternary-color)), (danger, var(--gjs-color-red));
+
+.#{$prefix} {
+  @each $cnum, $ccol in $colorsAll {
+    &#{$cnum} {
+      &-bg {
+        background-color: $ccol;
+      }
+
+      &-color {
+        color: $ccol;
+
+        &-h:hover {
+          color: $ccol;
+        }
+      }
+    }
+  }
+}
+
+.#{$app-prefix}bg {
+  &-main {
+    background-color: var(--gjs-main-color);
+  }
+}
+
+.#{$app-prefix}color {
+  &-main {
+    color: var(--gjs-font-color);
+    fill: var(--gjs-font-color);
+  }
+
+  &-active {
+    color: var(--gjs-font-color-active);
+    fill: var(--gjs-font-color-active);
+  }
+
+  &-warn {
+    color: var(--gjs-color-warn);
+    fill: var(--gjs-color-warn);
+  }
+
+  &-hl {
+    color: var(--gjs-color-highlight);
+    fill: var(--gjs-color-highlight);
+  }
+}
+
+.#{$app-prefix}invis-invis,
+.#{$app-prefix}no-app {
+  background-color: transparent;
+  border: none;
+  color: inherit;
+}
+.#{$app-prefix}no-app {
+  height: 10px;
+}
+
+.#{$app-prefix}test {
+  &::btn {
+    color: '#fff';
+  }
+
+  &input {
+  }
+
+  &header {
+  }
+}
+.opac50 {
+  @include opacity(0.5);
+}
+.#{$app-prefix}checker-bg,
+.checker-bg {
+  background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAIAAADZF8uwAAAAGUlEQVQYV2M4gwH+YwCGIasIUwhT25BVBADtzYNYrHvv4gAAAABJRU5ErkJggg==');
+}
+
+.#{$app-prefix}no-user-select {
+  @include user-select(none);
+}
+
+.#{$app-prefix}no-pointer-events {
+  pointer-events: none;
+}
+
+.#{$app-prefix}bdrag {
+  pointer-events: none !important;
+  position: absolute !important;
+  z-index: 10 !important;
+  width: auto;
+}
+
+.#{$app-prefix}drag-helper {
+  background-color: var(--gjs-color-blue) !important;
+  pointer-events: none !important;
+  position: absolute !important;
+  z-index: 10 !important;
+  transform: scale(0.3) !important;
+  transform-origin: top left !important;
+  -webkit-transform-origin: top left !important;
+  margin: 15px !important;
+  transition: none !important;
+  outline: none !important;
+}
+
+.#{$app-prefix}grabbing,
+.#{$app-prefix}grabbing * {
+  @extend .#{$app-prefix}no-user-select;
+
+  cursor: grabbing !important;
+  cursor: -webkit-grabbing !important;
+}
+
+.#{$app-prefix}grabbing {
+  overflow: hidden;
+}
+
+.#{$app-prefix}off-prv {
+  @extend .#{$app-prefix}color-main;
+  @extend .#{$app-prefix}bg-main;
+  position: relative;
+  z-index: 10;
+  padding: 5px;
+  cursor: pointer;
+}
+
+// Custom scrollbars for Chrome
+.#{$app-prefix}editor-cont ::-webkit-scrollbar-track {
+  background: var(--gjs-secondary-dark-color);
+}
+
+.#{$app-prefix}editor-cont ::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+.#{$app-prefix}editor-cont ::-webkit-scrollbar {
+  width: 8px;
+}
+
+/********************* MAIN ************************/
+// @property --input-padding {
+//   syntax: "<length>";
+//   inherits: false;
+//   initial-value: #{$inputPadding};
+// }
+
+:root {
+  --gjs-main-color: #{$mainColor};
+  --gjs-primary-color: #{$primaryColor};
+  --gjs-secondary-color: #{$secondaryColor};
+  --gjs-tertiary-color: #{$tertiaryColor};
+  --gjs-quaternary-color: #{$quaternaryColor};
+  --gjs-font-color: #{$fontColor};
+  --gjs-font-color-active: #{$fontColorActive};
+  --gjs-main-dark-color: #{$mainDkColor};
+  --gjs-secondary-dark-color: #{$mainDklColor};
+  --gjs-main-light-color: #{$mainLhColor};
+  --gjs-secondary-light-color: #{$mainLhlColor};
+  --gjs-soft-light-color: #{$softLhColor};
+  --gjs-color-blue: #{$colorBlue};
+  --gjs-color-red: #{$colorRed};
+  --gjs-color-yellow: #{$colorYell};
+  --gjs-color-green: #{$colorGreen};
+  --gjs-left-width: #{$leftWidth};
+  --gjs-color-highlight: #{$colorHighlight};
+  --gjs-color-warn: #{$colorWarn};
+  --gjs-handle-margin: #{$hndlMargin};
+  --gjs-light-border: #{$lightBorder};
+  --gjs-arrow-color: #{$arrowColor};
+  --gjs-dark-text-shadow: #{$darkTextShadow};
+  --gjs-color-input-padding: #{$colorpSize};
+  --gjs-input-padding: #{$inputPadding}; // Has to be a single value
+  --gjs-padding-elem-classmanager: #{$paddElClm};
+  --gjs-upload-padding: #{$uploadPadding};
+  --gjs-animation-duration: #{$animSpeed};
+  --gjs-main-font: #{$mainFont};
+  --gjs-font-size: #{$fontSize};
+  --gjs-placeholder-background-color: #{$placeholderColor};
+  --gjs-canvas-top: #{$canvasTop};
+  --gjs-flex-item-gap: 5px;
+}
+
+.clear {
+  clear: both;
+}
+
+.no-select {
+  @include user-select(none);
+}
+
+.#{$app-prefix} {
+  &no-touch-actions {
+    touch-action: none;
+  }
+
+  &disabled {
+    @include user-select(none);
+    @include opacity(0.5);
+  }
+
+  &editor {
+    font-family: var(--gjs-main-font);
+    font-size: var(--gjs-font-size);
+    position: relative;
+    box-sizing: border-box;
+    height: 100%;
+  }
+}
+
+.#{$app-prefix}freezed,
+.#{$nv-prefix}freezed {
+  @include opacity(0.5);
+  pointer-events: none;
+}
+
+@import 'gjs_traits';
+@import 'gjs_canvas';
+
+/********* COMMANDS **********/
+
+.no-dots,
+.ui-resizable-handle {
+  border: none !important;
+  margin: 0 !important;
+  outline: none !important;
+}
+
+.#{$com-prefix}dashed * {
+  outline: 1px dashed #888;
+  outline-offset: -2px;
+  box-sizing: border-box;
+}
+
+.#{$com-prefix}no-select,
+.#{$com-prefix}no-select img {
+  @extend .no-select;
+}
+
+.#{$com-prefix}badge,
+.#{$app-prefix}badge {
+  pointer-events: none;
+  background-color: var(--gjs-color-blue);
+  color: #fff;
+  padding: 2px 5px;
+  position: absolute;
+  z-index: 1;
+  font-size: 12px;
+  outline: none;
+  display: none;
+}
+.#{$app-prefix}badge-warning {
+  background-color: var(--gjs-color-yellow);
+}
+.#{$app-prefix}placeholder,
+.#{$com-prefix}placeholder,
+.#{$nv-prefix}placeholder {
+  position: absolute;
+  z-index: 10;
+  pointer-events: none;
+  display: none;
+}
+
+.#{$app-prefix}placeholder,
+.#{$nv-prefix}placeholder {
+  border-style: solid !important;
+  outline: none;
+  box-sizing: border-box;
+  transition:
+    top var(--gjs-animation-duration),
+    left var(--gjs-animation-duration),
+    width var(--gjs-animation-duration),
+    height var(--gjs-animation-duration);
+}
+
+.#{$app-prefix}placeholder.horizontal,
+.#{$com-prefix}placeholder.horizontal,
+.#{$nv-prefix}placeholder.horizontal {
+  border-color: transparent var(--gjs-placeholder-background-color);
+  border-width: 3px 5px;
+  margin: -3px 0 0;
+}
+
+.#{$app-prefix}placeholder.vertical,
+.#{$com-prefix}placeholder.vertical,
+.#{$nv-prefix}placeholder.vertical {
+  border-color: var(--gjs-placeholder-background-color) transparent;
+  border-width: 5px 3px;
+  margin: 0 0 0 -3px;
+}
+
+.#{$app-prefix}placeholder-int,
+.#{$com-prefix}placeholder-int,
+.#{$nv-prefix}placeholder-int {
+  background-color: var(--gjs-placeholder-background-color);
+  box-shadow: 0 0 3px rgba(0, 0, 0, 0.2);
+  height: 100%;
+  width: 100%;
+  pointer-events: none;
+  padding: 1.5px;
+  outline: none;
+}
+
+@import 'gjs_panels';
+
+/***********  Components *************/
+
+@import 'gjs_inputs';
+
+@import 'gjs_devices';
+
+/********* General **********/
+
+.#{$app-prefix}category-open {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.25);
+}
+
+.#{$app-prefix}category-title {
+  @extend .no-select;
+
+  font-weight: lighter;
+  background-color: var(--gjs-secondary-dark-color);
+  letter-spacing: 1px;
+  padding: 9px 10px 9px 20px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.25);
+  text-align: left;
+  position: relative;
+  cursor: pointer;
+}
+
+@import 'gjs_style_manager';
+@import 'gjs_blocks';
+@import 'gjs_layers';
+@import 'gjs_selectors';
+@import 'gjs_modal';
+@import 'gjs_assets';
+
+/********* File uploader **********/
+
+.#{$am-prefix}file-uploader {
+  width: 55%;
+  float: left;
+
+  > form {
+    background-color: var(--gjs-secondary-dark-color);
+    border: 2px dashed;
+    border-radius: 3px;
+    position: relative;
+    text-align: center;
+    margin-bottom: 15px;
+
+    &.#{$am-prefix}hover {
+      border: 2px solid var(--gjs-color-green);
+      color: lighten-color(var(--gjs-color-green), 5%);
+    }
+
+    &.#{$am-prefix}disabled {
+      border-color: red;
+    }
+
+    ##{$am-prefix}uploadFile {
+      @include opacity(0);
+      padding: var(--gjs-upload-padding);
+      width: 100%;
+      box-sizing: border-box;
+    }
+  }
+
+  ##{$am-prefix}title {
+    position: absolute;
+    padding: var(--gjs-upload-padding);
+    width: 100%;
+  }
+}
+
+/********* Code Manager **********/
+
+.#{$cm-prefix}editor-c {
+  float: left;
+  box-sizing: border-box;
+  width: 50%;
+
+  .CodeMirror {
+    height: 450px;
+  }
+}
+.#{$cm-prefix}editor {
+  font-size: 12px;
+
+  &##{$cm-prefix}htmlmixed {
+    padding-right: 10px;
+    border-right: 1px solid var(--gjs-main-dark-color);
+    ##{$cm-prefix}title {
+      color: #a97d44;
+    }
+  }
+  &##{$cm-prefix}css {
+    padding-left: 10px;
+    ##{$cm-prefix}title {
+      color: #ddca7e;
+    }
+  }
+  ##{$cm-prefix}title {
+    background-color: var(--gjs-main-dark-color);
+    font-size: 12px;
+    padding: 5px 10px 3px;
+    text-align: right;
+  }
+}
+
+/*************RTE****************/
+
+@import 'gjs_rte';
+
+/********* Spectrum **********/
+
+.#{$app-prefix}editor-sp {
+  border: 1px solid var(--gjs-main-dark-color);
+  box-shadow: 0 0 7px var(--gjs-main-dark-color);
+  border-radius: 3px;
+}
+
+.#{$app-prefix}editor-sp {
+  .sp-hue,
+  .sp-slider {
+    cursor: row-resize;
+  }
+  .sp-color,
+  .sp-dragger {
+    cursor: crosshair;
+  }
+  .sp-alpha-inner,
+  .sp-alpha-handle {
+    cursor: col-resize;
+  }
+  .sp-hue {
+    left: 90%;
+  }
+  .sp-color {
+    right: 15%;
+  }
+  .sp-picker-container {
+    border: none;
+  }
+  .colpick_dark .colpick_color {
+    outline: 1px solid var(--gjs-main-dark-color);
+  }
+  .sp-cancel,
+  .sp-cancel:hover {
+    bottom: -8px;
+    color: #777 !important;
+    font-size: 25px;
+    left: 0;
+    position: absolute;
+    text-decoration: none;
+  }
+  .sp-alpha-handle {
+    background-color: #ccc;
+    border: 1px solid #555;
+    width: 4px;
+  }
+  .sp-color,
+  .sp-hue {
+    border: 1px solid #333333;
+  }
+  .sp-slider {
+    background-color: #ccc;
+    border: 1px solid #555;
+    height: 3px;
+    left: -4px;
+    width: 22px;
+  }
+  .sp-dragger {
+    background: transparent;
+    box-shadow: 0 0 0 1px #111;
+  }
+  .sp-button-container {
+    float: none;
+    width: 100%;
+    position: relative;
+    text-align: right;
+
+    .sp-choose,
+    .sp-choose:hover,
+    .sp-choose:active {
+      background: var(--gjs-main-dark-color);
+      border-color: var(--gjs-main-dark-color);
+      color: var(--gjs-font-color);
+      text-shadow: none;
+      box-shadow: none;
+      padding: 3px 5px;
+    }
+  }
+  .sp-palette-container {
+    border: none;
+    float: none;
+    margin: 0;
+    padding: 5px 10px 0;
+  }
+  .sp-palette .sp-thumb-el,
+  .sp-palette .sp-thumb-el:hover {
+    border: 1px solid rgba(0, 0, 0, 0.9);
+  }
+
+  .sp-palette .sp-thumb-el:hover,
+  .sp-palette .sp-thumb-el.sp-thumb-active {
+    border-color: rgba(0, 0, 0, 0.9);
+  }
+}
+
+.#{$app-prefix}hidden {
+  display: none;
+}
+
+@keyframes #{$app-prefix}slide-down {
+  0% {
+    transform: translate(0, -3rem);
+    opacity: 0;
+  }
+  100% {
+    transform: translate(0, 0);
+    opacity: 1;
+  }
+}
+
+@keyframes #{$app-prefix}slide-up {
+  0% {
+    transform: translate(0, 0);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(0, -3rem);
+    opacity: 0;
+  }
+}
+
+.cm-s-hopscotch span.cm-error {
+  color: #ffffff;
+}

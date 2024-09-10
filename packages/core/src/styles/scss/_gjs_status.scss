@@ -1,0 +1,18 @@
+$gjs-is-prefix: '.#{$app-prefix}is__';
+
+@function gjs-is($name) {
+  @return '#{$gjs-is-prefix}#{$name}';
+}
+
+#{$gjs-is-prefix} {
+  &grab,
+  &grab * {
+    cursor: grab !important;
+  }
+
+  &grabbing,
+  &grabbing * {
+    @include user-select(none);
+    cursor: grabbing !important;
+  }
+}

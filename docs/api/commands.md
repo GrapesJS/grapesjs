@@ -32,19 +32,19 @@ editor.on('command:run', ({ id, result, options }) => {
 });
 ```
 
-* `command:run:COMMAND_ID` Triggered on run of a specific command.
+* `command:run:COMMAND\_ID` Triggered on run of a specific command.
 
 ```javascript
 editor.on('command:run:my-command', ({ result, options }) => { ... });
 ```
 
-* `command:run:before:COMMAND_ID` Triggered before the command is called.
+* `command:run:before:COMMAND\_ID` Triggered before the command is called.
 
 ```javascript
 editor.on('command:run:before:my-command', ({ options }) => { ... });
 ```
 
-* `command:abort:COMMAND_ID` Triggered when the command execution is aborted.
+* `command:abort:COMMAND\_ID` Triggered when the command execution is aborted.
 
 ```javascript
 editor.on('command:abort:my-command', ({ options }) => { ... });
@@ -65,13 +65,13 @@ editor.on('command:stop', ({ id, result, options }) => {
 });
 ```
 
-* `command:stop:COMMAND_ID` Triggered on stop of a specific command.
+* `command:stop:COMMAND\_ID` Triggered on stop of a specific command.
 
 ```javascript
 editor.on('command:run:my-command', ({ result, options }) => { ... });
 ```
 
-* `command:stop:before:COMMAND_ID` Triggered before the command is called to stop.
+* `command:stop:before:COMMAND\_ID` Triggered before the command is called to stop.
 
 ```javascript
 editor.on('command:stop:before:my-command', ({ options }) => { ... });
@@ -114,7 +114,7 @@ commands.add('myCommand', {
 commands.add('myCommand2', editor => { ... });
 ```
 
-Returns **this** 
+Returns **this**&#x20;
 
 ## get
 
@@ -153,7 +153,7 @@ commands.extend('old-command', {
 });
 ```
 
-Returns **this** 
+Returns **this**&#x20;
 
 ## has
 
@@ -163,13 +163,13 @@ Check if command exists
 
 *   `id` **[string][11]** Command's ID
 
-Returns **[Boolean][14]** 
+Returns **[Boolean][14]**&#x20;
 
 ## getAll
 
 Get an object containing all the commands
 
-Returns **[Object][12]** 
+Returns **[Object][12]**&#x20;
 
 ## run
 
@@ -227,7 +227,7 @@ commands.isActive(cId);
 // -> false
 ```
 
-Returns **[Boolean][14]** 
+Returns **[Boolean][14]**&#x20;
 
 ## getActive
 
@@ -240,7 +240,7 @@ console.log(commands.getActive());
 // -> { someCommand: itsLastReturn, anotherOne: ... };
 ```
 
-Returns **[Object][12]** 
+Returns **[Object][12]**&#x20;
 
 [1]: https://github.com/GrapesJS/grapesjs/blob/master/src/commands/config/config.ts
 

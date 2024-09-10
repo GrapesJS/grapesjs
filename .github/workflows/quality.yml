@@ -1,0 +1,23 @@
+name: GrapesJS Qualty Checks
+on:
+  push:
+    branches: [dev]
+  pull_request:
+    branches: [dev]
+
+jobs:
+  quality-checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-project
+      - name: TS Check
+        run: pnpm ts:check
+      - name: Lint
+        run: pnpm lint
+      - name: Format Check
+        run: pnpm format:check
+      - name: Test
+        run: pnpm test
+      - name: Docs
+        run: pnpm docs:api

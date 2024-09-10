@@ -1,0 +1,180 @@
+$layerIconSize: 15px !default;
+
+.#{$nv-prefix} {
+  &selected-parent {
+    border: 1px solid var(--gjs-color-yellow);
+  }
+
+  &opac50 {
+    @include opacity(0.5);
+  }
+
+  &layer {
+    font-weight: lighter;
+    text-align: left;
+    position: relative;
+    font-size: var(--gjs-font-size);
+    display: grid;
+
+    &-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 5px 10px;
+      border-bottom: 1px solid var(--gjs-main-dark-color);
+      background-color: var(--gjs-secondary-dark-color);
+      gap: var(--gjs-flex-item-gap);
+      cursor: pointer;
+
+      &-left,
+      &-right {
+        display: flex;
+        align-items: center;
+        gap: var(--gjs-flex-item-gap);
+      }
+
+      &-left {
+        width: 100%;
+      }
+    }
+
+    &-hidden {
+      @include opacity(0.55);
+    }
+
+    &-vis {
+      box-sizing: content-box;
+      cursor: pointer;
+      z-index: 1;
+
+      &-on,
+      &-off {
+        display: flex;
+        width: 13px;
+      }
+
+      &-off {
+        display: none;
+      }
+
+      &.#{$nv-prefix}layer-off {
+        .#{$nv-prefix}layer-vis-on {
+          display: none;
+        }
+        .#{$nv-prefix}layer-vis-off {
+          display: flex;
+        }
+      }
+    }
+
+    &-caret {
+      width: 15px;
+      cursor: pointer;
+      box-sizing: content-box;
+      transform: rotate(90deg);
+      display: flex;
+      @include opacity(0.7);
+
+      &:hover {
+        @include opacity(1);
+      }
+    }
+
+    &.open > &-item &-caret {
+      transform: rotate(180deg);
+    }
+
+    &-title {
+      @extend .#{$app-prefix}category-title;
+
+      padding: 0;
+      display: flex;
+      align-items: center;
+      background-color: transparent !important;
+      border-bottom: none;
+
+      &-inn {
+        align-items: center;
+        position: relative;
+        display: flex;
+        gap: var(--gjs-flex-item-gap);
+      }
+
+      &-c {
+        width: 100%;
+      }
+    }
+
+    &__icon {
+      display: block;
+      width: 100%;
+      max-width: $layerIconSize;
+      max-height: $layerIconSize;
+      padding-left: 5px;
+
+      svg {
+        fill: currentColor;
+      }
+    }
+
+    &-name {
+      display: inline-block;
+      box-sizing: content-box;
+      overflow: hidden;
+      white-space: nowrap;
+      max-width: 170px;
+      height: auto;
+      @extend .#{$app-prefix}no-user-select;
+
+      &--no-edit {
+        text-overflow: ellipsis;
+      }
+    }
+
+    > .#{$nv-prefix}layer-children {
+      display: none;
+    }
+
+    &.open > .#{$nv-prefix}layer-children {
+      display: block;
+    }
+
+    &-no-chld > .#{$nv-prefix}layer-title-inn > .#{$nv-prefix}layer-caret {
+      visibility: hidden;
+    }
+
+    &-move {
+      display: flex;
+      width: 13px;
+      box-sizing: content-box;
+      cursor: move;
+    }
+
+    &.#{$nv-prefix}hovered .#{$nv-prefix}layer-item {
+      background-color: var(--gjs-soft-light-color);
+    }
+
+    &.#{$nv-prefix}selected .#{$nv-prefix}layer-item {
+      background-color: var(--gjs-main-light-color);
+    }
+  }
+}
+
+.#{$app-prefix}layers {
+  position: relative;
+  height: 100%;
+
+  ##{$nv-prefix}placeholder {
+    width: 100%;
+    position: absolute;
+
+    ##{$nv-prefix}plh-int {
+      height: 100%;
+      padding: 1px;
+
+      &.#{$nv-prefix}insert {
+        background-color: var(--gjs-color-green);
+      }
+    }
+  }
+}

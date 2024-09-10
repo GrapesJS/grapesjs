@@ -12,8 +12,6 @@ This guide is referring to GrapesJS v0.17.26 or higher
 
 [[toc]]
 
-
-
 ## Basic usage
 
 You can easily display your content by calling a single API call.
@@ -57,7 +55,7 @@ Modal.setContent('New content');
 
 // Execute one-time callback on modal close
 Modal.onceClose(() => {
- console.log('My last modal is closed');
+  console.log('My last modal is closed');
 });
 ```
 
@@ -68,8 +66,8 @@ The fastest and the easiest one is to use your specific CSS for the modal elemen
 
 ```css
 .gjs-mdl-dialog {
-    background-color: white;
-    color: #333;
+  background-color: white;
+  color: #333;
 }
 ```
 
@@ -77,17 +75,17 @@ In case you have to customize a specific modal differently, you can rely on your
 
 ```js
 editor.Modal.open({
-    title: 'My title',
-    content: 'My content',
-    attributes: {
-        class: 'my-small-modal',
-    },
+  title: 'My title',
+  content: 'My content',
+  attributes: {
+    class: 'my-small-modal',
+  },
 });
 ```
 
 ```css
 .my-small-modal .gjs-mdl-dialog {
-    max-width: 300px;
+  max-width: 300px;
 }
 ```
 
@@ -101,26 +99,24 @@ For more advanced usage, you can completely replace the default modal with one o
 
 ```js
 const editor = grapesjs.init({
-    // ...
-    modal: { custom: true },
+  // ...
+  modal: { custom: true },
 });
 
-editor.on('modal', props => {
-    // The `props` will contain all the information you need in order to update your custom modal.
-    // props.open (boolean) - Indicates if the modal should be open
-    // props.title (Node) - Modal title
-    // props.content (Node) - Modal content
-    // props.attributes (Object) - Modal custom attributes (eg. class)
-    // props.close (Function) - A callback to use when you want to close the modal programmatically
-
-    // Here you would put the logic to control your modal.
+editor.on('modal', (props) => {
+  // The `props` will contain all the information you need in order to update your custom modal.
+  // props.open (boolean) - Indicates if the modal should be open
+  // props.title (Node) - Modal title
+  // props.content (Node) - Modal content
+  // props.attributes (Object) - Modal custom attributes (eg. class)
+  // props.close (Function) - A callback to use when you want to close the modal programmatically
+  // Here you would put the logic to control your modal.
 });
 ```
 
 Here an example of using the Bootstrap modal.
 
 <demo-viewer value="x70amv3f" height="500" darkcode/>
-
 
 ## Events
 

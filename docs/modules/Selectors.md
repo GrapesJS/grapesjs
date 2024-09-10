@@ -6,7 +6,6 @@ title: Selector Manager
 
 <p align="center"><img :src="$withBase('/selector-manager.jpg')" alt="GrapesJS - Selector Manager"/></p>
 
-
 The [Selector] allows the reuse of styles across all of your [Components] in the project (exactly what classes do in HTML) and the main goal of the Selector Manager is to collect them and indicate the current state of the selection.
 
 ::: warning
@@ -14,7 +13,6 @@ This guide is referring to GrapesJS v0.17.28 or higher
 :::
 
 [[toc]]
-
 
 ## Configuration
 
@@ -30,7 +28,6 @@ const editor = grapesjs.init({
 ```
 
 Check the full list of available options here: [Selector Manager Config](https://github.com/GrapesJS/grapesjs/blob/master/src/selector_manager/config/config.ts)
-
 
 ## Initialization
 
@@ -55,6 +52,7 @@ const editor = grapesjs.init({
   `,
 });
 ```
+
 Internally, the example above will provide to Selector Manager 3 selectors: `class-a`, `class-b` and `class-c`.
 
 Without any selected component, the Selector Manager UI is hidden by default (along with the Style Manager). By selecting the `Element A-B-C` you will see the current selection of what will be actually styled.
@@ -72,9 +70,6 @@ The label **Selected** indicates on which CSS query styles will be applied, so i
 You can also disable specific selectors and change the state (eg. Hover) in order to switch the target of styling.
 
 <img :src="$withBase('/sm-disable-selector.jpg')" alt="Disabled selectors" style="display: block; margin: auto"/>
-
-
-
 
 ## Component-first selectors
 
@@ -99,14 +94,9 @@ This option enables also the possibility to style multiple components and the ab
 With multiple selection, the Style Manager shows always styles of the last selected component.
 :::
 
-
-
 ## Programmatic usage
+
 If you need to manage your selectors programmatically you can use its [APIs][Selector API].
-
-
-
-
 
 ## Customization
 
@@ -116,17 +106,16 @@ All you have to do is to indicate the editor your intent to use a custom UI and 
 
 ```js
 const editor = grapesjs.init({
+  // ...
+  selectorManager: {
+    custom: true,
     // ...
-    selectorManager: {
-      custom: true,
-      // ...
-    },
+  },
 });
 
-editor.on('selector:custom', props => {
-    // props.container (HTMLElement) - The default element where you can append your UI
-
-    // Here you would put the logic to render/update your UI.
+editor.on('selector:custom', (props) => {
+  // props.container (HTMLElement) - The default element where you can append your UI
+  // Here you would put the logic to render/update your UI.
 });
 ```
 
@@ -134,17 +123,12 @@ In the example below we'll replicate most of the default functionality by using 
 
 <demo-viewer value="v8cgkLfr" height="500" darkcode/>
 
-
-
-
-
 ## Events
 
 For a complete list of available events, you can check it [here](/api/selector_manager.html#available-events).
 
-
-[Selector]: </api/selector.html>
-[Style Manager]: <Style-manager.html>
-[Components]: <Components.html>
-[Getting Started]: </getting-started.html>
-[Selector API]: </api/selector_manager.html>
+[Selector]: /api/selector.html
+[Style Manager]: Style-manager.html
+[Components]: Components.html
+[Getting Started]: /getting-started.html
+[Selector API]: /api/selector_manager.html

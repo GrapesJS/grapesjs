@@ -70,7 +70,7 @@ Get all pages
 const arrayOfPages = pageManager.getAll();
 ```
 
-Returns **[Array][1]<[Page]>** 
+Returns **[Array][1]<[Page]>**&#x20;
 
 ## add
 
@@ -91,7 +91,7 @@ const newPage = pageManager.add({
 });
 ```
 
-Returns **[Page]** 
+Returns **[Page]**&#x20;
 
 ## remove
 
@@ -127,7 +127,7 @@ Get page by id
 const somePage = pageManager.get('page-id');
 ```
 
-Returns **[Page]** 
+Returns **[Page]**&#x20;
 
 ## getMain
 
@@ -139,7 +139,7 @@ Get main page (the first one available)
 const mainPage = pageManager.getMain();
 ```
 
-Returns **[Page]** 
+Returns **[Page]**&#x20;
 
 ## getAllWrappers
 
@@ -153,7 +153,7 @@ const wrappers = pageManager.getAllWrappers();
 const allImages = wrappers.map(wrp => wrp.findType('image')).flat();
 ```
 
-Returns **[Array][1]<[Component]>** 
+Returns **[Array][1]<[Component]>**&#x20;
 
 ## select
 
@@ -173,7 +173,7 @@ const somePage = pageManager.get('page-id');
 pageManager.select(somePage);
 ```
 
-Returns **this** 
+Returns **this**&#x20;
 
 ## getSelected
 
@@ -185,7 +185,7 @@ Get the selected page
 const selectedPage = pageManager.getSelected();
 ```
 
-Returns **[Page]** 
+Returns **[Page]**&#x20;
 
 [1]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array
 
