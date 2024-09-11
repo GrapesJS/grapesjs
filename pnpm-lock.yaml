@@ -127,8 +127,8 @@ importers:
         specifier: '8'
         version: 8.4.45
       sass:
-        specifier: 1.42.1
-        version: 1.42.1
+        specifier: 1.78.0
+        version: 1.78.0
       vuepress:
         specifier: 1.9.10
         version: 1.9.10(@vue/compiler-sfc@3.5.3)(ejs@3.1.10)(hogan.js@3.0.2)(lodash@4.17.21)(prettier@3.3.3)(underscore@1.13.1)
@@ -255,8 +255,8 @@ importers:
         specifier: '8'
         version: 8.4.45
       sass:
-        specifier: 1.42.1
-        version: 1.42.1
+        specifier: 1.78.0
+        version: 1.78.0
       whatwg-fetch:
         specifier: 3.6.20
         version: 3.6.20
@@ -4379,6 +4379,9 @@ packages:
   immediate@3.3.0:
     resolution: {integrity: sha512-HR7EVodfFUdQCTIeySw+WDRFJlPcLOJbXfwwZ7Oom6tjsvZ3bOkCDJHehQC3nxJrv7+f9XecwazynjU8e4Vw3Q==}
 
+  immutable@4.3.7:
+    resolution: {integrity: sha512-1hqclzwYwjRDFLjcFxOM5AYkkG0rpFPpr1RLPMEuGczoS7YA8gLhy8SWXYRAA/XwfEHpfo3cw5JGioS32fnMRw==}
+
   import-cwd@2.1.0:
     resolution: {integrity: sha512-Ew5AZzJQFqrOV5BTW3EIoHAnoie1LojZLXKcCQ/yTRyVZosBhK1x1ViYjHGf5pAFOq8ZyChZp6m/fSN7pJyZtg==}
     engines: {node: '>=4'}
@@ -6693,9 +6696,9 @@ packages:
   safer-buffer@2.1.2:
     resolution: {integrity: sha512-YZo3K82SD7Riyi0E1EQPojLz7kpepnSQI9IyPbHHg1XXXevb5dJI7tpyN2ADxGcQbHG7vcyRHk0cbwqcQriUtg==}
 
-  sass@1.42.1:
-    resolution: {integrity: sha512-/zvGoN8B7dspKc5mC6HlaygyCBRvnyzzgD5khiaCfglWztY99cYoiTUksVx11NlnemrcfH5CEaCpsUKoW0cQqg==}
-    engines: {node: '>=8.9.0'}
+  sass@1.78.0:
+    resolution: {integrity: sha512-AaIqGSrjo5lA2Yg7RvFZrlXDBCp3nV4XP73GrLGvdRWWwk+8H3l0SDvq/5bA4eF+0RFPLuWUk3E+P1U/YqnpsQ==}
+    engines: {node: '>=14.0.0'}
     hasBin: true
 
   sax@1.2.4:
@@ -13311,6 +13314,8 @@ snapshots:
 
   immediate@3.3.0: {}
 
+  immutable@4.3.7: {}
+
   import-cwd@2.1.0:
     dependencies:
       import-from: 2.1.0
@@ -16141,9 +16146,11 @@ snapshots:
 
   safer-buffer@2.1.2: {}
 
-  sass@1.42.1:
+  sass@1.78.0:
     dependencies:
       chokidar: 3.6.0
+      immutable: 4.3.7
+      source-map-js: 1.2.1
 
   sax@1.2.4: {}
 
