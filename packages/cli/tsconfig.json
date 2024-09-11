@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "allowJs": true,
+    "noImplicitThis": true,
+    "moduleResolution": "node",
+    "noUnusedLocals": true,
+    "allowUnreachableCode": false,
+    "module": "commonjs",
+    "target": "es2016",
+    "outDir": "dist",
+    "esModuleInterop": true,
+    "declaration": true,
+    "noImplicitReturns": false,
+    "noImplicitAny": false,
+    "strictNullChecks": false,
+    "resolveJsonModule": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true
+  },
+  "include": ["src/cli.ts"]
+}
