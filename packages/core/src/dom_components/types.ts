@@ -53,6 +53,14 @@ export enum ComponentsEvents {
   updateInside = 'component:update-inside',
 
   /**
+   * @event `component:select` Component selected.
+   * @example
+   * editor.on('component:select', (component) => { ... });
+   */
+  select = 'component:select',
+  selectBefore = 'component:select:before',
+
+  /**
    * @event `symbol:main:add` Added new main symbol.
    * @example
    * editor.on('symbol:main:add', ({ component }) => { ... });

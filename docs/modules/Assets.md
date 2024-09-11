@@ -63,7 +63,7 @@ const editor = grapesjs.init({
 });
 ```
 
-If you want a complete list of available properties check out the source [AssetImage Model](https://github.com/GrapesJS/grapesjs/blob/dev/src/asset_manager/model/AssetImage.ts)
+If you want a complete list of available properties check out the source [AssetImage Model](https://github.com/GrapesJS/grapesjs/blob/dev/packages/core/src/asset_manager/model/AssetImage.ts)
 
 The built-in Asset Manager modal is implemented and is showing up when requested. By default, you can make it appear by dragging Image Components in canvas, double clicking on images and all other stuff related to images (eg. CSS styling)
 
@@ -429,7 +429,7 @@ am.addType('svg-icon', {
     // `getPreview()` and `getInfo()` are just few helpers, you can
     // override the entire template with `template()`
     // Check the base `template()` here:
-    // https://github.com/GrapesJS/grapesjs/blob/dev/src/asset_manager/view/AssetView.js
+    // https://github.com/GrapesJS/grapesjs/blob/dev/packages/core/src/asset_manager/view/AssetView.ts
     getPreview() {
       return `<div style="text-align: center">${this.model.get('svgContent')}</div>`;
     },
@@ -543,7 +543,7 @@ am.addType('image', {
   // but you can eventually extend some other type
   view: {
     // If you want to see more methods to extend check out
-    // https://github.com/GrapesJS/grapesjs/blob/dev/src/asset_manager/view/AssetImageView.js
+    // https://github.com/GrapesJS/grapesjs/blob/dev/packages/core/src/asset_manager/view/AssetImageView.ts
     onRemove(e) {
       e.stopPropagation();
       const model = this.model;

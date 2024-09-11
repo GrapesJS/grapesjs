@@ -36,7 +36,7 @@
     "codemirror": "5.63.0",
     "codemirror-formatting": "1.0.0",
     "html-entities": "~1.4.0",
-    "promise-polyfill": "8.1.3",
+    "promise-polyfill": "8.3.0",
     "underscore": "1.13.1"
   },
   "devDependencies": {
@@ -71,6 +71,7 @@
     "build:mjs": "BUILD_MODULE=true grapesjs-cli build --dts='skip' --patch=false --targets=\"> 1%, ie 11, safari 8, not dead\"",
     "build:css": "sass src/styles/scss/main.scss dist/css/grapes.min.css --no-source-map --style=compressed --load-path=node_modules",
     "ts:build": "grapesjs-cli build --dts='only' --patch=false",
+    "ts:check": "tsc --noEmit --esModuleInterop dist/index.d.ts",
     "start": "run-p start:*",
     "start:js": "grapesjs-cli serve",
     "start:css": "npm run build:css -- --watch",

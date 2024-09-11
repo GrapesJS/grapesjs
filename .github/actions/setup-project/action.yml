@@ -5,7 +5,7 @@ inputs:
   pnpm-version:
     description: 'The version of pnpm to use for installing dependencies.'
     required: false
-    default: 8.6.3
+    default: 9.10.0
   node-version:
     description: 'The version of Node.js to use for building the project.'
     required: false
@@ -25,5 +25,5 @@ runs:
       run: pnpm install
       shell: bash
     - name: Build project
-      run: pnpm build --force
+      run: pnpm build
       shell: bash

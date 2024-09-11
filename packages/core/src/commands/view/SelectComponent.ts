@@ -326,8 +326,10 @@ export default {
    */
   select(model: Component, event = {}) {
     if (!model) return;
-    this.editor.select(model, { event, useValid: true });
-    this.initResize(model);
+    const { em } = this;
+    em.setSelected(model, { event, useValid: true });
+    // Ensure we're passing the proper selected component #6096
+    this.initResize(em.getSelected());
   },
 
   /**
