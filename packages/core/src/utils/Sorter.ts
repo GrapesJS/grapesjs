@@ -7,10 +7,12 @@ import EditorModel from '../editor/model/Editor';
 import { getPointerEvent, isTextNode, off, on } from './dom';
 import { getElement, getModel, matches } from './mixins';
 import { TreeSorterBase } from './TreeSorterBase';
+import { DropLocationDeterminer } from './DropLocationDeterminer';
+import Component from '../dom_components/model/Component';
 
 type DropContent = BlockProperties['content'];
 
-interface Dim {
+export interface Dimension {
   top: number;
   left: number;
   height: number;
@@ -21,28 +23,29 @@ interface Dim {
   indexEl?: number;
 }
 
-interface Position {
+export interface Position {
   index: number;
   indexEl: number;
   method: string;
 }
 
 export enum SorterDirection {
-  Vertical,
-  Horizontal,
-  All
+  Vertical = "Vertical",
+  Horizontal = "Horizontal",
+  BothDirections = "BothDirections"
 }
 
-interface SorterContainerContext {
-  container?: HTMLElement;
+export interface SorterContainerContext {
+  container: HTMLElement;
   containerSel: string;
   itemSel: string;
   pfx: string;
   document: Document;
   placeholderElement?: HTMLElement;
+  customTarget?: Function;
 }
 
-interface PositionOptions {
+export interface PositionOptions {
   windowMargin: number;
   borderOffset: number;
   offsetTop: number;
@@ -52,22 +55,18 @@ interface PositionOptions {
   relative: boolean;
 }
 
-interface SorterEventHandlers {
+export interface SorterEventHandlers {
   onStart?: Function;
   onMove?: Function;
   onEndMove?: Function;
   onEnd?: Function;
 }
 
-interface SorterDragBehaviorOptions {
+export interface SorterDragBehaviorOptions {
   dragDirection: SorterDirection;
   ignoreViewChildren?: boolean;
   nested?: boolean;
-}
-
-interface SorterConfigurationOptions {
   selectOnEnd: boolean;
-  customTarget?: Function;
 }
 
 export interface SorterOptions<T> {
@@ -78,7 +77,6 @@ export interface SorterOptions<T> {
   positionOptions: PositionOptions;
   dragBehavior: SorterDragBehaviorOptions;
   eventHandlers?: SorterEventHandlers;
-  sorterConfig: SorterConfigurationOptions;
 }
 
 const targetSpotType = CanvasSpotBuiltInTypes.Target;
@@ -93,88 +91,6 @@ type RequiredEmAndTreeClassPartialSorterOptions<T> = Partial<SorterOptions<T>> &
   treeClass: new (model: T) => TreeSorterBase<T>;
 };
 
-interface DropLocationDeterminerOptions {
-  containerContext: SorterContainerContext;
-  positionOptions: PositionOptions;
-  dragBehavior: SorterDragBehaviorOptions;
-  eventHandlers?: SorterEventHandlers;
-}
-
-class DropLocationDeterminer<T> {
-  em?: EditorModel;
-  treeClass!: new (model: any) => TreeSorterBase<T>;
-
-  positionOptions!: PositionOptions;
-  containerContext!: SorterContainerContext;
-  dragBehavior!: SorterDragBehaviorOptions;
-  eventHandlers?: SorterEventHandlers;
-  sorterConfig!: SorterConfigurationOptions;
-
-  dropModel?: Model;
-  targetElement?: HTMLElement;
-  prevTargetElement?: HTMLElement;
-  sourceElement?: HTMLElement;
-  moved?: boolean;
-  docs!: Document[];
-  constructor(options: DropLocationDeterminerOptions) {
-    this.containerContext = options.containerContext;
-    this.positionOptions = options.positionOptions;
-    this.dragBehavior = options.dragBehavior;
-    this.eventHandlers = options.eventHandlers;
-  }
-
-  /**
-   * Picking component to move
-   * @param {HTMLElement} src
-   * */
-  startSort(src?: HTMLElement, opts: { container?: HTMLElement } = {}) {
-    const { itemSel } = this.containerContext;
-    this.resetDragStates();
-    src = src ? this.closest(src, itemSel) : src;
-  }
-
-  private resetDragStates() {
-    delete this.dropModel;
-    delete this.targetElement;
-    delete this.prevTargetElement;
-    this.moved = false;
-  }
-
-  updateContainer(container: HTMLElement) {
-    this.containerContext.container = container;
-  }
-
-  updateDocs(docs: Document[]) {
-    this.docs = docs;
-  }
-
-  /**
- * Returns true if the element matches with selector
- * @param {Element} el
- * @param {String} selector
- * @return {Boolean}
- */
-  matches(el: HTMLElement, selector: string): boolean {
-    return matches.call(el, selector);
-  }
-
-  /**
-   * Closest parent
-   * @param {Element} el
-   * @param {String} selector
-   * @return {Element|null}
-   */
-  closest(el: HTMLElement, selector: string): HTMLElement | undefined {
-    if (!el) return;
-    let elem = el.parentNode;
-
-    while (elem && elem.nodeType === 1) {
-      if (this.matches(elem as HTMLElement, selector)) return elem as HTMLElement;
-      elem = elem.parentNode;
-    }
-  }
-}
-
 export default class Sorter<T> extends View {
   em?: EditorModel;
   treeClass!: new (model: any) => TreeSorterBase<T>;
@@ -183,7 +99,6 @@ export default class Sorter<T> extends View {
   containerContext!: SorterContainerContext;
   dragBehavior!: SorterDragBehaviorOptions;
   eventHandlers?: SorterEventHandlers;
-  sorterConfig!: SorterConfigurationOptions;
 
   dropContent?: DropContent;
   options!: SorterOptions<T>;
@@ -202,22 +117,24 @@ export default class Sorter<T> extends View {
   mouseXRelativeToContainer?: number;
   mouseYRelativeToContainer?: number;
   eventMove?: MouseEvent;
-  prevTargetDim?: Dim;
-  cacheDimsP?: Dim[];
-  cacheDims?: Dim[];
+  prevTargetDim?: Dimension;
+  cacheDimsP?: Dimension[];
+  cacheDims?: Dimension[];
   targetP?: HTMLElement;
   targetPrev?: HTMLElement;
   lastPos?: Position;
-  lastDims?: Dim[];
+  lastDims?: Dimension[];
   $placeholderElement?: any;
   toMove?: Model | Model[];
-  drop!: DropLocationDeterminer<unknown>;
+  dropLocationDeterminer!: DropLocationDeterminer<unknown>;
   docs!: Document[];
 
   // @ts-ignore
   initialize(sorterOptions: RequiredEmAndTreeClassPartialSorterOptions<T> = {}) {
     const defaultOptions: Omit<SorterOptions<T>, 'em' | 'treeClass'> = {
       containerContext: {
+        // Change this
+        container: '' as any,
         containerSel: '*',
         itemSel: '*',
         pfx: '',
@@ -236,10 +153,8 @@ export default class Sorter<T> extends View {
         dragDirection: SorterDirection.Vertical,
         nested: false,
         ignoreViewChildren: false,
-      },
-      sorterConfig: {
         selectOnEnd: true,
-      }
+      },
     }
 
     const mergedOptions: Omit<SorterOptions<T>, 'em' | 'treeClass'> = {
@@ -257,10 +172,6 @@ export default class Sorter<T> extends View {
         ...defaultOptions.dragBehavior,
         ...sorterOptions.dragBehavior,
       },
-      sorterConfig: {
-        ...defaultOptions.sorterConfig,
-        ...sorterOptions.sorterConfig,
-      }
     };
 
     bindAll(this, 'startSort', 'onMove', 'endMove', 'rollback', 'updateOffset', 'moveDragHelper');
@@ -268,7 +179,6 @@ export default class Sorter<T> extends View {
     this.positionOptions = mergedOptions.positionOptions;
     this.dragBehavior = mergedOptions.dragBehavior;
     this.eventHandlers = mergedOptions.eventHandlers;
-    this.sorterConfig = mergedOptions.sorterConfig;
 
     this.elT = 0;
     this.elL = 0;
@@ -282,11 +192,16 @@ export default class Sorter<T> extends View {
       this.em.on(this.em.Canvas.events.refresh, this.updateOffset);
     }
 
-    this.drop = new DropLocationDeterminer({
+    this.dropLocationDeterminer = new DropLocationDeterminer({
       containerContext: this.containerContext,
       positionOptions: this.positionOptions,
       dragBehavior: this.dragBehavior,
       eventHandlers: this.eventHandlers,
+    }, (model: Component, index: any) => {
+      if (model?.view) {
+        model.view.el.style.border = "black 3px dashed"
+      }
+      // console.log("You moved!", model, index)
     });
   }
 
@@ -294,7 +209,7 @@ export default class Sorter<T> extends View {
     if (elem) this.el = elem;
 
     if (!this.el) {
-      var el = this.options.containerContext.container;
+      var el = this.containerContext.container;
       this.el = typeof el === 'string' ? document.querySelector(el)! : el!;
     }
 
@@ -468,11 +383,12 @@ export default class Sorter<T> extends View {
     }
   }
 
+  /*-1-*/
   /**
    * Get the offset of the element
    * @param  {HTMLElement} el
    * @return {Object}
-   */
+  */
   offset(el: HTMLElement) {
     const rect = el.getBoundingClientRect();
 
@@ -481,6 +397,7 @@ export default class Sorter<T> extends View {
       left: rect.left + document.body.scrollLeft,
     };
   }
+  /*-1-*/
 
   /**
    * Create placeholder
@@ -510,10 +427,10 @@ export default class Sorter<T> extends View {
       const elementDoc = this.getElementDoc(src);
       elementDoc && this.appendDoc(elementDoc);
     }
-    this.drop.startSort();
+    this.dropLocationDeterminer.startSort();
 
     const { em } = this;
-    const { itemSel, containerSel, placeholderElement } = this.containerContext;
+    const { itemSel, containerSel } = this.containerContext;
     /*---*/
     const docs = this.getDocuments(src);
     this.resetDragStates();
@@ -529,9 +446,7 @@ export default class Sorter<T> extends View {
       this.sourceModel = this.getSourceModel(src);
     }
 
-    on(this.containerContext.container!, 'mousemove dragover', this.onMove);
-    on(docs, 'mouseup dragend touchend', this.endMove);
-    on(docs, 'keydown', this.rollback);
+    this.bindDragEventHandlers(docs);
     this.envokeOnStartCallback();
     /*---*/
 
@@ -539,6 +454,12 @@ export default class Sorter<T> extends View {
     em?.clearSelection();
     this.toggleSortCursor(true);
     this.emitSorterStart(src);
+  }
+
+  private bindDragEventHandlers(docs: Document[]) {
+    on(this.containerContext.container!, 'mousemove dragover', this.onMove);
+    on(docs, 'mouseup dragend touchend', this.endMove);
+    on(docs, 'keydown', this.rollback);
   }
 
   private emitSorterStart(src: HTMLElement | undefined) {
@@ -573,7 +494,7 @@ export default class Sorter<T> extends View {
   updateContainer(container: HTMLElement) {
     const newContainer = this.getContainerEl(container);
 
-    this.drop.updateContainer(newContainer);
+    this.dropLocationDeterminer.updateContainer(newContainer);
   }
 
   getElementDoc(el: HTMLElement) {
@@ -591,7 +512,7 @@ export default class Sorter<T> extends View {
 
   updateDocs(docs: Document[]) {
     this.docs = docs
-    this.drop.updateDocs(docs);
+    this.dropLocationDeterminer.updateDocs(docs);
   }
 
   /**
@@ -601,6 +522,14 @@ export default class Sorter<T> extends View {
   getTargetModel(el: HTMLElement) {
     const elem = el || this.targetElement;
     return $(elem).data('model');
+  }
+
+  updateTargetModel(el: HTMLElement) {
+    this.targetElement = el || this.targetElement;
+    if (!this.targetElement) return;
+    this.targetModel = $(this.targetElement).data('model')
+    this.dropLocationDeterminer.targetElement = this.targetElement
+    this.dropLocationDeterminer.targetModel = this.targetModel
   }
 
   getTargetNode(el: HTMLElement) {
@@ -694,14 +623,11 @@ export default class Sorter<T> extends View {
    * @private
    */
   private onMove(mouseEvent: MouseEvent): void {
-    const ev = mouseEvent;
-    const { em } = this;
-    const onMoveCallback = this.eventHandlers?.onMove;
-    const placeholderElement = this.containerContext.placeholderElement;
-    const customTarget = this.sorterConfig.customTarget;
+    const customTarget = this.containerContext.customTarget;
     this.moved = true;
 
     this.showPlaceholder();
+    /*-1-*/
     this.cacheContainerPosition(mouseEvent);
 
     const { mouseXRelativeToContainer, mouseYRelativeToContainer } = this.getMousePositionRelativeToContainer(mouseEvent);
@@ -711,35 +637,42 @@ export default class Sorter<T> extends View {
 
     const sourceModel = this.getSourceModel();
     const targetEl = customTarget ? customTarget({ sorter: this, event: mouseEvent }) : mouseEvent.target;
+    this.updateTargetModel(targetEl);
     const dims = this.dimsFromTarget(targetEl as HTMLElement, mouseXRelativeToContainer, mouseYRelativeToContainer);
-    const target = this.targetElement;
-    const targetModel = target && this.getTargetModel(target);
-
-    this.selectTargetModel(targetModel, sourceModel);
-    if (!targetModel) this.hidePlaceholder();
-    if (!target) return;
-
     this.lastDims = dims;
+    // const target = this.targetElement;
+    // const targetModel = target && this.getTargetModel(target);
+    /*-1-*/
+
+    this.selectTargetModel(this.targetModel, sourceModel);
+    if (!this.targetModel) this.hidePlaceholder();
+    if (!this.targetElement) return;
+
     const pos = this.findPosition(dims, mouseXRelativeToContainer, mouseYRelativeToContainer);
 
-    this.handleTextable(sourceModel, targetModel, ev, pos, dims);
+    // @ts-ignore
+    this.handleTextable(sourceModel, this.targetModel, mouseEvent, pos, dims);
 
-    this.triggerOnMoveCallback(mouseEvent, sourceModel, targetModel, pos);
+    // @ts-ignore
+    this.triggerOnMoveCallback(mouseEvent, sourceModel, this.targetModel, pos);
 
-    this.triggerDragEvent(target, targetModel, sourceModel, dims, pos, mouseXRelativeToContainer, mouseYRelativeToContainer);
+    // @ts-ignore
+    this.triggerDragEvent(this.targetElement, this.targetModel, sourceModel, dims, pos, mouseXRelativeToContainer, mouseYRelativeToContainer);
   }
 
+  /*-1-*/
   /**
    * Caches the container position and updates relevant variables for position calculation.
-   *
-   * @param {MouseEvent} mouseEvent - The current mouse event.
-   * @private
-   */
+  *
+  * @param {MouseEvent} mouseEvent - The current mouse event.
+  * @private
+  */
   private cacheContainerPosition(mouseEvent: MouseEvent): void {
-    const containerOffset = this.offset(this.getContainerEl());
+    const containerOffset = this.offset(this.containerContext.container);
     this.elT = this.positionOptions.windowMargin ? Math.abs(containerOffset.top) : containerOffset.top;
     this.elL = this.positionOptions.windowMargin ? Math.abs(containerOffset.left) : containerOffset.left;
   }
+  /*-1-*/
 
   /**
    * Gets the mouse position relative to the container, adjusting for scroll and canvas relative options.
@@ -846,7 +779,7 @@ export default class Sorter<T> extends View {
     return !this.lastPos || this.lastPos.index !== pos.index || this.lastPos.method !== pos.method;
   }
 
-  private updatePlaceholderPosition(dims: Dim[], pos: Position | undefined) {
+  private updatePlaceholderPosition(dims: Dimension[], pos: Position | undefined) {
     const { placeholderElement } = this.containerContext;
     //@ts-ignore
     this.movePlaceholder(placeholderElement!, dims, pos, this.prevTargetDim);
@@ -899,7 +832,6 @@ export default class Sorter<T> extends View {
   private isInFlow(el: HTMLElement, parent: HTMLElement = document.body): boolean {
     if (!el) return false;
 
-    const elementHeight = el.offsetHeight;
     if (!this.isStyleInFlow(el, parent)) return false;
 
     return true;
@@ -992,7 +924,6 @@ export default class Sorter<T> extends View {
     return node.nodeType === Node.TEXT_NODE;
   }
 
-
   /**
    * Check if the target is valid with the actual source
    * @param  {HTMLElement} trg
@@ -1048,12 +979,12 @@ export default class Sorter<T> extends View {
    * @param {HTMLElement} target - The target element.
    * @param {number} [rX=0] - Relative X position.
    * @param {number} [rY=0] - Relative Y position.
-   * @return {Dim[]} - The dimensions array of the target and its valid parents.
+   * @return {Dimension[]} - The dimensions array of the target and its valid parents.
    * @private
    */
-  private dimsFromTarget(target: HTMLElement, rX = 0, rY = 0): Dim[] {
+  private dimsFromTarget(target: HTMLElement, rX = 0, rY = 0): Dimension[] {
     const em = this.em;
-    let dims: Dim[] = [];
+    let dims: Dimension[] = [];
 
     if (!target) return dims;
 
@@ -1138,10 +1069,10 @@ export default class Sorter<T> extends View {
    * @param {HTMLElement} target - The target element.
    * @param {number} rX - Relative X position.
    * @param {number} rY - Relative Y position.
-   * @return {Dim[]} - The dimensions array of the target.
+   * @return {Dimension[]} - The dimensions array of the target.
    * @private
    */
-  private getTargetDimensions(target: HTMLElement, rX: number, rY: number): Dim[] {
+  private getTargetDimensions(target: HTMLElement, rX: number, rY: number): Dimension[] {
     let dims = this.cacheDims!;
 
     if (this.nearBorders(this.prevTargetDim!, rX, rY) || (!this.dragBehavior.nested && !this.cacheDims!.length)) {
@@ -1256,7 +1187,7 @@ export default class Sorter<T> extends View {
    * @param {HTMLElement} el
    * @return {Array<number>}
    */
-  getDim(el: HTMLElement): Dim {
+  getDim(el: HTMLElement): Dimension {
     const { em } = this;
     const canvasRelative = this.positionOptions.canvasRelative;
     const canvas = em?.Canvas;
@@ -1286,7 +1217,7 @@ export default class Sorter<T> extends View {
    * @return {Array}
    * */
   getChildrenDim(trg: HTMLElement) {
-    const dims: Dim[] = [];
+    const dims: Dimension[] = [];
     if (!trg) return dims;
 
     // Get children based on getChildrenContainer
@@ -1329,7 +1260,7 @@ export default class Sorter<T> extends View {
    * @param {number} rY Relative Y position
    * @return {Boolean}
    * */
-  nearBorders(dim: Dim, rX: number, rY: number) {
+  nearBorders(dim: Dimension, rX: number, rY: number) {
     let result = false;
     const off = this.positionOptions.borderOffset;
     const x = rX || 0;
@@ -1350,7 +1281,7 @@ export default class Sorter<T> extends View {
    * @param {number} posY Y coordindate
    * @return {Object}
    * */
-  findPosition(dims: Dim[], posX: number, posY: number): Position {
+  findPosition(dims: Dimension[], posX: number, posY: number): Position {
     const result: Position = { index: 0, indexEl: 0, method: 'before' };
     let leftLimit = 0;
     let xLimit = 0;
@@ -1359,7 +1290,7 @@ export default class Sorter<T> extends View {
     let xCenter = 0;
     let yCenter = 0;
     let dimDown = 0;
-    let dim: Dim;
+    let dim: Dimension;
 
     // Each dim is: Top, Left, Height, Width
     for (var i = 0, len = dims.length; i < len; i++) {
@@ -1406,68 +1337,128 @@ export default class Sorter<T> extends View {
   }
 
   /**
-   * Updates the position of the placeholder
-   * @param {HTMLElement} phl
-   * @param {Array<Array>} dims
-   * @param {Object} pos Position object
-   * @param {Array<number>} trgDim target dimensions ([top, left, height, width])
-   * */
-  movePlaceholder(plh: HTMLElement, dims: Dim[], pos: Position, trgDim?: Dim) {
-    let marg = 0;
-    let t = 0;
-    let l = 0;
-    let w = '';
-    let h = '';
-    let un = 'px';
-    let margI = 5;
-    let method = pos.method;
-    const elDim = dims[pos.index];
+   * Updates the position of the placeholder.
+   * @param {HTMLElement} placeholder Placeholder element.
+   * @param {Dimension[]} elementsDimension Array of element dimensions.
+   * @param {Position} position Object representing position details (index and method).
+   * @param {Dimension} [targetDimension] Optional target dimensions ([top, left, height, width]).
+   */
+  private movePlaceholder(
+    placeholder: HTMLElement,
+    elementsDimension: Dimension[],
+    position: Position,
+    targetDimension?: Dimension
+  ) {
+    const marginOffset = 0;
+    const placeholderMargin = 5;
+    const unit = 'px';
+    let top = 0;
+    let left = 0;
+    let width = '';
+    let height = '';
 
-    // Placeholder orientation
-    plh.classList.remove('vertical');
-    plh.classList.add('horizontal');
+    const { method, index } = position;
+    const elementDimension = elementsDimension[index];
 
-    if (elDim) {
-      // If it's not in flow (like 'float' element)
-      const { top, left, height, width } = elDim;
-      if (!elDim.dir) {
-        w = 'auto';
-        h = height - marg * 2 + un;
-        t = top + marg;
-        l = method == 'before' ? left - marg : left + width - marg;
+    this.setPlaceholderOrientation(placeholder, elementDimension);
 
-        plh.classList.remove('horizontal');
-        plh.classList.add('vertical');
+    if (elementDimension) {
+      const { top: elTop, left: elLeft, height: elHeight, width: elWidth, dir } = elementDimension;
+
+      if (!dir) {
+        // If element is not in flow (e.g., a floating element)
+        width = 'auto';
+        height = (elHeight - marginOffset * 2) + unit;
+        top = elTop + marginOffset;
+        left = method === 'before' ? elLeft - marginOffset : elLeft + elWidth - marginOffset;
+
+        this.setPlaceholderVertical(placeholder);
       } else {
-        w = width + un;
-        h = 'auto';
-        t = method == 'before' ? top - marg : top + height - marg;
-        l = left;
+        width = elWidth + unit;
+        height = 'auto';
+        top = method === 'before' ? elTop - marginOffset : elTop + elHeight - marginOffset;
+        left = elLeft;
       }
     } else {
-      // Placeholder inside the component
-      if (!this.dragBehavior.nested) {
-        plh.style.display = 'none';
-        return;
-      }
-      if (trgDim) {
-        const offset = trgDim.offsets || {};
-        const pT = offset.paddingTop || margI;
-        const pL = offset.paddingLeft || margI;
-        const bT = offset.borderTopWidth || 0;
-        const bL = offset.borderLeftWidth || 0;
-        const bR = offset.borderRightWidth || 0;
-        const bWidth = bL + bR;
-        t = trgDim.top + pT + bT;
-        l = trgDim.left + pL + bL;
-        w = parseInt(`${trgDim.width}`) - pL * 2 - bWidth + un;
-        h = 'auto';
-      }
+      this.handleNestedPlaceholder(placeholder, placeholderMargin, targetDimension);
     }
-    plh.style.top = t + un;
-    plh.style.left = l + un;
-    if (w) plh.style.width = w;
-    if (h) plh.style.height = h;
+
+    this.updatePlaceholderStyles(placeholder, top, left, width, height);
+  }
+
+  /**
+   * Sets the orientation of the placeholder based on the element dimensions.
+   * @param {HTMLElement} placeholder Placeholder element.
+   * @param {Dimension} elementDimension Dimensions of the element at the index.
+   */
+  private setPlaceholderOrientation(placeholder: HTMLElement, elementDimension?: Dimension) {
+    placeholder.classList.remove('vertical');
+    placeholder.classList.add('horizontal');
+
+    if (elementDimension && !elementDimension.dir) {
+      this.setPlaceholderVertical(placeholder);
+    }
+  }
+
+  /**
+   * Sets the placeholder's class to vertical.
+   * @param {HTMLElement} placeholder Placeholder element.
+   */
+  private setPlaceholderVertical(placeholder: HTMLElement) {
+    placeholder.classList.remove('horizontal');
+    placeholder.classList.add('vertical');
+  }
+
+  /**
+   * Handles the case where the placeholder is nested inside a component.
+   * @param {HTMLElement} placeholder Placeholder element.
+   * @param {Dimension} targetDimension Target element dimensions.
+   * @param {number} marginOffset Margin offset value.
+   */
+  private handleNestedPlaceholder(
+    placeholder: HTMLElement,
+    marginOffset: number,
+    targetDimension?: Dimension,
+  ) {
+    if (!this.dragBehavior.nested || !targetDimension) {
+      placeholder.style.display = 'none';
+      return;
+    }
+
+    const { top: trgTop, left: trgLeft, width: trgWidth, offsets } = targetDimension;
+    const paddingTop = offsets?.paddingTop || marginOffset;
+    const paddingLeft = offsets?.paddingLeft || marginOffset;
+    const borderTopWidth = offsets?.borderTopWidth || 0;
+    const borderLeftWidth = offsets?.borderLeftWidth || 0;
+    const borderRightWidth = offsets?.borderRightWidth || 0;
+
+    const borderWidth = borderLeftWidth + borderRightWidth;
+    const top = trgTop + paddingTop + borderTopWidth;
+    const left = trgLeft + paddingLeft + borderLeftWidth;
+    const width = trgWidth - paddingLeft * 2 - borderWidth + 'px';
+
+    this.updatePlaceholderStyles(placeholder, top, left, width, 'auto');
+  }
+
+  /**
+   * Updates the CSS styles of the placeholder element.
+   * @param {HTMLElement} placeholder Placeholder element.
+   * @param {number} top Top position of the placeholder.
+   * @param {number} left Left position of the placeholder.
+   * @param {string} width Width of the placeholder.
+   * @param {string} height Height of the placeholder.
+   */
+  private updatePlaceholderStyles(
+    placeholder: HTMLElement,
+    top: number,
+    left: number,
+    width: string,
+    height: string
+  ) {
+    placeholder.style.top = top + 'px';
+    placeholder.style.left = left + 'px';
+    if (width) placeholder.style.width = width;
+    if (height) placeholder.style.height = height;
   }
 
   /**
