@@ -40,7 +40,7 @@ export default class ItemsView extends View {
         containerSel: `.${this.className}`,
         itemSel: `.${pfx}layer`,
         ignoreViewChildren: 1,
-        avoidSelectOnEnd: 1,
+        selectOnEnd: false,
         nested: 1,
         ppfx,
         pfx,

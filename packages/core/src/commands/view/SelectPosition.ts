@@ -34,7 +34,7 @@ export default {
           canvasRelative: true,
         },
         dragBehavior: {
-          dragDirection: SorterDirection.All,
+          dragDirection: SorterDirection.BothDirections,
           nested: true,
         }
       });
