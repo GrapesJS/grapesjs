@@ -5,8 +5,8 @@ export class PlaceholderClass extends View {
   pfx: string;
   allowNesting: boolean;
   container: HTMLElement;
-  el!: HTMLElement;
-  offset!: {
+  el: HTMLElement;
+  offset: {
     top: number;
     left: number;
   };
@@ -24,8 +24,7 @@ export class PlaceholderClass extends View {
     this.pfx = options.pfx || '';
     this.allowNesting = options.allowNesting || false;
     this.container = options.container;
-    this.el = options.el ? options.el : this.el;
-    this.ensurePlaceholderElement();
+    this.el = options.el ? options.el : this.createPlaceholder();
     this.offset = {
       top: options.offset.top || 0,
       left: options.offset.left || 0,
@@ -55,13 +54,10 @@ export class PlaceholderClass extends View {
 
   hide() {
     this.el.style.display = 'none';
-    console.log("🚀 ~ PlaceholderClass ~ hide ~ this.el:", this.el)
-    console.log("🚀 ~ PlaceholderClass ~ hide ~ this.el.style.display:", this.el.style.display)
   }
 
   /**
  * Updates the position of the placeholder.
- * @param {HTMLElement} placeholder Placeholder element.
  * @param {Dimension[]} elementsDimension Array of element dimensions.
  * @param {Position} position Object representing position details (index and method).
  * @param {Dimension} [targetDimension] Optional target dimensions ([top, left, height, width]).
@@ -112,7 +108,6 @@ export class PlaceholderClass extends View {
 
   /**
    * Sets the orientation of the placeholder based on the element dimensions.
-   * @param {HTMLElement} placeholder Placeholder element.
    * @param {Dimension} elementDimension Dimensions of the element at the index.
    */
   private setOrientation(elementDimension?: Dimension) {
@@ -126,7 +121,6 @@ export class PlaceholderClass extends View {
 
   /**
    * Sets the placeholder's class to vertical.
-   * @param {HTMLElement} placeholder Placeholder element.
    */
   private setToVertical() {
     this.el.classList.remove('horizontal');
@@ -135,7 +129,6 @@ export class PlaceholderClass extends View {
 
   /**
    * Handles the case where the placeholder is nested inside a component.
-   * @param {HTMLElement} placeholder Placeholder element.
    * @param {Dimension} targetDimension Target element dimensions.
    * @param {number} marginOffset Margin offset value.
    */
@@ -165,7 +158,6 @@ export class PlaceholderClass extends View {
 
   /**
    * Updates the CSS styles of the placeholder element.
-   * @param {HTMLElement} placeholder Placeholder element.
    * @param {number} top Top position of the placeholder.
    * @param {number} left Left position of the placeholder.
    * @param {string} width Width of the placeholder.
