@@ -26,26 +26,20 @@ export class DropLocationDeterminer<T> extends View {
   dragBehavior!: SorterDragBehaviorOptions;
   eventHandlers?: SorterEventHandlers;
 
-  dropModel?: Model;
-  targetElement?: HTMLElement;
+  targetNode!: TreeSorterBase<T>;
+  sourceNode!: TreeSorterBase<T>;
   moved?: boolean;
   docs!: Document[];
-
   elT!: number;
   elL!: number;
 
-  eventMove?: MouseEvent;
   targetParent: HTMLElement | undefined;
-  lastPos: any;
-
+  lastPos!: Position;
   sourceModel?: Model;
 
   targetDim?: Dimension;
   cacheDimsP?: Dimension[];
   cacheDims?: Dimension[];
-  lastDims!: Dimension[];
-  targetNode!: TreeSorterBase<T>;
-  sourceNode!: TreeSorterBase<T>;
 
   constructor(options: DropLocationDeterminerOptions<T>,
     private onMoveCallback?: (...args: any) => void,
@@ -110,8 +104,6 @@ export class DropLocationDeterminer<T> extends View {
     // @ts-ignore
     this.onDropPositionChange && this.onDropPositionChange(dims, pos, targetNode);
     this.lastPos = pos;
-
-    this.lastDims = dims;
   }
 
   private getValidParentNode(targetNode: TreeSorterBase<T>) {
@@ -132,8 +124,6 @@ export class DropLocationDeterminer<T> extends View {
     // TODO fix the index for same collection dropping
     isFunction(this.onDrop) && this.onDrop(this.targetNode, index)
     this.cleanupEventListeners();
-    delete this.eventMove;
-    delete this.dropModel;
   }
 
   /**
@@ -204,11 +194,10 @@ export class DropLocationDeterminer<T> extends View {
     em && em.trigger('sorter:drag:validation', validResult);
 
     if (!validResult.valid && this.targetParent) {
-      this.dimsFromTarget(this.targetParent, rX, rY, this.targetElement);
+      this.dimsFromTarget(this.targetParent, rX, rY, this.targetNode.getElement());
       return;
     }
 
-    this.targetElement = targetElement;
     this.targetDim = getDim(targetElement, this.elL, this.elT, this.positionOptions.relative, !!this.positionOptions.canvasRelative, this.positionOptions.windowMargin, this.em);
     this.cacheDimsP = this.getChildrenDim(this.targetParent!);
     this.cacheDims = this.getChildrenDim(targetElement);
@@ -322,8 +311,6 @@ export class DropLocationDeterminer<T> extends View {
   }
 
   private resetDragStates() {
-    delete this.dropModel;
-    delete this.targetElement;
     this.moved = false;
   }
 
