@@ -1,3 +1,5 @@
+import { View } from "../common";
+
 export abstract class TreeSorterBase<T> {
   model: T;
   constructor(model: T) {
@@ -41,4 +43,12 @@ export abstract class TreeSorterBase<T> {
    * @returns CanMoveResult<T> - Result of whether the move is allowed and the reason.
    */
   abstract canMove(source: TreeSorterBase<T>, index: number): Boolean;
+
+  abstract getView(): View | undefined;
+
+  abstract getElement(): HTMLElement | undefined;
+
+  getmodel() {
+    return this.model
+  }
 }

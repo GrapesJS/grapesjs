@@ -6,9 +6,8 @@ import EditorModel from '../editor/model/Editor';
 import { off, on } from './dom';
 import { TreeSorterBase } from './TreeSorterBase';
 import { DropLocationDeterminer } from './DropLocationDeterminer';
-import Component from '../dom_components/model/Component';
 import { PlaceholderClass } from './PlaceholderClass';
-import { getMergedOptions, setContentEditable, getDocuments, matches, closest, isTextableActive, findPosition, offset, disableTextable, nearBorders, nearElBorders, getCurrentPos, isInFlow, parents, sort } from './SorterUtils';
+import { getMergedOptions, getDocuments } from './SorterUtils';
 
 export interface Dimension {
   top: number;
@@ -79,11 +78,6 @@ export interface SorterOptions<T> {
 
 const targetSpotType = CanvasSpotBuiltInTypes.Target;
 
-const spotTarget = {
-  id: 'sorter-target',
-  type: targetSpotType,
-};
-
 export type RequiredEmAndTreeClassPartialSorterOptions<T> = Partial<SorterOptions<T>> & {
   em: EditorModel;
   treeClass: new (model: T) => TreeSorterBase<T>;
@@ -128,51 +122,7 @@ export default class Sorter<T> extends View {
     if (this.em?.on) {
       this.em.on(this.em.Canvas.events.refresh, this.updateOffset);
     }
-    let lastHighlighted: HTMLElement;
-    const onMove = (...args: any) => {
-      const targetEl: HTMLElement = args[0]
-      if (targetEl) {
-        // targetEl.style.border = "black 3px dashed"
-      }
-
-      const targetModel: Component = args[1]
-      if (targetModel?.view) {
-        // if (targetModel.view.el !== lastHighlighted) {
-        //   if (lastHighlighted) {
-        //     lastHighlighted.style.border = "";
-        //   }
-        //   targetModel.view.el.style.border = "black 3px dashed";
-        //   lastHighlighted = targetModel.view.el;
-        // }
-      }
-
-      const targetNode: TreeSorterBase<T> = args[2];
-      if (targetNode) {
-        // console.log(targetNode);
-      }
-
-      const pos = args[3]
-      // console.log(pos);
-
-      const sourceNode = args[4];
-      // console.log(sourceNode)
-
-      const canMoveSourceIntoTarget = targetNode.canMove(sourceNode, 0)
-      // console.log("🚀 ~ Sorter<T> ~ c ~ canMoveSourceIntoTarget:", canMoveSourceIntoTarget)
-
-      const finalNode: TreeSorterBase<Component> = args[5];
-      if (finalNode && finalNode.model && finalNode.model?.view) {
-        const finalNodeModel = finalNode.model;
-        const finalElement = finalNodeModel!.view!.el!;
-        if (finalElement !== lastHighlighted) {
-          if (lastHighlighted) {
-            lastHighlighted.style.border = "";
-          }
-          finalElement.style.border = "black 3px dashed";
-          lastHighlighted = finalElement;
-        }
-      }
-    }
+    const onMove = (...args: any) => { }
 
     const onDropPositionChange = (
       dims: Dimension[],
@@ -200,7 +150,7 @@ export default class Sorter<T> extends View {
       if (targetNode) {
         // @ts-ignore
         targetNode.model.view.el.style.border = '3px red solid';
-        const sourceNode = new this.treeClass(this.getSourceModel())
+        const sourceNode = this.getNodeFromModel(this.getSourceModel())
         const parent = sourceNode.getParent();
         if (parent) {
           parent.removeChildAt(parent.indexOfChild(sourceNode))
@@ -221,6 +171,10 @@ export default class Sorter<T> extends View {
       dragBehavior: this.dragBehavior,
       eventHandlers: this.eventHandlers,
     }, onMove.bind(this), onDropPositionChange.bind(this), onDrop.bind(this));
+  }
+
+  getNodeFromModel(model: Model) {
+    return new this.treeClass(model);
   }
 
   private getContainerEl(elem?: HTMLElement) {
