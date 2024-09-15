@@ -28,7 +28,6 @@ export class DropLocationDeterminer<T> extends View {
 
   dropModel?: Model;
   targetElement?: HTMLElement;
-  prevTargetElement?: HTMLElement;
   private sourceElement?: HTMLElement;
   moved?: boolean;
   docs!: Document[];
@@ -46,7 +45,7 @@ export class DropLocationDeterminer<T> extends View {
 
   sourceModel?: Model;
 
-  prevTargetDim?: Dimension;
+  targetDim?: Dimension;
   cacheDimsP?: Dimension[];
   cacheDims?: Dimension[];
   lastDims!: Dimension[];
@@ -104,6 +103,7 @@ export class DropLocationDeterminer<T> extends View {
     const sourceModel = $(this.sourceElement).data('model')
     const sourceNode = new this.treeClass(sourceModel);
     let finalNode = targetNode;
+    // TODO change the hard coded 0 value
     while (finalNode.getParent() !== null && !finalNode.canMove(sourceNode, 0)) {
       finalNode = finalNode.getParent()!;
     }
@@ -112,11 +112,9 @@ export class DropLocationDeterminer<T> extends View {
       this.targetNode.model.view.el.style.border = 'none'
       // @ts-ignore
       finalNode.model.view.el.style.border = '1px red solid'
-    } catch {
-
-    }
+    } catch {}
     // @ts-ignore
-    const dims = this.dimsFromTarget(targetNode.model.view.el as HTMLElement, mouseXRelativeToContainer, mouseYRelativeToContainer, this.prevTargetElement);
+    const dims = this.dimsFromTarget(targetNode.model.view.el as HTMLElement, mouseXRelativeToContainer, mouseYRelativeToContainer, this.targetElement);
 
     const pos = findPosition(dims, mouseXRelativeToContainer, mouseYRelativeToContainer);
 
@@ -133,7 +131,8 @@ export class DropLocationDeterminer<T> extends View {
  * Handles the cleanup and final steps after an item is moved.
  */
   endMove(): void {
-    const index = this.lastPos.method === 'after' ? this.lastPos.indexEl + 1 : this.lastPos.indexEl;
+    let index = this.lastPos.method === 'after' ? this.lastPos.indexEl + 1 : this.lastPos.indexEl;
+    // TODO fix the index for same collection dropping
     isFunction(this.onDrop) && this.onDrop(this.targetNode, index)
     this.cleanupEventListeners();
     delete this.eventMove;
@@ -170,35 +169,13 @@ export class DropLocationDeterminer<T> extends View {
       return dims
     };
 
-    target = this.getValidTarget(target)!;
-
-    if (!target) {
-      return dims
-    };
-
     if (this.isNewTarget(target, prevTargetElement)) {
       this.handleNewTarget(target, rX, rY);
     }
 
-    dims = this.getTargetDimensions(target, rX, rY);
+    dims = this.cacheDims!;
 
     return dims;
-  }
-
-  /**
-   * Get a valid target by checking if the target matches specific selectors
-   * and if not, find the closest valid target.
-   *
-   * @param {HTMLElement} target - The target element.
-   * @return {HTMLElement | null} - The valid target element or null if none found.
-   * @private
-   */
-  private getValidTarget(target: HTMLElement): HTMLElement | null {
-    if (!matches(target, `${this.containerContext.itemSel}, ${this.containerContext.containerSel}`)) {
-      target = closest(target, this.containerContext.itemSel)!;
-    }
-
-    return target;
   }
 
   /**
@@ -234,41 +211,14 @@ export class DropLocationDeterminer<T> extends View {
     em && em.trigger('sorter:drag:validation', validResult);
 
     if (!validResult.valid && this.targetParent) {
-      this.dimsFromTarget(this.targetParent, rX, rY, this.prevTargetElement);
+      this.dimsFromTarget(this.targetParent, rX, rY, this.targetElement);
       return;
     }
 
-    this.prevTargetElement = target;
-    this.prevTargetDim = getDim(target, this.elL, this.elT, this.positionOptions.relative, !!this.positionOptions.canvasRelative, this.positionOptions.windowMargin, this.em);
+    this.targetElement = target;
+    this.targetDim = getDim(target, this.elL, this.elT, this.positionOptions.relative, !!this.positionOptions.canvasRelative, this.positionOptions.windowMargin, this.em);
     this.cacheDimsP = this.getChildrenDim(this.targetParent!);
     this.cacheDims = this.getChildrenDim(target);
-  }
-
-  /**
-   * Retrieve and return the dimensions for the target, considering any potential
-   * parent element dimensions if necessary.
-   *
-   * @param {HTMLElement} target - The target element.
-   * @param {number} rX - Relative X position.
-   * @param {number} rY - Relative Y position.
-   * @return {Dimension[]} - The dimensions array of the target.
-   * @private
-   */
-  private getTargetDimensions(target: HTMLElement, rX: number, rY: number): Dimension[] {
-    let dims = this.cacheDims!;
-
-    if (nearBorders(this.prevTargetDim!, rX, rY, this.positionOptions.borderOffset) || (!this.dragBehavior.nested && !this.cacheDims!.length)) {
-      const targetParent = this.targetParent;
-
-      if (targetParent && this.validTarget(targetParent).valid) {
-        dims = this.cacheDimsP!;
-        this.targetElement = targetParent;
-      }
-    }
-
-    this.targetElement = this.prevTargetElement;
-
-    return dims;
   }
 
   /**
@@ -416,7 +366,6 @@ export class DropLocationDeterminer<T> extends View {
   private resetDragStates() {
     delete this.dropModel;
     delete this.targetElement;
-    delete this.prevTargetElement;
     this.moved = false;
   }
 
