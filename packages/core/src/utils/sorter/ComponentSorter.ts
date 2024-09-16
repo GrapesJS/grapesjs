@@ -29,6 +29,7 @@ export default class ComponentSorter extends Sorter<Component> {
         super({
             // @ts-ignore
             em,
+            treeClass: ComponentNode,
             containerContext,
             positionOptions,
             dragBehavior,

@@ -22,6 +22,7 @@ export default class StyleManagerSorter extends Sorter<Layers | Layer> {
         super({
             // @ts-ignore
             em,
+            treeClass: LayerNode,
             containerContext,
             positionOptions,
             dragBehavior,
@@ -40,10 +41,6 @@ export default class StyleManagerSorter extends Sorter<Layers | Layer> {
                 ...eventHandlers,
             },
         });
-    }
-
-    getNodeFromModel(model: Layer): LayerNode {
-        return new LayerNode(model);
     }
 
     onLayerStartSort = (sourceNode: LayerNode) => {

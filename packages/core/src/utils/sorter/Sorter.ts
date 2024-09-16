@@ -16,18 +16,18 @@ export type RequiredEmAndTreeClassPartialSorterOptions<T> = Partial<SorterOption
 
 export default class Sorter<T> extends View {
   em!: EditorModel;
+  treeClass!: new (model: T) => TreeSorterBase<T>;
   placeholder!: PlaceholderClass;
   dropLocationDeterminer!: DropLocationDeterminer<T>;
-
+  
   positionOptions!: PositionOptions;
   containerContext!: SorterContainerContext;
   dragBehavior!: SorterDragBehaviorOptions;
   eventHandlers?: SorterEventHandlers<T>;
-
+  
   options!: SorterOptions<T>;
   docs: any;
   sourceNode?: TreeSorterBase<T>;
-
   // TODO
   // @ts-ignore
   initialize(sorterOptions: RequiredEmAndTreeClassPartialSorterOptions<T> = {}) {
@@ -40,6 +40,7 @@ export default class Sorter<T> extends View {
     this.eventHandlers = mergedOptions.eventHandlers;
 
     this.em = sorterOptions.em;
+    this.treeClass = sorterOptions.treeClass;
     var el = mergedOptions.containerContext.container;
     this.el = typeof el === 'string' ? document.querySelector(el)! : el!;
     this.updateOffset();
@@ -61,7 +62,7 @@ export default class Sorter<T> extends View {
 
     this.dropLocationDeterminer = new DropLocationDeterminer({
       em: this.em,
-      treeClass: this.getNodeFromModel,
+      treeClass: this.treeClass,
       containerContext: this.containerContext,
       positionOptions: this.positionOptions,
       dragBehavior: this.dragBehavior,
@@ -79,10 +80,6 @@ export default class Sorter<T> extends View {
     });
   }
 
-  // TODO
-  getNodeFromModel(model: T) {
-    return '' as any;
-  }
 
   private getContainerEl(elem?: HTMLElement) {
     if (elem) this.el = elem;
@@ -119,7 +116,7 @@ export default class Sorter<T> extends View {
     }
 
     const sourceModel = $(sourceElement).data("model");
-    this.sourceNode = this.getNodeFromModel(sourceModel)
+    this.sourceNode = new this.treeClass(sourceModel)
     const docs = getDocuments(this.em, sourceElement);
     this.updateDocs(docs)
     this.dropLocationDeterminer.startSort(sourceElement);

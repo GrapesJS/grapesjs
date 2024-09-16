@@ -10,7 +10,7 @@ import { matches, findPosition, offset, isInFlow } from './SorterUtils';
 
 interface DropLocationDeterminerOptions<T> {
   em: EditorModel;
-  treeClass: (model: any) => TreeSorterBase<T>;
+  treeClass: new (model: any) => TreeSorterBase<T>;
   containerContext: SorterContainerContext;
   positionOptions: PositionOptions;
   dragBehavior: SorterDragBehaviorOptions;
@@ -19,7 +19,7 @@ interface DropLocationDeterminerOptions<T> {
 
 export class DropLocationDeterminer<T> extends View {
   em?: EditorModel;
-  treeClass!: (model: any) => TreeSorterBase<T>;
+  treeClass!: new (model: any) => TreeSorterBase<T>;
 
   positionOptions!: PositionOptions;
   containerContext!: SorterContainerContext;
@@ -53,7 +53,7 @@ export class DropLocationDeterminer<T> extends View {
    * */
   startSort(sourceElement?: HTMLElement) {
     const sourceModel = $(sourceElement).data('model')
-    const sourceNode = this.treeClass(sourceModel);
+    const sourceNode = new this.treeClass(sourceModel);
     this.sourceNode = sourceNode;
 
     this.bindDragEventHandlers(this.docs);
@@ -76,7 +76,7 @@ export class DropLocationDeterminer<T> extends View {
     if (!mouseTargetEl) return
 
     const mouseTargetModel = $(mouseTargetEl)?.data("model");
-    const mouseTargetNode = this.treeClass(mouseTargetModel);
+    const mouseTargetNode = new this.treeClass(mouseTargetModel);
     const targetNode = this.getValidParentNode(mouseTargetNode);
     if (!targetNode) return
     const dims = this.dimsFromTarget(targetNode.getElement()!);
