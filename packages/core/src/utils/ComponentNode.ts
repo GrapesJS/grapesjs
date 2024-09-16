@@ -1,7 +1,7 @@
-import Component from '../../dom_components/model/Component';
-import { TreeSorterBase } from '../../utils/TreeSorterBase';
+import Component from '../dom_components/model/Component';
+import { TreeSorterBase } from './TreeSorterBase';
 
-export class ComponentTreeSorter extends TreeSorterBase<Component> {
+export class ComponentNode extends TreeSorterBase<Component> {
   constructor(model: Component) {
     super(model);
   }
@@ -9,16 +9,16 @@ export class ComponentTreeSorter extends TreeSorterBase<Component> {
   /**
    * Get the list of children of this component.
    */
-  getChildren(): ComponentTreeSorter[] {
-    return this.model.components().map((comp: Component) => new ComponentTreeSorter(comp));
+  getChildren(): ComponentNode[] {
+    return this.model.components().map((comp: Component) => new ComponentNode(comp));
   }
 
   /**
    * Get the parent component of this component, or null if it has no parent.
    */
-  getParent(): ComponentTreeSorter | null {
+  getParent(): ComponentNode | null {
     const parent = this.model.parent();
-    return parent ? new ComponentTreeSorter(parent) : null;
+    return parent ? new ComponentNode(parent) : null;
   }
 
   /**
@@ -26,21 +26,21 @@ export class ComponentTreeSorter extends TreeSorterBase<Component> {
    * @param node - The child component to add.
    * @param index - The position to insert the child at.
    */
-  addChildAt(node: ComponentTreeSorter, index: number): ComponentTreeSorter {
+  addChildAt(node: ComponentNode, index: number): ComponentNode {
     const newModel = this.model.components().add(node.model, { at: index });
-    return new ComponentTreeSorter(newModel);
+    return new ComponentNode(newModel);
   }
 
   /**
    * Remove a child component at a particular index.
    * @param index - The index to remove the child component from.
    */
-  removeChildAt(index: number): ComponentTreeSorter {
+  removeChildAt(index: number): ComponentNode {
     const child = this.model.components().at(index);
     if (child) {
       this.model.components().remove(child);
     }
-    return new ComponentTreeSorter(child);
+    return new ComponentNode(child);
   }
 
   /**
@@ -48,7 +48,7 @@ export class ComponentTreeSorter extends TreeSorterBase<Component> {
    * @param node - The child component to find.
    * @returns The index of the child component, or -1 if not found.
    */
-  indexOfChild(node: ComponentTreeSorter): number {
+  indexOfChild(node: ComponentNode): number {
     return this.model.components().indexOf(node.model);
   }
 
@@ -58,7 +58,7 @@ export class ComponentTreeSorter extends TreeSorterBase<Component> {
    * @param index - The index at which the source component will be moved.
    * @returns True if the source component can be moved, false otherwise.
    */
-  canMove(source: ComponentTreeSorter, index: number): boolean {
+  canMove(source: ComponentNode, index: number): boolean {
     return this.model.em.Components.canMove(this.model, source.model, index).result;
   }
 
@@ -66,15 +66,12 @@ export class ComponentTreeSorter extends TreeSorterBase<Component> {
    * Get the associated view of this component.
    * @returns The view associated with the component, or undefined if none.
    */
+  // TODO add the correct type
   getView(): any {
     return this.model.getView();
   }
 
-  /**
-   * Get the associated DOM element of this component.
-   * @returns The DOM element associated with the component, or undefined if none.
-   */
-  getEl(): HTMLElement | undefined {
+  getElement(): HTMLElement | undefined {
     return this.model.getEl();
   }
 }
