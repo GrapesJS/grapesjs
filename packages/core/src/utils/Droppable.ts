@@ -172,14 +172,14 @@ export default class Droppable {
         document: this.el.ownerDocument,
         ...(this.sortOpts || {}),
       });
-      sorter.setDropContent(content);
+      // sorter.setDropContent(content);
       sorter.startSort();
       this.sorter = sorter;
       dragStop = (cancel?: boolean) => {
-        cancel && (sorter.moved = false);
+        // cancel && (sorter.moved = false);
         sorter.endMove();
       };
-      dragContent = (content: any) => sorter.setDropContent(content);
+      // dragContent = (content: any) => sorter.setDropContent(content);
     }
 
     this.dragStop = dragStop;

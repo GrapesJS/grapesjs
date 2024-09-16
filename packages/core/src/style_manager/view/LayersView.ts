@@ -1,6 +1,6 @@
 import { View } from '../../common';
 import EditorModel from '../../editor/model/Editor';
-import { SorterDirection } from '../../utils/sorter/Sorter';
+import { SorterDirection } from '../../utils/sorter/types';
 import Layer from '../model/Layer';
 import Layers from '../model/Layers';
 import LayerView from './LayerView';

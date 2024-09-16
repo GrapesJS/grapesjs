@@ -1,5 +1,5 @@
 import { View } from '../../common';
-import { Dimension, Position } from './Sorter';
+import { Dimension, Position } from './types';
 
 export class PlaceholderClass extends View {
   pfx: string;

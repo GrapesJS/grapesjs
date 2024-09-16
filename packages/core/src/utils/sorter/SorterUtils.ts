@@ -2,7 +2,9 @@ import { $, Model, SetOptions } from '../../common';
 import EditorModel from '../../editor/model/Editor';
 import { isTextNode } from '../dom';
 import { matches as matchesMixin } from '../mixins';
-import { Dimension, Position, RequiredEmAndTreeClassPartialSorterOptions, SorterOptions, SorterDirection } from './Sorter';
+import { RequiredEmAndTreeClassPartialSorterOptions } from './Sorter';
+import { SorterOptions } from './types';
+import { Dimension, Position, SorterDirection } from './types';
 
 /**
  * Find the position based on passed dimensions and coordinates
@@ -329,40 +331,6 @@ export function getMergedOptions<T>(sorterOptions: RequiredEmAndTreeClassPartial
     },
   };
   return mergedOptions;
-}
-
-/**
- * Returns dimensions and positions about the element
- * @param {HTMLElement} el
- * @return {Array<number>}
- */
-export function getDim(el: HTMLElement,
-  elL: number,
-  elT: number,
-  relative: boolean,
-  canvasRelative: boolean,
-  windowMargin: number,
-  em?: EditorModel
-): Dimension {
-  const canvas = em?.Canvas;
-  const offsets = canvas ? canvas.getElementOffsets(el) : {};
-  let top, left, height, width;
-
-  if (canvasRelative && em) {
-    const pos = canvas!.getElementPos(el, { noScroll: 1 })!;
-    top = pos.top; // - offsets.marginTop;
-    left = pos.left; // - offsets.marginLeft;
-    height = pos.height; // + offsets.marginTop + offsets.marginBottom;
-    width = pos.width; // + offsets.marginLeft + offsets.marginRight;
-  } else {
-    var o = offset(el);
-    top = relative ? el.offsetTop : o.top - (windowMargin ? -1 : 1) * elT;
-    left = relative ? el.offsetLeft : o.left - (windowMargin ? -1 : 1) * elL;
-    height = el.offsetHeight;
-    width = el.offsetWidth;
-  }
-
-  return { top, left, height, width, offsets };
 }
 
 export function hasPointerPositionChanged(pos: Position, lastPos?: Position) {

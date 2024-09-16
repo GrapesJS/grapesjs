@@ -1,12 +1,12 @@
-import { $, Model, View } from '../../common';
+import { $, View } from '../../common';
 
 import EditorModel from '../../editor/model/Editor';
 import { isTextNode, off, on } from '../dom';
 import { getModel } from '../mixins';
 import { TreeSorterBase } from './TreeSorterBase';
-import { Dimension, Position, PositionOptions, SorterContainerContext, SorterDirection, SorterDragBehaviorOptions, SorterEventHandlers } from './Sorter';
+import { Dimension, Position, PositionOptions, SorterContainerContext, SorterDirection, SorterDragBehaviorOptions, SorterEventHandlers } from './types';
 import { bindAll, each } from 'underscore';
-import { matches, findPosition, offset, isInFlow, getDim } from './SorterUtils';
+import { matches, findPosition, offset, isInFlow } from './SorterUtils';
 
 interface DropLocationDeterminerOptions<T> {
   em: EditorModel;
@@ -197,7 +197,7 @@ export class DropLocationDeterminer<T> extends View {
       }
 
       // TODO
-      const dim = getDim(el, this.elL, this.elT, this.positionOptions.relative!, !!this.positionOptions.canvasRelative, this.positionOptions.windowMargin!, this.em);
+      const dim = this.getDim(el, this.elL, this.elT, this.positionOptions.relative!, !!this.positionOptions.canvasRelative, this.positionOptions.windowMargin!, this.em);
       let dir = this.dragBehavior.dragDirection;
       let dirValue: boolean;
 
@@ -252,5 +252,39 @@ export class DropLocationDeterminer<T> extends View {
 
   updateDocs(docs: Document[]) {
     this.docs = docs;
+  }
+
+  /**
+ * Returns dimensions and positions about the element
+ * @param {HTMLElement} el
+ * @return {Dimension}
+ */
+  getDim(el: HTMLElement,
+    elL: number,
+    elT: number,
+    relative: boolean,
+    canvasRelative: boolean,
+    windowMargin: number,
+    em?: EditorModel
+  ): Dimension {
+    const canvas = em?.Canvas;
+    const offsets = canvas ? canvas.getElementOffsets(el) : {};
+    let top, left, height, width;
+
+    if (canvasRelative && em) {
+      const pos = canvas!.getElementPos(el, { noScroll: 1 })!;
+      top = pos.top; // - offsets.marginTop;
+      left = pos.left; // - offsets.marginLeft;
+      height = pos.height; // + offsets.marginTop + offsets.marginBottom;
+      width = pos.width; // + offsets.marginLeft + offsets.marginRight;
+    } else {
+      var o = offset(el);
+      top = relative ? el.offsetTop : o.top - (windowMargin ? -1 : 1) * elT;
+      left = relative ? el.offsetLeft : o.left - (windowMargin ? -1 : 1) * elL;
+      height = el.offsetHeight;
+      width = el.offsetWidth;
+    }
+
+    return { top, left, height, width, offsets };
   }
 }
