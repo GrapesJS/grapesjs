@@ -65,8 +65,14 @@ export default class ComponentSorter extends Sorter<Component> {
         sourceNode.getmodel().set('status', '');
         if (targetNode) {
             const parent = sourceNode.getParent();
+            let initialSourceIndex = -1;
             if (parent) {
-                parent.removeChildAt(parent.indexOfChild(sourceNode))
+                initialSourceIndex = parent.indexOfChild(sourceNode);
+                parent.removeChildAt(initialSourceIndex)
+            }
+            const isSameCollection = parent?.getmodel().cid === targetNode.getmodel().cid
+            if (isSameCollection && initialSourceIndex < index) {
+                index--;
             }
 
             targetNode.addChildAt(sourceNode, index);

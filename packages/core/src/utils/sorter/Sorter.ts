@@ -80,7 +80,6 @@ export default class Sorter<T> extends View {
     });
   }
 
-
   private getContainerEl(elem?: HTMLElement) {
     if (elem) this.el = elem;
 
@@ -141,11 +140,6 @@ export default class Sorter<T> extends View {
     this.docs = docs
     this.dropLocationDeterminer.updateDocs(docs);
   }
-
-  // TODO move to componentSorter
-  // private clearFreeze() {
-  //   this.sourceModel?.set && this.sourceModel.set('status', '');
-  // }
 
   private updatePlaceholderPosition(dims: Dimension[], pos: Position) {
     this.placeholder.move(dims, pos)

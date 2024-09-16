@@ -51,9 +51,12 @@ export default class StyleManagerSorter extends Sorter<Layers | Layer> {
     onLayerDrop = (targetNode: LayerNode, sourceNode: LayerNode, index: number) => {
         if (targetNode) {
             const parent = sourceNode.getParent();
+            let initialSourceIndex = -1;
             if (parent) {
-                parent.removeChildAt(parent.indexOfChild(sourceNode))
+                initialSourceIndex = parent.indexOfChild(sourceNode);
+                parent.removeChildAt(initialSourceIndex)
             }
+            index = initialSourceIndex < index ? index - 1 : index;
 
             targetNode.addChildAt(sourceNode, index);
         }
@@ -63,23 +66,5 @@ export default class StyleManagerSorter extends Sorter<Layers | Layer> {
 
     onDragStart() {
         this.containerContext.container.appendChild(this.placeholder.el);
-    }
-
-    /**
-* Create placeholder
-* @return {HTMLElement}
-*/
-    private createPlaceholder() {
-        const pfx = this.containerContext.pfx;
-        const el = document.createElement('div');
-        const ins = document.createElement('div');
-        el.className = pfx + 'placeholder';
-        el.style.display = 'none';
-        el.style.pointerEvents = 'none';
-        ins.className = pfx + 'placeholder-int';
-        el.appendChild(ins);
-        this.containerContext.container.appendChild(el);
-
-        return el;
     }
 }
