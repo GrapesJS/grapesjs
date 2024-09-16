@@ -5,7 +5,7 @@ export class PlaceholderClass extends View {
   pfx: string;
   allowNesting: boolean;
   container: HTMLElement;
-  el: HTMLElement;
+  el!: HTMLElement;
   offset: {
     top: number;
     left: number;
@@ -14,7 +14,7 @@ export class PlaceholderClass extends View {
     container: HTMLElement;
     pfx?: string;
     allowNesting?: boolean;
-    el?: HTMLElement;
+    el: HTMLElement;
     offset: {
       top: number;
       left: number;
@@ -24,29 +24,13 @@ export class PlaceholderClass extends View {
     this.pfx = options.pfx || '';
     this.allowNesting = options.allowNesting || false;
     this.container = options.container;
-    this.el = options.el ? options.el : this.createPlaceholder();
+    this.setElement(options.el)
     this.offset = {
       top: options.offset.top || 0,
       left: options.offset.left || 0,
     };
   }
 
-  /**
- * Create placeholder
- * @return {HTMLElement}
- */
-  private createPlaceholder() {
-    const pfx = this.pfx;
-    const el = document.createElement('div');
-    const ins = document.createElement('div');
-    el.className = pfx + 'placeholder';
-    el.style.display = 'none';
-    el.style.pointerEvents = 'none';
-    ins.className = pfx + 'placeholder-int';
-    el.appendChild(ins);
-
-    return el;
-  }
 
   show() {
     this.el.style.display = 'block';
@@ -65,11 +49,8 @@ export class PlaceholderClass extends View {
   move(
     elementsDimension: Dimension[],
     position: Position,
-    targetDimension?: Dimension
   ) {
-    this.ensurePlaceholderElement();
     const marginOffset = 0;
-    const placeholderMargin = 5;
     const unit = 'px';
     let top = 0;
     let left = 0;
@@ -81,25 +62,21 @@ export class PlaceholderClass extends View {
 
     this.setOrientation(elementDimension);
 
-    if (elementDimension) {
-      const { top: elTop, left: elLeft, height: elHeight, width: elWidth, dir } = elementDimension;
+    const { top: elTop, left: elLeft, height: elHeight, width: elWidth, dir } = elementDimension;
 
-      if (!dir) {
-        // If element is not in flow (e.g., a floating element)
-        width = 'auto';
-        height = (elHeight - marginOffset * 2) + unit;
-        top = elTop + marginOffset;
-        left = method === 'before' ? elLeft - marginOffset : elLeft + elWidth - marginOffset;
+    if (!dir) {
+      // If element is not in flow (e.g., a floating element)
+      width = 'auto';
+      height = (elHeight - marginOffset * 2) + unit;
+      top = elTop + marginOffset;
+      left = method === 'before' ? elLeft - marginOffset : elLeft + elWidth - marginOffset;
 
-        this.setToVertical();
-      } else {
-        width = elWidth + unit;
-        height = 'auto';
-        top = method === 'before' ? elTop - marginOffset : elTop + elHeight - marginOffset;
-        left = elLeft;
-      }
+      this.setToVertical();
     } else {
-      this.handleNestedPlaceholder(placeholderMargin, targetDimension);
+      width = elWidth + unit;
+      height = 'auto';
+      top = method === 'before' ? elTop - marginOffset : elTop + elHeight - marginOffset;
+      left = elLeft;
     }
 
     this.updateStyles(top, left, width, height);
@@ -173,13 +150,6 @@ export class PlaceholderClass extends View {
     this.el.style.left = left + 'px';
     if (width) this.el.style.width = width;
     if (height) this.el.style.height = height;
-  }
-
-  private ensurePlaceholderElement() {
-    if (!this.el) {
-      this.el = this.createPlaceholder();
-      this.container!.appendChild(this.el);
-    }
   }
 
   private adjustOffset() {

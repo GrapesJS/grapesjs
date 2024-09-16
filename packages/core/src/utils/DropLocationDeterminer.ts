@@ -34,8 +34,7 @@ export class DropLocationDeterminer<T> extends View {
   elT!: number;
   elL!: number;
 
-  constructor(options: DropLocationDeterminerOptions<T>,
-    private onDropPositionChange?: (dims: Dimension[], newPosition: Position, targetDimension: Dimension) => void) {
+  constructor(options: DropLocationDeterminerOptions<T>) {
     super();
     this.treeClass = options.treeClass;
     this.em = options.em;
@@ -52,8 +51,7 @@ export class DropLocationDeterminer<T> extends View {
    * Picking component to move
    * @param {HTMLElement} sourceElement
    * */
-  startSort(sourceElement?: HTMLElement, options: { container?: HTMLElement } = {}) {
-    this.containerContext.container = options.container!
+  startSort(sourceElement?: HTMLElement) {
     const sourceModel = $(sourceElement).data('model')
     const sourceNode = this.treeClass(sourceModel);
     this.sourceNode = sourceNode;
@@ -62,6 +60,7 @@ export class DropLocationDeterminer<T> extends View {
   }
 
   private bindDragEventHandlers(docs: Document[]) {
+    on(this.containerContext.container, 'dragstart', this.onDragStart);
     on(this.containerContext.container, 'mousemove dragover', this.onMove);
     on(docs, 'mouseup dragend touchend', this.endMove);
   }
@@ -72,21 +71,48 @@ export class DropLocationDeterminer<T> extends View {
 
     const { mouseXRelativeToContainer, mouseYRelativeToContainer } = this.getMousePositionRelativeToContainer(mouseEvent);
 
-    const mouseTargetEl = customTarget ? customTarget({ sorter: this, event: mouseEvent }) : mouseEvent.target;
+    let mouseTargetEl: HTMLElement | null = customTarget ? customTarget({ sorter: this, event: mouseEvent }) : mouseEvent.target;
+    mouseTargetEl = this.getFirstElementWithAModel(mouseTargetEl);
+    if (!mouseTargetEl) return
 
     const mouseTargetModel = $(mouseTargetEl)?.data("model");
     const mouseTargetNode = this.treeClass(mouseTargetModel);
-    let targetNode = this.getValidParentNode(mouseTargetNode);
-    // @ts-ignore
-    const dims = this.dimsFromTarget(targetNode.getElement(), mouseXRelativeToContainer, mouseYRelativeToContainer, this.targetElement);
+    const targetNode = this.getValidParentNode(mouseTargetNode);
+    if (!targetNode) return
+    const dims = this.dimsFromTarget(targetNode.getElement()!);
 
     const pos = findPosition(dims, mouseXRelativeToContainer, mouseYRelativeToContainer);
-    this.lastPos = pos;
 
-    // @ts-ignore
-    this.onDropPositionChange && this.onDropPositionChange(dims, pos, targetNode);
+    this.eventHandlers?.onPlaceholderPositionChange && this.eventHandlers?.onPlaceholderPositionChange(dims, pos);
     this.eventHandlers?.onTargetChange && this.eventHandlers?.onTargetChange(this.targetNode, targetNode);
     this.targetNode = targetNode;
+    this.lastPos = pos;
+  }
+
+  onDragStart(mouseEvent: MouseEvent): void {
+    this.eventHandlers?.onDragStart && this.eventHandlers?.onDragStart(mouseEvent);
+  }
+
+  /**
+   * Retrieves the first element that has a data model associated with it.
+   * Traverses up the DOM tree from the given element until it reaches the container
+   * or an element with a data model.
+   * 
+   * @param mouseTargetEl - The element to start searching from.
+   * @returns The first element with a data model, or null if not found.
+   */
+  private getFirstElementWithAModel(mouseTargetEl: HTMLElement | null): HTMLElement | null {
+    const isModelPresent = (el: HTMLElement) => $(el).data("model") !== undefined;
+
+    while (mouseTargetEl && mouseTargetEl !== this.containerContext.container) {
+      if (isModelPresent(mouseTargetEl)) {
+        return mouseTargetEl;
+      }
+
+      mouseTargetEl = mouseTargetEl.parentElement;
+    }
+
+    return null;
   }
 
   private getValidParentNode(targetNode: TreeSorterBase<T>) {
@@ -95,6 +121,7 @@ export class DropLocationDeterminer<T> extends View {
     while (finalNode.getParent() !== null && !finalNode.canMove(this.sourceNode, 0)) {
       finalNode = finalNode.getParent()!;
     }
+
     return finalNode;
   }
 
@@ -132,7 +159,7 @@ export class DropLocationDeterminer<T> extends View {
    * @return {Dimension[]} - The dimensions array of the target and its valid parents.
    * @private
    */
-  private dimsFromTarget(target: HTMLElement, rX = 0, rY = 0, prevTargetElement?: HTMLElement): Dimension[] {
+  private dimsFromTarget(target: HTMLElement): Dimension[] {
     let dims: Dimension[] = [];
 
     if (!target) {

@@ -69,12 +69,13 @@ export default class ComponentSorter extends Sorter<Component> {
 
             targetNode.addChildAt(sourceNode, index);
         }
+        targetNode?.getmodel()?.set('status', '');
 
         this.placeholder.hide();
     }
 
     onTargetChange = (oldTargetNode: ComponentNode, newTargetNode: ComponentNode) => {
-        oldTargetNode && oldTargetNode?.getmodel()?.set('status', '');
+        oldTargetNode?.getmodel()?.set('status', '');
         newTargetNode?.getmodel()?.set('status', 'selected-parent');
     }
 

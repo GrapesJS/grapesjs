@@ -289,6 +289,7 @@ export function getMergedOptions<T>(sorterOptions: RequiredEmAndTreeClassPartial
     containerContext: {
       // TODO Change this
       container: '' as any,
+      placeholderElement: '' as any,
       containerSel: '*',
       itemSel: '*',
       pfx: '',

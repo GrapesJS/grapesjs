@@ -1,5 +1,6 @@
 import { View } from '../../common';
 import EditorModel from '../../editor/model/Editor';
+import { SorterDirection } from '../../utils/Sorter';
 import Layer from '../model/Layer';
 import Layers from '../model/Layers';
 import LayerView from './LayerView';
@@ -12,6 +13,7 @@ export default class LayersView extends View<Layer> {
   propertyView: PropertyStackView;
   items: LayerView[];
   sorter: any;
+  placeholderElement: HTMLElement;
 
   constructor(o: any) {
     super(o);
@@ -28,25 +30,28 @@ export default class LayersView extends View<Layer> {
     this.listenTo(coll, 'add', this.addTo);
     this.listenTo(coll, 'reset', this.reset);
     this.items = [];
+    this.placeholderElement = this.createPlaceholder(config.pStylePrefix);
 
     // For the Sorter
     const utils = em?.Utils;
     this.sorter = utils
-      ? new utils.Sorter({
-          // @ts-ignore
+      ? new utils.StyleManagerSorter({
+        em,
+        containerContext: {
           container: this.el,
-          canMove: (targetModel: any) => {
-            return targetModel.view.el === this.el
-          },
-          getChildren: (model: Layer | Layers) => {
-            return model instanceof Layers ? model.toArray() : [];
-          },
-          ignoreViewChildren: 1,
           containerSel: `.${pfx}layers`,
           itemSel: `.${pfx}layer`,
           pfx: config.pStylePrefix,
-          em,
-        })
+          document,
+          placeholderElement: this.placeholderElement
+        },
+        dragBehavior: {
+          dragDirection: SorterDirection.Vertical,
+          ignoreViewChildren: true,
+          nested: true,
+        },
+        positionOptions: {}
+      })
       : '';
     // @ts-ignore
     coll.view = this;
@@ -114,14 +119,31 @@ export default class LayersView extends View<Layer> {
   }
 
   render() {
-    const { $el, sorter } = this;
+    const { $el } = this;
     const frag = document.createDocumentFragment();
     $el.empty();
     this.collection.forEach((m) => this.addToCollection(m, frag));
     $el.append(frag);
     $el.attr('class', this.className!);
-    if (sorter) sorter.plh = null;
+    $el.append(this.placeholderElement)
 
     return this;
+  }
+
+  /**
+* Create placeholder
+* @return {HTMLElement}
+*/
+  private createPlaceholder(pfx: string) {
+    const el = document.createElement('div');
+    const ins = document.createElement('div');
+    this.el.parentNode
+    el.className = pfx + 'placeholder';
+    el.style.display = 'none';
+    el.style.pointerEvents = 'none';
+    ins.className = pfx + 'placeholder-int';
+    el.appendChild(ins);
+
+    return el;
   }
 }

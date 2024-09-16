@@ -6,7 +6,7 @@ import { off, on } from './dom';
 import { TreeSorterBase } from './TreeSorterBase';
 import { DropLocationDeterminer } from './DropLocationDeterminer';
 import { PlaceholderClass } from './PlaceholderClass';
-import { getMergedOptions, getDocuments } from './SorterUtils';
+import { getMergedOptions, getDocuments, matches, closest } from './SorterUtils';
 
 export interface Dimension {
   top: number;
@@ -37,7 +37,7 @@ export interface SorterContainerContext {
   itemSel: string;
   pfx: string;
   document: Document;
-  placeholderElement?: HTMLElement;
+  placeholderElement: HTMLElement;
   customTarget?: Function;
 }
 
@@ -53,11 +53,12 @@ export interface PositionOptions {
 
 export interface SorterEventHandlers<T> {
   onStartSort?: (sourceNode: TreeSorterBase<T>, container?: HTMLElement) => void;
+  onDragStart?: (mouseEvent: MouseEvent) => void;
   onMouseMove?: Function;
   onDrop?: (targetNode: TreeSorterBase<T>, sourceNode: TreeSorterBase<T>, index: number) => void;
-  onCancel?: Function;
-  onEndMove?: Function;
   onTargetChange?: (oldTargetNode: TreeSorterBase<T>, newTargetNode: TreeSorterBase<T>) => void;
+  onPlaceholderPositionChange?: (dims: Dimension[], newPosition: Position) => void;
+  onEndMove?: Function;
 }
 
 export interface SorterDragBehaviorOptions {
@@ -110,24 +111,16 @@ export default class Sorter<T> extends View {
     this.em = sorterOptions.em;
     var el = mergedOptions.containerContext.container;
     this.el = typeof el === 'string' ? document.querySelector(el)! : el!;
-
     this.updateOffset();
+
     if (this.em?.on) {
       this.em.on(this.em.Canvas.events.refresh, this.updateOffset);
-    }
-    const onDropPositionChange = (
-      dims: Dimension[],
-      newPosition: Position,
-      targetDimension: Dimension) => {
-      if (newPosition) {
-        this.placeholder.show();
-        this.updatePlaceholderPosition(dims, newPosition, targetDimension);
-      }
     }
 
     this.placeholder = new PlaceholderClass({
       container: this.containerContext.container,
       allowNesting: this.dragBehavior.nested,
+      pfx: this.containerContext.pfx,
       el: this.containerContext.placeholderElement,
       offset: {
         top: this.positionOptions.offsetTop!,
@@ -141,8 +134,18 @@ export default class Sorter<T> extends View {
       containerContext: this.containerContext,
       positionOptions: this.positionOptions,
       dragBehavior: this.dragBehavior,
-      eventHandlers: this.eventHandlers,
-    }, onDropPositionChange.bind(this));
+      eventHandlers: {
+        ...this.eventHandlers,
+        onPlaceholderPositionChange: ((
+          dims: Dimension[],
+          newPosition: Position) => {
+          if (newPosition) {
+            this.placeholder.show();
+            this.updatePlaceholderPosition(dims, newPosition);
+          }
+        }).bind(this)
+      },
+    });
   }
 
   // TODO
@@ -178,15 +181,21 @@ export default class Sorter<T> extends View {
     if (!!options.container) {
       this.updateContainer(options.container);
     }
+
+    // Check if the start element is a valid one, if not, try the closest valid one
+    if (sourceElement && !matches(sourceElement, `${this.containerContext.itemSel}, ${this.containerContext.containerSel}`)) {
+      sourceElement = closest(sourceElement, this.containerContext.itemSel)!;
+    }
+
     const sourceModel = $(sourceElement).data("model");
     this.sourceNode = this.getNodeFromModel(sourceModel)
     const docs = getDocuments(this.em, sourceElement);
     this.updateDocs(docs)
-    this.dropLocationDeterminer.startSort(sourceElement, options);
+    this.dropLocationDeterminer.startSort(sourceElement);
     this.bindDragEventHandlers(docs);
 
     if (this.eventHandlers && isFunction(this.eventHandlers.onStartSort)) {
-      this.eventHandlers.onStartSort(this.sourceNode!, options.container)
+      this.eventHandlers.onStartSort(this.sourceNode!, this.containerContext.container)
     }
   }
 
@@ -210,8 +219,8 @@ export default class Sorter<T> extends View {
   //   this.sourceModel?.set && this.sourceModel.set('status', '');
   // }
 
-  private updatePlaceholderPosition(dims: Dimension[], pos: Position, prevTargetDim: Dimension) {
-    this.placeholder.move(dims, pos, prevTargetDim)
+  private updatePlaceholderPosition(dims: Dimension[], pos: Position) {
+    this.placeholder.move(dims, pos)
   }
 
   /**
