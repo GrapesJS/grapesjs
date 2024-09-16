@@ -5,46 +5,37 @@ import { isTextNode, off, on } from './dom';
 import { getModel } from './mixins';
 import { TreeSorterBase } from './TreeSorterBase';
 import { Dimension, Position, PositionOptions, SorterContainerContext, SorterDirection, SorterDragBehaviorOptions, SorterEventHandlers } from './Sorter';
-import { bindAll, each, isFunction } from 'underscore';
-import { matches, closest, findPosition, offset, isInFlow, getDim } from './SorterUtils';
+import { bindAll, each } from 'underscore';
+import { matches, findPosition, offset, isInFlow, getDim } from './SorterUtils';
 
 interface DropLocationDeterminerOptions<T> {
   em: EditorModel;
-  treeClass: new (model: any) => TreeSorterBase<T>;
+  treeClass: (model: any) => TreeSorterBase<T>;
   containerContext: SorterContainerContext;
   positionOptions: PositionOptions;
   dragBehavior: SorterDragBehaviorOptions;
-  eventHandlers?: SorterEventHandlers;
+  eventHandlers?: SorterEventHandlers<T>;
 }
 
 export class DropLocationDeterminer<T> extends View {
   em?: EditorModel;
-  treeClass!: new (model: any) => TreeSorterBase<T>;
+  treeClass!: (model: any) => TreeSorterBase<T>;
 
   positionOptions!: PositionOptions;
   containerContext!: SorterContainerContext;
   dragBehavior!: SorterDragBehaviorOptions;
-  eventHandlers?: SorterEventHandlers;
+  eventHandlers?: SorterEventHandlers<T>;
 
   targetNode!: TreeSorterBase<T>;
+  lastPos!: Position;
+  targetDimensions?: Dimension[];
   sourceNode!: TreeSorterBase<T>;
-  moved?: boolean;
   docs!: Document[];
   elT!: number;
   elL!: number;
 
-  targetParent: HTMLElement | undefined;
-  lastPos!: Position;
-  sourceModel?: Model;
-
-  targetDim?: Dimension;
-  cacheDimsP?: Dimension[];
-  cacheDims?: Dimension[];
-
   constructor(options: DropLocationDeterminerOptions<T>,
-    private onMoveCallback?: (...args: any) => void,
-    private onDropPositionChange?: (dims: Dimension[], newPosition: Position, targetDimension: Dimension) => void,
-    private onDrop?: (node: TreeSorterBase<T>, index: number) => void) {
+    private onDropPositionChange?: (dims: Dimension[], newPosition: Position, targetDimension: Dimension) => void) {
     super();
     this.treeClass = options.treeClass;
     this.em = options.em;
@@ -61,13 +52,12 @@ export class DropLocationDeterminer<T> extends View {
    * Picking component to move
    * @param {HTMLElement} sourceElement
    * */
-  startSort(sourceElement?: HTMLElement, options: { container?: HTMLElement; } = {}) {
+  startSort(sourceElement?: HTMLElement, options: { container?: HTMLElement } = {}) {
     this.containerContext.container = options.container!
     const sourceModel = $(sourceElement).data('model')
-    const sourceNode = new this.treeClass(sourceModel);
+    const sourceNode = this.treeClass(sourceModel);
     this.sourceNode = sourceNode;
 
-    this.resetDragStates();
     this.bindDragEventHandlers(this.docs);
   }
 
@@ -78,7 +68,6 @@ export class DropLocationDeterminer<T> extends View {
 
   onMove(mouseEvent: MouseEvent): void {
     const customTarget = this.containerContext.customTarget;
-    this.moved = true;
     this.cacheContainerPosition();
 
     const { mouseXRelativeToContainer, mouseYRelativeToContainer } = this.getMousePositionRelativeToContainer(mouseEvent);
@@ -86,24 +75,18 @@ export class DropLocationDeterminer<T> extends View {
     const mouseTargetEl = customTarget ? customTarget({ sorter: this, event: mouseEvent }) : mouseEvent.target;
 
     const mouseTargetModel = $(mouseTargetEl)?.data("model");
-    const mouseTargetNode = new this.treeClass(mouseTargetModel);
+    const mouseTargetNode = this.treeClass(mouseTargetModel);
     let targetNode = this.getValidParentNode(mouseTargetNode);
-    // TODO replace this with adding selected parent to the component
-    try {
-      // @ts-ignore
-      this.targetNode.getElement().style.border = 'none'
-      // @ts-ignore
-      targetNode.getElement().style.border = '1px red solid'
-    } catch { }
-    this.targetNode = targetNode;
     // @ts-ignore
     const dims = this.dimsFromTarget(targetNode.getElement(), mouseXRelativeToContainer, mouseYRelativeToContainer, this.targetElement);
 
     const pos = findPosition(dims, mouseXRelativeToContainer, mouseYRelativeToContainer);
+    this.lastPos = pos;
 
     // @ts-ignore
     this.onDropPositionChange && this.onDropPositionChange(dims, pos, targetNode);
-    this.lastPos = pos;
+    this.eventHandlers?.onTargetChange && this.eventHandlers?.onTargetChange(this.targetNode, targetNode);
+    this.targetNode = targetNode;
   }
 
   private getValidParentNode(targetNode: TreeSorterBase<T>) {
@@ -122,7 +105,7 @@ export class DropLocationDeterminer<T> extends View {
   endMove(): void {
     let index = this.lastPos.method === 'after' ? this.lastPos.indexEl + 1 : this.lastPos.indexEl;
     // TODO fix the index for same collection dropping
-    isFunction(this.onDrop) && this.onDrop(this.targetNode, index)
+    this.eventHandlers?.onDrop?.(this.targetNode, this.sourceNode, index)
     this.cleanupEventListeners();
   }
 
@@ -156,51 +139,9 @@ export class DropLocationDeterminer<T> extends View {
       return dims
     };
 
-    if (this.isNewTarget(target, prevTargetElement)) {
-      this.handleNewTarget(target, rX, rY);
-    }
+    this.targetDimensions = this.getChildrenDim(target);
 
-    dims = this.cacheDims!;
-
-    return dims;
-  }
-
-  /**
-   * Checks if the provided target is different from the previous one.
-   *
-   * @param {HTMLElement} target - The target element.
-   * @return {boolean} - Whether the target is a new one.
-   * @private
-   */
-  private isNewTarget(target: HTMLElement, prevTargetElement: any): boolean {
-    return (prevTargetElement && prevTargetElement !== target) || !prevTargetElement;
-  }
-
-  /**
-   * Handle the initialization of a new target, caching dimensions and validating
-   * if the target is valid for sorting.
-   *
-   * @param {HTMLElement} targetElement - The new target element.
-   * @param {number} rX - Relative X position.
-   * @param {number} rY - Relative Y position.
-   * @private
-   */
-  private handleNewTarget(targetElement: HTMLElement, rX: number, rY: number): void {
-    const em = this.em;
-
-    this.targetParent = closest(targetElement, this.containerContext.containerSel);
-
-    const validResult = this.validTarget();
-    em && em.trigger('sorter:drag:validation', validResult);
-
-    if (!validResult.valid && this.targetParent) {
-      this.dimsFromTarget(this.targetParent, rX, rY, this.targetNode.getElement());
-      return;
-    }
-
-    this.targetDim = getDim(targetElement, this.elL, this.elT, this.positionOptions.relative, !!this.positionOptions.canvasRelative, this.positionOptions.windowMargin, this.em);
-    this.cacheDimsP = this.getChildrenDim(this.targetParent!);
-    this.cacheDims = this.getChildrenDim(targetElement);
+    return this.targetDimensions;
   }
 
   /**
@@ -208,7 +149,7 @@ export class DropLocationDeterminer<T> extends View {
    * @param {HTMLELement} el Element root
    * @return {Array}
    * */
-  getChildrenDim(trg: HTMLElement) {
+  private getChildrenDim(trg: HTMLElement) {
     const dims: Dimension[] = [];
     if (!trg) return dims;
 
@@ -228,7 +169,8 @@ export class DropLocationDeterminer<T> extends View {
         return;
       }
 
-      const dim = getDim(el, this.elL, this.elT, this.positionOptions.relative, !!this.positionOptions.canvasRelative, this.positionOptions.windowMargin, this.em);
+      // TODO
+      const dim = getDim(el, this.elL, this.elT, this.positionOptions.relative!, !!this.positionOptions.canvasRelative, this.positionOptions.windowMargin!, this.em);
       let dir = this.dragBehavior.dragDirection;
       let dirValue: boolean;
 
@@ -243,39 +185,6 @@ export class DropLocationDeterminer<T> extends View {
     });
 
     return dims;
-  }
-
-  /**
-   * Check if the target is valid with the actual source
-   * @return {Boolean}
-   */
-  validTarget() {
-    const pos = this.lastPos;
-    const targetModel = this.targetNode.getmodel();
-    const targetElement = this.targetNode.getElement();
-    const sourceModel = this.sourceNode.getmodel();
-    const sourceElement = this.sourceNode.getElement();
-    const targetChildren = this.targetNode.getChildren();
-    if (!targetChildren) {
-      return {
-        valid: false,
-        src: sourceElement,
-        srcModel: sourceModel,
-        trg: targetElement,
-        trgModel: targetModel
-      };
-    }
-    const length = targetChildren.length;
-    const index = pos ? (pos.method === 'after' ? pos.indexEl + 1 : pos.indexEl) : length;
-    const canMove = this.targetNode.canMove(this.sourceNode, index);
-
-    return {
-      valid: canMove,
-      src: sourceElement,
-      srcModel: sourceModel,
-      trg: targetElement,
-      trgModel: targetModel
-    };
   }
 
   /**
@@ -308,10 +217,6 @@ export class DropLocationDeterminer<T> extends View {
     const containerOffset = offset(this.containerContext.container);
     this.elT = this.positionOptions.windowMargin ? Math.abs(containerOffset.top) : containerOffset.top;
     this.elL = this.positionOptions.windowMargin ? Math.abs(containerOffset.left) : containerOffset.left;
-  }
-
-  private resetDragStates() {
-    this.moved = false;
   }
 
   updateContainer(container: HTMLElement) {
