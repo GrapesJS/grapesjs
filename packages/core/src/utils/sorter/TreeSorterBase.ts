@@ -1,4 +1,4 @@
-import { View } from "../common";
+import { View } from "../../common";
 
 export abstract class TreeSorterBase<T> {
   model: T;

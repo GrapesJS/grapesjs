@@ -1,7 +1,7 @@
 import { isFunction } from "underscore";
-import { CanvasSpotBuiltInTypes } from "../canvas/model/CanvasSpot";
-import Component from "../dom_components/model/Component";
-import EditorModel from "../editor/model/Editor";
+import { CanvasSpotBuiltInTypes } from "../../canvas/model/CanvasSpot";
+import Component from "../../dom_components/model/Component";
+import EditorModel from "../../editor/model/Editor";
 import { ComponentNode } from "./ComponentNode";
 import Sorter, { SorterContainerContext, PositionOptions, SorterDragBehaviorOptions, SorterEventHandlers } from "./Sorter";
 

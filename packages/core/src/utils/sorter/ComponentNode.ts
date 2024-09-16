@@ -1,4 +1,4 @@
-import Component from '../dom_components/model/Component';
+import Component from '../../dom_components/model/Component';
 import { TreeSorterBase } from './TreeSorterBase';
 
 export class ComponentNode extends TreeSorterBase<Component> {

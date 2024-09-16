@@ -1,5 +1,5 @@
 import { $ } from '../../common';
-import { SorterDirection } from '../../utils/Sorter';
+import { SorterDirection } from '../../utils/sorter/Sorter';
 import { CommandObject } from './CommandAbstract';
 export default {
   /**

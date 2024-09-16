@@ -1,6 +1,6 @@
-import EditorModel from "../editor/model/Editor";
-import Layer from "../style_manager/model/Layer";
-import Layers from "../style_manager/model/Layers";
+import EditorModel from "../../editor/model/Editor";
+import Layer from "../../style_manager/model/Layer";
+import Layers from "../../style_manager/model/Layers";
 import { LayerNode } from "./LayerNode";
 import Sorter, { SorterContainerContext, PositionOptions, SorterDragBehaviorOptions, SorterEventHandlers } from "./Sorter";
 

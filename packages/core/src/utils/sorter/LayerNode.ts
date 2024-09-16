@@ -1,5 +1,5 @@
-import Layer from '../style_manager/model/Layer';
-import Layers from '../style_manager/model/Layers';
+import Layer from '../../style_manager/model/Layer';
+import Layers from '../../style_manager/model/Layers';
 import { TreeSorterBase } from './TreeSorterBase';
 
 /**

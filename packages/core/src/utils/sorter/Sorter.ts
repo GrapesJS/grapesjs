@@ -1,8 +1,8 @@
 import { bindAll, isFunction } from 'underscore';
-import CanvasModule from '../canvas';
-import { $, View } from '../common';
-import EditorModel from '../editor/model/Editor';
-import { off, on } from './dom';
+import CanvasModule from '../../canvas';
+import { $, View } from '../../common';
+import EditorModel from '../../editor/model/Editor';
+import { off, on } from '../dom';
 import { TreeSorterBase } from './TreeSorterBase';
 import { DropLocationDeterminer } from './DropLocationDeterminer';
 import { PlaceholderClass } from './PlaceholderClass';

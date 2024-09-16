@@ -1,4 +1,4 @@
-import { View } from '../common';
+import { View } from '../../common';
 import { Dimension, Position } from './Sorter';
 
 export class PlaceholderClass extends View {

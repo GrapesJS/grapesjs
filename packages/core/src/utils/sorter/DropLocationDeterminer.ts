@@ -1,8 +1,8 @@
-import { $, Model, View } from '../common';
+import { $, Model, View } from '../../common';
 
-import EditorModel from '../editor/model/Editor';
-import { isTextNode, off, on } from './dom';
-import { getModel } from './mixins';
+import EditorModel from '../../editor/model/Editor';
+import { isTextNode, off, on } from '../dom';
+import { getModel } from '../mixins';
 import { TreeSorterBase } from './TreeSorterBase';
 import { Dimension, Position, PositionOptions, SorterContainerContext, SorterDirection, SorterDragBehaviorOptions, SorterEventHandlers } from './Sorter';
 import { bindAll, each } from 'underscore';

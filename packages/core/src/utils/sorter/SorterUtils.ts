@@ -1,7 +1,7 @@
-import { $, Model, SetOptions } from '../common';
-import EditorModel from '../editor/model/Editor';
-import { isTextNode } from './dom';
-import { matches as matchesMixin } from './mixins';
+import { $, Model, SetOptions } from '../../common';
+import EditorModel from '../../editor/model/Editor';
+import { isTextNode } from '../dom';
+import { matches as matchesMixin } from '../mixins';
 import { Dimension, Position, RequiredEmAndTreeClassPartialSorterOptions, SorterOptions, SorterDirection } from './Sorter';
 
 /**
@@ -329,7 +329,9 @@ export function getMergedOptions<T>(sorterOptions: RequiredEmAndTreeClassPartial
     },
   };
   return mergedOptions;
-}/**
+}
+
+/**
  * Returns dimensions and positions about the element
  * @param {HTMLElement} el
  * @return {Array<number>}
@@ -362,7 +364,7 @@ export function getDim(el: HTMLElement,
 
   return { top, left, height, width, offsets };
 }
+
 export function hasPointerPositionChanged(pos: Position, lastPos?: Position) {
   return !lastPos || lastPos.index !== pos.index || lastPos.method !== pos.method;
 }
-
