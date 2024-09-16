@@ -1,7 +1,6 @@
-import { bindAll } from 'underscore';
+import { bindAll, isFunction } from 'underscore';
 import CanvasModule from '../canvas';
-import { CanvasSpotBuiltInTypes } from '../canvas/model/CanvasSpot';
-import { $, Model, View } from '../common';
+import { $, View } from '../common';
 import EditorModel from '../editor/model/Editor';
 import { off, on } from './dom';
 import { TreeSorterBase } from './TreeSorterBase';
@@ -43,40 +42,40 @@ export interface SorterContainerContext {
 }
 
 export interface PositionOptions {
-  windowMargin: number;
-  borderOffset: number;
-  offsetTop: number;
-  offsetLeft: number;
+  windowMargin?: number;
+  borderOffset?: number;
+  offsetTop?: number;
+  offsetLeft?: number;
   canvasRelative?: boolean;
-  scale: number;
-  relative: boolean;
+  scale?: number;
+  relative?: boolean;
 }
 
-export interface SorterEventHandlers {
-  onStart?: Function;
-  onMove?: Function;
+export interface SorterEventHandlers<T> {
+  onStartSort?: (sourceNode: TreeSorterBase<T>, container?: HTMLElement) => void;
+  onMouseMove?: Function;
+  onDrop?: (targetNode: TreeSorterBase<T>, sourceNode: TreeSorterBase<T>, index: number) => void;
+  onCancel?: Function;
   onEndMove?: Function;
-  onEnd?: Function;
+  onTargetChange?: (oldTargetNode: TreeSorterBase<T>, newTargetNode: TreeSorterBase<T>) => void;
 }
 
 export interface SorterDragBehaviorOptions {
   dragDirection: SorterDirection;
   ignoreViewChildren?: boolean;
   nested?: boolean;
-  selectOnEnd: boolean;
+  selectOnEnd?: boolean;
 }
 
 export interface SorterOptions<T> {
-  em?: EditorModel;
+  em: EditorModel;
   treeClass: new (model: T) => TreeSorterBase<T>;
 
   containerContext: SorterContainerContext;
   positionOptions: PositionOptions;
   dragBehavior: SorterDragBehaviorOptions;
-  eventHandlers?: SorterEventHandlers;
+  eventHandlers?: SorterEventHandlers<T>;
 }
-
-const targetSpotType = CanvasSpotBuiltInTypes.Target;
 
 export type RequiredEmAndTreeClassPartialSorterOptions<T> = Partial<SorterOptions<T>> & {
   em: EditorModel;
@@ -84,23 +83,18 @@ export type RequiredEmAndTreeClassPartialSorterOptions<T> = Partial<SorterOption
 };
 
 export default class Sorter<T> extends View {
-  em?: EditorModel;
-  treeClass!: new (model: any) => TreeSorterBase<T>;
+  em!: EditorModel;
   placeholder!: PlaceholderClass;
   dropLocationDeterminer!: DropLocationDeterminer<T>;
 
   positionOptions!: PositionOptions;
   containerContext!: SorterContainerContext;
   dragBehavior!: SorterDragBehaviorOptions;
-  eventHandlers?: SorterEventHandlers;
+  eventHandlers?: SorterEventHandlers<T>;
 
   options!: SorterOptions<T>;
-
-  targetElement?: HTMLElement;
-  prevTargetElement?: HTMLElement;
-  sourceElement?: HTMLElement;
-  sourceModel?: Model;
-  docs!: Document[];
+  docs: any;
+  sourceNode?: TreeSorterBase<T>;
 
   // TODO
   // @ts-ignore
@@ -116,14 +110,11 @@ export default class Sorter<T> extends View {
     this.em = sorterOptions.em;
     var el = mergedOptions.containerContext.container;
     this.el = typeof el === 'string' ? document.querySelector(el)! : el!;
-    this.treeClass = sorterOptions.treeClass;
 
     this.updateOffset();
     if (this.em?.on) {
       this.em.on(this.em.Canvas.events.refresh, this.updateOffset);
     }
-    const onMove = (...args: any) => { }
-
     const onDropPositionChange = (
       dims: Dimension[],
       newPosition: Position,
@@ -134,47 +125,29 @@ export default class Sorter<T> extends View {
       }
     }
 
-
     this.placeholder = new PlaceholderClass({
       container: this.containerContext.container,
       allowNesting: this.dragBehavior.nested,
       el: this.containerContext.placeholderElement,
       offset: {
-        top: this.positionOptions.offsetTop,
-        left: this.positionOptions.offsetLeft
+        top: this.positionOptions.offsetTop!,
+        left: this.positionOptions.offsetLeft!
       }
     })
 
-    const onDrop = (targetNode: TreeSorterBase<T>, index: number) => {
-      console.log(targetNode.getChildren()?.length, index);
-      if (targetNode) {
-        // @ts-ignore
-        targetNode.model.view.el.style.border = '3px red solid';
-        const sourceNode = this.getNodeFromModel(this.getSourceModel())
-        const parent = sourceNode.getParent();
-        if (parent) {
-          parent.removeChildAt(parent.indexOfChild(sourceNode))
-        }
-
-        targetNode.addChildAt(sourceNode, index);
-      }
-
-      this.clearFreeze();
-      this.placeholder.hide();
-    }
-
     this.dropLocationDeterminer = new DropLocationDeterminer({
       em: this.em,
-      treeClass: this.treeClass,
+      treeClass: this.getNodeFromModel,
       containerContext: this.containerContext,
       positionOptions: this.positionOptions,
       dragBehavior: this.dragBehavior,
       eventHandlers: this.eventHandlers,
-    }, onMove.bind(this), onDropPositionChange.bind(this), onDrop.bind(this));
+    }, onDropPositionChange.bind(this));
   }
 
-  getNodeFromModel(model: Model) {
-    return new this.treeClass(model);
+  // TODO
+  getNodeFromModel(model: T) {
+    return '' as any;
   }
 
   private getContainerEl(elem?: HTMLElement) {
@@ -198,51 +171,27 @@ export default class Sorter<T> extends View {
   }
 
   /**
-   * Toggle cursor while sorting
-   * @param {Boolean} active
-   */
-  private toggleSortCursor(active?: boolean) {
-    const { em } = this;
-    const cv = em?.Canvas;
-
-    // Avoid updating body className as it causes a huge repaint
-    // Noticeable with "fast" drag of blocks
-    cv && (active ? cv.startAutoscroll() : cv.stopAutoscroll());
-  }
-
-  /**
    * Picking component to move
-   * @param {HTMLElement} src
+   * @param {HTMLElement} sourceElement
    * */
-  startSort(src?: HTMLElement, opts: { container?: HTMLElement } = {}) {
-    if (!!opts.container) {
-      this.updateContainer(opts.container);
+  startSort(sourceElement?: HTMLElement, options: { container?: HTMLElement } = {}) {
+    if (!!options.container) {
+      this.updateContainer(options.container);
     }
-    const docs = getDocuments(this.em, src);
+    const sourceModel = $(sourceElement).data("model");
+    this.sourceNode = this.getNodeFromModel(sourceModel)
+    const docs = getDocuments(this.em, sourceElement);
     this.updateDocs(docs)
-    this.dropLocationDeterminer.startSort(src, opts);
-    this.resetDragStates();
-
-    this.sourceElement = src;
-    if (src) {
-      this.sourceModel = this.getSourceModel(src);
-    }
-
+    this.dropLocationDeterminer.startSort(sourceElement, options);
     this.bindDragEventHandlers(docs);
-    this.toggleSortCursor(true);
-    this.emitSorterStart(src);
+
+    if (this.eventHandlers && isFunction(this.eventHandlers.onStartSort)) {
+      this.eventHandlers.onStartSort(this.sourceNode!, options.container)
+    }
   }
 
   private bindDragEventHandlers(docs: Document[]) {
     on(docs, 'keydown', this.rollback);
-  }
-
-  private emitSorterStart(src: HTMLElement | undefined) {
-    this.em?.trigger('sorter:drag:start', src, this.sourceModel);
-  }
-
-  private resetDragStates() {
-    delete this.targetElement;
   }
 
   private updateContainer(container: HTMLElement) {
@@ -256,20 +205,10 @@ export default class Sorter<T> extends View {
     this.dropLocationDeterminer.updateDocs(docs);
   }
 
-  /**
-   * Get the model of the current source element (element to drag)
-   * @return {Model}
-   */
-  private getSourceModel(source?: HTMLElement, { target, avoidChildren = 1 }: any = {}): Model {
-    const { sourceElement } = this;
-    const src = source || sourceElement;
-
-    return src && $(src).data('model');
-  }
-
-  private clearFreeze() {
-    this.sourceModel?.set && this.sourceModel.set('status', '');
-  }
+  // TODO move to componentSorter
+  // private clearFreeze() {
+  //   this.sourceModel?.set && this.sourceModel.set('status', '');
+  // }
 
   private updatePlaceholderPosition(dims: Dimension[], pos: Position, prevTargetDim: Dimension) {
     this.placeholder.move(dims, pos, prevTargetDim)
@@ -280,18 +219,10 @@ export default class Sorter<T> extends View {
    * Handles the cleanup and final steps after an item is moved.
    */
   endMove(): void {
-    const { sourceElement } = this;
     const container = this.getContainerEl();
     const docs = this.docs;
-    let srcModel;
-
     this.cleanupEventListeners(container, docs);
     this.placeholder.hide();
-
-    if (sourceElement) {
-      srcModel = this.getSourceModel();
-    }
-
     this.finalizeMove();
   }
 
@@ -312,8 +243,6 @@ export default class Sorter<T> extends View {
    * @private
    */
   private finalizeMove(): void {
-    this.clearFreeze();
-    this.toggleSortCursor();
     // @ts-ignore
     this.em?.Canvas.removeSpots(this.spotTarget);
   }

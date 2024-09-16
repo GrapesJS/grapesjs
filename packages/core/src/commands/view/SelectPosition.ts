@@ -1,8 +1,6 @@
 import { $ } from '../../common';
-import Component from '../../dom_components/model/Component';
 import { SorterDirection } from '../../utils/Sorter';
 import { CommandObject } from './CommandAbstract';
-import { ComponentTreeSorter } from './ComponentTreeSorter';
 export default {
   /**
    * Start select position event
@@ -16,10 +14,9 @@ export default {
     const container = trg.ownerDocument.body;
 
     if (utils && !this.sorter)
-      this.sorter = new utils.Sorter<Component>({
+      this.sorter = new utils.ComponentSorter({
         // @ts-ignore
         em: this.em,
-        treeClass: ComponentTreeSorter,
         containerContext: {
           container,
           containerSel: '*',
@@ -29,8 +26,7 @@ export default {
           placeholderElement: this.canvas.getPlacerEl(),
         },
         positionOptions: {
-          wmargin: 1,
-          scale: () => this.em.getZoomDecimal(),
+          windowMargin: 1,
           canvasRelative: true,
         },
         dragBehavior: {
