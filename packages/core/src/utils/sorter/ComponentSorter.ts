@@ -1,8 +1,7 @@
-import { isFunction } from "underscore";
 import { CanvasSpotBuiltInTypes } from "../../canvas/model/CanvasSpot";
 import Component from "../../dom_components/model/Component";
 import EditorModel from "../../editor/model/Editor";
-import { ComponentNode } from "./ComponentNode";
+import { BaseComponentNode } from "./BaseComponentNode";
 import Sorter from "./Sorter";
 import { SorterContainerContext, PositionOptions, SorterDragBehaviorOptions, SorterEventHandlers } from './types';
 
@@ -15,12 +14,14 @@ const spotTarget = {
 export default class ComponentSorter extends Sorter<Component> {
     constructor({
         em,
+        treeClass,
         containerContext,
         positionOptions,
         dragBehavior,
         eventHandlers = {},
     }: {
         em: EditorModel;
+        treeClass: new (model: Component) => BaseComponentNode,
         containerContext: SorterContainerContext;
         positionOptions: PositionOptions;
         dragBehavior: SorterDragBehaviorOptions;
@@ -29,39 +30,41 @@ export default class ComponentSorter extends Sorter<Component> {
         super({
             // @ts-ignore
             em,
-            treeClass: ComponentNode,
+            treeClass,
             containerContext,
             positionOptions,
             dragBehavior,
             eventHandlers: {
-                onStartSort: (sourceNode: ComponentNode, containerElement?: HTMLElement) => {
+                onStartSort: (sourceNode: BaseComponentNode, containerElement?: HTMLElement) => {
                     eventHandlers.onStartSort?.(sourceNode, containerElement);
                     this.onComponentStartSort(sourceNode);
                 },
-                onDrop: (targetNode: ComponentNode, sourceNode: ComponentNode, index: number) => {
+                onDrop: (targetNode: BaseComponentNode, sourceNode: BaseComponentNode, index: number) => {
                     eventHandlers.onDrop?.(targetNode, sourceNode, index);
                     this.onComponentDrop(targetNode, sourceNode, index);
                 },
-                onTargetChange: (oldTargetNode: ComponentNode, newTargetNode: ComponentNode) => {
+                onTargetChange: (oldTargetNode: BaseComponentNode, newTargetNode: BaseComponentNode) => {
                     eventHandlers.onTargetChange?.(oldTargetNode, newTargetNode);
                     this.onTargetChange(oldTargetNode, newTargetNode);
                 },
                 ...eventHandlers,
             },
         });
+        
+        this.treeClass = treeClass;
     }
 
-    getNodeFromModel(model: Component): ComponentNode {
-        return new ComponentNode(model);
+    getNodeFromModel(model: Component): BaseComponentNode {
+        return new this.treeClass(model);
     }
 
-    onComponentStartSort = (sourceNode: ComponentNode) => {
+    onComponentStartSort = (sourceNode: BaseComponentNode) => {
         this.em.clearSelection();
         this.toggleSortCursor(true);
         this.em.trigger('sorter:drag:start', sourceNode?.element, sourceNode?.model);
     }
 
-    onComponentDrop = (targetNode: ComponentNode, sourceNode: ComponentNode, index: number) => {
+    onComponentDrop = (targetNode: BaseComponentNode, sourceNode: BaseComponentNode, index: number) => {
         sourceNode.model.set('status', '');
         if (targetNode) {
             const parent = sourceNode.getParent();
@@ -82,7 +85,7 @@ export default class ComponentSorter extends Sorter<Component> {
         this.placeholder.hide();
     }
 
-    onTargetChange = (oldTargetNode: ComponentNode, newTargetNode: ComponentNode) => {
+    onTargetChange = (oldTargetNode: BaseComponentNode, newTargetNode: BaseComponentNode) => {
         oldTargetNode?.model?.set('status', '');
         newTargetNode?.model?.set('status', 'selected-parent');
     }
@@ -104,7 +107,7 @@ export default class ComponentSorter extends Sorter<Component> {
         return () => this.em!.getZoomDecimal()
     }
 
-    setSelection(node: ComponentNode, selected: Boolean) {
+    setSelection(node: BaseComponentNode, selected: Boolean) {
         const model = node.model;
         const cv = this.em!.Canvas;
         const { Select, Hover, Spacing } = CanvasSpotBuiltInTypes;

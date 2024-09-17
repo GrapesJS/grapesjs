@@ -1,4 +1,5 @@
 import { $ } from '../../common';
+import { ComponentCanvasNode } from '../../utils/sorter/ComponentCanvasNode';
 import { SorterDirection } from '../../utils/sorter/types';
 import { CommandObject } from './CommandAbstract';
 export default {
@@ -17,6 +18,7 @@ export default {
       this.sorter = new utils.ComponentSorter({
         // @ts-ignore
         em: this.em,
+        treeClass: ComponentCanvasNode,
         containerContext: {
           container,
           containerSel: '*',

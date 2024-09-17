@@ -3,14 +3,14 @@ import { $, View } from '../../common';
 import EditorModel from '../../editor/model/Editor';
 import { isTextNode, off, on } from '../dom';
 import { getModel } from '../mixins';
-import { TreeSorterBase } from './TreeSorterBase';
+import { SortableTreeNode } from './SortableTreeNode';
 import { Dimension, Position, PositionOptions, SorterContainerContext, SorterDirection, SorterDragBehaviorOptions, SorterEventHandlers } from './types';
 import { bindAll, each } from 'underscore';
 import { matches, findPosition, offset, isInFlow } from './SorterUtils';
 
 interface DropLocationDeterminerOptions<T> {
   em: EditorModel;
-  treeClass: new (model: any) => TreeSorterBase<T>;
+  treeClass: new (model: any) => SortableTreeNode<T>;
   containerContext: SorterContainerContext;
   positionOptions: PositionOptions;
   dragBehavior: SorterDragBehaviorOptions;
@@ -19,17 +19,17 @@ interface DropLocationDeterminerOptions<T> {
 
 export class DropLocationDeterminer<T> extends View {
   em?: EditorModel;
-  treeClass!: new (model: any) => TreeSorterBase<T>;
+  treeClass!: new (model: any) => SortableTreeNode<T>;
 
   positionOptions!: PositionOptions;
   containerContext!: SorterContainerContext;
   dragBehavior!: SorterDragBehaviorOptions;
   eventHandlers?: SorterEventHandlers<T>;
 
-  targetNode!: TreeSorterBase<T>;
+  targetNode!: SortableTreeNode<T>;
   lastPos!: Position;
   targetDimensions?: Dimension[];
-  sourceNode!: TreeSorterBase<T>;
+  sourceNode!: SortableTreeNode<T>;
   docs!: Document[];
   elT!: number;
   elL!: number;
@@ -115,10 +115,10 @@ export class DropLocationDeterminer<T> extends View {
     return null;
   }
 
-  private getValidParentNode(targetNode: TreeSorterBase<T>) {
+  private getValidParentNode(targetNode: SortableTreeNode<T>) {
     let finalNode = targetNode;
     // TODO change the hard coded 0 value
-    while (finalNode.getParent() !== null && !finalNode.canMove(this.sourceNode, 0)) {
+    while (!finalNode.canMove(this.sourceNode, 0) && finalNode.getParent() !== null) {
       finalNode = finalNode.getParent()!;
     }
 
@@ -153,13 +153,13 @@ export class DropLocationDeterminer<T> extends View {
   /**
    * Get dimensions of nodes relative to the coordinates.
    *
-   * @param {TreeSorterBase<T>} targetNode - The target node.
+   * @param {SortableTreeNode<T>} targetNode - The target node.
    * @param {number} [rX=0] - Relative X position.
    * @param {number} [rY=0] - Relative Y position.
    * @return {Dimension[]} - The dimensions array of the target and its valid parents.
    * @private
    */
-  private dimsFromTarget(targetNode: TreeSorterBase<T>): Dimension[] {
+  private dimsFromTarget(targetNode: SortableTreeNode<T>): Dimension[] {
     let dims: Dimension[] = [];
 
     if (!targetNode) {
@@ -173,10 +173,10 @@ export class DropLocationDeterminer<T> extends View {
 
   /**
    * Get children dimensions
-   * @param {TreeSorterBase<T>} el Element root
+   * @param {SortableTreeNode<T>} el Element root
    * @return {Array}
    * */
-  private getChildrenDim(targetNode: TreeSorterBase<T>) {
+  private getChildrenDim(targetNode: SortableTreeNode<T>) {
     const dims: Dimension[] = [];
     const targetElement = targetNode.element
     if (!!!targetElement) return dims;

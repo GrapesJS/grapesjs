@@ -5,6 +5,8 @@ import EditorModel from '../../editor/model/Editor';
 import ItemView from './ItemView';
 import Components from '../../dom_components/model/Components';
 import LayerManager from '..';
+import { SorterDirection } from '../../utils/sorter/types';
+import { ComponentLayersNode } from '../../utils/sorter/ComponentLayersNode';
 
 export default class ItemsView extends View {
   items: ItemView[];
@@ -14,6 +16,7 @@ export default class ItemsView extends View {
   module: LayerManager;
   /** @ts-ignore */
   collection!: Components;
+  placeholderElement?: HTMLDivElement;
 
   constructor(opt: any = {}) {
     super(opt);
@@ -34,24 +37,62 @@ export default class ItemsView extends View {
 
     if (config.sortable && !this.opt.sorter) {
       const utils = em.Utils;
-      this.opt.sorter = new utils.Sorter({
-        // @ts-ignore
-        container: config.sortContainer || this.el,
-        containerSel: `.${this.className}`,
-        itemSel: `.${pfx}layer`,
-        ignoreViewChildren: 1,
-        selectOnEnd: false,
-        nested: 1,
-        ppfx,
-        pfx,
+      // this.opt.sorter = new utils.Sorter({
+      //   // @ts-ignore
+      //   container: config.sortContainer || this.el,
+      //   containerSel: `.${this.className}`,
+      //   itemSel: `.${pfx}layer`,
+      //   ignoreViewChildren: 1,
+      //   selectOnEnd: false,
+      //   nested: 1,
+      //   ppfx,
+      //   pfx,
+      //   em,
+      // });
+      const container = config.sortContainer || this.el;
+      this.placeholderElement = this.createPlaceholder(container)
+      this.opt.sorter = new utils.ComponentSorter({
         em,
-      });
+        treeClass: ComponentLayersNode,
+        containerContext: {
+          container: container,
+          containerSel: `.${this.className}`,
+          itemSel: `.${pfx}layer`,
+          pfx: config.pStylePrefix,
+          document,
+          placeholderElement: this.placeholderElement
+        },
+        dragBehavior: {
+          dragDirection: SorterDirection.Vertical,
+          ignoreViewChildren: true,
+          nested: true,
+        },
+        positionOptions: {}
+      })
     }
 
     // For the sorter
     this.$el.data('collection', coll);
     opt.parent && this.$el.data('model', opt.parent);
   }
+
+  /**
+* Create placeholder
+* @return {HTMLElement}
+*/
+  private createPlaceholder(pfx: string) {
+    const el = document.createElement('div');
+    const ins = document.createElement('div');
+    this.el.parentNode
+    el.className = pfx + 'placeholder';
+    el.style.display = 'none';
+    el.style.pointerEvents = 'none';
+    ins.className = pfx + 'placeholder-int';
+    el.appendChild(ins);
+
+    return el;
+  }
+
 
   removeChildren(removed: Component) {
     const view = removed.viewLayer;

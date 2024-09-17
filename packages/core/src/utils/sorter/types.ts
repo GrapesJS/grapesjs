@@ -1,6 +1,6 @@
 import CanvasModule from '../../canvas';
 import EditorModel from '../../editor/model/Editor';
-import { TreeSorterBase } from './TreeSorterBase';
+import { SortableTreeNode } from './SortableTreeNode';
 
 export interface Dimension {
   top: number;
@@ -46,11 +46,11 @@ export interface PositionOptions {
 }
 
 export interface SorterEventHandlers<T> {
-  onStartSort?: (sourceNode: TreeSorterBase<T>, container?: HTMLElement) => void;
+  onStartSort?: (sourceNode: SortableTreeNode<T>, container?: HTMLElement) => void;
   onDragStart?: (mouseEvent: MouseEvent) => void;
   onMouseMove?: Function;
-  onDrop?: (targetNode: TreeSorterBase<T>, sourceNode: TreeSorterBase<T>, index: number) => void;
-  onTargetChange?: (oldTargetNode: TreeSorterBase<T>, newTargetNode: TreeSorterBase<T>) => void;
+  onDrop?: (targetNode: SortableTreeNode<T>, sourceNode: SortableTreeNode<T>, index: number) => void;
+  onTargetChange?: (oldTargetNode: SortableTreeNode<T>, newTargetNode: SortableTreeNode<T>) => void;
   onPlaceholderPositionChange?: (dims: Dimension[], newPosition: Position) => void;
   onEndMove?: Function;
 }
@@ -64,7 +64,7 @@ export interface SorterDragBehaviorOptions {
 
 export interface SorterOptions<T> {
   em: EditorModel;
-  treeClass: new (model: T) => TreeSorterBase<T>;
+  treeClass: new (model: T) => SortableTreeNode<T>;
 
   containerContext: SorterContainerContext;
   positionOptions: PositionOptions;

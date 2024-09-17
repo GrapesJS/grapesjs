@@ -2,7 +2,7 @@ import { bindAll, isFunction } from 'underscore';
 import { $, View } from '../../common';
 import EditorModel from '../../editor/model/Editor';
 import { off, on } from '../dom';
-import { TreeSorterBase } from './TreeSorterBase';
+import { SortableTreeNode } from './SortableTreeNode';
 import { DropLocationDeterminer } from './DropLocationDeterminer';
 import { PlaceholderClass } from './PlaceholderClass';
 import { getMergedOptions, getDocuments, matches, closest } from './SorterUtils';
@@ -11,12 +11,12 @@ import { SorterOptions } from './types';
 
 export type RequiredEmAndTreeClassPartialSorterOptions<T> = Partial<SorterOptions<T>> & {
   em: EditorModel;
-  treeClass: new (model: T) => TreeSorterBase<T>;
+  treeClass: new (model: T) => SortableTreeNode<T>;
 };
 
 export default class Sorter<T> extends View {
   em!: EditorModel;
-  treeClass!: new (model: T) => TreeSorterBase<T>;
+  treeClass!: new (model: T) => SortableTreeNode<T>;
   placeholder!: PlaceholderClass;
   dropLocationDeterminer!: DropLocationDeterminer<T>;
   
@@ -27,7 +27,7 @@ export default class Sorter<T> extends View {
   
   options!: SorterOptions<T>;
   docs: any;
-  sourceNode?: TreeSorterBase<T>;
+  sourceNode?: SortableTreeNode<T>;
   // TODO
   // @ts-ignore
   initialize(sorterOptions: RequiredEmAndTreeClassPartialSorterOptions<T> = {}) {

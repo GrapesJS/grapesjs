@@ -1,12 +1,12 @@
 import Layer from '../../style_manager/model/Layer';
 import Layers from '../../style_manager/model/Layers';
-import { TreeSorterBase } from './TreeSorterBase';
+import { SortableTreeNode } from './SortableTreeNode';
 
 /**
  * Represents a node in the tree of Layers or Layer components.
  * Extends the TreeSorterBase class for handling tree sorting logic.
  */
-export class LayerNode extends TreeSorterBase<Layer | Layers> {
+export class LayerNode extends SortableTreeNode<Layer | Layers> {
   /**
    * Constructor for creating a new LayerNode instance.
    * @param model - The Layer or Layers model associated with this node.

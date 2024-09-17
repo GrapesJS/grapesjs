@@ -5,7 +5,7 @@ import { $, View } from '../../common';
  * 
  * @template T - The type of the model that the tree nodes represent.
  */
-export abstract class TreeSorterBase<T> {
+export abstract class SortableTreeNode<T> {
   protected _model: T;
   constructor(model: T) {
     this._model = model;
@@ -13,25 +13,25 @@ export abstract class TreeSorterBase<T> {
   /**
    * Get the list of children of this node.
    * 
-   * @returns {TreeSorterBase<T>[] | null} - List of children or null if no children exist.
+   * @returns {SortableTreeNode<T>[] | null} - List of children or null if no children exist.
    */
-  abstract getChildren(): TreeSorterBase<T>[] | null;
+  abstract getChildren(): SortableTreeNode<T>[] | null;
 
   /**
    * Get the parent node of this node, or null if it has no parent.
    * 
-   * @returns {TreeSorterBase<T> | null} - Parent node or null if it has no parent.
+   * @returns {SortableTreeNode<T> | null} - Parent node or null if it has no parent.
    */
-  abstract getParent(): TreeSorterBase<T> | null;
+  abstract getParent(): SortableTreeNode<T> | null;
 
   /**
    * Add a child node at a particular index.
    * 
-   * @param {TreeSorterBase<T>} node - The node to add.
+   * @param {SortableTreeNode<T>} node - The node to add.
    * @param {number} index - The position to insert the child node at.
-   * @returns {TreeSorterBase<T>} - The added node.
+   * @returns {SortableTreeNode<T>} - The added node.
    */
-  abstract addChildAt(node: TreeSorterBase<T>, index: number): TreeSorterBase<T>;
+  abstract addChildAt(node: SortableTreeNode<T>, index: number): SortableTreeNode<T>;
 
   /**
    * Remove a child node at a particular index.
@@ -43,19 +43,19 @@ export abstract class TreeSorterBase<T> {
   /**
    * Get the index of a child node in the current node's list of children.
    * 
-   * @param {TreeSorterBase<T>} node - The node whose index is to be found.
+   * @param {SortableTreeNode<T>} node - The node whose index is to be found.
    * @returns {number} - The index of the node, or -1 if the node is not a child.
    */
-  abstract indexOfChild(node: TreeSorterBase<T>): number;
+  abstract indexOfChild(node: SortableTreeNode<T>): number;
 
   /**
    * Determine if a node can be moved to a specific index in another node's children list.
    * 
-   * @param {TreeSorterBase<T>} source - The node to be moved.
+   * @param {SortableTreeNode<T>} source - The node to be moved.
    * @param {number} index - The index at which the node will be inserted.
    * @returns {boolean} - True if the move is allowed, false otherwise.
    */
-  abstract canMove(source: TreeSorterBase<T>, index: number): boolean;
+  abstract canMove(source: SortableTreeNode<T>, index: number): boolean;
 
   /**
    * Get the view associated with this node, if any.
