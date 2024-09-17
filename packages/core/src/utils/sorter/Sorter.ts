@@ -89,8 +89,9 @@ export default class Sorter<T> extends View {
   }
 
   private ensurePlaceholderElement() {
+    const el = this.placeholder.el;
     const container = this.containerContext.container;
-    if (!container.ownerDocument.contains(this.placeholder.el)) {
+    if (!el.ownerDocument.contains(el)) {
       container.append(this.placeholder.el);
     }
   }
