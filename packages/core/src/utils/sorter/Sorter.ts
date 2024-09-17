@@ -41,7 +41,7 @@ export default class Sorter<T> extends View {
 
     this.em = sorterOptions.em;
     this.treeClass = sorterOptions.treeClass;
-    var el = mergedOptions.containerContext.container;
+    const el = mergedOptions.containerContext.container;
     this.el = typeof el === 'string' ? document.querySelector(el)! : el!;
     this.updateOffset();
 

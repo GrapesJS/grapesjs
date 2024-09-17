@@ -79,7 +79,7 @@ export class DropLocationDeterminer<T> extends View {
     const mouseTargetNode = new this.treeClass(mouseTargetModel);
     const targetNode = this.getValidParentNode(mouseTargetNode);
     if (!targetNode) return
-    const dims = this.dimsFromTarget(targetNode.getElement()!);
+    const dims = this.dimsFromTarget(targetNode);
 
     const pos = findPosition(dims, mouseXRelativeToContainer, mouseYRelativeToContainer);
 
@@ -153,41 +153,38 @@ export class DropLocationDeterminer<T> extends View {
   /**
    * Get dimensions of nodes relative to the coordinates.
    *
-   * @param {HTMLElement} target - The target element.
+   * @param {TreeSorterBase<T>} targetNode - The target node.
    * @param {number} [rX=0] - Relative X position.
    * @param {number} [rY=0] - Relative Y position.
    * @return {Dimension[]} - The dimensions array of the target and its valid parents.
    * @private
    */
-  private dimsFromTarget(target: HTMLElement): Dimension[] {
+  private dimsFromTarget(targetNode: TreeSorterBase<T>): Dimension[] {
     let dims: Dimension[] = [];
 
-    if (!target) {
+    if (!targetNode) {
       return dims
     };
 
-    this.targetDimensions = this.getChildrenDim(target);
+    this.targetDimensions = this.getChildrenDim(targetNode);
 
     return this.targetDimensions;
   }
 
   /**
    * Get children dimensions
-   * @param {HTMLELement} el Element root
+   * @param {TreeSorterBase<T>} el Element root
    * @return {Array}
    * */
-  private getChildrenDim(trg: HTMLElement) {
+  private getChildrenDim(targetNode: TreeSorterBase<T>) {
     const dims: Dimension[] = [];
-    if (!trg) return dims;
+    const targetElement = targetNode.element
+    if (!!!targetElement) return dims;
+    // if (targetModel && targetNode.getView() && !this.dragBehavior.ignoreViewChildren) {
+    //   targetElement = targetNode.getView()?.getChildrenContainer();
+    // }
 
-    // @ts-ignore
-    if (this.targetModel && this.targetModel.view && !this.dragBehavior.ignoreViewChildren) {
-      // @ts-ignore
-      const view = this.targetModel.getCurrentView ? this.targetModel.getCurrentView() : trgModel.view;
-      trg = view.getChildrenContainer();
-    }
-
-    each(trg.children, (ele, i) => {
+    each(targetElement.children, (ele, i) => {
       const el = ele as HTMLElement;
       const model = getModel(el, $);
       const elIndex = model && model.index ? model.index() : i;
@@ -203,7 +200,7 @@ export class DropLocationDeterminer<T> extends View {
 
       if (dir === SorterDirection.Vertical) dirValue = true;
       else if (dir === SorterDirection.Horizontal) dirValue = false;
-      else dirValue = isInFlow(el, trg);
+      else dirValue = isInFlow(el, targetElement);
 
       dim.dir = dirValue;
       dim.el = el;

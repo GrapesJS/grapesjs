@@ -7,15 +7,12 @@ import { TreeSorterBase } from './TreeSorterBase';
  * Extends the TreeSorterBase class for handling tree sorting logic.
  */
 export class LayerNode extends TreeSorterBase<Layer | Layers> {
-  model: Layer | Layers;
-
   /**
    * Constructor for creating a new LayerNode instance.
    * @param model - The Layer or Layers model associated with this node.
    */
   constructor(model: Layer | Layers) {
     super(model);
-    this.model = model;
   }
 
   /**
@@ -100,7 +97,7 @@ export class LayerNode extends TreeSorterBase<Layer | Layers> {
    * @returns The associated view or undefined if none.
    */
   // TODO: Update with the correct type when available.
-  getView(): any {
+  get view(): any {
     return this.model.view;
   }
 
@@ -108,7 +105,11 @@ export class LayerNode extends TreeSorterBase<Layer | Layers> {
    * Get the DOM element associated with this LayerNode's view.
    * @returns The associated HTMLElement or undefined.
    */
-  getElement(): HTMLElement | undefined {
-    return this.getView()?.el;
+  get element(): HTMLElement | undefined {
+    return this.view?.el;
+  }
+
+  get model(): Layer | Layers {
+    return this._model;
   }
 }

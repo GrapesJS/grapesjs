@@ -58,11 +58,11 @@ export default class ComponentSorter extends Sorter<Component> {
     onComponentStartSort = (sourceNode: ComponentNode) => {
         this.em.clearSelection();
         this.toggleSortCursor(true);
-        this.em.trigger('sorter:drag:start', sourceNode?.getElement(), sourceNode?.getmodel());
+        this.em.trigger('sorter:drag:start', sourceNode?.element, sourceNode?.model);
     }
 
     onComponentDrop = (targetNode: ComponentNode, sourceNode: ComponentNode, index: number) => {
-        sourceNode.getmodel().set('status', '');
+        sourceNode.model.set('status', '');
         if (targetNode) {
             const parent = sourceNode.getParent();
             let initialSourceIndex = -1;
@@ -70,21 +70,21 @@ export default class ComponentSorter extends Sorter<Component> {
                 initialSourceIndex = parent.indexOfChild(sourceNode);
                 parent.removeChildAt(initialSourceIndex)
             }
-            const isSameCollection = parent?.getmodel().cid === targetNode.getmodel().cid
+            const isSameCollection = parent?.model.cid === targetNode.model.cid
             if (isSameCollection && initialSourceIndex < index) {
                 index--;
             }
 
             targetNode.addChildAt(sourceNode, index);
         }
-        targetNode?.getmodel()?.set('status', '');
+        targetNode?.model?.set('status', '');
 
         this.placeholder.hide();
     }
 
     onTargetChange = (oldTargetNode: ComponentNode, newTargetNode: ComponentNode) => {
-        oldTargetNode?.getmodel()?.set('status', '');
-        newTargetNode?.getmodel()?.set('status', 'selected-parent');
+        oldTargetNode?.model?.set('status', '');
+        newTargetNode?.model?.set('status', 'selected-parent');
     }
 
     /**
@@ -105,7 +105,7 @@ export default class ComponentSorter extends Sorter<Component> {
     }
 
     setSelection(node: ComponentNode, selected: Boolean) {
-        const model = node.getmodel();
+        const model = node.model;
         const cv = this.em!.Canvas;
         const { Select, Hover, Spacing } = CanvasSpotBuiltInTypes;
         [Select, Hover, Spacing].forEach((type) => cv.removeSpots({ type }));

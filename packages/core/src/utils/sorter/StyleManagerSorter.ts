@@ -45,7 +45,7 @@ export default class StyleManagerSorter extends Sorter<Layers | Layer> {
 
     onLayerStartSort = (sourceNode: LayerNode) => {
         this.em.clearSelection();
-        this.em.trigger('sorter:drag:start', sourceNode?.getElement(), sourceNode?.getmodel());
+        this.em.trigger('sorter:drag:start', sourceNode?.element, sourceNode?.model);
     }
 
     onLayerDrop = (targetNode: LayerNode, sourceNode: LayerNode, index: number) => {

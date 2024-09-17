@@ -67,11 +67,11 @@ export class ComponentNode extends TreeSorterBase<Component> {
    * @returns The view associated with the component, or undefined if none.
    */
   // TODO add the correct type
-  getView(): any {
+  get view(): any {
     return this.model.getView();
   }
 
-  getElement(): HTMLElement | undefined {
+  get element(): HTMLElement | undefined {
     return this.model.getEl();
   }
 }
