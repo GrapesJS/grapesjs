@@ -80,13 +80,14 @@ export class DropLocationDeterminer<T> extends View {
     const targetNode = this.getValidParentNode(mouseTargetNode);
     if (!targetNode) return
     const dims = this.dimsFromTarget(targetNode);
-
     const pos = findPosition(dims, mouseXRelativeToContainer, mouseYRelativeToContainer);
 
     this.eventHandlers?.onPlaceholderPositionChange && this.eventHandlers?.onPlaceholderPositionChange(dims, pos);
     this.eventHandlers?.onTargetChange && this.eventHandlers?.onTargetChange(this.targetNode, targetNode);
     this.targetNode = targetNode;
+    this.eventHandlers?.onPlaceholderPositionChange && this.eventHandlers?.onPlaceholderPositionChange(dims, pos);
     this.lastPos = pos;
+    this.targetDimensions = dims;
   }
 
   onDragStart(mouseEvent: MouseEvent): void {
@@ -154,21 +155,10 @@ export class DropLocationDeterminer<T> extends View {
    * Get dimensions of nodes relative to the coordinates.
    *
    * @param {SortableTreeNode<T>} targetNode - The target node.
-   * @param {number} [rX=0] - Relative X position.
-   * @param {number} [rY=0] - Relative Y position.
-   * @return {Dimension[]} - The dimensions array of the target and its valid parents.
    * @private
    */
   private dimsFromTarget(targetNode: SortableTreeNode<T>): Dimension[] {
-    let dims: Dimension[] = [];
-
-    if (!targetNode) {
-      return dims
-    };
-
-    this.targetDimensions = this.getChildrenDim(targetNode);
-
-    return this.targetDimensions;
+    return this.getChildrenDim(targetNode);
   }
 
   /**
@@ -178,14 +168,21 @@ export class DropLocationDeterminer<T> extends View {
    * */
   private getChildrenDim(targetNode: SortableTreeNode<T>) {
     const dims: Dimension[] = [];
-    const targetElement = targetNode.element
-    if (!!!targetElement) return dims;
-    // if (targetModel && targetNode.getView() && !this.dragBehavior.ignoreViewChildren) {
-    //   targetElement = targetNode.getView()?.getChildrenContainer();
-    // }
+    const targetElement = targetNode.element;
+    if (!!!targetElement) {
+      return []
+    };
 
-    each(targetElement.children, (ele, i) => {
-      const el = ele as HTMLElement;
+    const children = targetNode.getChildren();
+    // If no children, just use the dimensions of the target element
+    if (!children || children.length === 0) {
+      const targetDimensions = this.getDim(targetElement, this.elL, this.elT, this.positionOptions.relative!, !!this.positionOptions.canvasRelative, this.positionOptions.windowMargin!, this.em)
+      return [targetDimensions]
+    }
+
+    each(children, (sortableTreeNode, i) => {
+      const el = sortableTreeNode.element;
+      if (!el) return
       const model = getModel(el, $);
       const elIndex = model && model.index ? model.index() : i;
 
