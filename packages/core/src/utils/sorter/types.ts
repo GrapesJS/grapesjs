@@ -68,7 +68,7 @@ type OnEndMoveHandler = () => void;
 /**
  * Represents a collection of event handlers for sortable tree node events.
  */
-interface SorterEventHandlers<T> {
+export interface SorterEventHandlers<T> {
   onStartSort?: OnStartSortHandler<T>;
   onDragStart?: OnDragStartHandler;
   onMouseMove?: OnMouseMoveHandler;
