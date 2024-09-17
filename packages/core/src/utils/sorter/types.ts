@@ -45,14 +45,37 @@ export interface PositionOptions {
   relative?: boolean;
 }
 
-export interface SorterEventHandlers<T> {
-  onStartSort?: (sourceNode: SortableTreeNode<T>, container?: HTMLElement) => void;
-  onDragStart?: (mouseEvent: MouseEvent) => void;
-  onMouseMove?: Function;
-  onDrop?: (targetNode: SortableTreeNode<T>, sourceNode: SortableTreeNode<T>, index: number) => void;
-  onTargetChange?: (oldTargetNode: SortableTreeNode<T>, newTargetNode: SortableTreeNode<T>) => void;
-  onPlaceholderPositionChange?: (dims: Dimension[], newPosition: Position) => void;
-  onEndMove?: Function;
+/**
+ * Represents an event handler for the `onStartSort` event.
+ *
+ * @param sourceNode The source node being sorted.
+ * @param container The container element where the sorting is taking place.
+ */
+type OnStartSortHandler<T> = (sourceNode: SortableTreeNode<T>, container?: HTMLElement) => void;
+
+/**
+ * Represents an event handler for the `onDragStart` event.
+ *
+ * @param mouseEvent The mouse event associated with the drag start.
+ */
+type OnDragStartHandler = (mouseEvent: MouseEvent) => void;
+type OnMouseMoveHandler = () => void;
+type OnDropHandler<T> = (targetNode: SortableTreeNode<T>, sourceNode: SortableTreeNode<T>, index: number) => void;
+type OnTargetChangeHandler<T> = (oldTargetNode: SortableTreeNode<T>, newTargetNode: SortableTreeNode<T>) => void;
+type OnPlaceholderPositionChangeHandler = (dims: Dimension[], newPosition: Position) => void;
+type OnEndMoveHandler = () => void;
+
+/**
+ * Represents a collection of event handlers for sortable tree node events.
+ */
+interface SorterEventHandlers<T> {
+  onStartSort?: OnStartSortHandler<T>;
+  onDragStart?: OnDragStartHandler;
+  onMouseMove?: OnMouseMoveHandler;
+  onDrop?: OnDropHandler<T>;
+  onTargetChange?: OnTargetChangeHandler<T>;
+  onPlaceholderPositionChange?: OnPlaceholderPositionChangeHandler;
+  onEndMove?: OnEndMoveHandler;
 }
 
 export interface SorterDragBehaviorOptions {
