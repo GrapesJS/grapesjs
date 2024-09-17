@@ -188,11 +188,7 @@ export function getCurrentPos(event?: MouseEvent) {
  * @private
  */
 export function isInFlow(el: HTMLElement, parent: HTMLElement = document.body): boolean {
-  if (!el) return false;
-
-  if (!isStyleInFlow(el, parent)) return false;
-
-  return true;
+  return !!el || isStyleInFlow(el, parent);
 }
 /**
  * Checks if an element has styles that keep it in the document flow.
