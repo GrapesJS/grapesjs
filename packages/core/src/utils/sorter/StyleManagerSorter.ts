@@ -35,9 +35,6 @@ export default class StyleManagerSorter extends Sorter<Layers | Layer> {
                     eventHandlers.onDrop?.(targetNode, sourceNode, index);
                     this.onLayerDrop(targetNode, sourceNode, index);
                 },
-                onDragStart: () => {
-                    this.onDragStart()
-                },
                 ...eventHandlers,
             },
         });
@@ -62,9 +59,5 @@ export default class StyleManagerSorter extends Sorter<Layers | Layer> {
         }
 
         this.placeholder.hide();
-    }
-
-    onDragStart() {
-        this.containerContext.container.appendChild(this.placeholder.el);
     }
 }
