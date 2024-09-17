@@ -1,4 +1,4 @@
-import { bindAll, isFunction } from 'underscore';
+import { bindAll, isFunction, contains } from 'underscore';
 import { $, View } from '../../common';
 import EditorModel from '../../editor/model/Editor';
 import { off, on } from '../dom';
@@ -19,12 +19,12 @@ export default class Sorter<T> extends View {
   treeClass!: new (model: T) => SortableTreeNode<T>;
   placeholder!: PlaceholderClass;
   dropLocationDeterminer!: DropLocationDeterminer<T>;
-  
+
   positionOptions!: PositionOptions;
   containerContext!: SorterContainerContext;
   dragBehavior!: SorterDragBehaviorOptions;
   eventHandlers?: SorterEventHandlers<T>;
-  
+
   options!: SorterOptions<T>;
   docs: any;
   sourceNode?: SortableTreeNode<T>;
@@ -49,16 +49,7 @@ export default class Sorter<T> extends View {
       this.em.on(this.em.Canvas.events.refresh, this.updateOffset);
     }
 
-    this.placeholder = new PlaceholderClass({
-      container: this.containerContext.container,
-      allowNesting: this.dragBehavior.nested,
-      pfx: this.containerContext.pfx,
-      el: this.containerContext.placeholderElement,
-      offset: {
-        top: this.positionOptions.offsetTop!,
-        left: this.positionOptions.offsetLeft!
-      }
-    })
+    this.placeholder = this.createPlaceholder();
 
     this.dropLocationDeterminer = new DropLocationDeterminer({
       em: this.em,
@@ -71,13 +62,37 @@ export default class Sorter<T> extends View {
         onPlaceholderPositionChange: ((
           dims: Dimension[],
           newPosition: Position) => {
-          if (newPosition) {
-            this.placeholder.show();
-            this.updatePlaceholderPosition(dims, newPosition);
-          }
+          this.ensurePlaceholderElement();
+          this.placeholder.show();
+          this.updatePlaceholderPosition(dims, newPosition);
         }).bind(this)
       },
     });
+  }
+
+  /**
+   * Creates a new placeholder element for the drag-and-drop operation.
+   *
+   * @returns {PlaceholderClass} The newly created placeholder instance.
+   */
+  private createPlaceholder(): PlaceholderClass {
+    return new PlaceholderClass({
+      container: this.containerContext.container,
+      allowNesting: this.dragBehavior.nested,
+      pfx: this.containerContext.pfx,
+      el: this.containerContext.placeholderElement,
+      offset: {
+        top: this.positionOptions.offsetTop!,
+        left: this.positionOptions.offsetLeft!
+      }
+    });
+  }
+
+  private ensurePlaceholderElement() {
+    const container = this.containerContext.container;
+    if (!container.ownerDocument.contains(this.placeholder.el)) {
+      container.append(this.placeholder.el);
+    }
   }
 
   private getContainerEl(elem?: HTMLElement) {

@@ -31,7 +31,6 @@ export class PlaceholderClass extends View {
     };
   }
 
-
   show() {
     this.el.style.display = 'block';
   }

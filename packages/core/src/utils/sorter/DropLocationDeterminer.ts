@@ -42,11 +42,11 @@ export class DropLocationDeterminer<T> extends View {
     this.positionOptions = options.positionOptions;
     this.dragBehavior = options.dragBehavior;
     this.eventHandlers = options.eventHandlers;
-    bindAll(this, 'startSort', 'onMove', 'endMove');
+    bindAll(this, 'startSort', 'onMove', 'endMove', 'onDragStart');
     this.elT = 0;
     this.elL = 0;
   }
-
+  
   /**
    * Picking component to move
    * @param {HTMLElement} sourceElement
@@ -55,7 +55,6 @@ export class DropLocationDeterminer<T> extends View {
     const sourceModel = $(sourceElement).data('model')
     const sourceNode = new this.treeClass(sourceModel);
     this.sourceNode = sourceNode;
-
     this.bindDragEventHandlers(this.docs);
   }
 
@@ -101,7 +100,7 @@ export class DropLocationDeterminer<T> extends View {
    * 
    * @param mouseTargetEl - The element to start searching from.
    * @returns The first element with a data model, or null if not found.
-   */
+  */
   private getFirstElementWithAModel(mouseTargetEl: HTMLElement | null): HTMLElement | null {
     const isModelPresent = (el: HTMLElement) => $(el).data("model") !== undefined;
 
@@ -127,9 +126,9 @@ export class DropLocationDeterminer<T> extends View {
   }
 
   /**
- * End the move action.
- * Handles the cleanup and final steps after an item is moved.
- */
+   * End the move action.
+   * Handles the cleanup and final steps after an item is moved.
+  */
   endMove(): void {
     let index = this.lastPos.method === 'after' ? this.lastPos.indexEl + 1 : this.lastPos.indexEl;
     // TODO fix the index for same collection dropping
@@ -147,6 +146,7 @@ export class DropLocationDeterminer<T> extends View {
   private cleanupEventListeners(): void {
     const container = this.containerContext.container;
     const docs = this.docs;
+    off(container, 'dragstart', this.onDragStart);
     off(container, 'mousemove dragover', this.onMove);
     off(docs, 'mouseup dragend touchend', this.endMove);
   }

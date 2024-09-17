@@ -37,20 +37,8 @@ export default class ItemsView extends View {
 
     if (config.sortable && !this.opt.sorter) {
       const utils = em.Utils;
-      // this.opt.sorter = new utils.Sorter({
-      //   // @ts-ignore
-      //   container: config.sortContainer || this.el,
-      //   containerSel: `.${this.className}`,
-      //   itemSel: `.${pfx}layer`,
-      //   ignoreViewChildren: 1,
-      //   selectOnEnd: false,
-      //   nested: 1,
-      //   ppfx,
-      //   pfx,
-      //   em,
-      // });
       const container = config.sortContainer || this.el;
-      this.placeholderElement = this.createPlaceholder(container)
+      this.placeholderElement = this.createPlaceholder(pfx)
       this.opt.sorter = new utils.ComponentSorter({
         em,
         treeClass: ComponentLayersNode,
