@@ -139,7 +139,7 @@ export default class CommandsModule extends Module<CommandsConfig & { pStylePref
         const em = ed.getModel();
         const { event } = opts;
         const trg = opts.target as Component | undefined;
-        const trgs = trg ? [trg] : [...ed.getSelectedAll()];
+        const trgs = Array.isArray(trg) ? trg : trg ? [trg] : [...ed.getSelectedAll()];
         const targets = trgs.map((trg) => trg.delegate?.move?.(trg) || trg).filter(Boolean);
         const target = targets[targets.length - 1] as Component | undefined;
         const nativeDrag = event?.type === 'dragstart';
