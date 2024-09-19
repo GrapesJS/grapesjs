@@ -40,6 +40,8 @@ const hasSkip = (opts: any) => opts.avoidStore || opts.noUndo;
 
 const getChanged = (obj: any) => Object.keys(obj.changedAttributes());
 
+const changedMap = new WeakMap();
+
 export default class UndoManagerModule extends Module<UndoManagerConfig & { name?: string; _disable?: boolean }> {
   beforeCache?: any;
   um: any;
@@ -69,22 +71,25 @@ export default class UndoManagerModule extends Module<UndoManagerConfig & { name
         return false;
       },
       on(object: any, v: any, opts: any) {
-        !this.beforeCache && (this.beforeCache = object.previousAttributes());
+        let before = changedMap.get(object);
+        if (!before) {
+          before = object.previousAttributes();
+          changedMap.set(object, before);
+        }
         const opt = opts || v || {};
-        opt.noUndo &&
-          setTimeout(() => {
-            this.beforeCache = null;
-          });
         if (hasSkip(opt)) {
+          setTimeout(() => {
+            changedMap.delete(object);
+          });
           return;
         } else {
           const after = object.toJSON({ fromUndo });
           const result = {
             object,
-            before: this.beforeCache,
+            before,
             after,
           };
-          this.beforeCache = null;
+          changedMap.delete(object);
           // Skip undo in case of empty changes
           if (isEmpty(after)) return;
 
