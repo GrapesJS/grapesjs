@@ -14,7 +14,7 @@ export type RequiredEmAndTreeClassPartialSorterOptions<T> = Partial<SorterOption
   treeClass: new (model: T) => SortableTreeNode<T>;
 };
 
-export default class Sorter<T> extends View {
+export default class Sorter<T>{
   em!: EditorModel;
   treeClass!: new (model: T) => SortableTreeNode<T>;
   placeholder!: PlaceholderClass;
@@ -28,9 +28,7 @@ export default class Sorter<T> extends View {
   options!: SorterOptions<T>;
   docs: any;
   sourceNode?: SortableTreeNode<T>;
-  // TODO
-  // @ts-ignore
-  initialize(sorterOptions: RequiredEmAndTreeClassPartialSorterOptions<T> = {}) {
+  constructor(sorterOptions: RequiredEmAndTreeClassPartialSorterOptions<T>) {
     const mergedOptions: Omit<SorterOptions<T>, 'em' | 'treeClass'> = getMergedOptions<T>(sorterOptions);
 
     bindAll(this, 'startSort', 'endMove', 'rollback', 'updateOffset');
@@ -41,8 +39,6 @@ export default class Sorter<T> extends View {
 
     this.em = sorterOptions.em;
     this.treeClass = sorterOptions.treeClass;
-    const el = mergedOptions.containerContext.container;
-    this.el = typeof el === 'string' ? document.querySelector(el)! : el!;
     this.updateOffset();
 
     if (this.em?.on) {
@@ -96,17 +92,6 @@ export default class Sorter<T> extends View {
     }
   }
 
-  private getContainerEl(elem?: HTMLElement) {
-    if (elem) this.el = elem;
-
-    if (!this.el) {
-      var el = this.containerContext.container;
-      this.el = typeof el === 'string' ? document.querySelector(el)! : el!;
-    }
-
-    return this.el;
-  }
-
   /**
    * Triggered when the offset of the editor is changed
    */
@@ -121,10 +106,6 @@ export default class Sorter<T> extends View {
    * @param {HTMLElement} sourceElement
    * */
   startSort(sourceElement?: HTMLElement, options: { container?: HTMLElement } = {}) {
-    if (!!options.container) {
-      this.updateContainer(options.container);
-    }
-
     // Check if the start element is a valid one, if not, try the closest valid one
     if (sourceElement && !matches(sourceElement, `${this.containerContext.itemSel}, ${this.containerContext.containerSel}`)) {
       sourceElement = closest(sourceElement, this.containerContext.itemSel)!;
@@ -147,12 +128,6 @@ export default class Sorter<T> extends View {
     on(docs, 'keydown', this.rollback);
   }
 
-  private updateContainer(container: HTMLElement) {
-    const newContainer = this.getContainerEl(container);
-
-    this.dropLocationDeterminer.updateContainer(newContainer);
-  }
-
   private updateDocs(docs: Document[]) {
     this.docs = docs
     this.dropLocationDeterminer.updateDocs(docs);
@@ -167,9 +142,8 @@ export default class Sorter<T> extends View {
    * Handles the cleanup and final steps after an item is moved.
    */
   endMove(): void {
-    const container = this.getContainerEl();
     const docs = this.docs;
-    this.cleanupEventListeners(container, docs);
+    this.cleanupEventListeners(docs);
     this.placeholder.hide();
     this.dropLocationDeterminer.endMove();
     this.finalizeMove();
@@ -178,11 +152,10 @@ export default class Sorter<T> extends View {
   /**
    * Clean up event listeners that were attached during the move.
    *
-   * @param {HTMLElement} container - The container element.
    * @param {Document[]} docs - List of documents.
    * @private
    */
-  private cleanupEventListeners(container: HTMLElement, docs: Document[]): void {
+  private cleanupEventListeners(docs: Document[]): void {
     off(docs, 'keydown', this.rollback);
   }
 

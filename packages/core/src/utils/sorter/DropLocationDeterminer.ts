@@ -31,8 +31,10 @@ export class DropLocationDeterminer<T> extends View {
   targetDimensions?: Dimension[];
   sourceNode!: SortableTreeNode<T>;
   docs!: Document[];
-  elT!: number;
-  elL!: number;
+  containerOffset: {
+    top: number;
+    left: number;
+  }
 
   constructor(options: DropLocationDeterminerOptions<T>) {
     super();
@@ -43,10 +45,12 @@ export class DropLocationDeterminer<T> extends View {
     this.dragBehavior = options.dragBehavior;
     this.eventHandlers = options.eventHandlers;
     bindAll(this, 'startSort', 'onMove', 'endMove', 'onDragStart');
-    this.elT = 0;
-    this.elL = 0;
+    this.containerOffset = {
+      top: 0,
+      left: 0
+    };
   }
-  
+
   /**
    * Picking component to move
    * @param {HTMLElement} sourceElement
@@ -63,11 +67,11 @@ export class DropLocationDeterminer<T> extends View {
   }
 
   onMove(mouseEvent: MouseEvent): void {
+    this.eventHandlers?.onMouseMove?.(mouseEvent);
     const customTarget = this.containerContext.customTarget;
-    this.cacheContainerPosition();
-
+    this.cacheContainerPosition(this.containerContext.container);
     const { mouseXRelativeToContainer, mouseYRelativeToContainer } = this.getMousePositionRelativeToContainer(mouseEvent);
-
+    
     let mouseTargetEl: HTMLElement | null = customTarget ? customTarget({ sorter: this, event: mouseEvent }) : mouseEvent.target;
     mouseTargetEl = this.getFirstElementWithAModel(mouseTargetEl);
     if (!mouseTargetEl) return
@@ -79,10 +83,9 @@ export class DropLocationDeterminer<T> extends View {
     const dims = this.dimsFromTarget(targetNode);
     const pos = findPosition(dims, mouseXRelativeToContainer, mouseYRelativeToContainer);
 
-    this.eventHandlers?.onPlaceholderPositionChange && this.eventHandlers?.onPlaceholderPositionChange(dims, pos);
-    this.eventHandlers?.onTargetChange && this.eventHandlers?.onTargetChange(this.targetNode, targetNode);
+    this.eventHandlers?.onPlaceholderPositionChange?.(dims, pos);
+    this.eventHandlers?.onTargetChange?.(this.targetNode, targetNode);
     this.targetNode = targetNode;
-    this.eventHandlers?.onPlaceholderPositionChange && this.eventHandlers?.onPlaceholderPositionChange(dims, pos);
     this.lastPos = pos;
     this.targetDimensions = dims;
   }
@@ -166,6 +169,7 @@ export class DropLocationDeterminer<T> extends View {
    * */
   private getChildrenDim(targetNode: SortableTreeNode<T>) {
     const dims: Dimension[] = [];
+    const containerOffset = this.containerOffset;
     const targetElement = targetNode.element;
     if (!!!targetElement) {
       return []
@@ -174,7 +178,7 @@ export class DropLocationDeterminer<T> extends View {
     const children = targetNode.getChildren();
     // If no children, just use the dimensions of the target element
     if (!children || children.length === 0) {
-      const targetDimensions = this.getDim(targetElement, this.elL, this.elT, this.positionOptions.relative!, !!this.positionOptions.canvasRelative, this.positionOptions.windowMargin!, this.em)
+      const targetDimensions = this.getDim(targetElement, containerOffset.left, containerOffset.top, this.positionOptions.relative!, !!this.positionOptions.canvasRelative, this.positionOptions.windowMargin!, this.em)
       return [targetDimensions]
     }
 
@@ -189,7 +193,7 @@ export class DropLocationDeterminer<T> extends View {
       }
 
       // TODO
-      const dim = this.getDim(el, this.elL, this.elT, this.positionOptions.relative!, !!this.positionOptions.canvasRelative, this.positionOptions.windowMargin!, this.em);
+      const dim = this.getDim(el, containerOffset.left, containerOffset.top, this.positionOptions.relative!, !!this.positionOptions.canvasRelative, this.positionOptions.windowMargin!, this.em);
       let dir = this.dragBehavior.dragDirection;
       let dirValue: boolean;
 
@@ -215,8 +219,8 @@ export class DropLocationDeterminer<T> extends View {
  */
   private getMousePositionRelativeToContainer(mouseEvent: MouseEvent): { mouseXRelativeToContainer: number, mouseYRelativeToContainer: number } {
     const { em } = this;
-    let mouseYRelativeToContainer = mouseEvent.pageY - this.elT + this.containerContext.container.scrollTop;
-    let mouseXRelativeToContainer = mouseEvent.pageX - this.elL + this.containerContext.container.scrollLeft;
+    let mouseYRelativeToContainer = mouseEvent.pageY - this.containerOffset.top + this.containerContext.container.scrollTop;
+    let mouseXRelativeToContainer = mouseEvent.pageX - this.containerOffset.left + this.containerContext.container.scrollLeft;
 
     if (this.positionOptions.canvasRelative && !!em) {
       const mousePos = em.Canvas.getMouseRelativeCanvas(mouseEvent, { noScroll: 1 });
@@ -232,10 +236,15 @@ export class DropLocationDeterminer<T> extends View {
  *
  * @private
  */
-  private cacheContainerPosition(): void {
-    const containerOffset = offset(this.containerContext.container);
-    this.elT = this.positionOptions.windowMargin ? Math.abs(containerOffset.top) : containerOffset.top;
-    this.elL = this.positionOptions.windowMargin ? Math.abs(containerOffset.left) : containerOffset.left;
+  private cacheContainerPosition(container: HTMLElement): void {
+    const containerOffset = offset(container);
+    const containerOffsetTop = this.positionOptions.windowMargin ? Math.abs(containerOffset.top) : containerOffset.top;
+    const containerOffsetLeft = this.positionOptions.windowMargin ? Math.abs(containerOffset.left) : containerOffset.left;
+
+    this.containerOffset = {
+      top: containerOffsetTop,
+      left: containerOffsetLeft
+    }
   }
 
   updateContainer(container: HTMLElement) {

@@ -20,7 +20,6 @@ export default class StyleManagerSorter extends Sorter<Layers | Layer> {
         eventHandlers?: SorterEventHandlers<Layer | Layers>;
     }) {
         super({
-            // @ts-ignore
             em,
             treeClass: LayerNode,
             containerContext,

@@ -285,7 +285,6 @@ export function getDocuments(em?: EditorModel, el?: HTMLElement) {
 export function getMergedOptions<T>(sorterOptions: RequiredEmAndTreeClassPartialSorterOptions<T>) {
   const defaultOptions: Omit<SorterOptions<T>, 'em' | 'treeClass'> = {
     containerContext: {
-      // TODO Change this
       container: '' as any,
       placeholderElement: '' as any,
       containerSel: '*',
@@ -325,6 +324,7 @@ export function getMergedOptions<T>(sorterOptions: RequiredEmAndTreeClassPartial
       ...defaultOptions.dragBehavior,
       ...sorterOptions.dragBehavior,
     },
+    eventHandlers: sorterOptions.eventHandlers
   };
   return mergedOptions;
 }

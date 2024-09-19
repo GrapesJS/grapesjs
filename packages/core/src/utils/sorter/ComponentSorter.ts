@@ -1,6 +1,7 @@
 import { CanvasSpotBuiltInTypes } from "../../canvas/model/CanvasSpot";
 import Component from "../../dom_components/model/Component";
 import EditorModel from "../../editor/model/Editor";
+import { getPointerEvent } from "../dom";
 import { BaseComponentNode } from "./BaseComponentNode";
 import Sorter from "./Sorter";
 import { SorterContainerContext, PositionOptions, SorterDragBehaviorOptions, SorterEventHandlers } from './types';
@@ -13,6 +14,7 @@ const spotTarget = {
 
 export default class ComponentSorter extends Sorter<Component> {
     treeClass: new (model: Component) => BaseComponentNode;
+    targetIsText: boolean = false;
     constructor({
         em,
         treeClass,
@@ -29,13 +31,13 @@ export default class ComponentSorter extends Sorter<Component> {
         eventHandlers?: SorterEventHandlers<Component>;
     }) {
         super({
-            // @ts-ignore
             em,
             treeClass,
             containerContext,
             positionOptions,
             dragBehavior,
             eventHandlers: {
+                ...eventHandlers,
                 onStartSort: (sourceNode: BaseComponentNode, containerElement?: HTMLElement) => {
                     eventHandlers.onStartSort?.(sourceNode, containerElement);
                     this.onComponentStartSort(sourceNode);
@@ -48,21 +50,27 @@ export default class ComponentSorter extends Sorter<Component> {
                     eventHandlers.onTargetChange?.(oldTargetNode, newTargetNode);
                     this.onTargetChange(oldTargetNode, newTargetNode);
                 },
-                ...eventHandlers,
+                onMouseMove: (mouseEvent) => {
+                    eventHandlers.onMouseMove?.(mouseEvent);
+                    this.onMouseMove(mouseEvent);
+                },
             },
         });
-        
+
         this.treeClass = treeClass;
     }
 
-    getNodeFromModel(model: Component): BaseComponentNode {
-        return new this.treeClass(model);
-    }
-
-    onComponentStartSort = (sourceNode: BaseComponentNode) => {
+    onComponentStartSort(sourceNode: BaseComponentNode) {
         this.em.clearSelection();
         this.toggleSortCursor(true);
         this.em.trigger('sorter:drag:start', sourceNode?.element, sourceNode?.model);
+    }
+
+    onMouseMove = (mouseEvent: MouseEvent) => {
+        const insertingTextableIntoText = this.targetIsText && this.sourceNode?.model?.get?.('textable');
+        if (insertingTextableIntoText) {
+            this.updateTextViewCursorPosition(mouseEvent);
+        }
     }
 
     onComponentDrop = (targetNode: BaseComponentNode, sourceNode: BaseComponentNode, index: number) => {
@@ -89,7 +97,51 @@ export default class ComponentSorter extends Sorter<Component> {
     onTargetChange = (oldTargetNode: BaseComponentNode, newTargetNode: BaseComponentNode) => {
         oldTargetNode?.model?.set('status', '');
         newTargetNode?.model?.set('status', 'selected-parent');
+        this.targetIsText = newTargetNode.model?.isInstanceOf?.('text');
+        const insertingTextableIntoText = this.targetIsText && this.sourceNode?.model?.get?.('textable');
+        if (insertingTextableIntoText) {
+            const el = newTargetNode?.model.getEl();
+            if (el) el.contentEditable = "true";
+
+            this.placeholder.hide()
+        } else {
+            this.placeholder.show();
+        }
     }
+
+    private updateTextViewCursorPosition(e: any) {
+        const { em } = this;
+        if (!em) return;
+        const Canvas = em.Canvas;
+        const targetDoc = Canvas.getDocument();
+        let range = null;
+
+        const poiner = getPointerEvent(e);
+
+        // @ts-ignore
+        if (targetDoc.caretPositionFromPoint) {
+            // New standard method
+            // @ts-ignore
+            const caretPosition = targetDoc.caretPositionFromPoint(poiner.clientX, poiner.clientY);
+            if (caretPosition) {
+                range = targetDoc.createRange();
+                range.setStart(caretPosition.offsetNode, caretPosition.offset);
+            }
+        } else if (targetDoc.caretRangeFromPoint) {
+            // Fallback for older browsers
+            range = targetDoc.caretRangeFromPoint(poiner.clientX, poiner.clientY);
+        } else if (e.rangeParent) {
+            // Firefox fallback
+            range = targetDoc.createRange();
+            range.setStart(e.rangeParent, e.rangeOffset);
+        }
+
+        const sel = Canvas.getWindow().getSelection();
+        Canvas.getFrameEl().focus();
+        sel?.removeAllRanges();
+        range && sel?.addRange(range);
+    }
+
 
     /**
      * Toggle cursor while sorting

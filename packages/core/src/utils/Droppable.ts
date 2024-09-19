@@ -157,7 +157,15 @@ export default class Droppable {
       dragContent = (cnt: any) => (content = cnt);
     } else {
       const handleOnDrop = (targetNode: CanvasNewComponentNode, sourceNode: CanvasNewComponentNode, index: number): void => {
-        const sourceModel = targetNode.model.components().add(this.content, { at: index });
+        const insertingTextableIntoText = targetNode.model?.isInstanceOf?.('text') && sourceNode?.model?.get?.('textable');
+        let sourceModel;
+        if (insertingTextableIntoText) {
+          // @ts-ignore
+          sourceModel = targetNode.model?.getView?.()?.insertComponent?.(this.content, { action: "add-component" });
+        } else {
+          sourceModel = targetNode.model.components().add(this.content, { at: index, action: "add-component" });
+        }
+
         this.handleDragEnd(sourceModel, dt);
       };
 

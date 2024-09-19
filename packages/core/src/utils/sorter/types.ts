@@ -59,7 +59,7 @@ type OnStartSortHandler<T> = (sourceNode: SortableTreeNode<T>, container?: HTMLE
  * @param mouseEvent The mouse event associated with the drag start.
  */
 type OnDragStartHandler = (mouseEvent: MouseEvent) => void;
-type OnMouseMoveHandler = () => void;
+type OnMouseMoveHandler = (mouseEvent: MouseEvent) => void;
 type OnDropHandler<T> = (targetNode: SortableTreeNode<T>, sourceNode: SortableTreeNode<T>, index: number) => void;
 type OnTargetChangeHandler<T> = (oldTargetNode: SortableTreeNode<T>, newTargetNode: SortableTreeNode<T>) => void;
 type OnPlaceholderPositionChangeHandler = (dims: Dimension[], newPosition: Position) => void;

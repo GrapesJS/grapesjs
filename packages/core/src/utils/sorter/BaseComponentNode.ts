@@ -32,6 +32,12 @@ export abstract class BaseComponentNode extends SortableTreeNode<Component> {
    * @param index - The position to insert the child at.
    */
   addChildAt(node: BaseComponentNode, index: number): BaseComponentNode {
+    const insertingTextableIntoText = this.model?.isInstanceOf?.('text') && node?.model?.get?.('textable');
+    if (insertingTextableIntoText) {
+      // @ts-ignore
+      return this.model?.getView?.()?.insertComponent?.(node?.model, { action: "add-component" });
+    }
+
     const newModel = this.model.components().add(node.model, { at: index });
     return new (this.constructor as any)(newModel);
   }

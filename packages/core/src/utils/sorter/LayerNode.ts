@@ -19,11 +19,12 @@ export class LayerNode extends SortableTreeNode<Layer | Layers> {
    * Get the list of children of this Layer or Layers component.
    * @returns An array of LayerNode instances representing the children.
    */
-  getChildren(): LayerNode[] {
+  getChildren(): LayerNode[] | null {
     if (this.model instanceof Layers) {
       return this.model.models.map(model => new LayerNode(model));
     }
-    return [];
+
+    return null;
   }
 
   /**
@@ -42,7 +43,7 @@ export class LayerNode extends SortableTreeNode<Layer | Layers> {
    * @returns The newly added LayerNode.
    * @throws Error if trying to add to a Layer (not a Layers).
    */
-  addChildAt(node: LayerNode, index: number): LayerNode {
+  addChildAt(node: LayerNode, index: number) {
     if (this.model instanceof Layer) {
       throw Error("Cannot add a layer model to another layer model");
     }
@@ -57,7 +58,7 @@ export class LayerNode extends SortableTreeNode<Layer | Layers> {
    * @returns The removed LayerNode.
    * @throws Error if trying to remove from a Layer (not a Layers).
    */
-  removeChildAt(index: number): LayerNode {
+  removeChildAt(index: number) {
     if (this.model instanceof Layer) {
       throw Error("Cannot remove a layer model from another layer model");
     }
@@ -66,8 +67,6 @@ export class LayerNode extends SortableTreeNode<Layer | Layers> {
     if (child) {
       this.model.remove(child);
     }
-
-    return new LayerNode(child);
   }
 
   /**
