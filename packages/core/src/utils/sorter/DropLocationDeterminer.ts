@@ -18,7 +18,7 @@ interface DropLocationDeterminerOptions<T> {
 }
 
 export class DropLocationDeterminer<T> extends View {
-  em?: EditorModel;
+  em: EditorModel;
   treeClass!: new (model: any) => SortableTreeNode<T>;
 
   positionOptions!: PositionOptions;
@@ -71,13 +71,13 @@ export class DropLocationDeterminer<T> extends View {
     const customTarget = this.containerContext.customTarget;
     this.cacheContainerPosition(this.containerContext.container);
     const { mouseXRelativeToContainer, mouseYRelativeToContainer } = this.getMousePositionRelativeToContainer(mouseEvent);
-    
-    let mouseTargetEl: HTMLElement | null = customTarget ? customTarget({ sorter: this, event: mouseEvent }) : mouseEvent.target;
-    mouseTargetEl = this.getFirstElementWithAModel(mouseTargetEl);
-    if (!mouseTargetEl) return
 
-    const mouseTargetModel = $(mouseTargetEl)?.data("model");
-    const mouseTargetNode = new this.treeClass(mouseTargetModel);
+    let mouseTargetEl: HTMLElement | null = customTarget ? customTarget({ sorter: this, event: mouseEvent }) : mouseEvent.target;
+    const targetEl = this.getFirstElementWithAModel(mouseTargetEl);
+    if (!targetEl) return
+
+    const targetModel = $(targetEl)?.data("model");
+    const mouseTargetNode = new this.treeClass(targetModel);
     const targetNode = this.getValidParentNode(mouseTargetNode);
     if (!targetNode) return
     const dims = this.dimsFromTarget(targetNode);
@@ -88,6 +88,24 @@ export class DropLocationDeterminer<T> extends View {
     this.targetNode = targetNode;
     this.lastPos = pos;
     this.targetDimensions = dims;
+
+    // For compatibility with old sorter
+    this.eventHandlers?.onMoveClb?.({
+      event: mouseEvent,
+      target: this.sourceNode.model,
+      parent: this.targetNode.model,
+      index: pos.index + (pos.method == 'after' ? 1 : 0),
+    });
+
+    this.em.trigger('sorter:drag', {
+      target: targetEl,
+      targetModel,
+      sourceModel: this.sourceNode.model,
+      dims,
+      pos,
+      x: mouseXRelativeToContainer,
+      y: mouseYRelativeToContainer,
+    });
   }
 
   onDragStart(mouseEvent: MouseEvent): void {
@@ -132,9 +150,25 @@ export class DropLocationDeterminer<T> extends View {
   */
   endMove(): void {
     let index = this.lastPos.method === 'after' ? this.lastPos.indexEl + 1 : this.lastPos.indexEl;
-    // TODO fix the index for same collection dropping
     this.eventHandlers?.onDrop?.(this.targetNode, this.sourceNode, index)
+    this.eventHandlers?.onEndMove?.()
     this.cleanupEventListeners();
+    this.em.trigger('sorter:drag:end', {
+      targetCollection: this.targetNode.getChildren(),
+      modelToDrop: this.sourceNode.model,
+      warns: [''],
+      validResult: {
+        result: true,
+        src: this.sourceNode.element,
+        srcModel: this.sourceNode.model,
+        trg: this.sourceNode.element,
+        trgModel: this.targetNode.model,
+        draggable: true,
+        droppable: true,
+      },
+      dst: this.targetNode.element,
+      srcEl: this.sourceNode.element,
+    });
   }
 
   /**

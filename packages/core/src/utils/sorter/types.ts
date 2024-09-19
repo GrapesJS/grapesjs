@@ -64,6 +64,8 @@ type OnDropHandler<T> = (targetNode: SortableTreeNode<T>, sourceNode: SortableTr
 type OnTargetChangeHandler<T> = (oldTargetNode: SortableTreeNode<T>, newTargetNode: SortableTreeNode<T>) => void;
 type OnPlaceholderPositionChangeHandler = (dims: Dimension[], newPosition: Position) => void;
 type OnEndMoveHandler = () => void;
+// For compatibility with old sorter
+type onMoveClb = (data: any) => void;
 
 /**
  * Represents a collection of event handlers for sortable tree node events.
@@ -76,6 +78,8 @@ export interface SorterEventHandlers<T> {
   onTargetChange?: OnTargetChangeHandler<T>;
   onPlaceholderPositionChange?: OnPlaceholderPositionChangeHandler;
   onEndMove?: OnEndMoveHandler;
+  // For compatibility with old sorter
+  onMoveClb?: onMoveClb;
 }
 
 export interface SorterDragBehaviorOptions {
