@@ -77,10 +77,14 @@ export default class UndoManagerModule extends Module<UndoManagerConfig & { name
           changedMap.set(object, before);
         }
         const opt = opts || v || {};
-        if (hasSkip(opt)) {
+
+        if (opt.noUndo) {
           setTimeout(() => {
             changedMap.delete(object);
           });
+        }
+
+        if (hasSkip(opt)) {
           return;
         } else {
           const after = object.toJSON({ fromUndo });
