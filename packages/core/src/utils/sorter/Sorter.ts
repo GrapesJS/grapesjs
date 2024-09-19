@@ -105,11 +105,8 @@ export default class Sorter<T>{
    * Picking component to move
    * @param {HTMLElement} sourceElement
    * */
-  startSort(sourceElement?: HTMLElement, options: { container?: HTMLElement } = {}) {
-    // Check if the start element is a valid one, if not, try the closest valid one
-    if (sourceElement && !matches(sourceElement, `${this.containerContext.itemSel}, ${this.containerContext.containerSel}`)) {
-      sourceElement = closest(sourceElement, this.containerContext.itemSel)!;
-    }
+  startSort(sourceElement?: HTMLElement) {
+    sourceElement = this.findValidSourceElement(sourceElement);
 
     const sourceModel = $(sourceElement).data("model");
     const sourceNode = new this.treeClass(sourceModel);
@@ -119,9 +116,22 @@ export default class Sorter<T>{
     this.dropLocationDeterminer.startSort(sourceNode);
     this.bindDragEventHandlers(docs);
 
-    if (this.eventHandlers && isFunction(this.eventHandlers.onStartSort)) {
-      this.eventHandlers.onStartSort(this.sourceNode!, this.containerContext.container)
+    this.eventHandlers?.onStartSort?.(this.sourceNode, this.containerContext.container);
+    this.em.trigger('sorter:drag:start', sourceElement, sourceModel);
+  }
+
+  /**
+   * Finds the closest valid source element within the container context.
+  
+   * @param sourceElement - The initial source element to check.
+   * @returns The closest valid source element, or null if none is found.
+   */
+  private findValidSourceElement(sourceElement?: HTMLElement): HTMLElement | undefined {
+    if (sourceElement && !matches(sourceElement, `${this.containerContext.itemSel}, ${this.containerContext.containerSel}`)) {
+      sourceElement = closest(sourceElement, this.containerContext.itemSel)!;
     }
+
+    return sourceElement;
   }
 
   private bindDragEventHandlers(docs: Document[]) {

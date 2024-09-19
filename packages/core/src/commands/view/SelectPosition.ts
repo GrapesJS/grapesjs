@@ -38,7 +38,7 @@ export default {
       });
 
     if (opts.onStart) this.sorter.onStart = opts.onStart;
-    trg && this.sorter.startSort(trg, { container });
+    trg && this.sorter.startSort(trg);
   },
 
   /**

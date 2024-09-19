@@ -307,6 +307,7 @@ export function getMergedOptions<T>(sorterOptions: RequiredEmAndTreeClassPartial
       ignoreViewChildren: false,
       selectOnEnd: true,
     },
+    eventHandlers: {}
   };
 
   const mergedOptions: Omit<SorterOptions<T>, 'em' | 'treeClass'> = {

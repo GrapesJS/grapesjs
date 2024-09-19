@@ -194,7 +194,7 @@ export default class Droppable {
         }
       })
       let dropModel = this.getTempDropModel(content);
-      sorter.startSort(dropModel.view?.el, { container: this.el });
+      sorter.startSort(dropModel.view?.el);
       this.sorter = sorter;
       dragStop = () => {
         sorter.endMove();
