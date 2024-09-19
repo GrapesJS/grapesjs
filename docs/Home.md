@@ -172,7 +172,7 @@ You could add other commands to enable interactions with blocks. Check [Built-in
 
 ## Style Manager
 
-Any HTML structure requires, at some point, a proper style, so to meet this need the Style Manager was added as a built-in feature in GrapesJS. Style manager is composed by sectors, which group inside different types of CSS properties. So you can add, for instance, a `Dimension` sector for `width` and `height`, and another one as `Typography` for `font-size` and `color`. So it's up to you decide how organize sectors.
+Any HTML structure requires, at some point, a proper style, so to meet this need the Style Manager was added as a built-in feature in GrapesJS. Style manager is composed by sectors, which group inside different types of CSS properties. So you can add, for instance, a `Dimension` sector for `width` and `height`, and another one as `Typography` for `font-size` and `color`. So it's up to you to decide how to organize sectors.
 
 To enable this module we rely on a built-in command `open-sm`, which shows up the Style Manager, which we gonna bind to another button in a separate panel
 
@@ -228,7 +228,7 @@ Selecting one of the component will show up the Style Manager with default secto
 
 [[img/default-sm.jpg]]
 
-As we exploring different configurations inside GrapesJS we gonna overwrite all the default sectors to create some custom one
+As we explore different configurations inside GrapesJS we gonna overwrite all the default sectors to create some custom one
 
 Let's put a few sectors with use of `buildProps` which helps us building common properties
 
@@ -356,7 +356,7 @@ styleManager : {
 ...
 ```
 
-As you can see using `buildProps` actually will save you a lot of work. You could also mix this techniques to obtain custom properties in less time. For example, let's see how can we setup the same width but with a different value of `min`:
+As you can see using `buildProps` actually will save you a lot of work. You could also mix these techniques to obtain custom properties in less time. For example, let's see how we can setup the same width but with a different value of `min`:
 
 ```js
 ...
@@ -402,7 +402,7 @@ var editor = grapesjs.init({
 ...
 ```
 
-Worth noting the defaut `id` parameter which adds a prefix for all keys to store. If you check the localStorage inside your DOM panel you'll see something like `{ 'gjs-components': '<div>....' ...}` in this way it prevents the risk of collisions, quite common with localStorage use in large applications.
+Worth noting the default `id` parameter which adds a prefix for all keys to store. If you check the localStorage inside your DOM panel you'll see something like `{ 'gjs-components': '<div>....' ...}` in this way it prevents the risk of collisions, quite common with localStorage use in large applications.
 
 Storing data locally it's easy and fast but useless in some common cases. In the next example we'll see how to setup a remote storage, which is not far from the previous one
 
