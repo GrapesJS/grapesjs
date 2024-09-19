@@ -1,13 +1,13 @@
 import { BaseComponentNode } from './BaseComponentNode';
 
-export class ComponentCanvasNode extends BaseComponentNode {
+export default class LayersComponentNode extends BaseComponentNode {
   /**
    * Get the associated view of this component.
    * @returns The view associated with the component, or undefined if none.
    */
   // TODO add the correct type
   get view(): any {
-    return this.model.getView();
+    return this.model.viewLayer;
   }
 
   /**
@@ -15,6 +15,6 @@ export class ComponentCanvasNode extends BaseComponentNode {
  * @returns The Element associated with the component, or undefined if none.
  */
   get element(): HTMLElement | undefined {
-    return this.model.getEl();
+    return this.model.viewLayer?.el;
   }
 }

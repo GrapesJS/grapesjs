@@ -51,9 +51,7 @@ export class DropLocationDeterminer<T> extends View {
    * Picking component to move
    * @param {HTMLElement} sourceElement
    * */
-  startSort(sourceElement?: HTMLElement) {
-    const sourceModel = $(sourceElement).data('model')
-    const sourceNode = new this.treeClass(sourceModel);
+  startSort(sourceNode: SortableTreeNode<T>) {
     this.sourceNode = sourceNode;
     this.bindDragEventHandlers(this.docs);
   }

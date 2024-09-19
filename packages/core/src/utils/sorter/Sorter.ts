@@ -131,10 +131,11 @@ export default class Sorter<T> extends View {
     }
 
     const sourceModel = $(sourceElement).data("model");
-    this.sourceNode = new this.treeClass(sourceModel)
+    const sourceNode = new this.treeClass(sourceModel);
+    this.sourceNode = sourceNode;
     const docs = getDocuments(this.em, sourceElement);
     this.updateDocs(docs)
-    this.dropLocationDeterminer.startSort(sourceElement);
+    this.dropLocationDeterminer.startSort(sourceNode);
     this.bindDragEventHandlers(docs);
 
     if (this.eventHandlers && isFunction(this.eventHandlers.onStartSort)) {
@@ -170,6 +171,7 @@ export default class Sorter<T> extends View {
     const docs = this.docs;
     this.cleanupEventListeners(container, docs);
     this.placeholder.hide();
+    this.dropLocationDeterminer.endMove();
     this.finalizeMove();
   }
 

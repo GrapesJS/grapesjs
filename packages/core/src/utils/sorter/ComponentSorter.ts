@@ -12,6 +12,7 @@ const spotTarget = {
 };
 
 export default class ComponentSorter extends Sorter<Component> {
+    treeClass: new (model: Component) => BaseComponentNode;
     constructor({
         em,
         treeClass,
@@ -65,7 +66,7 @@ export default class ComponentSorter extends Sorter<Component> {
     }
 
     onComponentDrop = (targetNode: BaseComponentNode, sourceNode: BaseComponentNode, index: number) => {
-        sourceNode.model.set('status', '');
+        sourceNode.model?.set?.('status', '');
         if (targetNode) {
             const parent = sourceNode.getParent();
             let initialSourceIndex = -1;

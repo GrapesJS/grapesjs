@@ -3,6 +3,8 @@ import CanvasModule from '../canvas';
 import { ObjectStrings } from '../common';
 import EditorModel from '../editor/model/Editor';
 import { getDocumentScroll, off, on } from './dom';
+import { SorterDirection } from './sorter/types';
+import CanvasNewComponentNode from './sorter/CanvasNewComponentNode';
 
 // TODO move in sorter
 type SorterOptions = {
@@ -11,8 +13,6 @@ type SorterOptions = {
 };
 
 type DragStop = (cancel?: boolean) => void;
-
-type DragContent = (content: any) => void;
 
 /**
  * This class makes the canvas droppable
@@ -25,7 +25,7 @@ export default class Droppable {
   sortOpts?: Record<string, any> | null;
   over?: boolean;
   dragStop?: DragStop;
-  dragContent?: DragContent;
+  content: any;
   sorter?: any;
 
   constructor(em: EditorModel, rootEl?: HTMLElement) {
@@ -156,35 +156,61 @@ export default class Droppable {
       dragStop = (cancel?: boolean) => dragger.stop(ev, { cancel });
       dragContent = (cnt: any) => (content = cnt);
     } else {
-      const sorter = new utils.Sorter({
-        // @ts-ignore
+      const handleOnDrop = (targetNode: CanvasNewComponentNode, sourceNode: CanvasNewComponentNode, index: number): void => {
+        const sourceModel = targetNode.model.components().add(this.content, { at: index });
+        this.handleDragEnd(sourceModel, dt);
+      };
+
+      const sorter = new utils.ComponentSorter({
         em,
-        wmargin: 1,
-        nested: 1,
-        canvasRelative: 1,
-        direction: 'a',
-        container: this.el,
-        placer: canvas.getPlacerEl(),
-        containerSel: '*',
-        itemSel: '*',
-        pfx: 'gjs-',
-        onEndMove: (model: any) => this.handleDragEnd(model, dt),
-        document: this.el.ownerDocument,
-        ...(this.sortOpts || {}),
-      });
-      // sorter.setDropContent(content);
-      sorter.startSort();
+        treeClass: CanvasNewComponentNode,
+        containerContext: {
+          container: this.el,
+          containerSel: '*',
+          itemSel: '*',
+          pfx: 'gjs-',
+          placeholderElement: canvas.getPlacerEl()!,
+          document: this.el.ownerDocument,
+        },
+        dragBehavior: {
+          dragDirection: SorterDirection.BothDirections,
+          ignoreViewChildren: true,
+          nested: true,
+        },
+        positionOptions: {
+          windowMargin: 1,
+          canvasRelative: true
+        },
+        eventHandlers: {
+          onDrop: handleOnDrop.bind(this)
+        }
+      })
+      let dropModel = this.getTempDropModel(content);
+      sorter.startSort(dropModel.view?.el, { container: this.el });
       this.sorter = sorter;
-      dragStop = (cancel?: boolean) => {
-        // cancel && (sorter.moved = false);
+      dragStop = () => {
         sorter.endMove();
       };
-      // dragContent = (content: any) => sorter.setDropContent(content);
     }
 
     this.dragStop = dragStop;
-    this.dragContent = dragContent;
     em.trigger('canvas:dragenter', dt, content);
+  }
+
+  private getTempDropModel(content: any) {
+    const comps = this.em.Components.getComponents();
+    const opts = {
+      avoidChildren: 1,
+      avoidStore: 1,
+      avoidUpdateStyle: 1,
+    };
+    const tempModel = comps.add(content, { ...opts, temporary: true });
+    // @ts-ignore
+    let dropModel = comps.remove(tempModel, opts as any);
+    // @ts-ignore
+    dropModel = dropModel instanceof Array ? dropModel[0] : dropModel;
+    dropModel.view?.$el.data("model", dropModel);
+    return dropModel;
   }
 
   handleDragEnd(model: any, dt: any) {
@@ -212,10 +238,9 @@ export default class Droppable {
    */
   handleDrop(ev: Event | DragEvent) {
     ev.preventDefault();
-    const { dragContent } = this;
     const dt = (ev as DragEvent).dataTransfer;
     const content = this.getContentByData(dt).content;
-    content && dragContent && dragContent(content);
+    this.content = content;
     this.endDrop(!content, ev);
   }
 

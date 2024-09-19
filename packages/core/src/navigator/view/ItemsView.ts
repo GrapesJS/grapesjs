@@ -6,7 +6,7 @@ import ItemView from './ItemView';
 import Components from '../../dom_components/model/Components';
 import LayerManager from '..';
 import { SorterDirection } from '../../utils/sorter/types';
-import { ComponentLayersNode } from '../../utils/sorter/ComponentLayersNode';
+import LayersComponentNode from '../../utils/sorter/LayersComponentNode';
 
 export default class ItemsView extends View {
   items: ItemView[];
@@ -41,7 +41,7 @@ export default class ItemsView extends View {
       this.placeholderElement = this.createPlaceholder(pfx)
       this.opt.sorter = new utils.ComponentSorter({
         em,
-        treeClass: ComponentLayersNode,
+        treeClass: LayersComponentNode,
         containerContext: {
           container: container,
           containerSel: `.${this.className}`,
