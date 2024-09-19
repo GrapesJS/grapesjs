@@ -1,4 +1,4 @@
-import { Collection } from '../../common';
+import { Collection, RemoveOptions } from '../../common';
 import EditorModel from '../../editor/model/Editor';
 import Page from './Page';
 
@@ -14,11 +14,13 @@ export default class Pages extends Collection<Page> {
     };
   }
 
-  onReset(m: Page, opts?: { previousModels?: Pages }) {
-    opts?.previousModels?.map((p) => this.onRemove(p));
+  onReset(m: Page, opts?: RemoveOptions & { previousModels?: Pages }) {
+    opts?.previousModels?.map((p) => this.onRemove(p, this, opts));
   }
 
-  onRemove(removed?: Page) {
+  onRemove(removed?: Page, _p?: this, opts: RemoveOptions = {}) {
+    // Avoid removing frames if triggered from undo #6142
+    if (opts.fromUndo) return;
     removed?.onRemove();
   }
 }
