@@ -559,7 +559,7 @@ TComp> {
     this.updateClasses();
   }
 
-  onAttrUpdate() { }
+  onAttrUpdate() {}
 
   render() {
     this.renderAttributes();
