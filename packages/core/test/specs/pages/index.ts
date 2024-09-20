@@ -1,8 +1,9 @@
+import CanvasEvents from '../../../src/canvas/types';
 import { ComponentDefinition } from '../../../src/dom_components/model/types';
 import Editor from '../../../src/editor';
 import EditorModel from '../../../src/editor/model/Editor';
 import { PageProperties } from '../../../src/pages/model/Page';
-import { DEFAULT_CMPS } from '../../common';
+import { DEFAULT_CMPS, setupTestEditor, waitEditorEvent } from '../../common';
 
 describe('Pages', () => {
   let editor: Editor;
@@ -279,5 +280,73 @@ describe('Managing pages', () => {
     expect(cmp2.getId()).toBe(id2);
     expect(rule2.getSelectorsString()).toBe(idSel2);
     expect(rule2.getStyle()).toEqual({ color: 'blue' });
+  });
+});
+
+describe('Pages in canvas', () => {
+  let editor: Editor;
+  let canvas: Editor['Canvas'];
+  let em: EditorModel;
+  let fxt: HTMLElement;
+  let pm: Editor['Pages'];
+  const clsPageEl = 'cmp';
+  const selPageEl = `.${clsPageEl}`;
+
+  const getPageContent = () => canvas.getBody().querySelector(selPageEl)?.innerHTML;
+
+  beforeEach(async () => {
+    const testEditor = setupTestEditor({
+      withCanvas: true,
+      config: {
+        pageManager: {
+          pages: [
+            {
+              id: 'page-1',
+              component: `<div class="${clsPageEl}">Page 1</div>`,
+            },
+          ],
+        },
+      },
+    });
+    editor = testEditor.editor;
+    canvas = editor.Canvas;
+    em = testEditor.em;
+    fxt = testEditor.fixtures;
+    pm = editor.Pages;
+    await waitEditorEvent(em, 'change:readyCanvas');
+  });
+
+  afterEach(() => {
+    editor.destroy();
+  });
+
+  test('Pages are rendering properly with undo/redo', async () => {
+    const mainPage = pm.getMain();
+    expect(mainPage).toBe(pm.getSelected());
+
+    const page = pm.add(
+      {
+        id: 'page-2',
+        component: `<div class="${clsPageEl}">Page 2</div>`,
+      },
+      { select: true },
+    )!;
+
+    // Check the second page is selected and rendered properly
+    expect(page).toBe(pm.getSelected());
+    await waitEditorEvent(em, CanvasEvents.frameLoadBody);
+    expect(getPageContent()).toEqual('Page 2');
+
+    // Undo and check the main page is rendered properly
+    em.UndoManager.undo();
+    expect(mainPage).toBe(pm.getSelected());
+    await waitEditorEvent(em, CanvasEvents.frameLoadBody);
+    expect(getPageContent()).toBe('Page 1');
+
+    // Redo and check the second page is rendered properly again
+    em.UndoManager.redo();
+    expect(page).toBe(pm.getSelected());
+    await waitEditorEvent(em, CanvasEvents.frameLoadBody);
+    expect(getPageContent()).toEqual('Page 2');
   });
 });
