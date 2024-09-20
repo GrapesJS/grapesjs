@@ -164,7 +164,7 @@ TComp> {
     event.stopPropagation();
     event.preventDefault();
     this.em.Commands.run('tlb-move', {
-      target: [...this.em.getEditor().getSelectedAll()],
+      target: [...this.em.getSelectedAll()],
       event,
     });
   }
