@@ -62,7 +62,7 @@ export default {
     this.posIndex = this.posMethod == 'after' && this.cDim.length !== 0 ? this.posIndex + 1 : this.posIndex; //Normalize
     if (this.sorter) {
       this.sorter.moved = 0;
-      this.sorter.endMove();
+      this.sorter.cancelDrag();
     }
     if (this.cDim) {
       this.posIsLastEl = this.cDim.length !== 0 && this.posMethod == 'after' && this.posIndex == this.cDim.length;

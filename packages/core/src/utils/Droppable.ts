@@ -208,7 +208,7 @@ export default class Droppable {
       sorter.startSort(el ? [el] : []);
       this.sorter = sorter;
       dragStop = () => {
-        sorter.endMove();
+        sorter.endDrag();
       };
     }
 

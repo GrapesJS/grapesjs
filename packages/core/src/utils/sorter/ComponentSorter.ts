@@ -6,6 +6,13 @@ import { BaseComponentNode } from "./BaseComponentNode";
 import Sorter from "./Sorter";
 import { SorterContainerContext, PositionOptions, SorterDragBehaviorOptions, SorterEventHandlers } from './types';
 
+const targetSpotType = CanvasSpotBuiltInTypes.Target;
+
+const spotTarget = {
+    id: 'sorter-target',
+    type: targetSpotType,
+};
+
 export default class ComponentSorter extends Sorter<Component, BaseComponentNode> {
     targetIsText: boolean = false;
     constructor({
@@ -66,7 +73,7 @@ export default class ComponentSorter extends Sorter<Component, BaseComponentNode
     }
 
     onMouseMove = (mouseEvent: MouseEvent) => {
-        const insertingTextableIntoText = this.targetIsText && this.sourceNodes?.some(node => node.model?.get?.('textable'))
+        const insertingTextableIntoText = this.targetIsText && this.sourceNodes?.some(node => node.isTextable())
         if (insertingTextableIntoText) {
             this.updateTextViewCursorPosition(mouseEvent);
         }
@@ -99,7 +106,6 @@ export default class ComponentSorter extends Sorter<Component, BaseComponentNode
     }
 
     private addSourceNodeToTarget(sourceNode: BaseComponentNode, targetNode: BaseComponentNode, index: number) {
-        sourceNode.clearState();
         if (!targetNode.canMove(sourceNode, index)) {
             return;
         }
@@ -119,9 +125,19 @@ export default class ComponentSorter extends Sorter<Component, BaseComponentNode
         return addedNode;
     }
 
+    /**
+     * Finalize the move by removing any helpers and selecting the target model.
+     * 
+     * @private
+    */
+    protected finalizeMove(): void {
+        this.em?.Canvas.removeSpots(spotTarget);
+        this.sourceNodes?.forEach(node => node.clearState());
+        super.finalizeMove();
+    }
+
     private onTargetChange = (oldTargetNode: BaseComponentNode | undefined, newTargetNode: BaseComponentNode | undefined) => {
         oldTargetNode?.clearState();
-
         if (!newTargetNode) {
             return
         }
@@ -137,7 +153,6 @@ export default class ComponentSorter extends Sorter<Component, BaseComponentNode
             this.placeholder.show();
         }
     }
-
 
     private updateTextViewCursorPosition(e: any) {
         const { em } = this;
@@ -171,7 +186,6 @@ export default class ComponentSorter extends Sorter<Component, BaseComponentNode
         sel?.removeAllRanges();
         range && sel?.addRange(range);
     }
-
 
     /**
      * Toggle cursor while sorting

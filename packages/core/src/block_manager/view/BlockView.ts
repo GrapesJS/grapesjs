@@ -131,7 +131,7 @@ export default class BlockView extends View<Block> {
     // things (throws false positives). As this method just need to drop away
     // the block helper I use the trick of 'moved = 0' to void those errors.
     sorter.moved = 0;
-    sorter.endMove();
+    sorter.cancelDrag();
   }
 
   render() {

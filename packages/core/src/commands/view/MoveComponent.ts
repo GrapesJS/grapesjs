@@ -135,7 +135,7 @@ export default extend({}, SelectPosition, SelectComponent, {
     var key = e.which || e.keyCode;
     if (key == 27 || force) {
       this.sorter.moved = false;
-      this.sorter.endMove();
+      this.sorter.cancelDrag();
     }
     return;
   },

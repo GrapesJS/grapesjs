@@ -44,7 +44,7 @@ export class DropLocationDeterminer<T, NodeType extends SortableTreeNode<T>> ext
     this.positionOptions = options.positionOptions;
     this.dragBehavior = options.dragBehavior;
     this.eventHandlers = options.eventHandlers || {};
-    bindAll(this, 'startSort', 'onMove', 'endMove', 'onDragStart');
+    bindAll(this, 'startSort', 'onDragStart', 'onMove', 'endDrag');
     this.containerOffset = {
       top: 0,
       left: 0
@@ -63,7 +63,7 @@ export class DropLocationDeterminer<T, NodeType extends SortableTreeNode<T>> ext
   private bindDragEventHandlers(docs: Document[]) {
     on(this.containerContext.container, 'dragstart', this.onDragStart);
     on(this.containerContext.container, 'mousemove dragover', this.onMove);
-    on(docs, 'mouseup dragend touchend', this.endMove);
+    on(docs, 'mouseup dragend touchend', this.endDrag);
   }
 
   onMove(mouseEvent: MouseEvent): void {
@@ -112,6 +112,55 @@ export class DropLocationDeterminer<T, NodeType extends SortableTreeNode<T>> ext
     this.eventHandlers.onDragStart && this.eventHandlers.onDragStart(mouseEvent);
   }
 
+  endDrag(): void {
+    this.dropDragged();
+    this.finalizeMove();
+  }
+
+  cancelDrag() {
+    this.eventHandlers.onTargetChange?.(this.targetNode, undefined);
+    this.finalizeMove();
+  }
+
+  private finalizeMove() {
+    this.cleanupEventListeners();
+    this.triggerOnDragEndEvent();
+    this.eventHandlers.onEndMove?.();
+  }
+
+  private dropDragged() {
+    const targetNode = this.targetNode;
+    const lastPos = this.lastPos;
+    let index = -1;
+    if (lastPos) {
+      index = lastPos.method === 'after' ? lastPos.indexEl + 1 : lastPos.indexEl;
+    }
+
+    this.eventHandlers.onDrop?.(targetNode, this.sourceNodes, index);
+  }
+
+  private triggerOnDragEndEvent() {
+    const targetNode = this.targetNode;
+    const lastPos = this.lastPos;
+    this.em.trigger('sorter:drag:end', {
+      targetCollection: this.targetNode ? this.targetNode.getChildren() : null,
+      modelToDrop: this.sourceNodes.map(node => node.model),
+      warns: [''],
+      validResult: {
+        result: true,
+        src: this.sourceNodes.map(node => node.element),
+        srcModel: this.sourceNodes.map(node => node.model),
+        trg: targetNode?.element,
+        trgModel: targetNode?.model,
+        draggable: true,
+        droppable: true,
+      },
+      dst: targetNode?.element,
+      srcEl: this.sourceNodes.map(node => node.element),
+    });
+    return { lastPos, targetNode };
+  }
+
   /**
    * Retrieves the first element that has a data model associated with it.
    * Traverses up the DOM tree from the given element until it reaches the container
@@ -147,45 +196,6 @@ export class DropLocationDeterminer<T, NodeType extends SortableTreeNode<T>> ext
   }
 
   /**
-   * End the move action.
-   * Handles the cleanup and final steps after an item is moved.
-  */
-  endMove(): void {
-    const targetNode = this.targetNode;
-    const lastPos = this.lastPos;
-    let index = -1;
-    if (lastPos) {
-      index = lastPos.method === 'after' ? lastPos.indexEl + 1 : lastPos.indexEl
-    }
-    this.eventHandlers.onDrop?.(targetNode, this.sourceNodes, index)
-    this.eventHandlers.onEndMove?.()
-    this.cleanupEventListeners();
-    this.triggerOnDragEndEvent();
-  }
-
-  private triggerOnDragEndEvent() {
-    const targetNode = this.targetNode;
-    const lastPos = this.lastPos;
-    this.em.trigger('sorter:drag:end', {
-      targetCollection: this.targetNode ? this.targetNode.getChildren() : null,
-      modelToDrop: this.sourceNodes.map(node => node.model),
-      warns: [''],
-      validResult: {
-        result: true,
-        src: this.sourceNodes.map(node => node.element),
-        srcModel: this.sourceNodes.map(node => node.model),
-        trg: targetNode?.element,
-        trgModel: targetNode?.model,
-        draggable: true,
-        droppable: true,
-      },
-      dst: targetNode?.element,
-      srcEl: this.sourceNodes.map(node => node.element),
-    });
-    return { lastPos, targetNode };
-  }
-
-  /**
    * Clean up event listeners that were attached during the move.
   *
   * @param {HTMLElement} container - The container element.
@@ -197,7 +207,7 @@ export class DropLocationDeterminer<T, NodeType extends SortableTreeNode<T>> ext
     const docs = this.docs;
     off(container, 'dragstart', this.onDragStart);
     off(container, 'mousemove dragover', this.onMove);
-    off(docs, 'mouseup dragend touchend', this.endMove);
+    off(docs, 'mouseup dragend touchend', this.endDrag);
   }
 
   /**

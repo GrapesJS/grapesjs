@@ -1,5 +1,5 @@
-import { bindAll, isFunction, contains } from 'underscore';
-import { $, View } from '../../common';
+import { bindAll } from 'underscore';
+import { $ } from '../../common';
 import EditorModel from '../../editor/model/Editor';
 import { off, on } from '../dom';
 import { SortableTreeNode } from './SortableTreeNode';
@@ -13,12 +13,11 @@ export type RequiredEmAndTreeClassPartialSorterOptions<T, NodeType extends Sorta
   em: EditorModel;
   treeClass: new (model: T) => NodeType;
 };
-
 export default class Sorter<T, NodeType extends SortableTreeNode<T>> {
   em: EditorModel;
   treeClass: new (model: T) => NodeType;
   placeholder: PlaceholderClass;
-  dropLocationDeterminer!: DropLocationDeterminer<T, NodeType>;
+  dropLocationDeterminer: DropLocationDeterminer<T, NodeType>;
 
   positionOptions: PositionOptions;
   containerContext: SorterContainerContext;
@@ -30,7 +29,7 @@ export default class Sorter<T, NodeType extends SortableTreeNode<T>> {
   constructor(sorterOptions: SorterOptions<T, NodeType>) {
     const mergedOptions = getMergedOptions<T, NodeType>(sorterOptions);
 
-    bindAll(this, 'startSort', 'endMove', 'rollback', 'updateOffset');
+    bindAll(this, 'startSort', 'cancelDrag', 'rollback', 'updateOffset');
     this.containerContext = mergedOptions.containerContext;
     this.positionOptions = mergedOptions.positionOptions;
     this.dragBehavior = mergedOptions.dragBehavior;
@@ -152,16 +151,19 @@ export default class Sorter<T, NodeType extends SortableTreeNode<T>> {
   }
 
   /**
-   * End the move action.
-   * Handles the cleanup and final steps after an item is moved.
-   */
-  endMove(): void {
-    const docs = this.docs;
-    this.cleanupEventListeners(docs);
-    this.placeholder.hide();
-    this.dropLocationDeterminer.endMove();
-    this.finalizeMove();
-    this.eventHandlers.legacyOnEnd?.({ sorter: this })
+   * Called when the drag operation should be cancelled
+  */
+ cancelDrag(): void {
+   this.placeholder.hide();
+   this.dropLocationDeterminer.cancelDrag()
+   this.finalizeMove();
+  }
+  
+  /**
+   * Called to drop an item onto a valid target.
+  */
+  endDrag() {
+    this.dropLocationDeterminer.endDrag()
   }
 
   /**
@@ -175,13 +177,14 @@ export default class Sorter<T, NodeType extends SortableTreeNode<T>> {
   }
 
   /**
-   * Finalize the move by removing any helpers and selecting the target model.
+   * Finalize the move.
    * 
    * @private
    */
-  private finalizeMove(): void {
-    // @ts-ignore
-    this.em?.Canvas.removeSpots(this.spotTarget);
+  protected finalizeMove(): void {
+    const docs = this.docs;
+    this.cleanupEventListeners(docs);
+    this.eventHandlers.legacyOnEnd?.({ sorter: this })
   }
 
   /**
@@ -194,7 +197,7 @@ export default class Sorter<T, NodeType extends SortableTreeNode<T>> {
     const ESC_KEY = 'Escape';
 
     if (e.key === ESC_KEY) {
-      // TODO add canceling
+      this.cancelDrag();
     }
   }
 }
