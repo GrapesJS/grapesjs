@@ -52,9 +52,9 @@ export default class StyleManagerSorter extends Sorter<Layers | Layer, LayerNode
         if (!targetNode) {
             return;
         }
-        for (let index = 0; index < sourceNodes.length; index++) {
-            const sourceNode = sourceNodes[index];
-            if (!targetNode.canMove(sourceNode, index)) {
+        for (let idx = 0; idx < sourceNodes.length; idx++) {
+            const sourceNode = sourceNodes[idx];
+            if (!targetNode.canMove(sourceNode, idx)) {
                 continue;
             }
             const parent = sourceNode.getParent();
