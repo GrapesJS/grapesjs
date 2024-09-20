@@ -8,6 +8,7 @@ import LayerManager from '../index';
 import ItemsView from './ItemsView';
 import { getOnComponentDrag, getOnComponentDragEnd, getOnComponentDragStart } from '../../commands';
 import Sorter from '../../utils/sorter/Sorter';
+import LayersComponentNode from '../../utils/sorter/LayersComponentNode';
 
 export type ItemViewProps = ViewOptions & {
   ItemView: ItemView;
@@ -100,7 +101,7 @@ export default class ItemView extends View {
   opt: ItemViewProps;
   module: LayerManager;
   config: any;
-  sorter: Sorter<Component>;
+  sorter: Sorter<Component, LayersComponentNode>;
   /** @ts-ignore */
   model!: Component;
   parentView: ItemView;
@@ -324,12 +325,14 @@ export default class ItemView extends View {
 
     if (sorter) {
       const toMove = model.delegate?.move?.(model) || model;
-      // TODO
-      // sorter.onStart = getOnComponentDragStart(em);
-      // sorter.onMoveClb = getOnComponentDrag(em);
-      // sorter.onEndMove = getOnComponentDragEnd(em, [toMove]);
+      sorter.eventHandlers = {
+        legacyOnStartSort: getOnComponentDragStart(em),
+        legacyOnMoveClb: getOnComponentDrag(em),
+        legacyOnEndMove: getOnComponentDragEnd(em, [toMove]),
+        ...sorter.eventHandlers
+      }
       const itemEl = (toMove as any).viewLayer?.el || ev.target;
-      sorter.startSort(itemEl);
+      sorter.startSort([itemEl]);
     }
   }
 

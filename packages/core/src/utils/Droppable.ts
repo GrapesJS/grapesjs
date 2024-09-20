@@ -22,7 +22,7 @@ export default class Droppable {
   canvas: CanvasModule;
   el: HTMLElement;
   counter: number;
-  sortOpts?: Record<string, any> | null;
+  getSorterOptions?: (sorter: any) => Record<string, any> | null;
   over?: boolean;
   dragStop?: DragStop;
   content: any;
@@ -52,19 +52,21 @@ export default class Droppable {
     const method = enable ? on : off;
     const doc = this.el.ownerDocument;
     const frameEl = doc.defaultView?.frameElement as HTMLIFrameElement;
-    this.sortOpts = enable
-      ? {
-          onStart({ sorter }: SorterOptions) {
-            on(frameEl, 'pointermove', sorter.onMove);
-          },
-          onEnd({ sorter }: SorterOptions) {
-            off(frameEl, 'pointermove', sorter.onMove);
-          },
-          customTarget({ event }: SorterOptions) {
-            return doc.elementFromPoint(event.clientX, event.clientY);
-          },
-        }
-      : null;
+    const getSorterOptions: (sorter: any) => Record<string, any> = (sorter: any) => ({
+      legacyOnStartSort() {
+        on(frameEl, 'pointermove', sorter.onMove);
+      },
+      legacyOnEnd() {
+        off(frameEl, 'pointermove', sorter.onMove);
+      },
+      customTarget({ event }: SorterOptions) {
+        return doc.elementFromPoint(event.clientX, event.clientY);
+      },
+    });
+
+    this.getSorterOptions = enable
+      ? getSorterOptions
+      : undefined;
     method(frameEl, 'pointerenter', this.handleDragEnter);
     method(frameEl, 'pointermove', this.handleDragOver);
     method(document, 'pointerup', this.handleDrop);
@@ -156,8 +158,9 @@ export default class Droppable {
       dragStop = (cancel?: boolean) => dragger.stop(ev, { cancel });
       dragContent = (cnt: any) => (content = cnt);
     } else {
-      const handleOnDrop = (targetNode: CanvasNewComponentNode, sourceNode: CanvasNewComponentNode, index: number): void => {
-        const insertingTextableIntoText = targetNode.model?.isInstanceOf?.('text') && sourceNode?.model?.get?.('textable');
+      const handleOnDrop = (targetNode: CanvasNewComponentNode | undefined, sourceNodes: CanvasNewComponentNode[], index: number): void => {
+        if (!targetNode) return
+        const insertingTextableIntoText = targetNode.model?.isInstanceOf?.('text') && sourceNodes?.some(node => node.model?.get?.('textable'));
         let sourceModel;
         if (insertingTextableIntoText) {
           // @ts-ignore
@@ -190,11 +193,19 @@ export default class Droppable {
           canvasRelative: true
         },
         eventHandlers: {
-          onDrop: handleOnDrop.bind(this)
-        }
+          onDrop: handleOnDrop.bind(this),
+          legacyOnEndMove: (model: any) => this.handleDragEnd(model, dt),
+        },
       })
+      const sorterOptions = this.getSorterOptions?.(sorter);
+      if (sorterOptions) {
+        sorter.eventHandlers.legacyOnStartSort = sorterOptions.legacyOnStart;
+        sorter.eventHandlers.legacyOnEnd = sorterOptions.legacyOnEnd;
+        sorter.containerContext.customTarget = sorterOptions.customTarget;
+      }
       let dropModel = this.getTempDropModel(content);
-      sorter.startSort(dropModel.view?.el);
+      const el = dropModel.view?.el;
+      sorter.startSort(el ? [el] : []);
       this.sorter = sorter;
       dragStop = () => {
         sorter.endMove();

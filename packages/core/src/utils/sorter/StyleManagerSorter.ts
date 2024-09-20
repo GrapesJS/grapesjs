@@ -5,19 +5,19 @@ import { LayerNode } from "./LayerNode";
 import Sorter from "./Sorter";
 import { SorterContainerContext, PositionOptions, SorterDragBehaviorOptions, SorterEventHandlers } from './types';
 
-export default class StyleManagerSorter extends Sorter<Layers | Layer> {
+export default class StyleManagerSorter extends Sorter<Layers | Layer, LayerNode> {
     constructor({
         em,
         containerContext,
-        positionOptions,
         dragBehavior,
+        positionOptions = {},
         eventHandlers = {},
     }: {
         em: EditorModel;
         containerContext: SorterContainerContext;
-        positionOptions: PositionOptions;
         dragBehavior: SorterDragBehaviorOptions;
-        eventHandlers?: SorterEventHandlers<Layer | Layers>;
+        positionOptions?: PositionOptions;
+        eventHandlers?: SorterEventHandlers<LayerNode>;
     }) {
         super({
             em,
@@ -26,26 +26,37 @@ export default class StyleManagerSorter extends Sorter<Layers | Layer> {
             positionOptions,
             dragBehavior,
             eventHandlers: {
-                onStartSort: (sourceNode: LayerNode, containerElement?: HTMLElement) => {
-                    eventHandlers.onStartSort?.(sourceNode, containerElement);
-                    this.onLayerStartSort(sourceNode);
+                onStartSort: (sourceNodes: LayerNode[], containerElement?: HTMLElement) => {
+                    eventHandlers.onStartSort?.(sourceNodes, containerElement);
+                    this.onLayerStartSort(sourceNodes);
                 },
-                onDrop: (targetNode: LayerNode, sourceNode: LayerNode, index: number) => {
-                    eventHandlers.onDrop?.(targetNode, sourceNode, index);
-                    this.onLayerDrop(targetNode, sourceNode, index);
+                onDrop: (targetNode: LayerNode | undefined, sourceNodes: LayerNode[], index: number) => {
+                    eventHandlers.onDrop?.(targetNode, sourceNodes, index);
+                    this.onLayerDrop(targetNode, sourceNodes, index);
                 },
                 ...eventHandlers,
             },
         });
     }
 
-    onLayerStartSort = (sourceNode: LayerNode) => {
+    onLayerStartSort = (sourceNodes: LayerNode[]) => {
         this.em.clearSelection();
-        this.em.trigger('sorter:drag:start', sourceNode?.element, sourceNode?.model);
+        // We'll leave the old triggered event for now
+        const sourceNode = sourceNodes[0];
+        this.em.trigger('sorter:drag:start', sourceNode?.element, sourceNode?.model, {
+            sourceModels: sourceNodes.map(node => node.model)
+        });
     }
 
-    onLayerDrop = (targetNode: LayerNode, sourceNode: LayerNode, index: number) => {
-        if (targetNode) {
+    onLayerDrop = (targetNode: LayerNode | undefined, sourceNodes: LayerNode[], index: number) => {
+        if (!targetNode) {
+            return;
+        }
+        for (let index = 0; index < sourceNodes.length; index++) {
+            const sourceNode = sourceNodes[index];
+            if (!targetNode.canMove(sourceNode, index)) {
+                continue;
+            }
             const parent = sourceNode.getParent();
             let initialSourceIndex = -1;
             if (parent) {

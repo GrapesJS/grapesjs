@@ -6,29 +6,22 @@ import { BaseComponentNode } from "./BaseComponentNode";
 import Sorter from "./Sorter";
 import { SorterContainerContext, PositionOptions, SorterDragBehaviorOptions, SorterEventHandlers } from './types';
 
-const targetSpotType = CanvasSpotBuiltInTypes.Target;
-const spotTarget = {
-    id: 'sorter-target',
-    type: targetSpotType,
-};
-
-export default class ComponentSorter extends Sorter<Component> {
-    treeClass: new (model: Component) => BaseComponentNode;
+export default class ComponentSorter extends Sorter<Component, BaseComponentNode> {
     targetIsText: boolean = false;
     constructor({
         em,
         treeClass,
         containerContext,
-        positionOptions,
         dragBehavior,
+        positionOptions = {},
         eventHandlers = {},
     }: {
         em: EditorModel;
         treeClass: new (model: Component) => BaseComponentNode,
         containerContext: SorterContainerContext;
-        positionOptions: PositionOptions;
         dragBehavior: SorterDragBehaviorOptions;
-        eventHandlers?: SorterEventHandlers<Component>;
+        positionOptions?: PositionOptions;
+        eventHandlers?: SorterEventHandlers<BaseComponentNode>;
     }) {
         super({
             em,
@@ -38,15 +31,15 @@ export default class ComponentSorter extends Sorter<Component> {
             dragBehavior,
             eventHandlers: {
                 ...eventHandlers,
-                onStartSort: (sourceNode: BaseComponentNode, containerElement?: HTMLElement) => {
-                    eventHandlers.onStartSort?.(sourceNode, containerElement);
-                    this.onComponentStartSort(sourceNode);
+                onStartSort: (sourceNodes: BaseComponentNode[], containerElement?: HTMLElement) => {
+                    eventHandlers.onStartSort?.(sourceNodes, containerElement);
+                    this.onStartSort();
                 },
-                onDrop: (targetNode: BaseComponentNode, sourceNode: BaseComponentNode, index: number) => {
-                    eventHandlers.onDrop?.(targetNode, sourceNode, index);
-                    this.onComponentDrop(targetNode, sourceNode, index);
+                onDrop: (targetNode: BaseComponentNode | undefined, sourceNodes: BaseComponentNode[], index: number) => {
+                    eventHandlers.onDrop?.(targetNode, sourceNodes, index);
+                    this.onDrop(targetNode, sourceNodes, index);
                 },
-                onTargetChange: (oldTargetNode: BaseComponentNode, newTargetNode: BaseComponentNode) => {
+                onTargetChange: (oldTargetNode: BaseComponentNode | undefined, newTargetNode: BaseComponentNode | undefined) => {
                     eventHandlers.onTargetChange?.(oldTargetNode, newTargetNode);
                     this.onTargetChange(oldTargetNode, newTargetNode);
                 },
@@ -56,58 +49,95 @@ export default class ComponentSorter extends Sorter<Component> {
                 },
             },
         });
-
-        this.treeClass = treeClass;
     }
 
-    onComponentStartSort(sourceNode: BaseComponentNode) {
+    onStartSort() {
         this.em.clearSelection();
         this.toggleSortCursor(true);
-        this.em.trigger('sorter:drag:start', sourceNode?.element, sourceNode?.model);
+        const model = this.sourceNodes?.[0].model;
+        this.eventHandlers.legacyOnStartSort?.({
+            sorter: this,
+            target: model,
+            // @ts-ignore
+            parent: model && model.parent?.(),
+            // @ts-ignore
+            index: model && model.index?.(),
+        });
     }
 
     onMouseMove = (mouseEvent: MouseEvent) => {
-        const insertingTextableIntoText = this.targetIsText && this.sourceNode?.model?.get?.('textable');
+        const insertingTextableIntoText = this.targetIsText && this.sourceNodes?.some(node => node.model?.get?.('textable'))
         if (insertingTextableIntoText) {
             this.updateTextViewCursorPosition(mouseEvent);
         }
     }
 
-    onComponentDrop = (targetNode: BaseComponentNode, sourceNode: BaseComponentNode, index: number) => {
-        sourceNode.model?.set?.('status', '');
-        if (targetNode) {
-            const parent = sourceNode.getParent();
-            let initialSourceIndex = -1;
-            if (parent) {
-                initialSourceIndex = parent.indexOfChild(sourceNode);
-                parent.removeChildAt(initialSourceIndex)
-            }
-            const isSameCollection = parent?.model.cid === targetNode.model.cid
-            if (isSameCollection && initialSourceIndex < index) {
-                index--;
-            }
+    onDrop = (targetNode: BaseComponentNode | undefined, sourceNodes: BaseComponentNode[], index: number) => {
+        if (!targetNode) return
+        const legacyOnEndMove = this.eventHandlers.legacyOnEndMove;
+        const model = this.sourceNodes?.[0].model;
+        const data = {
+            target: model,
+            // @ts-ignore
+            parent: model && model.parent(),
+            // @ts-ignore
+            index: model && model.index(),
+        };
 
-            targetNode.addChildAt(sourceNode, index);
+        for (let idx = 0; idx < sourceNodes.length; idx++) {
+            const sourceNode = sourceNodes[idx];
+            const addedNode = this.addSourceNodeToTarget(sourceNode, targetNode, index);
+            if (!addedNode) continue
+            legacyOnEndMove?.(addedNode!.model, this, data)
         }
-        targetNode?.model?.set('status', '');
+        if (sourceNodes.length === 0) {
+            legacyOnEndMove?.(null, this, { ...data, cancelled: 1 });
+        }
+
 
         this.placeholder.hide();
     }
 
-    onTargetChange = (oldTargetNode: BaseComponentNode, newTargetNode: BaseComponentNode) => {
-        oldTargetNode?.model?.set('status', '');
-        newTargetNode?.model?.set('status', 'selected-parent');
-        this.targetIsText = newTargetNode.model?.isInstanceOf?.('text');
-        const insertingTextableIntoText = this.targetIsText && this.sourceNode?.model?.get?.('textable');
+    private addSourceNodeToTarget(sourceNode: BaseComponentNode, targetNode: BaseComponentNode, index: number) {
+        sourceNode.clearState();
+        if (!targetNode.canMove(sourceNode, index)) {
+            return;
+        }
+        const parent = sourceNode.getParent();
+        let initialSourceIndex = -1;
+        if (parent) {
+            initialSourceIndex = parent.indexOfChild(sourceNode);
+            parent.removeChildAt(initialSourceIndex);
+        }
+        const isSameCollection = parent?.model.cid === targetNode.model.cid;
+        if (isSameCollection && initialSourceIndex < index) {
+            index--;
+        }
+
+        const addedNode = targetNode.addChildAt(sourceNode, index);
+        targetNode.clearState();
+        return addedNode;
+    }
+
+    private onTargetChange = (oldTargetNode: BaseComponentNode | undefined, newTargetNode: BaseComponentNode | undefined) => {
+        oldTargetNode?.clearState();
+
+        if (!newTargetNode) {
+            return
+        }
+        newTargetNode?.setSelectedParentState();
+        this.targetIsText = newTargetNode.isTextNode();
+        const insertingTextableIntoText = this.targetIsText && this.sourceNodes?.some(node => node.isTextable())
         if (insertingTextableIntoText) {
             const el = newTargetNode?.model.getEl();
             if (el) el.contentEditable = "true";
 
-            this.placeholder.hide()
+            this.placeholder.hide();
         } else {
             this.placeholder.show();
         }
     }
+
 
     private updateTextViewCursorPosition(e: any) {
         const { em } = this;
@@ -158,14 +188,5 @@ export default class ComponentSorter extends Sorter<Component> {
 
     get scale() {
         return () => this.em!.getZoomDecimal()
-    }
-
-    setSelection(node: BaseComponentNode, selected: Boolean) {
-        const model = node.model;
-        const cv = this.em!.Canvas;
-        const { Select, Hover, Spacing } = CanvasSpotBuiltInTypes;
-        [Select, Hover, Spacing].forEach((type) => cv.removeSpots({ type }));
-        cv.addSpot({ ...spotTarget, component: model as any });
-        model.set('status', selected ? 'selected-parent' : '');
     }
 }

@@ -8,42 +8,42 @@ import { Dimension, Position, PositionOptions, SorterContainerContext, SorterDir
 import { bindAll, each } from 'underscore';
 import { matches, findPosition, offset, isInFlow } from './SorterUtils';
 
-interface DropLocationDeterminerOptions<T> {
+interface DropLocationDeterminerOptions<T, NodeType extends SortableTreeNode<T>> {
   em: EditorModel;
-  treeClass: new (model: any) => SortableTreeNode<T>;
+  treeClass: new (model: T) => NodeType;
   containerContext: SorterContainerContext;
   positionOptions: PositionOptions;
   dragBehavior: SorterDragBehaviorOptions;
-  eventHandlers?: SorterEventHandlers<T>;
+  eventHandlers: SorterEventHandlers<NodeType>;
 }
 
-export class DropLocationDeterminer<T> extends View {
+export class DropLocationDeterminer<T, NodeType extends SortableTreeNode<T>> extends View {
   em: EditorModel;
-  treeClass!: new (model: any) => SortableTreeNode<T>;
+  treeClass: new (model: any) => NodeType;
 
-  positionOptions!: PositionOptions;
-  containerContext!: SorterContainerContext;
-  dragBehavior!: SorterDragBehaviorOptions;
-  eventHandlers?: SorterEventHandlers<T>;
+  positionOptions: PositionOptions;
+  containerContext: SorterContainerContext;
+  dragBehavior: SorterDragBehaviorOptions;
+  eventHandlers: SorterEventHandlers<NodeType>;
 
-  targetNode!: SortableTreeNode<T>;
-  lastPos!: Position;
+  targetNode?: NodeType;
+  lastPos?: Position;
   targetDimensions?: Dimension[];
-  sourceNode!: SortableTreeNode<T>;
+  sourceNodes!: NodeType[];
   docs!: Document[];
   containerOffset: {
     top: number;
     left: number;
   }
 
-  constructor(options: DropLocationDeterminerOptions<T>) {
+  constructor(options: DropLocationDeterminerOptions<T, NodeType>) {
     super();
     this.treeClass = options.treeClass;
     this.em = options.em;
     this.containerContext = options.containerContext;
     this.positionOptions = options.positionOptions;
     this.dragBehavior = options.dragBehavior;
-    this.eventHandlers = options.eventHandlers;
+    this.eventHandlers = options.eventHandlers || {};
     bindAll(this, 'startSort', 'onMove', 'endMove', 'onDragStart');
     this.containerOffset = {
       top: 0,
@@ -52,11 +52,11 @@ export class DropLocationDeterminer<T> extends View {
   }
 
   /**
-   * Picking component to move
-   * @param {HTMLElement} sourceElement
+   * Picking components to move
+   * @param {HTMLElement[]} sourceElements
    * */
-  startSort(sourceNode: SortableTreeNode<T>) {
-    this.sourceNode = sourceNode;
+  startSort(sourceNodes: NodeType[]) {
+    this.sourceNodes = sourceNodes;
     this.bindDragEventHandlers(this.docs);
   }
 
@@ -67,12 +67,12 @@ export class DropLocationDeterminer<T> extends View {
   }
 
   onMove(mouseEvent: MouseEvent): void {
-    this.eventHandlers?.onMouseMove?.(mouseEvent);
+    this.eventHandlers.onMouseMove?.(mouseEvent);
     const customTarget = this.containerContext.customTarget;
     this.cacheContainerPosition(this.containerContext.container);
     const { mouseXRelativeToContainer, mouseYRelativeToContainer } = this.getMousePositionRelativeToContainer(mouseEvent);
 
-    let mouseTargetEl: HTMLElement | null = customTarget ? customTarget({ sorter: this, event: mouseEvent }) : mouseEvent.target;
+    let mouseTargetEl: HTMLElement | null = customTarget ? customTarget({ event: mouseEvent }) : mouseEvent.target as HTMLElement;
     const targetEl = this.getFirstElementWithAModel(mouseTargetEl);
     if (!targetEl) return
 
@@ -83,16 +83,16 @@ export class DropLocationDeterminer<T> extends View {
     const dims = this.dimsFromTarget(targetNode);
     const pos = findPosition(dims, mouseXRelativeToContainer, mouseYRelativeToContainer);
 
-    this.eventHandlers?.onPlaceholderPositionChange?.(dims, pos);
-    this.eventHandlers?.onTargetChange?.(this.targetNode, targetNode);
+    this.eventHandlers.onPlaceholderPositionChange?.(dims, pos);
+    this.eventHandlers.onTargetChange?.(this.targetNode, targetNode);
     this.targetNode = targetNode;
     this.lastPos = pos;
     this.targetDimensions = dims;
 
     // For compatibility with old sorter
-    this.eventHandlers?.onMoveClb?.({
+    this.eventHandlers.legacyOnMoveClb?.({
       event: mouseEvent,
-      target: this.sourceNode.model,
+      target: this.sourceNodes.map(node => node.model),
       parent: this.targetNode.model,
       index: pos.index + (pos.method == 'after' ? 1 : 0),
     });
@@ -100,7 +100,7 @@ export class DropLocationDeterminer<T> extends View {
     this.em.trigger('sorter:drag', {
       target: targetEl,
       targetModel,
-      sourceModel: this.sourceNode.model,
+      sourceModel: this.sourceNodes.map(node => node.model),
       dims,
       pos,
       x: mouseXRelativeToContainer,
@@ -108,8 +108,8 @@ export class DropLocationDeterminer<T> extends View {
     });
   }
 
-  onDragStart(mouseEvent: MouseEvent): void {
-    this.eventHandlers?.onDragStart && this.eventHandlers?.onDragStart(mouseEvent);
+  private onDragStart(mouseEvent: MouseEvent): void {
+    this.eventHandlers.onDragStart && this.eventHandlers.onDragStart(mouseEvent);
   }
 
   /**
@@ -134,11 +134,13 @@ export class DropLocationDeterminer<T> extends View {
     return null;
   }
 
-  private getValidParentNode(targetNode: SortableTreeNode<T>) {
+  private getValidParentNode(targetNode: NodeType) {
     let finalNode = targetNode;
-    // TODO change the hard coded 0 value
-    while (!finalNode.canMove(this.sourceNode, 0) && finalNode.getParent() !== null) {
-      finalNode = finalNode.getParent()!;
+    // TODO change the hard coded values
+    while (finalNode.getParent() !== null) {
+      const canMove = this.sourceNodes.some(node => finalNode.canMove(node, 0));
+      if (canMove) break
+      finalNode = finalNode.getParent()! as NodeType;
     }
 
     return finalNode;
@@ -149,26 +151,38 @@ export class DropLocationDeterminer<T> extends View {
    * Handles the cleanup and final steps after an item is moved.
   */
   endMove(): void {
-    let index = this.lastPos.method === 'after' ? this.lastPos.indexEl + 1 : this.lastPos.indexEl;
-    this.eventHandlers?.onDrop?.(this.targetNode, this.sourceNode, index)
-    this.eventHandlers?.onEndMove?.()
+    const targetNode = this.targetNode;
+    const lastPos = this.lastPos;
+    let index = -1;
+    if (lastPos) {
+      index = lastPos.method === 'after' ? lastPos.indexEl + 1 : lastPos.indexEl
+    }
+    this.eventHandlers.onDrop?.(targetNode, this.sourceNodes, index)
+    this.eventHandlers.onEndMove?.()
     this.cleanupEventListeners();
+    this.triggerOnDragEndEvent();
+  }
+
+  private triggerOnDragEndEvent() {
+    const targetNode = this.targetNode;
+    const lastPos = this.lastPos;
     this.em.trigger('sorter:drag:end', {
-      targetCollection: this.targetNode.getChildren(),
-      modelToDrop: this.sourceNode.model,
+      targetCollection: this.targetNode ? this.targetNode.getChildren() : null,
+      modelToDrop: this.sourceNodes.map(node => node.model),
       warns: [''],
       validResult: {
         result: true,
-        src: this.sourceNode.element,
-        srcModel: this.sourceNode.model,
-        trg: this.sourceNode.element,
-        trgModel: this.targetNode.model,
+        src: this.sourceNodes.map(node => node.element),
+        srcModel: this.sourceNodes.map(node => node.model),
+        trg: targetNode?.element,
+        trgModel: targetNode?.model,
         draggable: true,
         droppable: true,
       },
-      dst: this.targetNode.element,
-      srcEl: this.sourceNode.element,
+      dst: targetNode?.element,
+      srcEl: this.sourceNodes.map(node => node.element),
     });
+    return { lastPos, targetNode };
   }
 
   /**
@@ -189,19 +203,19 @@ export class DropLocationDeterminer<T> extends View {
   /**
    * Get dimensions of nodes relative to the coordinates.
    *
-   * @param {SortableTreeNode<T>} targetNode - The target node.
+   * @param {NodeType} targetNode - The target node.
    * @private
    */
-  private dimsFromTarget(targetNode: SortableTreeNode<T>): Dimension[] {
+  private dimsFromTarget(targetNode: NodeType): Dimension[] {
     return this.getChildrenDim(targetNode);
   }
 
   /**
    * Get children dimensions
-   * @param {SortableTreeNode<T>} el Element root
+   * @param {NodeType} el Element root
    * @return {Array}
    * */
-  private getChildrenDim(targetNode: SortableTreeNode<T>) {
+  private getChildrenDim(targetNode: NodeType) {
     const dims: Dimension[] = [];
     const containerOffset = this.containerOffset;
     const targetElement = targetNode.element;
@@ -294,7 +308,7 @@ export class DropLocationDeterminer<T> extends View {
  * @param {HTMLElement} el
  * @return {Dimension}
  */
-  getDim(el: HTMLElement,
+  private getDim(el: HTMLElement,
     elL: number,
     elT: number,
     relative: boolean,

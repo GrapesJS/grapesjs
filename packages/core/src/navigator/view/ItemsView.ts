@@ -54,8 +54,7 @@ export default class ItemsView extends View {
           dragDirection: SorterDirection.Vertical,
           ignoreViewChildren: true,
           nested: true,
-        },
-        positionOptions: {}
+        }
       })
     }
 

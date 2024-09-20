@@ -5,18 +5,17 @@ import { CommandObject } from './CommandAbstract';
 export default {
   /**
    * Start select position event
-   * @param {HTMLElement} trg
+   * @param {HTMLElement} sourceElements
    * @private
    * */
-  startSelectPosition(trg: HTMLElement, doc: Document, opts: any = {}) {
+  startSelectPosition(sourceElements: HTMLElement[], doc: Document, opts: any = {}) {
 
     this.isPointed = false;
     const utils = this.em.Utils;
-    const container = trg.ownerDocument.body;
+    const container = sourceElements[0].ownerDocument.body;
 
     if (utils && !this.sorter)
       this.sorter = new utils.ComponentSorter({
-        // @ts-ignore
         em: this.em,
         treeClass: CanvasComponentNode,
         containerContext: {
@@ -37,8 +36,8 @@ export default {
         }
       });
 
-    if (opts.onStart) this.sorter.onStart = opts.onStart;
-    trg && this.sorter.startSort(trg);
+    if (opts.onStart) this.sorter.eventHandlers.legacyOnStart = opts.onStart;
+    sourceElements && this.sorter.startSort(sourceElements);
   },
 
   /**

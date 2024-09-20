@@ -102,7 +102,7 @@ export default class BlockView extends View<Block> {
     sorter.__currentBlock = model;
     sorter.setDragHelper(this.el, e);
     sorter.setDropContent(this.model.get('content'));
-    sorter.startSort(this.el);
+    sorter.startSort([this.el]);
     on(document, 'mouseup', this.endDrag);
   }
 

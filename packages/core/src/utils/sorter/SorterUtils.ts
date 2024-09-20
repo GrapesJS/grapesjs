@@ -2,8 +2,8 @@ import { $, Model, SetOptions } from '../../common';
 import EditorModel from '../../editor/model/Editor';
 import { isTextNode } from '../dom';
 import { matches as matchesMixin } from '../mixins';
+import { SortableTreeNode } from './SortableTreeNode';
 import { RequiredEmAndTreeClassPartialSorterOptions } from './Sorter';
-import { SorterOptions } from './types';
 import { Dimension, Position, SorterDirection } from './types';
 
 /**
@@ -275,15 +275,13 @@ export function setContentEditable(model?: Model, mode?: boolean) {
   }
 }
 
-export function getDocuments(em?: EditorModel, el?: HTMLElement) {
+export function getDocument(em?: EditorModel, el?: HTMLElement) {
   const elDoc = el ? el.ownerDocument : em?.Canvas.getBody().ownerDocument;
-  const docs = [document];
-  elDoc && docs.push(elDoc);
-  return docs;
+  return elDoc;
 }
 
-export function getMergedOptions<T>(sorterOptions: RequiredEmAndTreeClassPartialSorterOptions<T>) {
-  const defaultOptions: Omit<SorterOptions<T>, 'em' | 'treeClass'> = {
+export function getMergedOptions<T, NodeType extends SortableTreeNode<T>>(sorterOptions: RequiredEmAndTreeClassPartialSorterOptions<T, NodeType>) {
+  const defaultOptions = {
     containerContext: {
       container: '' as any,
       placeholderElement: '' as any,
@@ -310,7 +308,7 @@ export function getMergedOptions<T>(sorterOptions: RequiredEmAndTreeClassPartial
     eventHandlers: {}
   };
 
-  const mergedOptions: Omit<SorterOptions<T>, 'em' | 'treeClass'> = {
+  const mergedOptions = {
     ...defaultOptions,
     ...sorterOptions,
     containerContext: {
@@ -325,7 +323,10 @@ export function getMergedOptions<T>(sorterOptions: RequiredEmAndTreeClassPartial
       ...defaultOptions.dragBehavior,
       ...sorterOptions.dragBehavior,
     },
-    eventHandlers: sorterOptions.eventHandlers
+    eventHandlers: {
+      ...defaultOptions.eventHandlers,
+      ...sorterOptions.eventHandlers,
+    },
   };
   return mergedOptions;
 }

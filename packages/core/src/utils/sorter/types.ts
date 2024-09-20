@@ -32,7 +32,7 @@ export interface SorterContainerContext {
   pfx: string;
   document: Document;
   placeholderElement: HTMLElement;
-  customTarget?: Function;
+  customTarget?: ({ event }: { event: MouseEvent }) => HTMLElement | null;
 }
 
 export interface PositionOptions {
@@ -48,10 +48,10 @@ export interface PositionOptions {
 /**
  * Represents an event handler for the `onStartSort` event.
  *
- * @param sourceNode The source node being sorted.
+ * @param sourceNodes The source nodes being sorted.
  * @param container The container element where the sorting is taking place.
  */
-type OnStartSortHandler<T> = (sourceNode: SortableTreeNode<T>, container?: HTMLElement) => void;
+type OnStartSortHandler<NodeType> = (sourceNodes: NodeType[], container?: HTMLElement) => void;
 
 /**
  * Represents an event handler for the `onDragStart` event.
@@ -60,26 +60,28 @@ type OnStartSortHandler<T> = (sourceNode: SortableTreeNode<T>, container?: HTMLE
  */
 type OnDragStartHandler = (mouseEvent: MouseEvent) => void;
 type OnMouseMoveHandler = (mouseEvent: MouseEvent) => void;
-type OnDropHandler<T> = (targetNode: SortableTreeNode<T>, sourceNode: SortableTreeNode<T>, index: number) => void;
-type OnTargetChangeHandler<T> = (oldTargetNode: SortableTreeNode<T>, newTargetNode: SortableTreeNode<T>) => void;
+type OnDropHandler<NodeType> = (targetNode: NodeType | undefined, sourceNodes: NodeType[], index: number) => void;
+type OnTargetChangeHandler<NodeType> = (oldTargetNode: NodeType | undefined, newTargetNode: NodeType | undefined) => void;
 type OnPlaceholderPositionChangeHandler = (dims: Dimension[], newPosition: Position) => void;
 type OnEndMoveHandler = () => void;
-// For compatibility with old sorter
-type onMoveClb = (data: any) => void;
 
 /**
  * Represents a collection of event handlers for sortable tree node events.
  */
-export interface SorterEventHandlers<T> {
-  onStartSort?: OnStartSortHandler<T>;
+export interface SorterEventHandlers<NodeType> {
+  onStartSort?: OnStartSortHandler<NodeType>;
   onDragStart?: OnDragStartHandler;
   onMouseMove?: OnMouseMoveHandler;
-  onDrop?: OnDropHandler<T>;
-  onTargetChange?: OnTargetChangeHandler<T>;
+  onDrop?: OnDropHandler<NodeType>;
+  onTargetChange?: OnTargetChangeHandler<NodeType>;
   onPlaceholderPositionChange?: OnPlaceholderPositionChangeHandler;
   onEndMove?: OnEndMoveHandler;
+
   // For compatibility with old sorter
-  onMoveClb?: onMoveClb;
+  legacyOnMoveClb?: Function;
+  legacyOnStartSort?: Function;
+  legacyOnEndMove?: Function;
+  legacyOnEnd?: Function;
 }
 
 export interface SorterDragBehaviorOptions {
@@ -89,13 +91,13 @@ export interface SorterDragBehaviorOptions {
   selectOnEnd?: boolean;
 }
 
-export interface SorterOptions<T> {
+export interface SorterOptions<T, NodeType extends SortableTreeNode<T>> {
   em: EditorModel;
-  treeClass: new (model: T) => SortableTreeNode<T>;
+  treeClass: new (model: T) => NodeType;
 
   containerContext: SorterContainerContext;
   positionOptions: PositionOptions;
   dragBehavior: SorterDragBehaviorOptions;
-  eventHandlers?: SorterEventHandlers<T>;
+  eventHandlers: SorterEventHandlers<NodeType>;
 }
 

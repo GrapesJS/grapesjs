@@ -5,31 +5,30 @@ import { off, on } from '../dom';
 import { SortableTreeNode } from './SortableTreeNode';
 import { DropLocationDeterminer } from './DropLocationDeterminer';
 import { PlaceholderClass } from './PlaceholderClass';
-import { getMergedOptions, getDocuments, matches, closest } from './SorterUtils';
+import { getMergedOptions, getDocument, matches, closest } from './SorterUtils';
 import { SorterContainerContext, PositionOptions, SorterDragBehaviorOptions, SorterEventHandlers, Dimension, Position } from './types';
 import { SorterOptions } from './types';
 
-export type RequiredEmAndTreeClassPartialSorterOptions<T> = Partial<SorterOptions<T>> & {
+export type RequiredEmAndTreeClassPartialSorterOptions<T, NodeType extends SortableTreeNode<T>> = Partial<SorterOptions<T, NodeType>> & {
   em: EditorModel;
-  treeClass: new (model: T) => SortableTreeNode<T>;
+  treeClass: new (model: T) => NodeType;
 };
 
-export default class Sorter<T>{
-  em!: EditorModel;
-  treeClass!: new (model: T) => SortableTreeNode<T>;
-  placeholder!: PlaceholderClass;
-  dropLocationDeterminer!: DropLocationDeterminer<T>;
+export default class Sorter<T, NodeType extends SortableTreeNode<T>> {
+  em: EditorModel;
+  treeClass: new (model: T) => NodeType;
+  placeholder: PlaceholderClass;
+  dropLocationDeterminer!: DropLocationDeterminer<T, NodeType>;
 
-  positionOptions!: PositionOptions;
-  containerContext!: SorterContainerContext;
-  dragBehavior!: SorterDragBehaviorOptions;
-  eventHandlers?: SorterEventHandlers<T>;
+  positionOptions: PositionOptions;
+  containerContext: SorterContainerContext;
+  dragBehavior: SorterDragBehaviorOptions;
+  eventHandlers: SorterEventHandlers<NodeType>;
 
-  options!: SorterOptions<T>;
   docs: any;
-  sourceNode?: SortableTreeNode<T>;
-  constructor(sorterOptions: RequiredEmAndTreeClassPartialSorterOptions<T>) {
-    const mergedOptions: Omit<SorterOptions<T>, 'em' | 'treeClass'> = getMergedOptions<T>(sorterOptions);
+  sourceNodes?: NodeType[];
+  constructor(sorterOptions: SorterOptions<T, NodeType>) {
+    const mergedOptions = getMergedOptions<T, NodeType>(sorterOptions);
 
     bindAll(this, 'startSort', 'endMove', 'rollback', 'updateOffset');
     this.containerContext = mergedOptions.containerContext;
@@ -40,11 +39,7 @@ export default class Sorter<T>{
     this.em = sorterOptions.em;
     this.treeClass = sorterOptions.treeClass;
     this.updateOffset();
-
-    if (this.em?.on) {
-      this.em.on(this.em.Canvas.events.refresh, this.updateOffset);
-    }
-
+    this.em.on(this.em.Canvas.events.refresh, this.updateOffset);
     this.placeholder = this.createPlaceholder();
 
     this.dropLocationDeterminer = new DropLocationDeterminer({
@@ -102,22 +97,31 @@ export default class Sorter<T>{
   }
 
   /**
-   * Picking component to move
-   * @param {HTMLElement} sourceElement
+   * Picking components to move
+   * @param {HTMLElement[]} sourceElements[]
    * */
-  startSort(sourceElement?: HTMLElement) {
-    sourceElement = this.findValidSourceElement(sourceElement);
+  startSort(sourceElements: HTMLElement[]) {
+    const validSourceElements = sourceElements.map(element => this.findValidSourceElement(element))
 
-    const sourceModel = $(sourceElement).data("model");
-    const sourceNode = new this.treeClass(sourceModel);
-    this.sourceNode = sourceNode;
-    const docs = getDocuments(this.em, sourceElement);
+    const sourceModels: T[] = validSourceElements.map(element => $(element).data("model"))
+    const sourceNodes = sourceModels.map(model => new this.treeClass(model));
+    this.sourceNodes = sourceNodes;
+    const uniqueDocs = new Set<Document>();
+    validSourceElements.forEach((element) => {
+      const doc = getDocument(this.em, element);
+      if (doc) {
+        uniqueDocs.add(doc);
+      }
+    });
+
+    const docs = Array.from(uniqueDocs);
     this.updateDocs(docs)
-    this.dropLocationDeterminer.startSort(sourceNode);
+    this.dropLocationDeterminer.startSort(sourceNodes);
     this.bindDragEventHandlers(docs);
 
-    this.eventHandlers?.onStartSort?.(this.sourceNode, this.containerContext.container);
-    this.em.trigger('sorter:drag:start', sourceElement, sourceModel);
+    this.eventHandlers.onStartSort?.(this.sourceNodes, this.containerContext.container);
+    // Only take a single value as the old sorted
+    this.em.trigger('sorter:drag:start', sourceElements[0], sourceModels[0]);
   }
 
   /**
@@ -157,6 +161,7 @@ export default class Sorter<T>{
     this.placeholder.hide();
     this.dropLocationDeterminer.endMove();
     this.finalizeMove();
+    this.eventHandlers.legacyOnEnd?.({ sorter: this })
   }
 
   /**

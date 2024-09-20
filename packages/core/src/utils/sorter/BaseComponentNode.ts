@@ -83,4 +83,20 @@ export abstract class BaseComponentNode extends SortableTreeNode<Component> {
    * Subclasses must implement this method.
    */
   abstract get element(): HTMLElement | undefined;
+
+  clearState() {
+    this.model.set?.('status', '')
+  }
+
+  setSelectedParentState() {
+    this.model.set?.('status', 'selected-parent')
+  }
+
+  isTextNode() {
+    return this.model.isInstanceOf?.('text');
+  }
+  
+  isTextable() {
+    return this.model.get?.('textable');
+  }
 }
