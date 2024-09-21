@@ -35,6 +35,7 @@
  * @param {EditorModel} em - Editor model.
  */
 
+import { readSync } from 'fs';
 import { ItemManagerModule, ModuleConfig } from '../abstract/Module';
 import { AddOptions, ObjectAny, RemoveOptions } from '../common';
 import EditorModel from '../editor/model/Editor';
@@ -46,7 +47,7 @@ import { DataSourcesEvents, DataSourceProps } from './types';
 import { Events } from 'backbone';
 
 export default class DataSourceManager extends ItemManagerModule<ModuleConfig, DataSources> {
-  storageKey = '';
+  storageKey = 'dataSources';
   events = DataSourcesEvents;
   destroy(): void {}
 
@@ -147,5 +148,60 @@ export default class DataSourceManager extends ItemManagerModule<ModuleConfig, D
     }
 
     return result;
+  }
+
+  /**
+   * Store data sources to a JSON object.
+   * @returns {Object} Stored data sources.
+   */
+  store() {
+    const data: ObjectAny = {};
+    this.all.forEach((dataSource) => {
+      const shouldStoreInProject = dataSource.get('shouldStoreInProject');
+      if (shouldStoreInProject) {
+        data[dataSource.id] = {
+          id: dataSource.id,
+          name: dataSource.get('name' as any),
+          records: dataSource.records.toJSON(),
+          shouldStoreInProject,
+        };
+      }
+    });
+
+    return { [this.storageKey]: data };
+  }
+
+  clear(): this {
+    // Clearing data sources are a no-op as to preserve data sources.
+    // This is because data sources are optionally stored in the project data.
+    // and could be defined prior to loading the project data.
+    return this;
+  }
+
+  /**
+   * Load data sources from a JSON object.
+   * @param {Object} data The data object containing data sources.
+   * @returns {Object} Loaded data sources.
+   */
+  load(data: any) {
+    const storedDataSources: Record<string, DataSourceProps> = data[this.storageKey] || {};
+    const memoryDataSources = this.em.DataSources.getAllMap();
+
+    if (!Object.keys(storedDataSources).length) {
+      return {
+        ...memoryDataSources,
+      };
+    } else {
+      this.clear();
+
+      Object.values(storedDataSources).forEach((ds) => {
+        this.add(ds, { silent: true });
+      });
+
+      return {
+        ...storedDataSources,
+        ...memoryDataSources,
+      };
+    }
   }
 }
