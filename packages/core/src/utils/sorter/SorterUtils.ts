@@ -124,6 +124,7 @@ export function sort(obj1: any, obj2: any) {
   // order according to the position in the DOM
   return s2.index() - s1.index();
 }
+
 /**
  * Build an array of all the parents, including the component itself
  * @return {Model|null}
@@ -131,52 +132,7 @@ export function sort(obj1: any, obj2: any) {
 export function parents(model: any): any[] {
   return model ? [model].concat(parents(model.parent())) : [];
 }
-/**
- * Check if the current pointer is near to element borders
- * @return {Boolen}
- */
-export function nearElBorders(el: HTMLElement, currentPosition: { x: number; y: number; }) {
-  const off = 10;
-  const rect = el.getBoundingClientRect();
-  const body = el.ownerDocument.body;
-  const { x, y } = currentPosition;
-  const top = rect.top + body.scrollTop;
-  const left = rect.left + body.scrollLeft;
-  const width = rect.width;
-  const height = rect.height;
 
-  if (y < top + off || // near top edge
-    y > top + height - off || // near bottom edge
-    x < left + off || // near left edge
-    x > left + width - off // near right edge
-  ) {
-    return 1;
-  }
-}
-/**
- * Check if the coordinates are near to the borders
- * @param {Array<number>} dim
- * @param {number} rX Relative X position
- * @param {number} rY Relative Y position
- * @return {Boolean}
- * */
-export function nearBorders(dim: Dimension, rX: number, rY: number, off: number) {
-  let result = false;
-  const x = rX || 0;
-  const y = rY || 0;
-  const t = dim.top;
-  const l = dim.left;
-  const h = dim.height;
-  const w = dim.width;
-  if (t + off > y || y > t + h - off || l + off > x || x > l + w - off) result = true;
-
-  return result;
-}
-export function getCurrentPos(event?: MouseEvent) {
-  const x = event?.pageX || 0;
-  const y = event?.pageY || 0;
-  return { x, y };
-}
 /**
  * Determines if an element is in the normal flow of the document.
  * This checks whether the element is not floated or positioned in a way that removes it from the flow.
@@ -189,6 +145,7 @@ export function getCurrentPos(event?: MouseEvent) {
 export function isInFlow(el: HTMLElement, parent: HTMLElement = document.body): boolean {
   return !!el || isStyleInFlow(el, parent);
 }
+
 /**
  * Checks if an element has styles that keep it in the document flow.
  * Considers properties like `float`, `position`, and certain display types.
@@ -221,6 +178,7 @@ function isStyleInFlow(el: HTMLElement, parent: HTMLElement): boolean {
   // Check tag and display properties
   return isFlowElementTag(el) || isFlowElementDisplay($el);
 }
+
 /**
  * Determines if the element's `position` style keeps it in the flow.
  *
@@ -238,6 +196,7 @@ function isInFlowPosition(position: string): boolean {
       return false;
   }
 }
+
 /**
  * Checks if the element's tag name represents an element typically in flow.
  *
@@ -249,6 +208,7 @@ function isFlowElementTag(el: HTMLElement): boolean {
   const flowTags = ['TR', 'TBODY', 'THEAD', 'TFOOT'];
   return flowTags.includes(el.tagName);
 }
+
 /**
  * Checks if the element's display style keeps it in flow.
  *
@@ -260,18 +220,6 @@ function isFlowElementDisplay($el: JQuery): boolean {
   const display = $el.css('display');
   const flowDisplays = ['block', 'list-item', 'table', 'flex', 'grid'];
   return flowDisplays.includes(display);
-}
-export function disableTextable(activeTextModel: Model<any, SetOptions, any> | undefined) {
-  // @ts-ignore
-  activeTextModel?.getView().disableEditing();
-  setContentEditable(activeTextModel, false);
-}
-export function setContentEditable(model?: Model, mode?: boolean) {
-  if (model) {
-    // @ts-ignore
-    const el = model.getEl();
-    if (el.contentEditable != mode) el.contentEditable = mode;
-  }
 }
 
 export function getDocument(em?: EditorModel, el?: HTMLElement) {
@@ -327,5 +275,6 @@ export function getMergedOptions<T, NodeType extends SortableTreeNode<T>>(sorter
       ...sorterOptions.eventHandlers,
     },
   };
+
   return mergedOptions;
 }
