@@ -70,7 +70,7 @@ export class DropLocationDeterminer<T, NodeType extends SortableTreeNode<T>> ext
     this.containerContext = options.containerContext;
     this.positionOptions = options.positionOptions;
     this.dragDirection = options.dragDirection;
-    this.eventHandlers = options.eventHandlers || {};
+    this.eventHandlers = options.eventHandlers;
     bindAll(this, 'startSort', 'onDragStart', 'onMove', 'endDrag');
 
     this.restLastMoveData();
@@ -246,22 +246,22 @@ export class DropLocationDeterminer<T, NodeType extends SortableTreeNode<T>> ext
     const { lastTargetNode: targetNode } = this.lastMoveData;
 
     // For backward compatibility, leave it to a single node
-    const sourceNode = this.sourceNodes[0];
+    const firstSourceNode = this.sourceNodes[0];
     this.em.trigger('sorter:drag:end', {
       targetCollection: targetNode ? targetNode.getChildren() : null,
-      modelToDrop: sourceNode.model,
+      modelToDrop: firstSourceNode.model,
       warns: [''],
       validResult: {
         result: true,
         src: this.sourceNodes.map(node => node.element),
-        srcModel: sourceNode.model,
+        srcModel: firstSourceNode.model,
         trg: targetNode?.element,
         trgModel: targetNode?.model,
         draggable: true,
         droppable: true,
       },
       dst: targetNode?.element,
-      srcEl: sourceNode.element,
+      srcEl: firstSourceNode.element,
     });
   }
 
@@ -289,9 +289,18 @@ export class DropLocationDeterminer<T, NodeType extends SortableTreeNode<T>> ext
 
   private getValidParentNode(targetNode: NodeType) {
     let finalNode = targetNode;
-    // TODO change the hard coded values
-    while (finalNode.getParent() !== null) {
+    while (finalNode !== null) {
       const canMove = this.sourceNodes.some(node => finalNode.canMove(node, 0));
+
+      // For backward compatibility, leave it to a single node
+      const firstSource = this.sourceNodes[0];
+      this.em.trigger('sorter:drag:validation', {
+        valid: canMove,
+        src: firstSource.element,
+        srcModel: firstSource.model,
+        trg: finalNode.element,
+        trgModel: finalNode.model,
+      })
       if (canMove) break
       finalNode = finalNode.getParent()! as NodeType;
     }

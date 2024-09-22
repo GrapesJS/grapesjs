@@ -121,6 +121,8 @@ export default class Sorter<T, NodeType extends SortableTreeNode<T>> {
     this.bindDragEventHandlers(docs);
 
     this.eventHandlers.onStartSort?.(this.sourceNodes, this.containerContext.container);
+
+    // For backward compatibility, leave it to a single node
     const model = this.sourceNodes?.[0].model;
     this.eventHandlers.legacyOnStartSort?.({
       sorter: this,
