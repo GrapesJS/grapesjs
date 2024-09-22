@@ -589,7 +589,8 @@ export default class CanvasView extends ModuleView<Canvas> {
       setTimeout(function() {
         var item = document.getElementById('${id}');
         if (!item) return;
-        (${scriptFnStr}.bind(item))(${scriptProps})
+        var script = (${scriptFnStr}).bind(item);
+        script(${scriptProps});
       }, 1);`;
     // #873
     // Adding setTimeout will make js components work on init of the editor
