@@ -13,17 +13,17 @@ export interface Dimension {
   indexEl?: number;
 }
 
-export interface Position {
-  index: number;
-  indexEl: number;
-  method: string;
-}
+export type Placement = 'before' | 'after';
 
-export enum SorterDirection {
+export enum DragDirection {
   Vertical = "Vertical",
   Horizontal = "Horizontal",
   BothDirections = "BothDirections"
 }
+
+export type CustomTarget = ({ event }: {
+  event: MouseEvent;
+}) => HTMLElement | null;
 
 export interface SorterContainerContext {
   container: HTMLElement;
@@ -32,7 +32,7 @@ export interface SorterContainerContext {
   pfx: string;
   document: Document;
   placeholderElement: HTMLElement;
-  customTarget?: ({ event }: { event: MouseEvent }) => HTMLElement | null;
+  customTarget?: CustomTarget;
 }
 
 export interface PositionOptions {
@@ -60,11 +60,11 @@ type OnStartSortHandler<NodeType> = (sourceNodes: NodeType[], container?: HTMLEl
  */
 type OnDragStartHandler = (mouseEvent: MouseEvent) => void;
 type OnMouseMoveHandler = (mouseEvent: MouseEvent) => void;
-type OnDropHandler<NodeType> = (targetNode: NodeType | undefined, sourceNodes: NodeType[], index: number) => void;
+type OnDropHandler<NodeType> = (targetNode: NodeType | undefined, sourceNodes: NodeType[], index: number | undefined) => void;
 type OnTargetChangeHandler<NodeType> = (oldTargetNode: NodeType | undefined, newTargetNode: NodeType | undefined) => void;
 export type OnPlaceholderPositionChangeHandler = {
   (show: false): void;
-  (show: true, dims: Dimension[], newPosition: Position): void;
+  (show: true, targetDimension: Dimension, placement: Placement): void;
 };
 type OnEndMoveHandler = () => void;
 
@@ -88,7 +88,7 @@ export interface SorterEventHandlers<NodeType> {
 }
 
 export interface SorterDragBehaviorOptions {
-  dragDirection: SorterDirection;
+  dragDirection: DragDirection;
   ignoreViewChildren?: boolean;
   nested?: boolean;
   selectOnEnd?: boolean;

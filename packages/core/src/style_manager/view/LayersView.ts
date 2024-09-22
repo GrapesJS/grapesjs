@@ -1,6 +1,6 @@
 import { View } from '../../common';
 import EditorModel from '../../editor/model/Editor';
-import { SorterDirection } from '../../utils/sorter/types';
+import { DragDirection } from '../../utils/sorter/types';
 import Layer from '../model/Layer';
 import Layers from '../model/Layers';
 import LayerView from './LayerView';
@@ -46,7 +46,7 @@ export default class LayersView extends View<Layer> {
           placeholderElement: this.placeholderElement
         },
         dragBehavior: {
-          dragDirection: SorterDirection.Vertical,
+          dragDirection: DragDirection.Vertical,
           ignoreViewChildren: true,
           nested: true,
         },

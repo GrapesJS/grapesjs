@@ -6,7 +6,7 @@ import { SortableTreeNode } from './SortableTreeNode';
 import { DropLocationDeterminer } from './DropLocationDeterminer';
 import { PlaceholderClass } from './PlaceholderClass';
 import { getMergedOptions, getDocument, matches, closest } from './SorterUtils';
-import { SorterContainerContext, PositionOptions, SorterDragBehaviorOptions, SorterEventHandlers, Dimension, Position, OnPlaceholderPositionChangeHandler } from './types';
+import { SorterContainerContext, PositionOptions, SorterDragBehaviorOptions, SorterEventHandlers, Dimension, OnPlaceholderPositionChangeHandler, Placement } from './types';
 import { SorterOptions } from './types';
 
 export type RequiredEmAndTreeClassPartialSorterOptions<T, NodeType extends SortableTreeNode<T>> = Partial<SorterOptions<T, NodeType>> & {
@@ -29,7 +29,7 @@ export default class Sorter<T, NodeType extends SortableTreeNode<T>> {
   constructor(sorterOptions: SorterOptions<T, NodeType>) {
     const mergedOptions = getMergedOptions<T, NodeType>(sorterOptions);
 
-    bindAll(this, 'startSort', 'cancelDrag', 'rollback', 'updateOffset');
+    bindAll(this, 'startSort', 'cancelDrag', 'rollback', 'updateOffset', 'handlePlaceholderMove');
     this.containerContext = mergedOptions.containerContext;
     this.positionOptions = mergedOptions.positionOptions;
     this.dragBehavior = mergedOptions.dragBehavior;
@@ -41,35 +41,33 @@ export default class Sorter<T, NodeType extends SortableTreeNode<T>> {
     this.em.on(this.em.Canvas.events.refresh, this.updateOffset);
     this.placeholder = this.createPlaceholder();
 
-    const onPlaceholderPositionChange = this.handlePlaceholderMove().bind(this) as OnPlaceholderPositionChangeHandler;
-
     this.dropLocationDeterminer = new DropLocationDeterminer({
       em: this.em,
       treeClass: this.treeClass,
       containerContext: this.containerContext,
       positionOptions: this.positionOptions,
-      dragBehavior: this.dragBehavior,
+      dragDirection: this.dragBehavior.dragDirection,
       eventHandlers: {
         ...this.eventHandlers,
-        onPlaceholderPositionChange
+        onPlaceholderPositionChange: this.handlePlaceholderMove as OnPlaceholderPositionChangeHandler
       },
     });
   }
 
-  private handlePlaceholderMove() {
-    return (
-      show: boolean,
-      dims: Dimension[],
-      newPosition: Position) => {
-      if (show) {
-        this.ensurePlaceholderElement();
-        this.placeholder.show();
-        this.updatePlaceholderPosition(dims, newPosition);
-      } else {
-        this.placeholder.hide();
-      }
-    };
+  private handlePlaceholderMove(
+    show: boolean,
+    elementDimension: Dimension,
+    placement: Placement,
+  ) {
+    if (show) {
+      this.ensurePlaceholderElement();
+      this.placeholder.show();
+      this.updatePlaceholderPosition(elementDimension, placement);
+    } else {
+      this.placeholder.hide();
+    }
   }
+
 
   /**
    * Creates a new placeholder element for the drag-and-drop operation.
@@ -157,8 +155,8 @@ export default class Sorter<T, NodeType extends SortableTreeNode<T>> {
     this.dropLocationDeterminer.updateDocs(docs);
   }
 
-  private updatePlaceholderPosition(dims: Dimension[], pos: Position) {
-    this.placeholder.move(dims, pos)
+  private updatePlaceholderPosition(targetDimension: Dimension, placement: Placement) {
+    this.placeholder.move(targetDimension, placement)
   }
 
   /**

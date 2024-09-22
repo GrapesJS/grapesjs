@@ -42,7 +42,7 @@ export default class ComponentSorter extends Sorter<Component, BaseComponentNode
                     eventHandlers.onStartSort?.(sourceNodes, containerElement);
                     this.onStartSort();
                 },
-                onDrop: (targetNode: BaseComponentNode | undefined, sourceNodes: BaseComponentNode[], index: number) => {
+                onDrop: (targetNode: BaseComponentNode | undefined, sourceNodes: BaseComponentNode[], index: number | undefined) => {
                     eventHandlers.onDrop?.(targetNode, sourceNodes, index);
                     this.onDrop(targetNode, sourceNodes, index);
                 },
@@ -58,7 +58,7 @@ export default class ComponentSorter extends Sorter<Component, BaseComponentNode
         });
     }
 
-    onStartSort() {
+    private onStartSort() {
         this.em.clearSelection();
         this.toggleSortCursor(true);
         const model = this.sourceNodes?.[0].model;
@@ -72,15 +72,16 @@ export default class ComponentSorter extends Sorter<Component, BaseComponentNode
         });
     }
 
-    onMouseMove = (mouseEvent: MouseEvent) => {
+    private onMouseMove = (mouseEvent: MouseEvent) => {
         const insertingTextableIntoText = this.targetIsText && this.sourceNodes?.some(node => node.isTextable())
         if (insertingTextableIntoText) {
             this.updateTextViewCursorPosition(mouseEvent);
         }
     }
 
-    onDrop = (targetNode: BaseComponentNode | undefined, sourceNodes: BaseComponentNode[], index: number) => {
+    private onDrop = (targetNode: BaseComponentNode | undefined, sourceNodes: BaseComponentNode[], index: number | undefined) => {
         if (!targetNode) return
+        index = typeof index === 'number' ? index : -1;
         const legacyOnEndMove = this.eventHandlers.legacyOnEndMove;
         const model = this.sourceNodes?.[0].model;
         const data = {
@@ -100,7 +101,6 @@ export default class ComponentSorter extends Sorter<Component, BaseComponentNode
         if (sourceNodes.length === 0) {
             legacyOnEndMove?.(null, this, { ...data, cancelled: 1 });
         }
-
 
         this.placeholder.hide();
     }
@@ -198,9 +198,5 @@ export default class ComponentSorter extends Sorter<Component, BaseComponentNode
         // Avoid updating body className as it causes a huge repaint
         // Noticeable with "fast" drag of blocks
         cv && (active ? cv.startAutoscroll() : cv.stopAutoscroll());
-    }
-
-    get scale() {
-        return () => this.em!.getZoomDecimal()
     }
 }

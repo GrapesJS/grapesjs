@@ -1,5 +1,5 @@
 import { View } from '../../common';
-import { Dimension, Position } from './types';
+import { Dimension, Placement } from './types';
 
 export class PlaceholderClass extends View {
   pfx: string;
@@ -41,13 +41,12 @@ export class PlaceholderClass extends View {
 
   /**
  * Updates the position of the placeholder.
- * @param {Dimension[]} elementsDimension Array of element dimensions.
- * @param {Position} position Object representing position details (index and method).
- * @param {Dimension} [targetDimension] Optional target dimensions ([top, left, height, width]).
+ * @param {Dimension} elementDimension element dimensions.
+ * @param {Position} placement either before or after the target.
  */
   move(
-    elementsDimension: Dimension[],
-    position: Position,
+    elementDimension: Dimension,
+    placement: Placement,
   ) {
     const marginOffset = 0;
     const unit = 'px';
@@ -55,12 +54,7 @@ export class PlaceholderClass extends View {
     let left = 0;
     let width = '';
     let height = '';
-
-    const { method, index } = position;
-    const elementDimension = elementsDimension[index];
-
     this.setOrientation(elementDimension);
-
     const { top: elTop, left: elLeft, height: elHeight, width: elWidth, dir } = elementDimension;
 
     if (!dir) {
@@ -68,13 +62,13 @@ export class PlaceholderClass extends View {
       width = 'auto';
       height = (elHeight - marginOffset * 2) + unit;
       top = elTop + marginOffset;
-      left = method === 'before' ? elLeft - marginOffset : elLeft + elWidth - marginOffset;
+      left = placement === 'before' ? elLeft - marginOffset : elLeft + elWidth - marginOffset;
 
       this.setToVertical();
     } else {
       width = elWidth + unit;
       height = 'auto';
-      top = method === 'before' ? elTop - marginOffset : elTop + elHeight - marginOffset;
+      top = placement === 'before' ? elTop - marginOffset : elTop + elHeight - marginOffset;
       left = elLeft;
     }
 

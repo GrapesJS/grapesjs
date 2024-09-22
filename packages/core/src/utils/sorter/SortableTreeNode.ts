@@ -79,4 +79,8 @@ export abstract class SortableTreeNode<T> {
   get model(): T {
     return this._model;
   }
+
+  equals(node?: SortableTreeNode<T>): boolean {
+    return !!node?._model && this._model === node._model;
+  }
 }

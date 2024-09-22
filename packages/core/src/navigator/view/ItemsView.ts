@@ -5,7 +5,7 @@ import EditorModel from '../../editor/model/Editor';
 import ItemView from './ItemView';
 import Components from '../../dom_components/model/Components';
 import LayerManager from '..';
-import { SorterDirection } from '../../utils/sorter/types';
+import { DragDirection } from '../../utils/sorter/types';
 import LayersComponentNode from '../../utils/sorter/LayersComponentNode';
 
 export default class ItemsView extends View {
@@ -51,7 +51,7 @@ export default class ItemsView extends View {
           placeholderElement: this.placeholderElement
         },
         dragBehavior: {
-          dragDirection: SorterDirection.Vertical,
+          dragDirection: DragDirection.Vertical,
           ignoreViewChildren: true,
           nested: true,
         }

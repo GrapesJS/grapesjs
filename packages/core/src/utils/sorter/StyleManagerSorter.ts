@@ -30,7 +30,7 @@ export default class StyleManagerSorter extends Sorter<Layers | Layer, LayerNode
                     eventHandlers.onStartSort?.(sourceNodes, containerElement);
                     this.onLayerStartSort(sourceNodes);
                 },
-                onDrop: (targetNode: LayerNode | undefined, sourceNodes: LayerNode[], index: number) => {
+                onDrop: (targetNode: LayerNode | undefined, sourceNodes: LayerNode[], index: number | undefined) => {
                     eventHandlers.onDrop?.(targetNode, sourceNodes, index);
                     this.onLayerDrop(targetNode, sourceNodes, index);
                 },
@@ -48,10 +48,11 @@ export default class StyleManagerSorter extends Sorter<Layers | Layer, LayerNode
         });
     }
 
-    onLayerDrop = (targetNode: LayerNode | undefined, sourceNodes: LayerNode[], index: number) => {
+    onLayerDrop = (targetNode: LayerNode | undefined, sourceNodes: LayerNode[], index: number | undefined) => {
         if (!targetNode) {
             return;
         }
+        index = typeof index === 'number' ? index : -1;
         for (let idx = 0; idx < sourceNodes.length; idx++) {
             const sourceNode = sourceNodes[idx];
             if (!targetNode.canMove(sourceNode, idx)) {

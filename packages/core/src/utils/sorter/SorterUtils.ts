@@ -4,7 +4,7 @@ import { isTextNode } from '../dom';
 import { matches as matchesMixin } from '../mixins';
 import { SortableTreeNode } from './SortableTreeNode';
 import { RequiredEmAndTreeClassPartialSorterOptions } from './Sorter';
-import { Dimension, Position, SorterDirection } from './types';
+import { Dimension, Placement, DragDirection } from './types';
 
 /**
  * Find the position based on passed dimensions and coordinates
@@ -13,8 +13,8 @@ import { Dimension, Position, SorterDirection } from './types';
  * @param {number} posY Y coordindate
  * @return {Object}
  * */
-export function findPosition(dims: Dimension[], posX: number, posY: number): Position {
-  const result: Position = { index: 0, indexEl: 0, method: 'before' };
+export function findPosition(dims: Dimension[], posX: number, posY: number) {
+  const result = { index: 0, placement: 'before' as Placement };
   let leftLimit = 0;
   let xLimit = 0;
   let dimRight = 0;
@@ -42,24 +42,23 @@ export function findPosition(dims: Dimension[], posX: number, posY: number): Pos
       (leftLimit && dimRight < leftLimit))
       continue;
     result.index = i;
-    result.indexEl = dim.indexEl!;
     // If it's not in flow (like 'float' element)
     if (!dim.dir) {
       if (posY < dimDown) yLimit = dimDown;
       //If x lefter than center
       if (posX < xCenter) {
         xLimit = xCenter;
-        result.method = 'before';
+        result.placement = 'before';
       } else {
         leftLimit = xCenter;
-        result.method = 'after';
+        result.placement = 'after';
       }
     } else {
       // If y upper than center
       if (posY < yCenter) {
-        result.method = 'before';
+        result.placement = 'before';
         break;
-      } else result.method = 'after'; // After last element
+      } else result.placement = 'after'; // After last element
     }
   }
 
@@ -300,7 +299,7 @@ export function getMergedOptions<T, NodeType extends SortableTreeNode<T>>(sorter
       canvasRelative: false
     },
     dragBehavior: {
-      dragDirection: SorterDirection.Vertical,
+      dragDirection: DragDirection.Vertical,
       nested: false,
       ignoreViewChildren: false,
       selectOnEnd: true,
@@ -329,8 +328,4 @@ export function getMergedOptions<T, NodeType extends SortableTreeNode<T>>(sorter
     },
   };
   return mergedOptions;
-}
-
-export function hasPointerPositionChanged(pos: Position, lastPos?: Position) {
-  return !lastPos || lastPos.index !== pos.index || lastPos.method !== pos.method;
 }

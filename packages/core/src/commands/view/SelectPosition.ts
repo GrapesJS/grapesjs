@@ -1,6 +1,6 @@
 import { $ } from '../../common';
 import CanvasComponentNode from '../../utils/sorter/CanvasComponentNode';
-import { SorterDirection } from '../../utils/sorter/types';
+import { DragDirection } from '../../utils/sorter/types';
 import { CommandObject } from './CommandAbstract';
 export default {
   /**
@@ -31,7 +31,7 @@ export default {
           canvasRelative: true,
         },
         dragBehavior: {
-          dragDirection: SorterDirection.BothDirections,
+          dragDirection: DragDirection.BothDirections,
           nested: true,
         }
       });

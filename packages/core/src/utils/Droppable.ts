@@ -3,7 +3,7 @@ import CanvasModule from '../canvas';
 import { ObjectStrings } from '../common';
 import EditorModel from '../editor/model/Editor';
 import { getDocumentScroll, off, on } from './dom';
-import { SorterDirection } from './sorter/types';
+import { DragDirection } from './sorter/types';
 import CanvasNewComponentNode from './sorter/CanvasNewComponentNode';
 
 // TODO move in sorter
@@ -158,7 +158,7 @@ export default class Droppable {
       dragStop = (cancel?: boolean) => dragger.stop(ev, { cancel });
       dragContent = (cnt: any) => (content = cnt);
     } else {
-      const handleOnDrop = (targetNode: CanvasNewComponentNode | undefined, sourceNodes: CanvasNewComponentNode[], index: number): void => {
+      const handleOnDrop = (targetNode: CanvasNewComponentNode | undefined, sourceNodes: CanvasNewComponentNode[], index: number | undefined): void => {
         if (!targetNode) return
         const insertingTextableIntoText = targetNode.model?.isInstanceOf?.('text') && sourceNodes?.some(node => node.model?.get?.('textable'));
         let sourceModel;
@@ -184,7 +184,7 @@ export default class Droppable {
           document: this.el.ownerDocument,
         },
         dragBehavior: {
-          dragDirection: SorterDirection.BothDirections,
+          dragDirection: DragDirection.BothDirections,
           ignoreViewChildren: true,
           nested: true,
         },
