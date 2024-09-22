@@ -79,11 +79,14 @@ export class DropLocationDeterminer<T, NodeType extends SortableTreeNode<T>> ext
     const targetModel = $(targetEl)?.data("model");
     const mouseTargetNode = new this.treeClass(targetModel);
     const targetNode = this.getValidParentNode(mouseTargetNode);
-    if (!targetNode) return
+    if (!targetNode) {
+      this.eventHandlers.onPlaceholderPositionChange?.(false);
+      return
+    }
     const dims = this.dimsFromTarget(targetNode);
     const pos = findPosition(dims, mouseXRelativeToContainer, mouseYRelativeToContainer);
 
-    this.eventHandlers.onPlaceholderPositionChange?.(dims, pos);
+    this.eventHandlers.onPlaceholderPositionChange?.(true, dims, pos);
     this.eventHandlers.onTargetChange?.(this.targetNode, targetNode);
     this.targetNode = targetNode;
     this.lastPos = pos;

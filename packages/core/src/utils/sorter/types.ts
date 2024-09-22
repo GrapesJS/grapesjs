@@ -62,7 +62,10 @@ type OnDragStartHandler = (mouseEvent: MouseEvent) => void;
 type OnMouseMoveHandler = (mouseEvent: MouseEvent) => void;
 type OnDropHandler<NodeType> = (targetNode: NodeType | undefined, sourceNodes: NodeType[], index: number) => void;
 type OnTargetChangeHandler<NodeType> = (oldTargetNode: NodeType | undefined, newTargetNode: NodeType | undefined) => void;
-type OnPlaceholderPositionChangeHandler = (dims: Dimension[], newPosition: Position) => void;
+export type OnPlaceholderPositionChangeHandler = {
+  (show: false): void;
+  (show: true, dims: Dimension[], newPosition: Position): void;
+};
 type OnEndMoveHandler = () => void;
 
 /**
