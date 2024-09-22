@@ -84,6 +84,11 @@ export abstract class BaseComponentNode extends SortableTreeNode<Component> {
    */
   abstract get element(): HTMLElement | undefined;
 
+  setContentEditable(value: boolean) {
+    if (!this.element) return
+    this.element.contentEditable = value ? 'true' : 'false';
+  }
+
   clearState() {
     this.model.set?.('status', '')
   }
@@ -95,7 +100,7 @@ export abstract class BaseComponentNode extends SortableTreeNode<Component> {
   isTextNode() {
     return this.model.isInstanceOf?.('text');
   }
-  
+
   isTextable() {
     return this.model.get?.('textable');
   }

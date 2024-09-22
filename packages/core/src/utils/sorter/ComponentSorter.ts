@@ -91,6 +91,9 @@ export default class ComponentSorter extends Sorter<Component, BaseComponentNode
             // @ts-ignore
             index: model && model.index(),
         };
+        if (sourceNodes.length === 0) {
+            legacyOnEndMove?.(null, this, { ...data, cancelled: 1 });
+        }
 
         for (let idx = 0; idx < sourceNodes.length; idx++) {
             const sourceNode = sourceNodes[idx];
@@ -98,10 +101,7 @@ export default class ComponentSorter extends Sorter<Component, BaseComponentNode
             if (!addedNode) continue
             legacyOnEndMove?.(addedNode!.model, this, data)
         }
-        if (sourceNodes.length === 0) {
-            legacyOnEndMove?.(null, this, { ...data, cancelled: 1 });
-        }
-
+        targetNode.clearState();
         this.placeholder.hide();
     }
 
@@ -121,7 +121,6 @@ export default class ComponentSorter extends Sorter<Component, BaseComponentNode
         }
 
         const addedNode = targetNode.addChildAt(sourceNode, index);
-        targetNode.clearState();
         return addedNode;
     }
 
@@ -138,6 +137,7 @@ export default class ComponentSorter extends Sorter<Component, BaseComponentNode
 
     private onTargetChange = (oldTargetNode: BaseComponentNode | undefined, newTargetNode: BaseComponentNode | undefined) => {
         oldTargetNode?.clearState();
+        oldTargetNode?.setContentEditable(false);
         if (!newTargetNode) {
             return
         }
@@ -145,9 +145,7 @@ export default class ComponentSorter extends Sorter<Component, BaseComponentNode
         this.targetIsText = newTargetNode.isTextNode();
         const insertingTextableIntoText = this.targetIsText && this.sourceNodes?.some(node => node.isTextable())
         if (insertingTextableIntoText) {
-            const el = newTargetNode?.model.getEl();
-            if (el) el.contentEditable = "true";
-
+            newTargetNode.setContentEditable(true)
             this.placeholder.hide();
         } else {
             this.placeholder.show();

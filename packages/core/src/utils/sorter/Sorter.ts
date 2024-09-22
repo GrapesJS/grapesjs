@@ -6,7 +6,7 @@ import { SortableTreeNode } from './SortableTreeNode';
 import { DropLocationDeterminer } from './DropLocationDeterminer';
 import { PlaceholderClass } from './PlaceholderClass';
 import { getMergedOptions, getDocument, matches, closest } from './SorterUtils';
-import { SorterContainerContext, PositionOptions, SorterDragBehaviorOptions, SorterEventHandlers, Dimension, OnPlaceholderPositionChangeHandler, Placement } from './types';
+import { SorterContainerContext, PositionOptions, SorterDragBehaviorOptions, SorterEventHandlers, Dimension, Placement } from './types';
 import { SorterOptions } from './types';
 
 export type RequiredEmAndTreeClassPartialSorterOptions<T, NodeType extends SortableTreeNode<T>> = Partial<SorterOptions<T, NodeType>> & {
@@ -49,25 +49,18 @@ export default class Sorter<T, NodeType extends SortableTreeNode<T>> {
       dragDirection: this.dragBehavior.dragDirection,
       eventHandlers: {
         ...this.eventHandlers,
-        onPlaceholderPositionChange: this.handlePlaceholderMove as OnPlaceholderPositionChangeHandler
+        onPlaceholderPositionChange: this.handlePlaceholderMove
       },
     });
   }
 
   private handlePlaceholderMove(
-    show: boolean,
     elementDimension: Dimension,
     placement: Placement,
   ) {
-    if (show) {
-      this.ensurePlaceholderElement();
-      this.placeholder.show();
-      this.updatePlaceholderPosition(elementDimension, placement);
-    } else {
-      this.placeholder.hide();
-    }
+    this.ensurePlaceholderElement();
+    this.updatePlaceholderPosition(elementDimension, placement);
   }
-
 
   /**
    * Creates a new placeholder element for the drag-and-drop operation.
@@ -163,8 +156,7 @@ export default class Sorter<T, NodeType extends SortableTreeNode<T>> {
    * Called when the drag operation should be cancelled
   */
   cancelDrag(): void {
-    this.placeholder.hide();
-    this.dropLocationDeterminer.cancelDrag()
+    this.dropLocationDeterminer.cancelDrag();
     this.finalizeMove();
   }
 
@@ -172,7 +164,7 @@ export default class Sorter<T, NodeType extends SortableTreeNode<T>> {
    * Called to drop an item onto a valid target.
   */
   endDrag() {
-    this.dropLocationDeterminer.endDrag()
+    this.dropLocationDeterminer.endDrag();
   }
 
   /**
@@ -193,7 +185,9 @@ export default class Sorter<T, NodeType extends SortableTreeNode<T>> {
   protected finalizeMove(): void {
     const docs = this.docs;
     this.cleanupEventListeners(docs);
-    this.eventHandlers.legacyOnEnd?.({ sorter: this })
+    this.eventHandlers.legacyOnEnd?.({ sorter: this });
+    this.placeholder.hide();
+    delete this.sourceNodes;
   }
 
   /**

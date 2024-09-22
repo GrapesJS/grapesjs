@@ -94,11 +94,14 @@ export class DropLocationDeterminer<T, NodeType extends SortableTreeNode<T>> ext
   private onMove(mouseEvent: MouseEvent): void {
     this.eventHandlers.onMouseMove?.(mouseEvent);
     const { mouseXRelativeToContainer: mouseX, mouseYRelativeToContainer: mouseY } = this.getMousePositionRelativeToContainer(mouseEvent);
+    const lastTargetNode = this.lastMoveData.lastTargetNode;
     const targetNode = this.getTargetNode(mouseEvent);
     if (!targetNode) {
-      this.eventHandlers.onPlaceholderPositionChange?.(false);
-      this.eventHandlers.onTargetChange?.(this.lastMoveData.lastTargetNode, undefined);
-      this.restLastMoveData();
+      if (lastTargetNode) {
+        this.eventHandlers.onTargetChange?.(lastTargetNode, undefined);
+        this.restLastMoveData();
+      }
+      this.triggerLegacyOnMoveCallback(mouseEvent, 0);
       this.triggerMoveEvent(mouseX, mouseY);
 
       return;
@@ -162,7 +165,9 @@ export class DropLocationDeterminer<T, NodeType extends SortableTreeNode<T>> ext
 
     const targetChanged = !hoveredNode.equals(lastTargetNode);
 
-    this.eventHandlers.onTargetChange?.(lastTargetNode, hoveredNode);
+    if (targetChanged) {
+      this.eventHandlers.onTargetChange?.(lastTargetNode, hoveredNode);
+    }
 
     const childrenDimensions = targetChanged ? this.dimsFromTarget(hoveredNode) : lastChildrenDimensions!;
     let { index, placement } = findPosition(childrenDimensions, mouseX, mouseY);
@@ -170,7 +175,7 @@ export class DropLocationDeterminer<T, NodeType extends SortableTreeNode<T>> ext
     index = index + (placement == 'after' ? 1 : 0);
 
     if (this.hasDropPositionChanged(targetChanged, index, placement)) {
-      this.eventHandlers.onPlaceholderPositionChange?.(true, elementDimension, placement);
+      this.eventHandlers.onPlaceholderPositionChange?.(elementDimension, placement);
     }
 
     this.lastMoveData = {
@@ -228,6 +233,7 @@ export class DropLocationDeterminer<T, NodeType extends SortableTreeNode<T>> ext
     this.cleanupEventListeners();
     this.triggerOnDragEndEvent();
     this.eventHandlers.onEndMove?.();
+    this.restLastMoveData();
   }
 
   private dropDragged() {
