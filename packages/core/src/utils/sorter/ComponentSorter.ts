@@ -93,6 +93,8 @@ export default class ComponentSorter extends Sorter<Component, BaseComponentNode
             legacyOnEndMove?.(addedNode!.model, this, data)
         }
         targetNode.clearState();
+        targetNode.disableEditing();
+        targetNode.setContentEditable(false);
         this.placeholder.hide();
     }
 
@@ -129,6 +131,7 @@ export default class ComponentSorter extends Sorter<Component, BaseComponentNode
     private onTargetChange = (oldTargetNode: BaseComponentNode | undefined, newTargetNode: BaseComponentNode | undefined) => {
         oldTargetNode?.clearState();
         oldTargetNode?.setContentEditable(false);
+        oldTargetNode?.disableEditing();
         if (!newTargetNode) {
             return
         }

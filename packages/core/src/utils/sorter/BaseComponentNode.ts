@@ -1,3 +1,4 @@
+import { View } from '../../common';
 import Component from '../../dom_components/model/Component';
 import { SortableTreeNode } from './SortableTreeNode';
 
@@ -76,7 +77,7 @@ export abstract class BaseComponentNode extends SortableTreeNode<Component> {
    * Abstract method to get the associated view of the component.
    * Subclasses must implement this method.
    */
-  abstract get view(): any;
+  abstract get view(): View<any, any>;
 
   /**
    * Abstract method to get the associated element of the component.
@@ -87,6 +88,11 @@ export abstract class BaseComponentNode extends SortableTreeNode<Component> {
   setContentEditable(value: boolean) {
     if (!this.element) return
     this.element.contentEditable = value ? 'true' : 'false';
+  }
+
+  disableEditing() {
+    // @ts-ignore
+    this.view?.disableEditing?.();
   }
 
   clearState() {
