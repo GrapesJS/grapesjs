@@ -233,6 +233,7 @@ export class DropLocationDeterminer<T, NodeType extends SortableTreeNode<T>> ext
     this.cleanupEventListeners();
     this.triggerOnDragEndEvent();
     this.eventHandlers.onEndMove?.();
+    this.eventHandlers.legacyOnEnd?.();
     this.restLastMoveData();
   }
 

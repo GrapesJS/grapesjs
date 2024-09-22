@@ -121,6 +121,16 @@ export default class Sorter<T, NodeType extends SortableTreeNode<T>> {
     this.bindDragEventHandlers(docs);
 
     this.eventHandlers.onStartSort?.(this.sourceNodes, this.containerContext.container);
+    const model = this.sourceNodes?.[0].model;
+    this.eventHandlers.legacyOnStartSort?.({
+      sorter: this,
+      target: model,
+      // @ts-ignore
+      parent: model && model.parent?.(),
+      // @ts-ignore
+      index: model && model.index?.(),
+    });
+
     // Only take a single value as the old sorted
     this.em.trigger('sorter:drag:start', sourceElements[0], sourceModels[0]);
   }
@@ -185,7 +195,6 @@ export default class Sorter<T, NodeType extends SortableTreeNode<T>> {
   protected finalizeMove(): void {
     const docs = this.docs;
     this.cleanupEventListeners(docs);
-    this.eventHandlers.legacyOnEnd?.({ sorter: this });
     this.placeholder.hide();
     delete this.sourceNodes;
   }

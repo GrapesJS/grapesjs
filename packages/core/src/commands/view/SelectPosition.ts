@@ -36,7 +36,7 @@ export default {
         }
       });
 
-    if (opts.onStart) this.sorter.eventHandlers.legacyOnStart = opts.onStart;
+    if (opts.onStart) this.sorter.eventHandlers.legacyOnStartSort = opts.onStart;
     sourceElements && this.sorter.startSort(sourceElements);
   },
 

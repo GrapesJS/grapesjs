@@ -61,15 +61,6 @@ export default class ComponentSorter extends Sorter<Component, BaseComponentNode
     private onStartSort() {
         this.em.clearSelection();
         this.toggleSortCursor(true);
-        const model = this.sourceNodes?.[0].model;
-        this.eventHandlers.legacyOnStartSort?.({
-            sorter: this,
-            target: model,
-            // @ts-ignore
-            parent: model && model.parent?.(),
-            // @ts-ignore
-            index: model && model.index?.(),
-        });
     }
 
     private onMouseMove = (mouseEvent: MouseEvent) => {
