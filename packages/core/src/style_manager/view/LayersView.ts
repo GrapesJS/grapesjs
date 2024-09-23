@@ -36,22 +36,22 @@ export default class LayersView extends View<Layer> {
     const utils = em?.Utils;
     this.sorter = utils
       ? new utils.StyleManagerSorter({
-        em,
-        containerContext: {
-          container: this.el,
-          containerSel: `.${pfx}layers`,
-          itemSel: `.${pfx}layer`,
-          pfx: config.pStylePrefix,
-          document,
-          placeholderElement: this.placeholderElement
-        },
-        dragBehavior: {
-          dragDirection: DragDirection.Vertical,
-          ignoreViewChildren: true,
-          nested: true,
-        },
-        positionOptions: {}
-      })
+          em,
+          containerContext: {
+            container: this.el,
+            containerSel: `.${pfx}layers`,
+            itemSel: `.${pfx}layer`,
+            pfx: config.pStylePrefix,
+            document,
+            placeholderElement: this.placeholderElement,
+          },
+          dragBehavior: {
+            dragDirection: DragDirection.Vertical,
+            ignoreViewChildren: true,
+            nested: true,
+          },
+          positionOptions: {},
+        })
       : '';
     // @ts-ignore
     coll.view = this;
@@ -125,19 +125,19 @@ export default class LayersView extends View<Layer> {
     this.collection.forEach((m) => this.addToCollection(m, frag));
     $el.append(frag);
     $el.attr('class', this.className!);
-    $el.append(this.placeholderElement)
+    $el.append(this.placeholderElement);
 
     return this;
   }
 
   /**
-* Create placeholder
-* @return {HTMLElement}
-*/
+   * Create placeholder
+   * @return {HTMLElement}
+   */
   private createPlaceholder(pfx: string) {
     const el = document.createElement('div');
     const ins = document.createElement('div');
-    this.el.parentNode
+    this.el.parentNode;
     el.className = pfx + 'placeholder';
     el.style.display = 'none';
     el.style.pointerEvents = 'none';

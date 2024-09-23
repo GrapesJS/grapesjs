@@ -16,14 +16,12 @@ export interface Dimension {
 export type Placement = 'before' | 'after';
 
 export enum DragDirection {
-  Vertical = "Vertical",
-  Horizontal = "Horizontal",
-  BothDirections = "BothDirections"
+  Vertical = 'Vertical',
+  Horizontal = 'Horizontal',
+  BothDirections = 'BothDirections',
 }
 
-export type CustomTarget = ({ event }: {
-  event: MouseEvent;
-}) => HTMLElement | null;
+export type CustomTarget = ({ event }: { event: MouseEvent }) => HTMLElement | null;
 
 export interface SorterContainerContext {
   container: HTMLElement;
@@ -60,8 +58,15 @@ type OnStartSortHandler<NodeType> = (sourceNodes: NodeType[], container?: HTMLEl
  */
 type OnDragStartHandler = (mouseEvent: MouseEvent) => void;
 type OnMouseMoveHandler = (mouseEvent: MouseEvent) => void;
-type OnDropHandler<NodeType> = (targetNode: NodeType | undefined, sourceNodes: NodeType[], index: number | undefined) => void;
-type OnTargetChangeHandler<NodeType> = (oldTargetNode: NodeType | undefined, newTargetNode: NodeType | undefined) => void;
+type OnDropHandler<NodeType> = (
+  targetNode: NodeType | undefined,
+  sourceNodes: NodeType[],
+  index: number | undefined,
+) => void;
+type OnTargetChangeHandler<NodeType> = (
+  oldTargetNode: NodeType | undefined,
+  newTargetNode: NodeType | undefined,
+) => void;
 type OnPlaceholderPositionChangeHandler = (targetDimension: Dimension, placement: Placement) => void;
 type OnEndMoveHandler = () => void;
 
@@ -100,4 +105,3 @@ export interface SorterOptions<T, NodeType extends SortableTreeNode<T>> {
   dragBehavior: SorterDragBehaviorOptions;
   eventHandlers: SorterEventHandlers<NodeType>;
 }
-

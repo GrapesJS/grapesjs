@@ -21,7 +21,7 @@ export class LayerNode extends SortableTreeNode<Layer | Layers> {
    */
   getChildren(): LayerNode[] | null {
     if (this.model instanceof Layers) {
-      return this.model.models.map(model => new LayerNode(model));
+      return this.model.models.map((model) => new LayerNode(model));
     }
 
     return null;
@@ -45,7 +45,7 @@ export class LayerNode extends SortableTreeNode<Layer | Layers> {
    */
   addChildAt(node: LayerNode, index: number) {
     if (this.model instanceof Layer) {
-      throw Error("Cannot add a layer model to another layer model");
+      throw Error('Cannot add a layer model to another layer model');
     }
 
     const newModel = this.model.add(node.model, { at: index });
@@ -60,7 +60,7 @@ export class LayerNode extends SortableTreeNode<Layer | Layers> {
    */
   removeChildAt(index: number) {
     if (this.model instanceof Layer) {
-      throw Error("Cannot remove a layer model from another layer model");
+      throw Error('Cannot remove a layer model from another layer model');
     }
 
     const child = this.model.at(index);

@@ -32,7 +32,7 @@ export default extend({}, SelectPosition, SelectComponent, {
    * Overwrite for doing nothing
    * @private
    */
-  toggleClipboard() { },
+  toggleClipboard() {},
 
   /**
    * Delegate sorting
@@ -95,7 +95,7 @@ export default extend({}, SelectPosition, SelectComponent, {
     const frameView = this.em.getCurrentFrame();
     const el = lastModel.getEl(frameView?.model)!;
     const doc = el.ownerDocument;
-    const elements = models.map(model => model?.view?.el);
+    const elements = models.map((model) => model?.view?.el);
     this.startSelectPosition(elements, doc, { onStart: this.onStart });
     this.sorter.draggable = lastModel.get('draggable');
     this.sorter.eventHandlers.legacyOnMoveClb = this.onDrag;
@@ -123,7 +123,7 @@ export default extend({}, SelectPosition, SelectComponent, {
    * @param {Object} Selected element
    * @private
    * */
-  onSelect(e: any, el: any) { },
+  onSelect(e: any, el: any) {},
 
   /**
    * Used to bring the previous situation before start moving the component

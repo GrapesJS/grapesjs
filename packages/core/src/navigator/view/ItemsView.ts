@@ -38,7 +38,7 @@ export default class ItemsView extends View {
     if (config.sortable && !this.opt.sorter) {
       const utils = em.Utils;
       const container = config.sortContainer || this.el;
-      this.placeholderElement = this.createPlaceholder(pfx)
+      this.placeholderElement = this.createPlaceholder(pfx);
       this.opt.sorter = new utils.ComponentSorter({
         em,
         treeClass: LayersComponentNode,
@@ -48,14 +48,14 @@ export default class ItemsView extends View {
           itemSel: `.${pfx}layer`,
           pfx: config.pStylePrefix,
           document,
-          placeholderElement: this.placeholderElement
+          placeholderElement: this.placeholderElement,
         },
         dragBehavior: {
           dragDirection: DragDirection.Vertical,
           ignoreViewChildren: true,
           nested: true,
-        }
-      })
+        },
+      });
     }
 
     // For the sorter
@@ -64,13 +64,13 @@ export default class ItemsView extends View {
   }
 
   /**
-* Create placeholder
-* @return {HTMLElement}
-*/
+   * Create placeholder
+   * @return {HTMLElement}
+   */
   private createPlaceholder(pfx: string) {
     const el = document.createElement('div');
     const ins = document.createElement('div');
-    this.el.parentNode
+    this.el.parentNode;
     el.className = pfx + 'placeholder';
     el.style.display = 'none';
     el.style.pointerEvents = 'none';
@@ -79,7 +79,6 @@ export default class ItemsView extends View {
 
     return el;
   }
-
 
   removeChildren(removed: Component) {
     const view = removed.viewLayer;

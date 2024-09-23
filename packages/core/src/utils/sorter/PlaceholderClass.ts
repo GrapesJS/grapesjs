@@ -24,7 +24,7 @@ export class PlaceholderClass extends View {
     this.pfx = options.pfx || '';
     this.allowNesting = options.allowNesting || false;
     this.container = options.container;
-    this.setElement(options.el)
+    this.setElement(options.el);
     this.offset = {
       top: options.offset.top || 0,
       left: options.offset.left || 0,
@@ -40,14 +40,11 @@ export class PlaceholderClass extends View {
   }
 
   /**
- * Updates the position of the placeholder.
- * @param {Dimension} elementDimension element dimensions.
- * @param {Position} placement either before or after the target.
- */
-  move(
-    elementDimension: Dimension,
-    placement: Placement,
-  ) {
+   * Updates the position of the placeholder.
+   * @param {Dimension} elementDimension element dimensions.
+   * @param {Position} placement either before or after the target.
+   */
+  move(elementDimension: Dimension, placement: Placement) {
     const marginOffset = 0;
     const unit = 'px';
     let top = 0;
@@ -60,7 +57,7 @@ export class PlaceholderClass extends View {
     if (!dir) {
       // If element is not in flow (e.g., a floating element)
       width = 'auto';
-      height = (elHeight - marginOffset * 2) + unit;
+      height = elHeight - marginOffset * 2 + unit;
       top = elTop + marginOffset;
       left = placement === 'before' ? elLeft - marginOffset : elLeft + elWidth - marginOffset;
 
@@ -102,10 +99,7 @@ export class PlaceholderClass extends View {
    * @param {Dimension} targetDimension Target element dimensions.
    * @param {number} marginOffset Margin offset value.
    */
-  private handleNestedPlaceholder(
-    marginOffset: number,
-    targetDimension?: Dimension
-  ) {
+  private handleNestedPlaceholder(marginOffset: number, targetDimension?: Dimension) {
     if (!this.allowNesting || !targetDimension) {
       this.el.style.display = 'none';
       return;
@@ -133,12 +127,7 @@ export class PlaceholderClass extends View {
    * @param {string} width Width of the placeholder.
    * @param {string} height Height of the placeholder.
    */
-  private updateStyles(
-    top: number,
-    left: number,
-    width: string,
-    height: string
-  ) {
+  private updateStyles(top: number, left: number, width: string, height: string) {
     this.el.style.top = top + 'px';
     this.el.style.left = left + 'px';
     if (width) this.el.style.width = width;

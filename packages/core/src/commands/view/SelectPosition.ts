@@ -9,7 +9,6 @@ export default {
    * @private
    * */
   startSelectPosition(sourceElements: HTMLElement[], doc: Document, opts: any = {}) {
-
     this.isPointed = false;
     const utils = this.em.Utils;
     const container = sourceElements[0].ownerDocument.body;
@@ -33,7 +32,7 @@ export default {
         dragBehavior: {
           dragDirection: DragDirection.BothDirections,
           nested: true,
-        }
+        },
       });
 
     if (opts.onStart) this.sorter.eventHandlers.legacyOnStartSort = opts.onStart;

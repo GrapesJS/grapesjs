@@ -1,4 +1,4 @@
-import CanvasComponentNode from "./CanvasComponentNode";
+import CanvasComponentNode from './CanvasComponentNode';
 
 export default class CanvasNewComponentNode extends CanvasComponentNode {
   /**

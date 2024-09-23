@@ -37,9 +37,11 @@ export function findPosition(dims: Dimension[], posX: number, posY: number) {
     // Y center position of the element. Top + (Height / 2)
     yCenter = top + height / 2;
     // Skip if over the limits
-    if ((xLimit && left > xLimit) ||
+    if (
+      (xLimit && left > xLimit) ||
       (yLimit && yCenter >= yLimit) || // >= avoid issue with clearfixes
-      (leftLimit && dimRight < leftLimit))
+      (leftLimit && dimRight < leftLimit)
+    )
       continue;
     result.index = i;
     // If it's not in flow (like 'float' element)
@@ -68,7 +70,7 @@ export function findPosition(dims: Dimension[], posX: number, posY: number) {
  * Get the offset of the element
  * @param  {HTMLElement} el
  * @return {Object}
-*/
+ */
 export function offset(el: HTMLElement) {
   const rect = el.getBoundingClientRect();
 
@@ -227,7 +229,9 @@ export function getDocument(em?: EditorModel, el?: HTMLElement) {
   return elDoc;
 }
 
-export function getMergedOptions<T, NodeType extends SortableTreeNode<T>>(sorterOptions: RequiredEmAndTreeClassPartialSorterOptions<T, NodeType>) {
+export function getMergedOptions<T, NodeType extends SortableTreeNode<T>>(
+  sorterOptions: RequiredEmAndTreeClassPartialSorterOptions<T, NodeType>,
+) {
   const defaultOptions = {
     containerContext: {
       container: '' as any,
@@ -244,7 +248,7 @@ export function getMergedOptions<T, NodeType extends SortableTreeNode<T>>(sorter
       offsetTop: 0,
       offsetLeft: 0,
       scale: 1,
-      canvasRelative: false
+      canvasRelative: false,
     },
     dragBehavior: {
       dragDirection: DragDirection.Vertical,
@@ -252,7 +256,7 @@ export function getMergedOptions<T, NodeType extends SortableTreeNode<T>>(sorter
       ignoreViewChildren: false,
       selectOnEnd: true,
     },
-    eventHandlers: {}
+    eventHandlers: {},
   };
 
   const mergedOptions = {

@@ -36,7 +36,7 @@ export abstract class BaseComponentNode extends SortableTreeNode<Component> {
     const insertingTextableIntoText = this.model?.isInstanceOf?.('text') && node?.model?.get?.('textable');
     if (insertingTextableIntoText) {
       // @ts-ignore
-      return this.model?.getView?.()?.insertComponent?.(node?.model, { action: "add-component" });
+      return this.model?.getView?.()?.insertComponent?.(node?.model, { action: 'add-component' });
     }
 
     const newModel = this.model.components().add(node.model, { at: index });
@@ -92,7 +92,7 @@ export abstract class BaseComponentNode extends SortableTreeNode<Component> {
   }
 
   setContentEditable(value: boolean) {
-    if (!this.element) return
+    if (!this.element) return;
     this.element.contentEditable = value ? 'true' : 'false';
   }
 
@@ -102,11 +102,11 @@ export abstract class BaseComponentNode extends SortableTreeNode<Component> {
   }
 
   private clearState() {
-    this.model.set?.('status', '')
+    this.model.set?.('status', '');
   }
 
   setSelectedParentState() {
-    this.model.set?.('status', 'selected-parent')
+    this.model.set?.('status', 'selected-parent');
   }
 
   isTextNode() {

@@ -11,9 +11,9 @@ export default class LayersComponentNode extends BaseComponentNode {
   }
 
   /**
- * Get the associated element of this component.
- * @returns The Element associated with the component, or undefined if none.
- */
+   * Get the associated element of this component.
+   * @returns The Element associated with the component, or undefined if none.
+   */
   get element(): HTMLElement | undefined {
     return this.model.viewLayer?.el;
   }

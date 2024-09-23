@@ -329,8 +329,8 @@ export default class ItemView extends View {
         legacyOnStartSort: getOnComponentDragStart(em),
         legacyOnMoveClb: getOnComponentDrag(em),
         legacyOnEndMove: getOnComponentDragEnd(em, [toMove]),
-        ...sorter.eventHandlers
-      }
+        ...sorter.eventHandlers,
+      };
       const itemEl = (toMove as any).viewLayer?.el || ev.target;
       sorter.startSort([itemEl]);
     }

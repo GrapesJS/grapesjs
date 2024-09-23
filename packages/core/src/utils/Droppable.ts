@@ -64,9 +64,7 @@ export default class Droppable {
       },
     });
 
-    this.getSorterOptions = enable
-      ? getSorterOptions
-      : undefined;
+    this.getSorterOptions = enable ? getSorterOptions : undefined;
     method(frameEl, 'pointerenter', this.handleDragEnter);
     method(frameEl, 'pointermove', this.handleDragOver);
     method(document, 'pointerup', this.handleDrop);
@@ -158,15 +156,20 @@ export default class Droppable {
       dragStop = (cancel?: boolean) => dragger.stop(ev, { cancel });
       dragContent = (cnt: any) => (content = cnt);
     } else {
-      const handleOnDrop = (targetNode: CanvasNewComponentNode | undefined, sourceNodes: CanvasNewComponentNode[], index: number | undefined): void => {
-        if (!targetNode) return
-        const insertingTextableIntoText = targetNode.model?.isInstanceOf?.('text') && sourceNodes?.some(node => node.model?.get?.('textable'));
+      const handleOnDrop = (
+        targetNode: CanvasNewComponentNode | undefined,
+        sourceNodes: CanvasNewComponentNode[],
+        index: number | undefined,
+      ): void => {
+        if (!targetNode) return;
+        const insertingTextableIntoText =
+          targetNode.model?.isInstanceOf?.('text') && sourceNodes?.some((node) => node.model?.get?.('textable'));
         let sourceModel;
         if (insertingTextableIntoText) {
           // @ts-ignore
-          sourceModel = targetNode.model?.getView?.()?.insertComponent?.(this.content, { action: "add-component" });
+          sourceModel = targetNode.model?.getView?.()?.insertComponent?.(this.content, { action: 'add-component' });
         } else {
-          sourceModel = targetNode.model.components().add(this.content, { at: index, action: "add-component" });
+          sourceModel = targetNode.model.components().add(this.content, { at: index, action: 'add-component' });
         }
 
         this.handleDragEnd(sourceModel, dt);
@@ -190,13 +193,13 @@ export default class Droppable {
         },
         positionOptions: {
           windowMargin: 1,
-          canvasRelative: true
+          canvasRelative: true,
         },
         eventHandlers: {
           onDrop: handleOnDrop.bind(this),
           legacyOnEndMove: (model: any) => this.handleDragEnd(model, dt),
         },
-      })
+      });
       const sorterOptions = this.getSorterOptions?.(sorter);
       if (sorterOptions) {
         sorter.eventHandlers.legacyOnStartSort = sorterOptions.legacyOnStart;
@@ -228,7 +231,7 @@ export default class Droppable {
     let dropModel = comps.remove(tempModel, opts as any);
     // @ts-ignore
     dropModel = dropModel instanceof Array ? dropModel[0] : dropModel;
-    dropModel.view?.$el.data("model", dropModel);
+    dropModel.view?.$el.data('model', dropModel);
     return dropModel;
   }
 

@@ -6,10 +6,19 @@ import { SortableTreeNode } from './SortableTreeNode';
 import { DropLocationDeterminer } from './DropLocationDeterminer';
 import { PlaceholderClass } from './PlaceholderClass';
 import { getMergedOptions, getDocument, matches, closest } from './SorterUtils';
-import { SorterContainerContext, PositionOptions, SorterDragBehaviorOptions, SorterEventHandlers, Dimension, Placement } from './types';
+import {
+  SorterContainerContext,
+  PositionOptions,
+  SorterDragBehaviorOptions,
+  SorterEventHandlers,
+  Dimension,
+  Placement,
+} from './types';
 import { SorterOptions } from './types';
 
-export type RequiredEmAndTreeClassPartialSorterOptions<T, NodeType extends SortableTreeNode<T>> = Partial<SorterOptions<T, NodeType>> & {
+export type RequiredEmAndTreeClassPartialSorterOptions<T, NodeType extends SortableTreeNode<T>> = Partial<
+  SorterOptions<T, NodeType>
+> & {
   em: EditorModel;
   treeClass: new (model: T) => NodeType;
 };
@@ -49,15 +58,12 @@ export default class Sorter<T, NodeType extends SortableTreeNode<T>> {
       dragDirection: this.dragBehavior.dragDirection,
       eventHandlers: {
         ...this.eventHandlers,
-        onPlaceholderPositionChange: this.handlePlaceholderMove
+        onPlaceholderPositionChange: this.handlePlaceholderMove,
       },
     });
   }
 
-  private handlePlaceholderMove(
-    elementDimension: Dimension,
-    placement: Placement,
-  ) {
+  private handlePlaceholderMove(elementDimension: Dimension, placement: Placement) {
     this.ensurePlaceholderElement();
     this.updatePlaceholderPosition(elementDimension, placement);
   }
@@ -75,8 +81,8 @@ export default class Sorter<T, NodeType extends SortableTreeNode<T>> {
       el: this.containerContext.placeholderElement,
       offset: {
         top: this.positionOptions.offsetTop!,
-        left: this.positionOptions.offsetLeft!
-      }
+        left: this.positionOptions.offsetLeft!,
+      },
     });
   }
 
@@ -102,10 +108,10 @@ export default class Sorter<T, NodeType extends SortableTreeNode<T>> {
    * @param {HTMLElement[]} sourceElements[]
    * */
   startSort(sourceElements: HTMLElement[]) {
-    const validSourceElements = sourceElements.map(element => this.findValidSourceElement(element))
+    const validSourceElements = sourceElements.map((element) => this.findValidSourceElement(element));
 
-    const sourceModels: T[] = validSourceElements.map(element => $(element).data("model"))
-    const sourceNodes = sourceModels.map(model => new this.treeClass(model));
+    const sourceModels: T[] = validSourceElements.map((element) => $(element).data('model'));
+    const sourceNodes = sourceModels.map((model) => new this.treeClass(model));
     this.sourceNodes = sourceNodes;
     const uniqueDocs = new Set<Document>();
     validSourceElements.forEach((element) => {
@@ -116,7 +122,7 @@ export default class Sorter<T, NodeType extends SortableTreeNode<T>> {
     });
 
     const docs = Array.from(uniqueDocs);
-    this.updateDocs(docs)
+    this.updateDocs(docs);
     this.dropLocationDeterminer.startSort(sourceNodes);
     this.bindDragEventHandlers(docs);
 
@@ -144,7 +150,10 @@ export default class Sorter<T, NodeType extends SortableTreeNode<T>> {
    * @returns The closest valid source element, or null if none is found.
    */
   private findValidSourceElement(sourceElement?: HTMLElement): HTMLElement | undefined {
-    if (sourceElement && !matches(sourceElement, `${this.containerContext.itemSel}, ${this.containerContext.containerSel}`)) {
+    if (
+      sourceElement &&
+      !matches(sourceElement, `${this.containerContext.itemSel}, ${this.containerContext.containerSel}`)
+    ) {
       sourceElement = closest(sourceElement, this.containerContext.itemSel)!;
     }
 
@@ -156,17 +165,17 @@ export default class Sorter<T, NodeType extends SortableTreeNode<T>> {
   }
 
   private updateDocs(docs: Document[]) {
-    this.docs = docs
+    this.docs = docs;
     this.dropLocationDeterminer.updateDocs(docs);
   }
 
   private updatePlaceholderPosition(targetDimension: Dimension, placement: Placement) {
-    this.placeholder.move(targetDimension, placement)
+    this.placeholder.move(targetDimension, placement);
   }
 
   /**
    * Called when the drag operation should be cancelled
-  */
+   */
   cancelDrag(): void {
     this.dropLocationDeterminer.cancelDrag();
     this.finalizeMove();
@@ -174,7 +183,7 @@ export default class Sorter<T, NodeType extends SortableTreeNode<T>> {
 
   /**
    * Called to drop an item onto a valid target.
-  */
+   */
   endDrag() {
     this.dropLocationDeterminer.endDrag();
   }
@@ -191,7 +200,7 @@ export default class Sorter<T, NodeType extends SortableTreeNode<T>> {
 
   /**
    * Finalize the move.
-   * 
+   *
    * @private
    */
   protected finalizeMove(): void {
