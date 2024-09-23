@@ -13,7 +13,7 @@ export default class LayersView extends View<Layer> {
   config: any;
   propertyView: PropertyStackView;
   items: LayerView[];
-  sorter: StyleManagerSorter;
+  sorter?: StyleManagerSorter;
 
   constructor(o: any) {
     super(o);
@@ -35,7 +35,7 @@ export default class LayersView extends View<Layer> {
 
     // For the Sorter
     const utils = em?.Utils;
-    this.sorter = new utils.StyleManagerSorter({
+    this.sorter = utils ? new utils.StyleManagerSorter({
       em,
       containerContext: {
         container: this.el,
@@ -49,7 +49,7 @@ export default class LayersView extends View<Layer> {
         dragDirection: DragDirection.Vertical,
         nested: false,
       },
-    });
+    }) : undefined;
     // @ts-ignore
     coll.view = this;
     this.$el.data('model', coll);
