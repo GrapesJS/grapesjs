@@ -201,7 +201,7 @@ In this example, `persistentDataSource` will be included in the project JSON whe
 
 ### Accessing Stored DataSources
 
-When a project is loaded, GrapesJS will automatically restore the DataSources that were saved with `skipFromStorage: true`. You can then access and use these DataSources as usual.
+When a project is loaded, GrapesJS will automatically restore the DataSources that were saved. You can then access and use these DataSources as usual.
 
 ```ts
 // After loading a project
@@ -209,7 +209,7 @@ const loadedDataSource = editor.DataSources.get('persistent-datasource');
 console.log(loadedDataSource.getRecord('id1').get('content')); // Outputs: "This data will be saved"
 ```
 
-Remember that DataSources with `skipFromStorage: false` (or those without the key specified) will not be available after a project is loaded unless you add them programmatically.
+Remember that DataSources with `skipFromStorage: true` will not be available after a project is loaded unless you add them programmatically.
 
 ## Benefits of Using DataSources
 
