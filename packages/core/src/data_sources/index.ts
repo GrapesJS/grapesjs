@@ -35,7 +35,6 @@
  * @param {EditorModel} em - Editor model.
  */
 
-import { readSync } from 'fs';
 import { ItemManagerModule, ModuleConfig } from '../abstract/Module';
 import { AddOptions, ObjectAny, RemoveOptions } from '../common';
 import EditorModel from '../editor/model/Editor';
@@ -184,24 +183,6 @@ export default class DataSourceManager extends ItemManagerModule<ModuleConfig, D
    * @returns {Object} Loaded data sources.
    */
   load(data: any) {
-    const storedDataSources: Record<string, DataSourceProps> = data[this.storageKey] || {};
-    const memoryDataSources = this.em.DataSources.getAllMap();
-
-    if (!Object.keys(storedDataSources).length) {
-      return {
-        ...memoryDataSources,
-      };
-    } else {
-      this.clear();
-
-      Object.values(storedDataSources).forEach((ds) => {
-        this.add(ds, { silent: true });
-      });
-
-      return {
-        ...storedDataSources,
-        ...memoryDataSources,
-      };
-    }
+    return this.loadProjectData(data);
   }
 }
