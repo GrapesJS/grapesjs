@@ -339,20 +339,20 @@ describe('DOM Components', () => {
         const source = obj.addSymbol(mainSymbol) as Component;
         expect(obj.canMove(mainSymbol, source)).toMatchObject({
           result: false,
-          reason: CanMoveReason.TargetReject
+          reason: CanMoveReason.TargetReject,
         });
 
         expect(obj.canMove(target, source)).toMatchObject({
           result: false,
-          reason: CanMoveReason.TargetReject
+          reason: CanMoveReason.TargetReject,
         });
       });
 
-      test('canMove returns true when source and target are in the same instance', () => {
+      test('canMove returns true when source and target are the same instance', () => {
         const component = obj.addComponent('<div><p>child</p></div>') as Component;
         const mainSymbol = obj.addSymbol(component) as Component;
         const childSymbol = mainSymbol.components().at(0);
-        expect(obj.canMove(mainSymbol, childSymbol).result).toBe(true)
+        expect(obj.canMove(mainSymbol, childSymbol).result).toBe(true);
       });
 
       test('canMove returns false when source is not draggable in the target', () => {
@@ -385,7 +385,7 @@ describe('DOM Components', () => {
         expect(result.result).toBe(false);
         expect(result.reason).toBe(CanMoveReason.TargetReject);
       });
-    })
+    });
   });
 
   describe('Rendered components', () => {

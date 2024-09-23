@@ -847,12 +847,12 @@ export default class ComponentManager extends ItemManagerModule<DomComponentsCon
     // Check if the target and source belong to the same root symbol
     if (isSymbolComponent(target) && source instanceof Component && isSymbolComponent(source)) {
       const targetRootSymbol = getSymbolTop(target);
-      const targetMain = isSymbolMain(targetRootSymbol) ? targetRootSymbol : getSymbolMain(targetRootSymbol)
-      const sourceRootSymbol = getSymbolTop(source as Component)
-      const sourceMain = isSymbolMain(sourceRootSymbol) ? sourceRootSymbol : getSymbolMain(sourceRootSymbol)
+      const targetMain = isSymbolMain(targetRootSymbol) ? targetRootSymbol : getSymbolMain(targetRootSymbol);
+      const sourceRootSymbol = getSymbolTop(source as Component);
+      const sourceMain = isSymbolMain(sourceRootSymbol) ? sourceRootSymbol : getSymbolMain(sourceRootSymbol);
 
       const sameRoot = targetMain === sourceMain;
-      const differentInstance = targetRootSymbol !== sourceRootSymbol
+      const differentInstance = targetRootSymbol !== sourceRootSymbol;
       if (sameRoot && differentInstance) return { ...result, reason: CanMoveReason.TargetReject };
     }
 
