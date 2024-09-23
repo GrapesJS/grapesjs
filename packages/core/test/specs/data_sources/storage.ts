@@ -58,12 +58,12 @@ describe('DataSource Storage', () => {
       expect(snapshot).toMatchSnapshot(``);
 
       const dataSources = projectData.dataSources;
-      expect(dataSources).toEqual({
-        [storedDataSource.id]: {
+      expect(dataSources).toEqual([
+        {
           id: storedDataSource.id,
           records: storedDataSource.records,
         },
-      });
+      ]);
     });
   });
 

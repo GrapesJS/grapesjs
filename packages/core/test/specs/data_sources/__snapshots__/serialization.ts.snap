@@ -3,7 +3,7 @@
 exports[`DataSource Serialization .getProjectData ComponentDataVariable 1`] = `
 {
   "assets": [],
-  "dataSources": {},
+  "dataSources": [],
   "pages": [
     {
       "frames": [
@@ -54,7 +54,7 @@ exports[`DataSource Serialization .getProjectData ComponentDataVariable 1`] = `
 exports[`DataSource Serialization .getProjectData StyleDataVariable 1`] = `
 {
   "assets": [],
-  "dataSources": {},
+  "dataSources": [],
   "pages": [
     {
       "frames": [
@@ -115,7 +115,7 @@ exports[`DataSource Serialization .getProjectData StyleDataVariable 1`] = `
 exports[`DataSource Serialization .getProjectData TraitDataVariable 1`] = `
 {
   "assets": [],
-  "dataSources": {},
+  "dataSources": [],
   "pages": [
     {
       "frames": [

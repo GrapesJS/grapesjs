@@ -3,8 +3,8 @@
 exports[`DataSource Storage .getProjectData ComponentDataVariable 1`] = `
 {
   "assets": [],
-  "dataSources": {
-    "component-storage": {
+  "dataSources": [
+    {
       "id": "data-variable-id",
       "records": [
         {
@@ -13,7 +13,7 @@ exports[`DataSource Storage .getProjectData ComponentDataVariable 1`] = `
         },
       ],
     },
-  },
+  ],
   "pages": [
     {
       "frames": [
@@ -64,8 +64,8 @@ exports[`DataSource Storage .getProjectData ComponentDataVariable 1`] = `
 exports[`DataSource Storage .loadProjectData ComponentDataVariable 1`] = `
 {
   "assets": [],
-  "dataSources": {
-    "component-storage": {
+  "dataSources": [
+    {
       "id": "data-variable-id",
       "records": [
         {
@@ -74,7 +74,7 @@ exports[`DataSource Storage .loadProjectData ComponentDataVariable 1`] = `
         },
       ],
     },
-  },
+  ],
   "pages": [
     {
       "frames": [

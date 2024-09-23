@@ -152,19 +152,19 @@ export default class DataSourceManager extends ItemManagerModule<ModuleConfig, D
 
   /**
    * Store data sources to a JSON object.
-   * @returns {Object} Stored data sources.
+   * @returns {Array} Stored data sources.
    */
   store() {
-    const data: ObjectAny = {};
+    const data: any[] = [];
     this.all.forEach((dataSource) => {
       const skipFromStorage = dataSource.get('skipFromStorage');
       if (!skipFromStorage) {
-        data[dataSource.id] = {
+        data.push({
           id: dataSource.id,
           name: dataSource.get('name' as any),
           records: dataSource.records.toJSON(),
           skipFromStorage,
-        };
+        });
       }
     });
 
