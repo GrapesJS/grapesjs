@@ -45,7 +45,8 @@ export default class StyleManagerSorter extends Sorter<Layers | Layer, LayerNode
 
     onLayerStartSort = (sourceNodes: LayerNode[]) => {
         this.em.clearSelection();
-        // We'll leave the old triggered event for now
+
+        // For backward compatibility, leave it to a single node
         const sourceNode = sourceNodes[0];
         this.em.trigger('sorter:drag:start', sourceNode?.element, sourceNode?.model, {
             sourceModels: sourceNodes.map(node => node.model)

@@ -85,17 +85,23 @@ export abstract class BaseComponentNode extends SortableTreeNode<Component> {
    */
   abstract get element(): HTMLElement | undefined;
 
+  restNodeState() {
+    this.clearState();
+    this.setContentEditable(false);
+    this.disableEditing();
+  }
+
   setContentEditable(value: boolean) {
     if (!this.element) return
     this.element.contentEditable = value ? 'true' : 'false';
   }
 
-  disableEditing() {
+  private disableEditing() {
     // @ts-ignore
     this.view?.disableEditing?.();
   }
 
-  clearState() {
+  private clearState() {
     this.model.set?.('status', '')
   }
 

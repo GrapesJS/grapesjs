@@ -92,9 +92,7 @@ export default class ComponentSorter extends Sorter<Component, BaseComponentNode
             if (!addedNode) continue
             legacyOnEndMove?.(addedNode!.model, this, data)
         }
-        targetNode.clearState();
-        targetNode.disableEditing();
-        targetNode.setContentEditable(false);
+        targetNode.restNodeState();
         this.placeholder.hide();
     }
 
@@ -124,14 +122,12 @@ export default class ComponentSorter extends Sorter<Component, BaseComponentNode
     */
     protected finalizeMove(): void {
         this.em?.Canvas.removeSpots(spotTarget);
-        this.sourceNodes?.forEach(node => node.clearState());
+        this.sourceNodes?.forEach(node => node.restNodeState());
         super.finalizeMove();
     }
 
     private onTargetChange = (oldTargetNode: BaseComponentNode | undefined, newTargetNode: BaseComponentNode | undefined) => {
-        oldTargetNode?.clearState();
-        oldTargetNode?.setContentEditable(false);
-        oldTargetNode?.disableEditing();
+        oldTargetNode?.restNodeState();
         if (!newTargetNode) {
             return
         }
@@ -139,7 +135,7 @@ export default class ComponentSorter extends Sorter<Component, BaseComponentNode
         this.targetIsText = newTargetNode.isTextNode();
         const insertingTextableIntoText = this.targetIsText && this.sourceNodes?.some(node => node.isTextable())
         if (insertingTextableIntoText) {
-            newTargetNode.setContentEditable(true)
+            newTargetNode.setContentEditable(true);
             this.placeholder.hide();
         } else {
             this.placeholder.show();
