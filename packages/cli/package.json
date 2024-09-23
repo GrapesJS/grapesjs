@@ -9,7 +9,8 @@
     "dist"
   ],
   "scripts": {
-    "build": "BUILD_MODE=production webpack --config ./webpack.cli.ts",
+    "postinstall": "pnpm run build",
+    "build": "cross-env BUILD_MODE=production webpack --config ./webpack.cli.ts",
     "build:watch": "webpack --config ./webpack.cli.ts --watch",
     "lint": "eslint src",
     "patch": "npm version patch -m 'Bump v%s'",
