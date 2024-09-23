@@ -12,7 +12,6 @@ exports[`DataSource Storage .getProjectData ComponentDataVariable 1`] = `
           "id": "data-variable-id",
         },
       ],
-      "shouldStoreInProject": true,
     },
   },
   "pages": [
@@ -74,7 +73,6 @@ exports[`DataSource Storage .loadProjectData ComponentDataVariable 1`] = `
           "id": "data-variable-id",
         },
       ],
-      "shouldStoreInProject": true,
     },
   },
   "pages": [

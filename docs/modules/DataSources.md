@@ -163,11 +163,11 @@ In this example, the `onRecordSetValue` transformer ensures that the `content` p
 
 GrapesJS allows you to control whether a DataSource should be stored statically in the project JSON. This is useful for managing persistent data across project saves and loads.
 
-### Using the `shouldStoreInProject` Key
+### Using the `skipFromStorage` Key
 
-When creating a DataSource, you can use the `shouldStoreInProject` key to specify whether it should be included in the project JSON.
+When creating a DataSource, you can use the `skipFromStorage` key to specify whether it should be included in the project JSON.
 
-**Example: Creating a DataSource with `shouldStoreInProject`**
+**Example: Creating a DataSource with `skipFromStorage`**
 
 ```ts
 const persistentDataSource = {
@@ -176,7 +176,6 @@ const persistentDataSource = {
     { id: 'id1', content: 'This data will be saved' },
     { id: 'id2', color: 'blue' },
   ],
-  shouldStoreInProject: true,
 };
 
 editor.DataSources.add(persistentDataSource);
@@ -186,7 +185,7 @@ const temporaryDataSource = {
   records: [
     { id: 'id1', content: 'This data will not be saved' },
   ],
-  shouldStoreInProject: false, // This is the default if not specified
+  skipFromStorage: true,
 };
 
 editor.DataSources.add(temporaryDataSource);
@@ -194,7 +193,7 @@ editor.DataSources.add(temporaryDataSource);
 
 In this example, `persistentDataSource` will be included in the project JSON when the project is saved, while `temporaryDataSource` will not.
 
-### Benefits of Using `shouldStoreInProject`
+### Benefits of Using `skipFromStorage`
 
 1. **Persistent Configuration**: Store configuration data that should persist across project saves and loads.
 2. **Default Data**: Include default data that should always be available in the project.
@@ -202,7 +201,7 @@ In this example, `persistentDataSource` will be included in the project JSON whe
 
 ### Accessing Stored DataSources
 
-When a project is loaded, GrapesJS will automatically restore the DataSources that were saved with `shouldStoreInProject: true`. You can then access and use these DataSources as usual.
+When a project is loaded, GrapesJS will automatically restore the DataSources that were saved with `skipFromStorage: true`. You can then access and use these DataSources as usual.
 
 ```ts
 // After loading a project
@@ -210,7 +209,7 @@ const loadedDataSource = editor.DataSources.get('persistent-datasource');
 console.log(loadedDataSource.getRecord('id1').get('content')); // Outputs: "This data will be saved"
 ```
 
-Remember that DataSources with `shouldStoreInProject: false` (or those without the key specified) will not be available after a project is loaded unless you add them programmatically.
+Remember that DataSources with `skipFromStorage: false` (or those without the key specified) will not be available after a project is loaded unless you add them programmatically.
 
 ## Benefits of Using DataSources
 

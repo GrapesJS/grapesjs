@@ -157,13 +157,13 @@ export default class DataSourceManager extends ItemManagerModule<ModuleConfig, D
   store() {
     const data: ObjectAny = {};
     this.all.forEach((dataSource) => {
-      const shouldStoreInProject = dataSource.get('shouldStoreInProject');
-      if (shouldStoreInProject) {
+      const skipFromStorage = dataSource.get('skipFromStorage');
+      if (!skipFromStorage) {
         data[dataSource.id] = {
           id: dataSource.id,
           name: dataSource.get('name' as any),
           records: dataSource.records.toJSON(),
-          shouldStoreInProject,
+          skipFromStorage,
         };
       }
     });

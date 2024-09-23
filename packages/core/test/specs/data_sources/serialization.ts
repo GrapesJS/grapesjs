@@ -18,14 +18,17 @@ describe('DataSource Serialization', () => {
       { id: 'id1', content: 'Hello World' },
       { id: 'id2', color: 'red' },
     ],
+    skipFromStorage: true,
   };
   const styleDataSource: DataSourceProps = {
     id: 'colors-data',
     records: [{ id: 'id1', color: 'red' }],
+    skipFromStorage: true,
   };
   const traitDataSource: DataSourceProps = {
     id: 'test-input',
     records: [{ id: 'id1', value: 'test-value' }],
+    skipFromStorage: true,
   };
 
   beforeEach(() => {

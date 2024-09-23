@@ -15,13 +15,12 @@ describe('DataSource Storage', () => {
   const storedDataSource: DataSourceProps = {
     id: 'component-storage',
     records: [{ id: 'id1', content: 'Hello World' }],
-    shouldStoreInProject: true,
   };
 
   const nonStoredDataSource: DataSourceProps = {
     id: 'component-non-storage',
     records: [{ id: 'id1', content: 'Hello World' }],
-    shouldStoreInProject: false,
+    skipFromStorage: true,
   };
 
   beforeEach(() => {
@@ -63,7 +62,6 @@ describe('DataSource Storage', () => {
         [storedDataSource.id]: {
           id: storedDataSource.id,
           records: storedDataSource.records,
-          shouldStoreInProject: true,
         },
       });
     });
@@ -77,7 +75,6 @@ describe('DataSource Storage', () => {
           [storedDataSource.id]: {
             id: storedDataSource.id,
             records: storedDataSource.records,
-            shouldStoreInProject: true,
           },
         },
         pages: [
