@@ -7,16 +7,19 @@ import Components from '../../dom_components/model/Components';
 import LayerManager from '..';
 import { DragDirection } from '../../utils/sorter/types';
 import LayersComponentNode from '../../utils/sorter/LayersComponentNode';
+import ComponentSorter from '../../utils/sorter/ComponentSorter';
 
 export default class ItemsView extends View {
   items: ItemView[];
-  opt: any;
+  opt: {
+    sorter: ComponentSorter<LayersComponentNode>;
+    [k: string]: any;
+  };
   config: any;
   parentView: ItemView;
   module: LayerManager;
   /** @ts-ignore */
   collection!: Components;
-  placeholderElement?: HTMLDivElement;
 
   constructor(opt: any = {}) {
     super(opt);
@@ -38,7 +41,7 @@ export default class ItemsView extends View {
     if (config.sortable && !this.opt.sorter) {
       const utils = em.Utils;
       const container = config.sortContainer || this.el;
-      this.placeholderElement = this.createPlaceholder(pfx);
+      const placeholderElement = this.createPlaceholder(pfx);
       this.opt.sorter = new utils.ComponentSorter({
         em,
         treeClass: LayersComponentNode,
@@ -48,11 +51,10 @@ export default class ItemsView extends View {
           itemSel: `.${pfx}layer`,
           pfx: config.pStylePrefix,
           document,
-          placeholderElement: this.placeholderElement,
+          placeholderElement: placeholderElement,
         },
         dragBehavior: {
           dragDirection: DragDirection.Vertical,
-          ignoreViewChildren: true,
           nested: true,
         },
       });

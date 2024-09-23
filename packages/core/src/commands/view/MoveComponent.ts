@@ -97,7 +97,6 @@ export default extend({}, SelectPosition, SelectComponent, {
     const doc = el.ownerDocument;
     const elements = models.map((model) => model?.view?.el);
     this.startSelectPosition(elements, doc, { onStart: this.onStart });
-    this.sorter.draggable = lastModel.get('draggable');
     this.sorter.eventHandlers.legacyOnMoveClb = this.onDrag;
     this.sorter.eventHandlers.legacyOnEndMove = this.onEndMoveFromModel.bind(this);
     this.stopSelectComponent();
@@ -134,7 +133,6 @@ export default extend({}, SelectPosition, SelectComponent, {
   rollback(e: any, force: boolean) {
     var key = e.which || e.keyCode;
     if (key == 27 || force) {
-      this.sorter.moved = false;
       this.sorter.cancelDrag();
     }
     return;

@@ -51,7 +51,7 @@ export class PlaceholderClass extends View {
     let left = 0;
     let width = '';
     let height = '';
-    this.setOrientation(elementDimension);
+    this.setOrientationForDimension(elementDimension);
     const { top: elTop, left: elLeft, height: elHeight, width: elWidth, dir } = elementDimension;
 
     if (!dir) {
@@ -77,7 +77,7 @@ export class PlaceholderClass extends View {
    * Sets the orientation of the placeholder based on the element dimensions.
    * @param {Dimension} elementDimension Dimensions of the element at the index.
    */
-  private setOrientation(elementDimension?: Dimension) {
+  private setOrientationForDimension(elementDimension?: Dimension) {
     this.el.classList.remove('vertical');
     this.el.classList.add('horizontal');
 

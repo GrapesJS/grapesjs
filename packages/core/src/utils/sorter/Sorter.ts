@@ -16,12 +16,6 @@ import {
 } from './types';
 import { SorterOptions } from './types';
 
-export type RequiredEmAndTreeClassPartialSorterOptions<T, NodeType extends SortableTreeNode<T>> = Partial<
-  SorterOptions<T, NodeType>
-> & {
-  em: EditorModel;
-  treeClass: new (model: T) => NodeType;
-};
 export default class Sorter<T, NodeType extends SortableTreeNode<T>> {
   em: EditorModel;
   treeClass: new (model: T) => NodeType;
@@ -139,7 +133,7 @@ export default class Sorter<T, NodeType extends SortableTreeNode<T>> {
       index: model && model.index?.(),
     });
 
-    // Only take a single value as the old sorted
+    // For backward compatibility, leave it to a single node
     this.em.trigger('sorter:drag:start', sourceElements[0], sourceModels[0]);
   }
 
@@ -211,8 +205,7 @@ export default class Sorter<T, NodeType extends SortableTreeNode<T>> {
   }
 
   /**
-   * Rollback to previous situation.
-   *
+   * Cancels the drag on Escape press ( nothing is dropped or moved )
    * @param {KeyboardEvent} e - The keyboard event object.
    */
   private rollback(e: KeyboardEvent) {

@@ -3,8 +3,7 @@ import EditorModel from '../../editor/model/Editor';
 import { isTextNode } from '../dom';
 import { matches as matchesMixin } from '../mixins';
 import { SortableTreeNode } from './SortableTreeNode';
-import { RequiredEmAndTreeClassPartialSorterOptions } from './Sorter';
-import { Dimension, Placement, DragDirection } from './types';
+import { Dimension, Placement, DragDirection, SorterOptions } from './types';
 
 /**
  * Find the position based on passed dimensions and coordinates
@@ -79,9 +78,6 @@ export function offset(el: HTMLElement) {
     left: rect.left + document.body.scrollLeft,
   };
 }
-export function isTextableActive(src: any, trg: any): boolean {
-  return !!(src?.get?.('textable') && trg?.isInstanceOf('text'));
-}
 /**
  * Returns true if the element matches with selector
  * @param {Element} el
@@ -106,35 +102,6 @@ export function closest(el: HTMLElement, selector: string): HTMLElement | undefi
     elem = elem.parentNode;
   }
 }
-/**
- * Sort according to the position in the dom
- * @param {Object} obj1 contains {model, parents}
- * @param {Object} obj2 contains {model, parents}
- */
-export function sort(obj1: any, obj2: any) {
-  // common ancesters
-  const ancesters = obj1.parents.filter((p: any) => obj2.parents.includes(p));
-  const ancester = ancesters[0];
-  if (!ancester) {
-    // this is never supposed to happen
-    return obj2.model.index() - obj1.model.index();
-  }
-  // find siblings in the common ancester
-  // the sibling is the element inside the ancester
-  const s1 = obj1.parents[obj1.parents.indexOf(ancester) - 1];
-  const s2 = obj2.parents[obj2.parents.indexOf(ancester) - 1];
-  // order according to the position in the DOM
-  return s2.index() - s1.index();
-}
-
-/**
- * Build an array of all the parents, including the component itself
- * @return {Model|null}
- */
-export function parents(model: any): any[] {
-  return model ? [model].concat(parents(model.parent())) : [];
-}
-
 /**
  * Determines if an element is in the normal flow of the document.
  * This checks whether the element is not floated or positioned in a way that removes it from the flow.
@@ -229,9 +196,7 @@ export function getDocument(em?: EditorModel, el?: HTMLElement) {
   return elDoc;
 }
 
-export function getMergedOptions<T, NodeType extends SortableTreeNode<T>>(
-  sorterOptions: RequiredEmAndTreeClassPartialSorterOptions<T, NodeType>,
-) {
+export function getMergedOptions<T, NodeType extends SortableTreeNode<T>>(sorterOptions: SorterOptions<T, NodeType>) {
   const defaultOptions = {
     containerContext: {
       container: '' as any,
@@ -253,7 +218,6 @@ export function getMergedOptions<T, NodeType extends SortableTreeNode<T>>(
     dragBehavior: {
       dragDirection: DragDirection.Vertical,
       nested: false,
-      ignoreViewChildren: false,
       selectOnEnd: true,
     },
     eventHandlers: {},

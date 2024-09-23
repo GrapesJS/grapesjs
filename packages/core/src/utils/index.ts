@@ -1,5 +1,4 @@
 import Dragger from './Dragger';
-import Sorter from './sorter/Sorter';
 import Resizer from './Resizer';
 import * as mixins from './mixins';
 import { Module } from '../abstract';
@@ -8,7 +7,7 @@ import ComponentSorter from './sorter/ComponentSorter';
 import StyleManagerSorter from './sorter/StyleManagerSorter';
 
 export default class UtilsModule extends Module {
-  Sorter = Sorter;
+  Sorter = ComponentSorter;
   Resizer = Resizer;
   Dragger = Dragger;
   ComponentSorter = ComponentSorter;

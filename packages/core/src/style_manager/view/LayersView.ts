@@ -1,5 +1,6 @@
 import { View } from '../../common';
 import EditorModel from '../../editor/model/Editor';
+import StyleManagerSorter from '../../utils/sorter/StyleManagerSorter';
 import { DragDirection } from '../../utils/sorter/types';
 import Layer from '../model/Layer';
 import Layers from '../model/Layers';
@@ -12,8 +13,7 @@ export default class LayersView extends View<Layer> {
   config: any;
   propertyView: PropertyStackView;
   items: LayerView[];
-  sorter: any;
-  placeholderElement: HTMLElement;
+  sorter: StyleManagerSorter;
 
   constructor(o: any) {
     super(o);
@@ -30,29 +30,26 @@ export default class LayersView extends View<Layer> {
     this.listenTo(coll, 'add', this.addTo);
     this.listenTo(coll, 'reset', this.reset);
     this.items = [];
-    this.placeholderElement = this.createPlaceholder(config.pStylePrefix);
+    const placeholderElement = this.createPlaceholder(config.pStylePrefix);
+    this.$el.append(placeholderElement);
 
     // For the Sorter
     const utils = em?.Utils;
-    this.sorter = utils
-      ? new utils.StyleManagerSorter({
-          em,
-          containerContext: {
-            container: this.el,
-            containerSel: `.${pfx}layers`,
-            itemSel: `.${pfx}layer`,
-            pfx: config.pStylePrefix,
-            document,
-            placeholderElement: this.placeholderElement,
-          },
-          dragBehavior: {
-            dragDirection: DragDirection.Vertical,
-            ignoreViewChildren: true,
-            nested: true,
-          },
-          positionOptions: {},
-        })
-      : '';
+    this.sorter = new utils.StyleManagerSorter({
+      em,
+      containerContext: {
+        container: this.el,
+        containerSel: `.${pfx}layers`,
+        itemSel: `.${pfx}layer`,
+        pfx: config.pStylePrefix,
+        document,
+        placeholderElement: placeholderElement,
+      },
+      dragBehavior: {
+        dragDirection: DragDirection.Vertical,
+        nested: false,
+      },
+    });
     // @ts-ignore
     coll.view = this;
     this.$el.data('model', coll);
@@ -125,7 +122,6 @@ export default class LayersView extends View<Layer> {
     this.collection.forEach((m) => this.addToCollection(m, frag));
     $el.append(frag);
     $el.attr('class', this.className!);
-    $el.append(this.placeholderElement);
 
     return this;
   }

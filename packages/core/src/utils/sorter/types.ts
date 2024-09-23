@@ -39,7 +39,6 @@ export interface PositionOptions {
   offsetTop?: number;
   offsetLeft?: number;
   canvasRelative?: boolean;
-  scale?: number;
   relative?: boolean;
 }
 
@@ -91,7 +90,6 @@ export interface SorterEventHandlers<NodeType> {
 
 export interface SorterDragBehaviorOptions {
   dragDirection: DragDirection;
-  ignoreViewChildren?: boolean;
   nested?: boolean;
   selectOnEnd?: boolean;
 }

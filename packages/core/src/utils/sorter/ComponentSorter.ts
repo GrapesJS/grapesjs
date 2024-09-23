@@ -13,7 +13,7 @@ const spotTarget = {
   type: targetSpotType,
 };
 
-export default class ComponentSorter extends Sorter<Component, BaseComponentNode> {
+export default class ComponentSorter<NodeType extends BaseComponentNode> extends Sorter<Component, NodeType> {
   targetIsText: boolean = false;
   constructor({
     em,
@@ -24,11 +24,11 @@ export default class ComponentSorter extends Sorter<Component, BaseComponentNode
     eventHandlers = {},
   }: {
     em: EditorModel;
-    treeClass: new (model: Component) => BaseComponentNode;
+    treeClass: new (model: Component) => NodeType;
     containerContext: SorterContainerContext;
     dragBehavior: SorterDragBehaviorOptions;
     positionOptions?: PositionOptions;
-    eventHandlers?: SorterEventHandlers<BaseComponentNode>;
+    eventHandlers?: SorterEventHandlers<NodeType>;
   }) {
     super({
       em,
@@ -38,22 +38,15 @@ export default class ComponentSorter extends Sorter<Component, BaseComponentNode
       dragBehavior,
       eventHandlers: {
         ...eventHandlers,
-        onStartSort: (sourceNodes: BaseComponentNode[], containerElement?: HTMLElement) => {
+        onStartSort: (sourceNodes: NodeType[], containerElement?: HTMLElement) => {
           eventHandlers.onStartSort?.(sourceNodes, containerElement);
           this.onStartSort();
         },
-        onDrop: (
-          targetNode: BaseComponentNode | undefined,
-          sourceNodes: BaseComponentNode[],
-          index: number | undefined,
-        ) => {
+        onDrop: (targetNode: NodeType | undefined, sourceNodes: NodeType[], index: number | undefined) => {
           eventHandlers.onDrop?.(targetNode, sourceNodes, index);
           this.onDrop(targetNode, sourceNodes, index);
         },
-        onTargetChange: (
-          oldTargetNode: BaseComponentNode | undefined,
-          newTargetNode: BaseComponentNode | undefined,
-        ) => {
+        onTargetChange: (oldTargetNode: NodeType | undefined, newTargetNode: NodeType | undefined) => {
           eventHandlers.onTargetChange?.(oldTargetNode, newTargetNode);
           this.onTargetChange(oldTargetNode, newTargetNode);
         },
@@ -77,11 +70,7 @@ export default class ComponentSorter extends Sorter<Component, BaseComponentNode
     }
   };
 
-  private onDrop = (
-    targetNode: BaseComponentNode | undefined,
-    sourceNodes: BaseComponentNode[],
-    index: number | undefined,
-  ) => {
+  private onDrop = (targetNode: NodeType | undefined, sourceNodes: NodeType[], index: number | undefined) => {
     if (!targetNode) return;
     index = typeof index === 'number' ? index : -1;
     const legacyOnEndMove = this.eventHandlers.legacyOnEndMove;
@@ -107,7 +96,7 @@ export default class ComponentSorter extends Sorter<Component, BaseComponentNode
     this.placeholder.hide();
   };
 
-  private addSourceNodeToTarget(sourceNode: BaseComponentNode, targetNode: BaseComponentNode, index: number) {
+  private addSourceNodeToTarget(sourceNode: NodeType, targetNode: NodeType, index: number) {
     if (!targetNode.canMove(sourceNode, index)) {
       return;
     }
@@ -137,10 +126,7 @@ export default class ComponentSorter extends Sorter<Component, BaseComponentNode
     super.finalizeMove();
   }
 
-  private onTargetChange = (
-    oldTargetNode: BaseComponentNode | undefined,
-    newTargetNode: BaseComponentNode | undefined,
-  ) => {
+  private onTargetChange = (oldTargetNode: NodeType | undefined, newTargetNode: NodeType | undefined) => {
     oldTargetNode?.restNodeState();
     if (!newTargetNode) {
       return;

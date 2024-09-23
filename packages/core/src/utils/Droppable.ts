@@ -5,6 +5,7 @@ import EditorModel from '../editor/model/Editor';
 import { getDocumentScroll, off, on } from './dom';
 import { DragDirection } from './sorter/types';
 import CanvasNewComponentNode from './sorter/CanvasNewComponentNode';
+import ComponentSorter from './sorter/ComponentSorter';
 
 // TODO move in sorter
 type SorterOptions = {
@@ -26,7 +27,7 @@ export default class Droppable {
   over?: boolean;
   dragStop?: DragStop;
   content: any;
-  sorter?: any;
+  sorter!: ComponentSorter<CanvasNewComponentNode>;
 
   constructor(em: EditorModel, rootEl?: HTMLElement) {
     this.em = em;
@@ -35,7 +36,7 @@ export default class Droppable {
     const els = Array.isArray(el) ? el : [el];
     this.el = els[0];
     this.counter = 0;
-    bindAll(this, 'handleDragEnter', 'handleDragOver', 'handleDrop', 'handleDragLeave');
+    bindAll(this, 'handleDragEnter', 'handleOnDrop', 'handleDragOver', 'handleDrop', 'handleDragLeave');
     els.forEach((el) => this.toggleEffects(el, true));
   }
 
@@ -156,25 +157,6 @@ export default class Droppable {
       dragStop = (cancel?: boolean) => dragger.stop(ev, { cancel });
       dragContent = (cnt: any) => (content = cnt);
     } else {
-      const handleOnDrop = (
-        targetNode: CanvasNewComponentNode | undefined,
-        sourceNodes: CanvasNewComponentNode[],
-        index: number | undefined,
-      ): void => {
-        if (!targetNode) return;
-        const insertingTextableIntoText =
-          targetNode.model?.isInstanceOf?.('text') && sourceNodes?.some((node) => node.model?.get?.('textable'));
-        let sourceModel;
-        if (insertingTextableIntoText) {
-          // @ts-ignore
-          sourceModel = targetNode.model?.getView?.()?.insertComponent?.(this.content, { action: 'add-component' });
-        } else {
-          sourceModel = targetNode.model.components().add(this.content, { at: index, action: 'add-component' });
-        }
-
-        this.handleDragEnd(sourceModel, dt);
-      };
-
       const sorter = new utils.ComponentSorter({
         em,
         treeClass: CanvasNewComponentNode,
@@ -188,7 +170,6 @@ export default class Droppable {
         },
         dragBehavior: {
           dragDirection: DragDirection.BothDirections,
-          ignoreViewChildren: true,
           nested: true,
         },
         positionOptions: {
@@ -196,7 +177,14 @@ export default class Droppable {
           canvasRelative: true,
         },
         eventHandlers: {
-          onDrop: handleOnDrop.bind(this),
+          onDrop: (
+            targetNode: CanvasNewComponentNode | undefined,
+            sourceNodes: CanvasNewComponentNode[],
+            index: number | undefined,
+          ) => {
+            const sourceModel = this.handleOnDrop(targetNode, sourceNodes, index);
+            this.handleDragEnd(sourceModel, dt);
+          },
           legacyOnEndMove: (model: any) => this.handleDragEnd(model, dt),
         },
       });
@@ -219,6 +207,10 @@ export default class Droppable {
     em.trigger('canvas:dragenter', dt, content);
   }
 
+  /**
+   * Generates a temporary model of the content being dragged for use with the sorter.
+   * @returns The temporary model representing the dragged content.
+   */
   private getTempDropModel(content: any) {
     const comps = this.em.Components.getComponents();
     const opts = {
@@ -233,6 +225,25 @@ export default class Droppable {
     dropModel = dropModel instanceof Array ? dropModel[0] : dropModel;
     dropModel.view?.$el.data('model', dropModel);
     return dropModel;
+  }
+
+  private handleOnDrop(
+    targetNode: CanvasNewComponentNode | undefined,
+    sourceNodes: CanvasNewComponentNode[],
+    index: number | undefined,
+  ) {
+    if (!targetNode) return;
+    const insertingTextableIntoText =
+      targetNode.model?.isInstanceOf?.('text') && sourceNodes?.some((node) => node.model?.get?.('textable'));
+    let sourceModel;
+    if (insertingTextableIntoText) {
+      // @ts-ignore
+      sourceModel = targetNode.model?.getView?.()?.insertComponent?.(this.content, { action: 'add-component' });
+    } else {
+      sourceModel = targetNode.model.components().add(this.content, { at: index, action: 'add-component' });
+    }
+
+    return sourceModel;
   }
 
   handleDragEnd(model: any, dt: any) {

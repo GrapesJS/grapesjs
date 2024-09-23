@@ -5,7 +5,7 @@ import { CommandObject } from './CommandAbstract';
 export default {
   /**
    * Start select position event
-   * @param {HTMLElement} sourceElements
+   * @param {HTMLElement[]} sourceElements
    * @private
    * */
   startSelectPosition(sourceElements: HTMLElement[], doc: Document, opts: any = {}) {
@@ -36,7 +36,7 @@ export default {
       });
 
     if (opts.onStart) this.sorter.eventHandlers.legacyOnStartSort = opts.onStart;
-    sourceElements && this.sorter.startSort(sourceElements);
+    sourceElements && sourceElements.length > 0 && this.sorter.startSort(sourceElements);
   },
 
   /**
@@ -60,7 +60,6 @@ export default {
     this.posTargetCollection = null;
     this.posIndex = this.posMethod == 'after' && this.cDim.length !== 0 ? this.posIndex + 1 : this.posIndex; //Normalize
     if (this.sorter) {
-      this.sorter.moved = 0;
       this.sorter.cancelDrag();
     }
     if (this.cDim) {

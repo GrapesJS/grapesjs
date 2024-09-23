@@ -77,7 +77,7 @@ export abstract class BaseComponentNode extends SortableTreeNode<Component> {
    * Abstract method to get the associated view of the component.
    * Subclasses must implement this method.
    */
-  abstract get view(): View<any, any>;
+  abstract get view(): any;
 
   /**
    * Abstract method to get the associated element of the component.

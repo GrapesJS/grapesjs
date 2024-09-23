@@ -4,7 +4,7 @@ import { SortableTreeNode } from './SortableTreeNode';
 
 /**
  * Represents a node in the tree of Layers or Layer components.
- * Extends the TreeSorterBase class for handling tree sorting logic.
+ * Extends the SortableTreeNode class for handling tree sorting logic.
  */
 export class LayerNode extends SortableTreeNode<Layer | Layers> {
   /**
@@ -95,7 +95,6 @@ export class LayerNode extends SortableTreeNode<Layer | Layers> {
    * Get the view associated with this LayerNode's model.
    * @returns The associated view or undefined if none.
    */
-  // TODO: Update with the correct type when available.
   get view(): any {
     return this.model.view;
   }

@@ -5,7 +5,6 @@ export default class LayersComponentNode extends BaseComponentNode {
    * Get the associated view of this component.
    * @returns The view associated with the component, or undefined if none.
    */
-  // TODO add the correct type
   get view(): any {
     return this.model.viewLayer;
   }
