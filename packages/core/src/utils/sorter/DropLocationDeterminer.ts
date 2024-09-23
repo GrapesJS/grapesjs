@@ -169,7 +169,7 @@ export class DropLocationDeterminer<T, NodeType extends SortableTreeNode<T>> ext
       this.eventHandlers.onTargetChange?.(lastTargetNode, hoveredNode);
     }
 
-    const childrenDimensions = targetChanged ? this.dimsFromTarget(hoveredNode) : lastChildrenDimensions!;
+    const childrenDimensions = targetChanged ? this.getChildrenDim(hoveredNode) : lastChildrenDimensions!;
     let { index, placement } = findPosition(childrenDimensions, mouseX, mouseY);
     const elementDimension = childrenDimensions[index];
     index = index + (placement == 'after' ? 1 : 0);
@@ -321,16 +321,6 @@ export class DropLocationDeterminer<T, NodeType extends SortableTreeNode<T>> ext
     off(container, 'dragstart', this.onDragStart);
     off(container, 'mousemove dragover', this.onMove);
     off(docs, 'mouseup dragend touchend', this.endDrag);
-  }
-
-  /**
-   * Get dimensions of nodes relative to the coordinates.
-   *
-   * @param {NodeType} targetNode - The target node.
-   * @private
-   */
-  private dimsFromTarget(targetNode: NodeType): Dimension[] {
-    return this.getChildrenDim(targetNode);
   }
 
   /**

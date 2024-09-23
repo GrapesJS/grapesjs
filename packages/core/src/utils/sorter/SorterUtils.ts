@@ -143,7 +143,7 @@ export function parents(model: any): any[] {
  * @private
  */
 export function isInFlow(el: HTMLElement, parent: HTMLElement = document.body): boolean {
-  return !!el || isStyleInFlow(el, parent);
+  return !!el && isStyleInFlow(el, parent);
 }
 
 /**
