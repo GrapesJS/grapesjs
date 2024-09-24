@@ -68,7 +68,7 @@
     "build": "npm run build-all",
     "build-all": "run-s build:*",
     "build:js": "node node_modules/grapesjs-cli/dist/cli.js build --patch=false --targets=\"> 1%, ie 11, safari 8, not dead\" --statsOutput=\"stats.json\" --localePath=\"src/i18n/locale\"",
-    "build:mjs": "BUILD_MODULE=true node node_modules/grapesjs-cli/dist/cli.js build --dts='skip' --patch=false --targets=\"> 1%, ie 11, safari 8, not dead\"",
+    "build:mjs": "cross-env BUILD_MODULE=true node node_modules/grapesjs-cli/dist/cli.js build --dts='skip' --patch=false --targets=\"> 1%, ie 11, safari 8, not dead\"",
     "build:css": "sass src/styles/scss/main.scss dist/css/grapes.min.css --no-source-map --style=compressed --load-path=node_modules",
     "ts:build": "node node_modules/grapesjs-cli/dist/cli.js build --dts='only' --patch=false",
     "ts:check": "tsc --noEmit --esModuleInterop dist/index.d.ts",
