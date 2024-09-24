@@ -126,6 +126,22 @@ const [dataSource, dataRecord, propPath] = dsm.fromPath('my_data_source_id.recor
 Returns **[DataSource?, DataRecord?, [String][7]?]** An array containing the data source,
 data record, and optional property path.
 
+## store
+
+Store data sources to a JSON object.
+
+Returns **[Object][6]** Stored data sources.
+
+## load
+
+Load data sources from a JSON object.
+
+### Parameters
+
+*   `data` **[Object][6]** The data object containing data sources.
+
+Returns **[Object][6]** Loaded data sources.
+
 [1]: #add
 
 [2]: #get

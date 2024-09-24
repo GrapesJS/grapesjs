@@ -1,9 +1,19 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`DataSource Serialization .getProjectData ComponentDataVariable 1`] = `
+exports[`DataSource Storage .getProjectData ComponentDataVariable 1`] = `
 {
   "assets": [],
-  "dataSources": [],
+  "dataSources": [
+    {
+      "id": "data-variable-id",
+      "records": [
+        {
+          "content": "Hello World",
+          "id": "data-variable-id",
+        },
+      ],
+    },
+  ],
   "pages": [
     {
       "frames": [
@@ -14,7 +24,7 @@ exports[`DataSource Serialization .getProjectData ComponentDataVariable 1`] = `
                 "components": [
                   {
                     "defaultValue": "default",
-                    "path": "component-serialization.id1.content",
+                    "path": "component-storage.id1.content",
                     "type": "data-variable",
                   },
                 ],
@@ -51,71 +61,20 @@ exports[`DataSource Serialization .getProjectData ComponentDataVariable 1`] = `
 }
 `;
 
-exports[`DataSource Serialization .getProjectData StyleDataVariable 1`] = `
+exports[`DataSource Storage .loadProjectData ComponentDataVariable 1`] = `
 {
   "assets": [],
-  "dataSources": [],
-  "pages": [
+  "dataSources": [
     {
-      "frames": [
+      "id": "data-variable-id",
+      "records": [
         {
-          "component": {
-            "components": [
-              {
-                "attributes": {
-                  "id": "data-variable-id",
-                },
-                "content": "Hello World",
-                "tagName": "h1",
-                "type": "text",
-              },
-            ],
-            "docEl": {
-              "tagName": "html",
-            },
-            "head": {
-              "type": "head",
-            },
-            "stylable": [
-              "background",
-              "background-color",
-              "background-image",
-              "background-repeat",
-              "background-attachment",
-              "background-position",
-              "background-size",
-            ],
-            "type": "wrapper",
-          },
+          "content": "Hello World Updated",
           "id": "data-variable-id",
         },
       ],
-      "id": "data-variable-id",
-      "type": "main",
     },
   ],
-  "styles": [
-    {
-      "selectors": [
-        "data-variable-id",
-      ],
-      "style": {
-        "color": {
-          "defaultValue": "black",
-          "path": "colors-data.id1.color",
-          "type": "data-variable",
-        },
-      },
-    },
-  ],
-  "symbols": [],
-}
-`;
-
-exports[`DataSource Serialization .getProjectData TraitDataVariable 1`] = `
-{
-  "assets": [],
-  "dataSources": [],
   "pages": [
     {
       "frames": [
@@ -123,18 +82,15 @@ exports[`DataSource Serialization .getProjectData TraitDataVariable 1`] = `
           "component": {
             "components": [
               {
-                "attributes": {
-                  "value": "test-value",
-                },
-                "attributes-data-variable": {
-                  "value": {
+                "components": [
+                  {
                     "defaultValue": "default",
-                    "path": "test-input.id1.value",
+                    "path": "component-storage.id1.content",
                     "type": "data-variable",
                   },
-                },
-                "tagName": "input",
-                "void": true,
+                ],
+                "tagName": "h1",
+                "type": "text",
               },
             ],
             "docEl": {

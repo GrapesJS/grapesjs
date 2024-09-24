@@ -73,6 +73,7 @@ const storableDeps: (new (em: EditorModel) => IModule & IStorableModule)[] = [
   CssComposer,
   PageManager,
   ComponentManager,
+  DataSourceManager,
 ];
 
 Extender({ $ });
