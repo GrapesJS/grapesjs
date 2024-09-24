@@ -26,7 +26,7 @@
     "@vuepress/types": "1.9.10",
     "documentation": "14.0.3",
     "postcss": "8",
-    "sass": "1.42.1",
+    "sass": "1.79.3",
     "vuepress": "1.9.10",
     "whatwg-fetch": "3.6.20"
   },
