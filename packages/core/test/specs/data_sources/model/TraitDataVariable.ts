@@ -200,7 +200,6 @@ describe('TraitDataVariable', () => {
       dsm.add(inputDataSource);
 
       const cmp = cmpRoot.append({
-        type: 'checkbox',
         tagName: 'input',
         attributes: { type: 'checkbox', name: 'my-checkbox' },
         traits: [

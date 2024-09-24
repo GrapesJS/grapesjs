@@ -71,12 +71,12 @@ describe('DataSource Storage', () => {
     test('ComponentDataVariable', () => {
       const componentProjectData: ProjectData = {
         assets: [],
-        dataSources: {
-          [storedDataSource.id]: {
+        dataSources: [
+          {
             id: storedDataSource.id,
             records: storedDataSource.records,
           },
-        },
+        ],
         pages: [
           {
             frames: [

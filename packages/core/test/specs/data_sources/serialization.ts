@@ -204,7 +204,7 @@ describe('DataSource Serialization', () => {
         ],
         styles: [],
         symbols: [],
-        dataSources: [],
+        dataSources: [componentDataSource],
       };
 
       editor.loadProjectData(componentProjectData);
@@ -270,6 +270,7 @@ describe('DataSource Serialization', () => {
           },
         ],
         symbols: [],
+        dataSources: [styleDataSource],
       };
 
       editor.loadProjectData(componentProjectData);
@@ -333,6 +334,7 @@ describe('DataSource Serialization', () => {
         ],
         styles: [],
         symbols: [],
+        dataSources: [traitDataSource],
       };
 
       editor.loadProjectData(componentProjectData);
