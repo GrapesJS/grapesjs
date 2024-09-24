@@ -204,7 +204,7 @@ describe('DataSource Serialization', () => {
         ],
         styles: [],
         symbols: [],
-        dataSources: {},
+        dataSources: [],
       };
 
       editor.loadProjectData(componentProjectData);
