@@ -28,8 +28,12 @@ export interface DataSourceProps {
   /**
    * DataSource validation and transformation factories.
    */
-
   transformers?: DataSourceTransformers;
+
+  /**
+   * If true will store the data source in the GrapesJS project.json file.
+   */
+  skipFromStorage?: boolean;
 }
 
 export interface DataSourceTransformers {
