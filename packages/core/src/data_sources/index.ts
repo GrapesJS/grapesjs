@@ -170,13 +170,6 @@ export default class DataSourceManager extends ItemManagerModule<ModuleConfig, D
     return { [this.storageKey]: data };
   }
 
-  clear(): this {
-    // Clearing data sources are a no-op as to preserve data sources.
-    // This is because data sources are optionally stored in the project data.
-    // and could be defined prior to loading the project data.
-    return this;
-  }
-
   /**
    * Load data sources from a JSON object.
    * @param {Object} data The data object containing data sources.
