@@ -5,45 +5,12 @@ import { DataVariableType } from '../../../src/data_sources/model/DataVariable';
 import EditorModel from '../../../src/editor/model/Editor';
 import { ProjectData } from '../../../src/storage_manager';
 import { DataSourceProps } from '../../../src/data_sources/types';
-import { setupTestEditor } from '../../common';
-
-// Filter out the unique ids and selectors replaced with 'data-variable-id'
-// Makes the snapshot more stable
-function filterObjectForSnapshot(obj: any, parentKey: string = ''): any {
-  const result: any = {};
-
-  for (const key in obj) {
-    if (key === 'id') {
-      result[key] = 'data-variable-id';
-      continue;
-    }
-
-    if (key === 'selectors') {
-      result[key] = obj[key].map(() => 'data-variable-id');
-      continue;
-    }
-
-    if (typeof obj[key] === 'object' && obj[key] !== null) {
-      if (Array.isArray(obj[key])) {
-        result[key] = obj[key].map((item: any) =>
-          typeof item === 'object' ? filterObjectForSnapshot(item, key) : item,
-        );
-      } else {
-        result[key] = filterObjectForSnapshot(obj[key], key);
-      }
-    } else {
-      result[key] = obj[key];
-    }
-  }
-
-  return result;
-}
+import { filterObjectForSnapshot, setupTestEditor } from '../../common';
 
 describe('DataSource Serialization', () => {
   let editor: Editor;
   let em: EditorModel;
   let dsm: DataSourceManager;
-  let fixtures: HTMLElement;
   let cmpRoot: ComponentWrapper;
   const componentDataSource: DataSourceProps = {
     id: 'component-serialization',
@@ -51,18 +18,21 @@ describe('DataSource Serialization', () => {
       { id: 'id1', content: 'Hello World' },
       { id: 'id2', color: 'red' },
     ],
+    skipFromStorage: true,
   };
   const styleDataSource: DataSourceProps = {
     id: 'colors-data',
     records: [{ id: 'id1', color: 'red' }],
+    skipFromStorage: true,
   };
   const traitDataSource: DataSourceProps = {
     id: 'test-input',
     records: [{ id: 'id1', value: 'test-value' }],
+    skipFromStorage: true,
   };
 
   beforeEach(() => {
-    ({ editor, em, dsm, cmpRoot, fixtures } = setupTestEditor());
+    ({ editor, em, dsm, cmpRoot } = setupTestEditor());
 
     dsm.add(componentDataSource);
     dsm.add(styleDataSource);
@@ -234,6 +204,7 @@ describe('DataSource Serialization', () => {
         ],
         styles: [],
         symbols: [],
+        dataSources: [componentDataSource],
       };
 
       editor.loadProjectData(componentProjectData);
@@ -299,6 +270,7 @@ describe('DataSource Serialization', () => {
           },
         ],
         symbols: [],
+        dataSources: [styleDataSource],
       };
 
       editor.loadProjectData(componentProjectData);
@@ -362,6 +334,7 @@ describe('DataSource Serialization', () => {
         ],
         styles: [],
         symbols: [],
+        dataSources: [traitDataSource],
       };
 
       editor.loadProjectData(componentProjectData);
