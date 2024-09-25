@@ -73,7 +73,6 @@ export default class ComponentSorter<NodeType extends BaseComponentNode> extends
   private onDrop = (targetNode: NodeType | undefined, sourceNodes: NodeType[], index: number | undefined) => {
     if (!targetNode) return;
     index = typeof index === 'number' ? index : -1;
-    const legacyOnEndMove = this.eventHandlers.legacyOnEndMove;
     const model = this.sourceNodes?.[0].model;
     const data = {
       target: model,
@@ -83,23 +82,20 @@ export default class ComponentSorter<NodeType extends BaseComponentNode> extends
       index: model && model.index(),
     };
     if (sourceNodes.length === 0) {
-      legacyOnEndMove?.(null, this, { ...data, cancelled: 1 });
+      this.eventHandlers.legacyOnEndMove?.(null, this, { ...data });
     }
 
     for (let idx = 0; idx < sourceNodes.length; idx++) {
       const sourceNode = sourceNodes[idx];
+      if (!targetNode.canMove(sourceNode, index)) continue;
       const addedNode = this.addSourceNodeToTarget(sourceNode, targetNode, index);
-      if (!addedNode) continue;
-      legacyOnEndMove?.(addedNode!.model, this, data);
+      this.eventHandlers.legacyOnEndMove?.(addedNode!.model, this, data);
     }
     targetNode.restNodeState();
     this.placeholder.hide();
   };
 
   private addSourceNodeToTarget(sourceNode: NodeType, targetNode: NodeType, index: number) {
-    if (!targetNode.canMove(sourceNode, index)) {
-      return;
-    }
     const parent = sourceNode.getParent();
     let initialSourceIndex = -1;
     if (parent) {
