@@ -104,14 +104,14 @@ export default class ComponentSorter<NodeType extends BaseComponentNode> extends
     let initialSourceIndex = -1;
     if (parent) {
       initialSourceIndex = parent.indexOfChild(sourceNode);
-      parent.removeChildAt(initialSourceIndex);
+      parent.removeChildAt(initialSourceIndex, { temporary: true });
     }
     const isSameCollection = parent?.model.cid === targetNode.model.cid;
     if (isSameCollection && initialSourceIndex < index) {
       index--;
     }
 
-    const addedNode = targetNode.addChildAt(sourceNode, index);
+    const addedNode = targetNode.addChildAt(sourceNode, index, { action: 'move-component' });
     return addedNode;
   }
 

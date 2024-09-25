@@ -32,14 +32,14 @@ export abstract class BaseComponentNode extends SortableTreeNode<Component> {
    * @param node - The child component to add.
    * @param index - The position to insert the child at.
    */
-  addChildAt(node: BaseComponentNode, index: number): BaseComponentNode {
+  addChildAt(node: BaseComponentNode, index: number, options: { action: string } = { action: 'add-component' }): BaseComponentNode {
     const insertingTextableIntoText = this.model?.isInstanceOf?.('text') && node?.model?.get?.('textable');
     if (insertingTextableIntoText) {
       // @ts-ignore
-      return this.model?.getView?.()?.insertComponent?.(node?.model, { action: 'add-component' });
+      return this.model?.getView?.()?.insertComponent?.(node?.model, { action: options.action });
     }
 
-    const newModel = this.model.components().add(node.model, { at: index });
+    const newModel = this.model.components().add(node.model, { at: index, action: options.action });
     return new (this.constructor as any)(newModel);
   }
 
@@ -47,10 +47,10 @@ export abstract class BaseComponentNode extends SortableTreeNode<Component> {
    * Remove a child component at a particular index.
    * @param index - The index to remove the child component from.
    */
-  removeChildAt(index: number): void {
+  removeChildAt(index: number, options: { temporary: boolean } = { temporary: false }): void {
     const child = this.model.components().at(index);
     if (child) {
-      this.model.components().remove(child);
+      this.model.components().remove(child, options as any);
     }
   }
 
