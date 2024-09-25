@@ -177,14 +177,7 @@ export default class Droppable {
           canvasRelative: true,
         },
         eventHandlers: {
-          onDrop: (
-            targetNode: CanvasNewComponentNode | undefined,
-            sourceNodes: CanvasNewComponentNode[],
-            index: number | undefined,
-          ) => {
-            const sourceModel = this.handleOnDrop(targetNode, sourceNodes, index);
-            this.handleDragEnd(sourceModel, dt);
-          },
+          onDrop: this.handleOnDrop,
           legacyOnEndMove: (model: any) => this.handleDragEnd(model, dt),
         },
       });
@@ -219,8 +212,7 @@ export default class Droppable {
       avoidUpdateStyle: 1,
     };
     const tempModel = comps.add(content, { ...opts, temporary: true });
-    // @ts-ignore
-    let dropModel = comps.remove(tempModel, opts as any);
+    let dropModel = comps.remove(tempModel, { ...opts, temporary: true } as any);
     // @ts-ignore
     dropModel = dropModel instanceof Array ? dropModel[0] : dropModel;
     dropModel.view?.$el.data('model', dropModel);
