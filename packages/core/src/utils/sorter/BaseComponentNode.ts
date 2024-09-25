@@ -32,7 +32,11 @@ export abstract class BaseComponentNode extends SortableTreeNode<Component> {
    * @param node - The child component to add.
    * @param index - The position to insert the child at.
    */
-  addChildAt(node: BaseComponentNode, index: number, options: { action: string } = { action: 'add-component' }): BaseComponentNode {
+  addChildAt(
+    node: BaseComponentNode,
+    index: number,
+    options: { action: string } = { action: 'add-component' },
+  ): BaseComponentNode {
     const insertingTextableIntoText = this.model?.isInstanceOf?.('text') && node?.model?.get?.('textable');
     if (insertingTextableIntoText) {
       // @ts-ignore

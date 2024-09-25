@@ -171,6 +171,7 @@ export default class Sorter<T, NodeType extends SortableTreeNode<T>> {
    * Called when the drag operation should be cancelled
    */
   cancelDrag(): void {
+    this.triggerOnEndMoveAfterCancel();
     this.dropLocationDeterminer.cancelDrag();
     this.finalizeMove();
   }
@@ -215,5 +216,19 @@ export default class Sorter<T, NodeType extends SortableTreeNode<T>> {
     if (e.key === ESC_KEY) {
       this.cancelDrag();
     }
+  }
+
+  // For the old sorter
+  private triggerOnEndMoveAfterCancel() {
+    const model = this.sourceNodes?.[0].model;
+    const data = {
+      target: model,
+      // @ts-ignore
+      parent: model && model.parent(),
+      // @ts-ignore
+      index: model && model.index(),
+    };
+
+    this.eventHandlers.legacyOnEndMove?.(null, this, { ...data, cancelled: 1 });
   }
 }
