@@ -125,9 +125,11 @@ export class DropLocationDeterminer<T, NodeType extends SortableTreeNode<T>> ext
   }
 
   private triggerLegacyOnMoveCallback(mouseEvent: MouseEvent, index: number) {
+    // For backward compatibility, leave it to a single node
+    const model = this.sourceNodes[0]?.model;
     this.eventHandlers.legacyOnMoveClb?.({
       event: mouseEvent,
-      target: this.sourceNodes.map((node) => node.model),
+      target: model,
       parent: this.lastMoveData.lastTargetNode?.model,
       index: index,
     });
@@ -257,19 +259,19 @@ export class DropLocationDeterminer<T, NodeType extends SortableTreeNode<T>> ext
     const firstSourceNode = this.sourceNodes[0];
     this.em.trigger('sorter:drag:end', {
       targetCollection: targetNode ? targetNode.getChildren() : null,
-      modelToDrop: firstSourceNode.model,
+      modelToDrop: firstSourceNode?.model,
       warns: [''],
       validResult: {
         result: true,
         src: this.sourceNodes.map((node) => node.element),
-        srcModel: firstSourceNode.model,
+        srcModel: firstSourceNode?.model,
         trg: targetNode?.element,
         trgModel: targetNode?.model,
         draggable: true,
         droppable: true,
       },
       dst: targetNode?.element,
-      srcEl: firstSourceNode.element,
+      srcEl: firstSourceNode?.element,
     });
   }
 
@@ -304,8 +306,8 @@ export class DropLocationDeterminer<T, NodeType extends SortableTreeNode<T>> ext
       const firstSource = this.sourceNodes[0];
       this.em.trigger('sorter:drag:validation', {
         valid: canMove,
-        src: firstSource.element,
-        srcModel: firstSource.model,
+        src: firstSource?.element,
+        srcModel: firstSource?.model,
         trg: finalNode.element,
         trgModel: finalNode.model,
       });

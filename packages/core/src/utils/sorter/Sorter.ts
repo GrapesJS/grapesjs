@@ -36,7 +36,10 @@ export default class Sorter<T, NodeType extends SortableTreeNode<T>> {
     this.containerContext = mergedOptions.containerContext;
     this.positionOptions = mergedOptions.positionOptions;
     this.dragBehavior = mergedOptions.dragBehavior;
-    this.eventHandlers = mergedOptions.eventHandlers;
+    this.eventHandlers = {
+      ...mergedOptions.eventHandlers,
+      onPlaceholderPositionChange: this.handlePlaceholderMove,
+    };
 
     this.em = sorterOptions.em;
     this.treeClass = sorterOptions.treeClass;
@@ -50,10 +53,7 @@ export default class Sorter<T, NodeType extends SortableTreeNode<T>> {
       containerContext: this.containerContext,
       positionOptions: this.positionOptions,
       dragDirection: this.dragBehavior.dragDirection,
-      eventHandlers: {
-        ...this.eventHandlers,
-        onPlaceholderPositionChange: this.handlePlaceholderMove,
-      },
+      eventHandlers: this.eventHandlers,
     });
   }
 
@@ -123,7 +123,7 @@ export default class Sorter<T, NodeType extends SortableTreeNode<T>> {
     this.eventHandlers.onStartSort?.(this.sourceNodes, this.containerContext.container);
 
     // For backward compatibility, leave it to a single node
-    const model = this.sourceNodes?.[0].model;
+    const model = this.sourceNodes[0]?.model;
     this.eventHandlers.legacyOnStartSort?.({
       sorter: this,
       target: model,
