@@ -177,8 +177,13 @@ export default class Droppable {
           canvasRelative: true,
         },
         eventHandlers: {
-          onDrop: this.handleOnDrop,
-          legacyOnEndMove: (model: any) => this.handleDragEnd(model, dt),
+          onDrop: (targetNode: CanvasNewComponentNode | undefined,
+            sourceNodes: CanvasNewComponentNode[],
+            index: number | undefined,
+          ) => {
+            const addedModel = this.handleOnDrop(targetNode, sourceNodes, index);
+            this.handleDragEnd(addedModel, dt)
+          },
         },
       });
       const sorterOptions = this.getSorterOptions?.(sorter);
@@ -227,15 +232,15 @@ export default class Droppable {
     if (!targetNode) return;
     const insertingTextableIntoText =
       targetNode.model?.isInstanceOf?.('text') && sourceNodes?.some((node) => node.model?.get?.('textable'));
-    let sourceModel;
+    let model;
     if (insertingTextableIntoText) {
       // @ts-ignore
-      sourceModel = targetNode.model?.getView?.()?.insertComponent?.(this.content, { action: 'add-component' });
+      model = targetNode.model?.getView?.()?.insertComponent?.(this.content, { action: 'add-component' });
     } else {
-      sourceModel = targetNode.model.components().add(this.content, { at: index, action: 'add-component' });
+      model = targetNode.model.components().add(this.content, { at: index, action: 'add-component' });
     }
 
-    return sourceModel;
+    return model;
   }
 
   handleDragEnd(model: any, dt: any) {
