@@ -48,9 +48,7 @@ export default class StyleManagerSorter extends Sorter<Layers | Layer, LayerNode
 
     // For backward compatibility, leave it to a single node
     const sourceNode = sourceNodes[0];
-    this.em.trigger('sorter:drag:start', sourceNode?.element, sourceNode?.model, {
-      sourceModels: sourceNodes.map((node) => node.model),
-    });
+    this.em.trigger('sorter:drag:start', sourceNode?.element, sourceNode?.model);
   };
 
   onLayerDrop = (targetNode: LayerNode | undefined, sourceNodes: LayerNode[], index: number | undefined) => {
