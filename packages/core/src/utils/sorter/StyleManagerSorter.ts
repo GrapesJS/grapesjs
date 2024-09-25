@@ -34,9 +34,8 @@ export default class StyleManagerSorter extends Sorter<Layers | Layer, LayerNode
           eventHandlers.onDrop?.(targetNode, sourceNodes, index);
           this.onLayerDrop(targetNode, sourceNodes, index);
         },
-        onTargetChange: (oldTargetNode: LayerNode | undefined, newTargetNode: LayerNode | undefined) => {
-          eventHandlers.onTargetChange?.(oldTargetNode, newTargetNode);
-          this.onTargetChange(oldTargetNode, newTargetNode);
+        onEndMove: () => { 
+          this.placeholder.hide();
         },
         ...eventHandlers,
       },
@@ -49,6 +48,7 @@ export default class StyleManagerSorter extends Sorter<Layers | Layer, LayerNode
     // For backward compatibility, leave it to a single node
     const sourceNode = sourceNodes[0];
     this.em.trigger('sorter:drag:start', sourceNode?.element, sourceNode?.model);
+    this.placeholder.show();
   };
 
   onLayerDrop = (targetNode: LayerNode | undefined, sourceNodes: LayerNode[], index: number | undefined) => {
@@ -72,13 +72,5 @@ export default class StyleManagerSorter extends Sorter<Layers | Layer, LayerNode
       targetNode.addChildAt(sourceNode, index);
     }
     this.placeholder.hide();
-  };
-
-  private onTargetChange = (oldTargetNode: LayerNode | undefined, newTargetNode: LayerNode | undefined) => {
-    if (!newTargetNode) {
-      this.placeholder.hide();
-    } else {
-      this.placeholder.show();
-    }
   };
 }

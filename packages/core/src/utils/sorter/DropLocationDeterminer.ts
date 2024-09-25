@@ -95,13 +95,8 @@ export class DropLocationDeterminer<T, NodeType extends SortableTreeNode<T>> ext
     this.eventHandlers.onMouseMove?.(mouseEvent);
     const { mouseXRelativeToContainer: mouseX, mouseYRelativeToContainer: mouseY } =
       this.getMousePositionRelativeToContainer(mouseEvent);
-    const lastTargetNode = this.lastMoveData.lastTargetNode;
     const targetNode = this.getTargetNode(mouseEvent);
     if (!targetNode) {
-      if (lastTargetNode) {
-        this.eventHandlers.onTargetChange?.(lastTargetNode, undefined);
-        this.restLastMoveData();
-      }
       this.triggerLegacyOnMoveCallback(mouseEvent, 0);
       this.triggerMoveEvent(mouseX, mouseY);
 
