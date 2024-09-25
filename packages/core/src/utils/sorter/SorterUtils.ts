@@ -87,6 +87,37 @@ export function offset(el: HTMLElement) {
 export function matches(el: HTMLElement, selector: string): boolean {
   return matchesMixin.call(el, selector);
 }
+
+/**
+ * Sort according to the position in the dom
+ * @param {Object} model2
+ * @param {Object} model1
+ */
+export function sortDom(model1: any, model2: any) {
+  const model1Parents = parents(model1)
+  const model2Parents = parents(model2)
+  // common ancesters
+  const ancesters = model2Parents.filter((p: any) => model1Parents.includes(p));
+  const ancester = ancesters[0];
+  if (!ancester) {
+    // this is never supposed to happen
+    return model1.model.index() - model2.model.index();
+  }
+  // find siblings in the common ancester
+  // the sibling is the element inside the ancester
+  const s1 = model2Parents[model2Parents.indexOf(ancester) - 1];
+  const s2 = model1Parents[model1Parents.indexOf(ancester) - 1];
+  // order according to the position in the DOM
+  return s2.index() - s1.index();
+}
+/**
+ * Build an array of all the parents, including the component itself
+ * @return {Model|null}
+ */
+function parents(model: any): any[] {
+  return model ? [model].concat(parents(model.parent())) : [];
+}
+
 /**
  * Closest parent
  * @param {Element} el

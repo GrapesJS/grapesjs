@@ -5,7 +5,7 @@ import { off, on } from '../dom';
 import { SortableTreeNode } from './SortableTreeNode';
 import { DropLocationDeterminer } from './DropLocationDeterminer';
 import { PlaceholderClass } from './PlaceholderClass';
-import { getMergedOptions, getDocument, matches, closest } from './SorterUtils';
+import { getMergedOptions, getDocument, matches, closest, sortDom } from './SorterUtils';
 import {
   SorterContainerContext,
   PositionOptions,
@@ -105,7 +105,8 @@ export default class Sorter<T, NodeType extends SortableTreeNode<T>> {
     const validSourceElements = sourceElements.map((element) => this.findValidSourceElement(element));
 
     const sourceModels: T[] = validSourceElements.map((element) => $(element).data('model'));
-    const sourceNodes = sourceModels.map((model) => new this.treeClass(model));
+    const sortedModels = sourceModels.sort(sortDom);
+    const sourceNodes = sortedModels.map((model) => new this.treeClass(model));
     this.sourceNodes = sourceNodes;
     const uniqueDocs = new Set<Document>();
     validSourceElements.forEach((element) => {

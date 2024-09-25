@@ -93,18 +93,21 @@ export default class ComponentSorter<NodeType extends BaseComponentNode> extends
 
   /**
    * Handles the addition of multiple source nodes to the target node.
-   * If the move is valid, adds the nodes at the specified index.
+   * If the move is valid, adds the nodes at the specified index and increments the index.
    * 
    * @param targetNode - The target node where source nodes will be added.
    * @param sourceNodes - The nodes being added.
-   * @param index - The index at which to add the source nodes.
+   * @param index - The initial index at which to add the source nodes.
    * @returns The list of successfully added nodes.
    */
   private handleNodeAddition(targetNode: NodeType, sourceNodes: NodeType[], index: number): NodeType[] {
     return sourceNodes.reduce((addedNodes, sourceNode) => {
       if (this.canMoveNode(targetNode, sourceNode, index)) {
         const addedNode = this.moveNode(targetNode, sourceNode, index);
-        if (addedNode) addedNodes.push(addedNode);
+        if (addedNode) {
+          addedNodes.push(addedNode);
+          index++; // Increment the index after a successful addition
+        }
       }
       return addedNodes;
     }, [] as NodeType[]);
