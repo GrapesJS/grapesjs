@@ -29,22 +29,22 @@ interface DropLocationDeterminerOptions<T, NodeType extends SortableTreeNode<T>>
  */
 type LastMoveData<NodeType> =
   | {
-      /** The target node under the mouse pointer during the last move. */
-      lastTargetNode: NodeType;
-      /** The index where the placeholder or dragged element should be inserted. */
-      lastIndex: number;
-      /** Placement relative to the target ('before' or 'after'). */
-      lastPlacement: Placement;
-      /** The dimensions of the child elements within the target node. */
-      lastChildrenDimensions: Dimension[];
-    }
+    /** The target node under the mouse pointer during the last move. */
+    lastTargetNode: NodeType;
+    /** The index where the placeholder or dragged element should be inserted. */
+    lastIndex: number;
+    /** Placement relative to the target ('before' or 'after'). */
+    lastPlacement: Placement;
+    /** The dimensions of the child elements within the target node. */
+    lastChildrenDimensions: Dimension[];
+  }
   | {
-      /** Indicates that there is no valid target node. */
-      lastTargetNode: undefined;
-      lastIndex: undefined;
-      lastPlacement: undefined;
-      lastChildrenDimensions: undefined;
-    };
+    /** Indicates that there is no valid target node. */
+    lastTargetNode: undefined;
+    lastIndex: undefined;
+    lastPlacement: undefined;
+    lastChildrenDimensions: undefined;
+  };
 
 export class DropLocationDeterminer<T, NodeType extends SortableTreeNode<T>> extends View {
   em: EditorModel;
@@ -172,9 +172,24 @@ export class DropLocationDeterminer<T, NodeType extends SortableTreeNode<T>> ext
       this.eventHandlers.onTargetChange?.(lastTargetNode, hoveredNode);
     }
 
-    const childrenDimensions = targetChanged ? this.getChildrenDim(hoveredNode) : lastChildrenDimensions!;
-    let { index, placement } = findPosition(childrenDimensions, mouseX, mouseY);
-    const elementDimension = childrenDimensions[index];
+    let hoveredNodeDimensions, index, placement: Placement;
+
+    const children = hoveredNode.getChildren();
+    const nodeHasChildren = children && children.length > 0;
+    if (nodeHasChildren) {
+      let childrenDimensions = targetChanged ? this.getChildrenDim(hoveredNode) : lastChildrenDimensions!;
+      ({ index, placement } = findPosition(childrenDimensions, mouseX, mouseY));
+
+      hoveredNodeDimensions = childrenDimensions;
+    } else {
+      const hovedElementDimensions = targetChanged ? [this.getDim(hoveredNode.element!)] : lastChildrenDimensions!;
+      index = 0;
+      placement = 'inside';
+
+      hoveredNodeDimensions = hovedElementDimensions;
+    }
+
+    const elementDimension = hoveredNodeDimensions[index];
     index = index + (placement == 'after' ? 1 : 0);
 
     if (this.hasDropPositionChanged(targetChanged, index, placement)) {
@@ -183,7 +198,7 @@ export class DropLocationDeterminer<T, NodeType extends SortableTreeNode<T>> ext
 
     this.lastMoveData = {
       lastTargetNode: hoveredNode,
-      lastChildrenDimensions: childrenDimensions,
+      lastChildrenDimensions: hoveredNodeDimensions,
       lastIndex: index,
       lastPlacement: placement,
     };
@@ -335,25 +350,14 @@ export class DropLocationDeterminer<T, NodeType extends SortableTreeNode<T>> ext
    * */
   private getChildrenDim(targetNode: NodeType) {
     const dims: Dimension[] = [];
-    const containerOffset = this.containerOffset;
     const targetElement = targetNode.element;
     if (!!!targetElement) {
       return [];
     }
 
     const children = targetNode.getChildren();
-    // If no children, just use the dimensions of the target element
     if (!children || children.length === 0) {
-      const targetDimensions = this.getDim(
-        targetElement,
-        containerOffset.left,
-        containerOffset.top,
-        this.positionOptions.relative!,
-        !!this.positionOptions.canvasRelative,
-        this.positionOptions.windowMargin!,
-        this.em,
-      );
-      return [targetDimensions];
+      return [];
     }
 
     each(children, (sortableTreeNode, i) => {
@@ -366,16 +370,7 @@ export class DropLocationDeterminer<T, NodeType extends SortableTreeNode<T>> ext
         return;
       }
 
-      // TODO
-      const dim = this.getDim(
-        el,
-        containerOffset.left,
-        containerOffset.top,
-        this.positionOptions.relative!,
-        !!this.positionOptions.canvasRelative,
-        this.positionOptions.windowMargin!,
-        this.em,
-      );
+      const dim = this.getDim(el);
       let dir = this.dragDirection;
       let dirValue: boolean;
 
@@ -451,18 +446,15 @@ export class DropLocationDeterminer<T, NodeType extends SortableTreeNode<T>> ext
    */
   private getDim(
     el: HTMLElement,
-    elL: number,
-    elT: number,
-    relative: boolean,
-    canvasRelative: boolean,
-    windowMargin: number,
-    em?: EditorModel,
   ): Dimension {
+    const em = this.em;
+    const relative = this.positionOptions.relative;
+    const windowMargin = this.positionOptions.windowMargin;
     const canvas = em?.Canvas;
     const offsets = canvas ? canvas.getElementOffsets(el) : {};
     let top, left, height, width;
 
-    if (canvasRelative && em) {
+    if (this.positionOptions.canvasRelative && this.em) {
       const pos = canvas!.getElementPos(el, { noScroll: 1 })!;
       top = pos.top; // - offsets.marginTop;
       left = pos.left; // - offsets.marginLeft;
@@ -470,8 +462,8 @@ export class DropLocationDeterminer<T, NodeType extends SortableTreeNode<T>> ext
       width = pos.width; // + offsets.marginLeft + offsets.marginRight;
     } else {
       var o = offset(el);
-      top = relative ? el.offsetTop : o.top - (windowMargin ? -1 : 1) * elT;
-      left = relative ? el.offsetLeft : o.left - (windowMargin ? -1 : 1) * elL;
+      top = relative ? el.offsetTop : o.top - (windowMargin ? -1 : 1) * this.containerOffset.top;
+      left = relative ? el.offsetLeft : o.left - (windowMargin ? -1 : 1) * this.containerOffset.left;
       height = el.offsetHeight;
       width = el.offsetWidth;
     }

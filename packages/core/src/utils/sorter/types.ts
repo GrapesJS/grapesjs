@@ -13,7 +13,7 @@ export interface Dimension {
   indexEl?: number;
 }
 
-export type Placement = 'before' | 'after';
+export type Placement = 'inside' | 'before' | 'after';
 
 export enum DragDirection {
   Vertical = 'Vertical',

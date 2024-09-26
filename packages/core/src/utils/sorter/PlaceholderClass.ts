@@ -52,21 +52,41 @@ export class PlaceholderClass extends View {
     let width = '';
     let height = '';
     this.setOrientationForDimension(elementDimension);
-    const { top: elTop, left: elLeft, height: elHeight, width: elWidth, dir } = elementDimension;
+    const { top: elTop, left: elLeft, height: elHeight, width: elWidth, dir, offsets } = elementDimension;
 
-    if (!dir) {
-      // If element is not in flow (e.g., a floating element)
-      width = 'auto';
-      height = elHeight - marginOffset * 2 + unit;
-      top = elTop + marginOffset;
-      left = placement === 'before' ? elLeft - marginOffset : elLeft + elWidth - marginOffset;
+    if (placement === 'inside') {
+      this.setOrientation('horizontal');
+      if (!this.allowNesting) {
+        this.hide()
+        return;
+      }
+      const defaultMargin = 5;
+      const paddingTop = offsets?.paddingTop || defaultMargin;
+      const paddingLeft = offsets?.paddingLeft || defaultMargin;
+      const borderTopWidth = offsets?.borderTopWidth || 0;
+      const borderLeftWidth = offsets?.borderLeftWidth || 0;
+      const borderRightWidth = offsets?.borderRightWidth || 0;
 
-      this.setToVertical();
-    } else {
-      width = elWidth + unit;
+      const borderWidth = borderLeftWidth + borderRightWidth;
+      top = elTop + paddingTop + borderTopWidth;
+      left = elLeft + paddingLeft + borderLeftWidth;
+      width = elWidth - paddingLeft * 2 - borderWidth + 'px';
       height = 'auto';
-      top = placement === 'before' ? elTop - marginOffset : elTop + elHeight - marginOffset;
-      left = elLeft;
+    } else {
+      if (!dir) {
+        // If element is not in flow (e.g., a floating element)
+        width = 'auto';
+        height = elHeight - marginOffset * 2 + unit;
+        top = elTop + marginOffset;
+        left = placement === 'before' ? elLeft - marginOffset : elLeft + elWidth - marginOffset;
+
+        this.setOrientation('vertical');
+      } else {
+        width = elWidth + unit;
+        height = 'auto';
+        top = placement === 'before' ? elTop - marginOffset : elTop + elHeight - marginOffset;
+        left = elLeft;
+      }
     }
 
     this.updateStyles(top, left, width, height);
@@ -82,42 +102,17 @@ export class PlaceholderClass extends View {
     this.el.classList.add('horizontal');
 
     if (elementDimension && !elementDimension.dir) {
-      this.setToVertical();
+      this.setOrientation('vertical');
     }
   }
 
   /**
    * Sets the placeholder's class to vertical.
    */
-  private setToVertical() {
+  private setOrientation(orientation: 'horizontal' | 'vertical') {
     this.el.classList.remove('horizontal');
-    this.el.classList.add('vertical');
-  }
-
-  /**
-   * Handles the case where the placeholder is nested inside a component.
-   * @param {Dimension} targetDimension Target element dimensions.
-   * @param {number} marginOffset Margin offset value.
-   */
-  private handleNestedPlaceholder(marginOffset: number, targetDimension?: Dimension) {
-    if (!this.allowNesting || !targetDimension) {
-      this.el.style.display = 'none';
-      return;
-    }
-
-    const { top: trgTop, left: trgLeft, width: trgWidth, offsets } = targetDimension;
-    const paddingTop = offsets?.paddingTop || marginOffset;
-    const paddingLeft = offsets?.paddingLeft || marginOffset;
-    const borderTopWidth = offsets?.borderTopWidth || 0;
-    const borderLeftWidth = offsets?.borderLeftWidth || 0;
-    const borderRightWidth = offsets?.borderRightWidth || 0;
-
-    const borderWidth = borderLeftWidth + borderRightWidth;
-    const top = trgTop + paddingTop + borderTopWidth;
-    const left = trgLeft + paddingLeft + borderLeftWidth;
-    const width = trgWidth - paddingLeft * 2 - borderWidth + 'px';
-
-    this.updateStyles(top, left, width, 'auto');
+    this.el.classList.remove('vertical');
+    this.el.classList.add(orientation);
   }
 
   /**
