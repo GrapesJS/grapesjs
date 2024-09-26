@@ -36,7 +36,7 @@ export default class Droppable {
     const els = Array.isArray(el) ? el : [el];
     this.el = els[0];
     this.counter = 0;
-    bindAll(this, 'handleDragEnter', 'handleOnDrop', 'handleDragOver', 'handleDrop', 'handleDragLeave');
+    bindAll(this, 'handleDragEnter', 'handleOnDrop', 'handleDragOver', 'handleDrop', 'handleDragLeave', 'handleDragEnd');
     els.forEach((el) => this.toggleEffects(el, true));
   }
 
@@ -166,7 +166,7 @@ export default class Droppable {
           itemSel: '*',
           pfx: 'gjs-',
           placeholderElement: canvas.getPlacerEl()!,
-          document: this.el.ownerDocument,
+          documents: [this.el.ownerDocument, document],
         },
         dragBehavior: {
           dragDirection: DragDirection.BothDirections,
@@ -184,6 +184,7 @@ export default class Droppable {
             const addedModel = this.handleOnDrop(targetNode, sourceNodes, index);
             this.handleDragEnd(addedModel, dt)
           },
+          legacyOnEndMove: this.handleDragEnd
         },
       });
       const sorterOptions = this.getSorterOptions?.(sorter);
@@ -196,8 +197,12 @@ export default class Droppable {
       const el = dropModel.view?.el;
       sorter.startSort(el ? [el] : []);
       this.sorter = sorter;
-      dragStop = () => {
-        sorter.endDrag();
+      dragStop = (cancel?: boolean) => {
+        if (cancel) {
+          sorter.cancelDrag();
+        } else {
+          sorter.endDrag();
+        }
       };
     }
 

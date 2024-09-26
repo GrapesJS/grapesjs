@@ -191,6 +191,7 @@ export default class ComponentSorter<NodeType extends BaseComponentNode> extends
   private onTargetChange = (oldTargetNode: NodeType | undefined, newTargetNode: NodeType | undefined) => {
     oldTargetNode?.restNodeState();
     if (!newTargetNode) {
+      this.placeholder.hide();
       return;
     }
     newTargetNode?.setSelectedParentState();

@@ -28,7 +28,7 @@ export interface SorterContainerContext {
   containerSel: string;
   itemSel: string;
   pfx: string;
-  document: Document;
+  documents: Document[];
   placeholderElement: HTMLElement;
   customTarget?: CustomTarget;
 }

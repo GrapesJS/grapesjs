@@ -27,7 +27,7 @@ export default class Sorter<T, NodeType extends SortableTreeNode<T>> {
   dragBehavior: SorterDragBehaviorOptions;
   eventHandlers: SorterEventHandlers<NodeType>;
 
-  docs: any;
+  docs: Document[] = [document];
   sourceNodes?: NodeType[];
   constructor(sorterOptions: SorterOptions<T, NodeType>) {
     const mergedOptions = getMergedOptions<T, NodeType>(sorterOptions);
@@ -119,7 +119,7 @@ export default class Sorter<T, NodeType extends SortableTreeNode<T>> {
     const docs = Array.from(uniqueDocs);
     this.updateDocs(docs);
     this.dropLocationDeterminer.startSort(sourceNodes);
-    this.bindDragEventHandlers(docs);
+    this.bindDragEventHandlers();
 
     this.eventHandlers.onStartSort?.(this.sourceNodes, this.containerContext.container);
 
@@ -155,13 +155,14 @@ export default class Sorter<T, NodeType extends SortableTreeNode<T>> {
     return sourceElement;
   }
 
-  private bindDragEventHandlers(docs: Document[]) {
-    on(docs, 'keydown', this.rollback);
+  private bindDragEventHandlers() {
+    on(this.docs, 'keydown', this.rollback);
   }
 
   private updateDocs(docs: Document[]) {
-    this.docs = docs;
-    this.dropLocationDeterminer.updateDocs(docs);
+    const uniqueDocs = new Set([...this.docs, ...docs]);
+    this.docs = Array.from(uniqueDocs);
+    this.dropLocationDeterminer.updateDocs(this.docs);
   }
 
   private updatePlaceholderPosition(targetDimension: Dimension, placement: Placement) {

@@ -22,7 +22,7 @@ export default {
           containerSel: '*',
           itemSel: '*',
           pfx: this.ppfx,
-          document: doc,
+          documents: [doc],
           placeholderElement: this.canvas.getPlacerEl()!,
         },
         positionOptions: {
