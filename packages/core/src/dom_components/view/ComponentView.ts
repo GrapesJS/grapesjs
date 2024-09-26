@@ -163,8 +163,10 @@ TComp> {
     if (!this.__isDraggable()) return false;
     event.stopPropagation();
     event.preventDefault();
+    const selected = this.em.getSelectedAll();
+    const modelsToMove = selected.includes(this.model) ? selected : [this.model];
     this.em.Commands.run('tlb-move', {
-      target: [...this.em.getSelectedAll()],
+      target: modelsToMove,
       event,
     });
   }
