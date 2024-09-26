@@ -226,9 +226,9 @@ export default class Sorter<T, NodeType extends SortableTreeNode<T>> {
     const data = {
       target: model,
       // @ts-ignore
-      parent: model && model.parent(),
+      parent: model && model.parent?.(),
       // @ts-ignore
-      index: model && model.index(),
+      index: model && model.index?.(),
     };
 
     this.eventHandlers.legacyOnEndMove?.(null, this, { ...data, cancelled: dragIsCancelled });
