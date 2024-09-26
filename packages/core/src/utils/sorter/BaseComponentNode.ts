@@ -31,7 +31,8 @@ export abstract class BaseComponentNode extends SortableTreeNode<Component> {
     const children = this.model.components();
     const displayedChildren = children.filter(child => {
       const element = child.getEl();
-      return !!element && element instanceof HTMLElement;
+
+      return isDisplayed(element);
     });
 
     return displayedChildren.map((comp: Component) => new (this.constructor as any)(comp));
@@ -118,9 +119,10 @@ export abstract class BaseComponentNode extends SortableTreeNode<Component> {
 
     for (let i = 0; i < children.length; i++) {
       const child = children.at(i);
-      const isDisplayed = !!child.getEl() && child.getEl() instanceof HTMLElement;
-      
-      if (isDisplayed) displayedCount++;
+      const element = child.getEl();
+      const displayed = isDisplayed(element);
+
+      if (displayed) displayedCount++;
       if (displayedCount === index + 1) return i;
     }
 
@@ -208,4 +210,12 @@ export abstract class BaseComponentNode extends SortableTreeNode<Component> {
   isTextable(): boolean {
     return this.model.get?.('textable');
   }
+}
+
+function isDisplayed(element: HTMLElement | undefined) {
+  if (!!!element) return false
+  return element instanceof HTMLElement
+    && window.getComputedStyle(element).display !== 'none'
+    && element.offsetWidth > 0
+    && element.offsetHeight > 0;
 }
