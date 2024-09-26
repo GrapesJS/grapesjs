@@ -32,13 +32,14 @@ export default class Sorter<T, NodeType extends SortableTreeNode<T>> {
   constructor(sorterOptions: SorterOptions<T, NodeType>) {
     const mergedOptions = getMergedOptions<T, NodeType>(sorterOptions);
 
-    bindAll(this, 'startSort', 'cancelDrag', 'rollback', 'updateOffset', 'handlePlaceholderMove');
+    bindAll(this, 'startSort', 'cancelDrag', 'rollback', 'updateOffset', 'handlePlaceholderMove', 'finalizeMove');
     this.containerContext = mergedOptions.containerContext;
     this.positionOptions = mergedOptions.positionOptions;
     this.dragBehavior = mergedOptions.dragBehavior;
     this.eventHandlers = {
       ...mergedOptions.eventHandlers,
       onPlaceholderPositionChange: this.handlePlaceholderMove,
+      onEnd: this.finalizeMove
     };
 
     this.em = sorterOptions.em;
@@ -175,7 +176,6 @@ export default class Sorter<T, NodeType extends SortableTreeNode<T>> {
   cancelDrag(): void {
     this.triggerNullOnEndMove(true);
     this.dropLocationDeterminer.cancelDrag();
-    this.finalizeMove();
   }
 
   /**

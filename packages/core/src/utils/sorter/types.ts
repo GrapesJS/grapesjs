@@ -67,7 +67,7 @@ type OnTargetChangeHandler<NodeType> = (
   newTargetNode: NodeType | undefined,
 ) => void;
 type OnPlaceholderPositionChangeHandler = (targetDimension: Dimension, placement: Placement) => void;
-type OnEndMoveHandler = () => void;
+type OnEndHandler = () => void;
 
 /**
  * Represents a collection of event handlers for sortable tree node events.
@@ -79,7 +79,7 @@ export interface SorterEventHandlers<NodeType> {
   onDrop?: OnDropHandler<NodeType>;
   onTargetChange?: OnTargetChangeHandler<NodeType>;
   onPlaceholderPositionChange?: OnPlaceholderPositionChangeHandler;
-  onEndMove?: OnEndMoveHandler;
+  onEnd?: OnEndHandler;
 
   // For compatibility with old sorter
   legacyOnMoveClb?: Function;

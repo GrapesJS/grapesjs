@@ -34,7 +34,7 @@ export default class StyleManagerSorter extends Sorter<Layers | Layer, LayerNode
           eventHandlers.onDrop?.(targetNode, sourceNodes, index);
           this.onLayerDrop(targetNode, sourceNodes, index);
         },
-        onEndMove: () => { 
+        onEnd: () => {
           this.placeholder.hide();
         },
         ...eventHandlers,

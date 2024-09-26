@@ -240,7 +240,6 @@ export class DropLocationDeterminer<T, NodeType extends SortableTreeNode<T>> ext
 
   endDrag(): void {
     this.dropDragged();
-    this.finalizeMove();
   }
 
   cancelDrag() {
@@ -252,7 +251,7 @@ export class DropLocationDeterminer<T, NodeType extends SortableTreeNode<T>> ext
   private finalizeMove() {
     this.cleanupEventListeners();
     this.triggerOnDragEndEvent();
-    this.eventHandlers.onEndMove?.();
+    this.eventHandlers.onEnd?.();
     this.eventHandlers.legacyOnEnd?.();
     this.restLastMoveData();
   }
@@ -260,6 +259,7 @@ export class DropLocationDeterminer<T, NodeType extends SortableTreeNode<T>> ext
   private dropDragged() {
     const { lastTargetNode, lastIndex } = this.lastMoveData;
     this.eventHandlers.onDrop?.(lastTargetNode, this.sourceNodes, lastIndex);
+    this.finalizeMove();
   }
 
   private triggerOnDragEndEvent() {

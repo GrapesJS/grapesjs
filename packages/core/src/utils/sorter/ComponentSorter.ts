@@ -60,7 +60,7 @@ export default class ComponentSorter<NodeType extends BaseComponentNode> extends
 
   private onStartSort() {
     this.em.clearSelection();
-    this.toggleSortCursor(true);
+    this.setAutoCanvasScroll(true);
   }
 
   private onMouseMove = (mouseEvent: MouseEvent) => {
@@ -185,6 +185,7 @@ export default class ComponentSorter<NodeType extends BaseComponentNode> extends
   protected finalizeMove(): void {
     this.em?.Canvas.removeSpots(spotTarget);
     this.sourceNodes?.forEach((node) => node.restNodeState());
+    this.setAutoCanvasScroll(false);
     super.finalizeMove();
   }
 
@@ -239,10 +240,10 @@ export default class ComponentSorter<NodeType extends BaseComponentNode> extends
   }
 
   /**
-   * Toggle cursor while sorting
+   * Change Autoscroll while sorting
    * @param {Boolean} active
    */
-  private toggleSortCursor(active?: boolean) {
+  private setAutoCanvasScroll(active?: boolean) {
     const { em } = this;
     const cv = em?.Canvas;
 
