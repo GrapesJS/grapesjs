@@ -242,7 +242,7 @@ export default class Droppable {
       // @ts-ignore
       model = targetNode.model?.getView?.()?.insertComponent?.(this.content, { action: 'add-component' });
     } else {
-      model = targetNode.model.components().add(this.content, { at: index, action: 'add-component' });
+      model = targetNode.model.components().add(this.content, { at: targetNode.getRealIndex(index || -1), action: 'add-component' });
     }
 
     return model;

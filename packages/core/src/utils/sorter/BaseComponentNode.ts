@@ -3,9 +3,10 @@ import Component from '../../dom_components/model/Component';
 import { SortableTreeNode } from './SortableTreeNode';
 
 /**
- * Abstract class that defines the basic structure for a ComponentNode.
- * This class cannot be instantiated directly, and requires subclasses
- * to implement the `view` and `element` methods.
+ * BaseComponentNode is an abstract class that provides basic operations 
+ * for managing component nodes in a tree structure. It extends 
+ * SortableTreeNode to handle sorting behavior for components.
+ * Subclasses must implement the `view` and `element` methods.
  */
 export abstract class BaseComponentNode extends SortableTreeNode<Component> {
   constructor(model: Component) {
@@ -13,14 +14,33 @@ export abstract class BaseComponentNode extends SortableTreeNode<Component> {
   }
 
   /**
-   * Get the list of children of this component.
+   * Get the list of child components.
+   * @returns {BaseComponentNode[] | null} - The list of children wrapped in 
+   * BaseComponentNode, or null if there are no children.
    */
   getChildren(): BaseComponentNode[] | null {
-    return this.model.components().map((comp: Component) => new (this.constructor as any)(comp));
+    return this.getDisplayedChildren();
   }
 
   /**
-   * Get the parent component of this component, or null if it has no parent.
+   * Get the list of displayed children, i.e., components that have a valid HTML element.
+   * @returns {BaseComponentNode[] | null} - The list of displayed children wrapped in 
+   * BaseComponentNode, or null if there are no displayed children.
+   */
+  private getDisplayedChildren(): BaseComponentNode[] | null {
+    const children = this.model.components();
+    const displayedChildren = children.filter(child => {
+      const element = child.getEl();
+      return !!element && element instanceof HTMLElement;
+    });
+
+    return displayedChildren.map((comp: Component) => new (this.constructor as any)(comp));
+  }
+
+  /**
+   * Get the parent component of this node.
+   * @returns {BaseComponentNode | null} - The parent wrapped in BaseComponentNode, 
+   * or null if no parent exists.
    */
   getParent(): BaseComponentNode | null {
     const parent = this.model.parent();
@@ -28,96 +48,164 @@ export abstract class BaseComponentNode extends SortableTreeNode<Component> {
   }
 
   /**
-   * Add a child component at a particular index.
-   * @param node - The child component to add.
-   * @param index - The position to insert the child at.
+   * Add a child component to this node at the specified index.
+   * @param {BaseComponentNode} node - The child node to add.
+   * @param {number} displayIndex - The visual index at which to insert the child.
+   * @param {{ action: string }} options - Options for the operation, with the default action being 'add-component'.
+   * @returns {BaseComponentNode} - The newly added child node wrapped in BaseComponentNode.
    */
   addChildAt(
     node: BaseComponentNode,
-    index: number,
+    displayIndex: number,
     options: { action: string } = { action: 'add-component' },
   ): BaseComponentNode {
     const insertingTextableIntoText = this.model?.isInstanceOf?.('text') && node?.model?.get?.('textable');
+
     if (insertingTextableIntoText) {
-      // @ts-ignore
+      // @ts-ignore: Handle inserting textable components
       return this.model?.getView?.()?.insertComponent?.(node?.model, { action: options.action });
     }
 
-    const newModel = this.model.components().add(node.model, { at: index, action: options.action });
+    const newModel = this.model.components().add(node.model, {
+      at: this.getRealIndex(displayIndex),
+      action: options.action
+    });
+
     return new (this.constructor as any)(newModel);
   }
 
   /**
-   * Remove a child component at a particular index.
-   * @param index - The index to remove the child component from.
+   * Remove a child component at the specified index.
+   * @param {number} displayIndex - The visual index of the child to remove.
+   * @param {{ temporary: boolean }} options - Whether to temporarily remove the child.
    */
-  removeChildAt(index: number, options: { temporary: boolean } = { temporary: false }): void {
-    const child = this.model.components().at(index);
+  removeChildAt(displayIndex: number, options: { temporary: boolean } = { temporary: false }): void {
+    const child = this.model.components().at(this.getRealIndex(displayIndex));
     if (child) {
       this.model.components().remove(child, options as any);
     }
   }
 
   /**
-   * Get the index of a child component in the current component's list of children.
-   * @param node - The child component to find.
-   * @returns The index of the child component, or -1 if not found.
+   * Get the visual index of a child node within the displayed children.
+   * @param {BaseComponentNode} node - The child node to locate.
+   * @returns {number} - The index of the child node, or -1 if not found.
    */
   indexOfChild(node: BaseComponentNode): number {
-    return this.model.components().indexOf(node.model);
+    return this.getDisplayIndex(node);
   }
 
   /**
-   * Determine if a source component can be moved to a specific index in the current component's list of children.
-   * @param source - The source component to be moved.
-   * @param index - The index at which the source component will be moved.
-   * @returns True if the source component can be moved, false otherwise.
+   * Get the index of the given node within the displayed children.
+   * @param {BaseComponentNode} node - The node to find.
+   * @returns {number} - The display index of the node, or -1 if not found.
+   */
+  private getDisplayIndex(node: BaseComponentNode): number {
+    const displayedChildren = this.getDisplayedChildren();
+    return displayedChildren ? displayedChildren.findIndex((displayedNode) => displayedNode.model === node.model) : -1;
+  }
+
+  /**
+   * Convert a display index to the actual index within the component's children array.
+   * @param {number} index - The display index to convert.
+   * @returns {number} - The corresponding real index, or -1 if not found.
+   */
+  getRealIndex(index: number): number {
+    if (index === -1) return -1;
+
+    let displayedCount = 0;
+    const children = this.model.components();
+
+    for (let i = 0; i < children.length; i++) {
+      const child = children.at(i);
+      const isDisplayed = !!child.getEl() && child.getEl() instanceof HTMLElement;
+      
+      if (isDisplayed) displayedCount++;
+      if (displayedCount === index + 1) return i;
+    }
+
+    return -1;
+  }
+
+  /**
+   * Check if a source node can be moved to a specified index within this component.
+   * @param {BaseComponentNode} source - The source node to move.
+   * @param {number} index - The display index to move the source to.
+   * @returns {boolean} - True if the move is allowed, false otherwise.
    */
   canMove(source: BaseComponentNode, index: number): boolean {
-    return this.model.em.Components.canMove(this.model, source.model, index).result;
+    return this.model.em.Components.canMove(this.model, source.model, this.getRealIndex(index)).result;
   }
 
   /**
-   * Abstract method to get the associated view of the component.
+   * Abstract method to get the view associated with this component.
    * Subclasses must implement this method.
+   * @abstract
    */
   abstract get view(): any;
 
   /**
-   * Abstract method to get the associated element of the component.
+   * Abstract method to get the DOM element associated with this component.
    * Subclasses must implement this method.
+   * @abstract
    */
   abstract get element(): HTMLElement | undefined;
 
-  restNodeState() {
+  /**
+   * Reset the state of the node by clearing its status and disabling editing.
+   */
+  restNodeState(): void {
     this.clearState();
     this.setContentEditable(false);
     this.disableEditing();
   }
 
-  setContentEditable(value: boolean) {
-    if (!this.element) return;
-    this.element.contentEditable = value ? 'true' : 'false';
+  /**
+   * Set the contentEditable property of the node's DOM element.
+   * @param {boolean} value - True to make the content editable, false to disable editing.
+   */
+  setContentEditable(value: boolean): void {
+    if (this.element) {
+      this.element.contentEditable = value ? 'true' : 'false';
+    }
   }
 
-  private disableEditing() {
+  /**
+   * Disable editing capabilities for the component's view.
+   * This method depends on the presence of the `disableEditing` method in the view.
+   */
+  private disableEditing(): void {
     // @ts-ignore
     this.view?.disableEditing?.();
   }
 
-  private clearState() {
+  /**
+   * Clear the current state of the node by resetting its status.
+   */
+  private clearState(): void {
     this.model.set?.('status', '');
   }
 
-  setSelectedParentState() {
+  /**
+   * Set the state of the node to 'selected-parent'.
+   */
+  setSelectedParentState(): void {
     this.model.set?.('status', 'selected-parent');
   }
 
-  isTextNode() {
+  /**
+   * Determine if the component is a text node.
+   * @returns {boolean} - True if the component is a text node, false otherwise.
+   */
+  isTextNode(): boolean {
     return this.model.isInstanceOf?.('text');
   }
 
-  isTextable() {
+  /**
+   * Determine if the component is textable.
+   * @returns {boolean} - True if the component is textable, false otherwise.
+   */
+  isTextable(): boolean {
     return this.model.get?.('textable');
   }
 }
