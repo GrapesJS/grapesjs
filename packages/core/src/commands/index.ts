@@ -82,9 +82,11 @@ export const getOnComponentDrag = (em: Editor) => (data: any) => em.trigger(even
 export const getOnComponentDragEnd =
   (em: Editor, targets: Component[], opts: { altMode?: boolean } = {}) =>
   (a: any, b: any, data: any) => {
-    targets.forEach((trg) => trg.set('status', trg.get('selectable') ? 'selected' : ''));
-    em.setSelected(targets);
-    targets[0].emitUpdate();
+    setTimeout(() => {
+      targets.forEach((trg) => trg.set('status', trg.get('selectable') ? 'selected' : ''));
+      em.setSelected(targets);
+      targets[0].emitUpdate();
+    });
     em.trigger(`${eventDrag}:end`, data);
 
     // Defer selectComponent in order to prevent canvas "freeze" #2692
