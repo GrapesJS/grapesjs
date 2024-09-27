@@ -102,28 +102,25 @@ export default class ComponentSorter<NodeType extends BaseComponentNode> extends
    */
   private handleNodeAddition(targetNode: NodeType, sourceNodes: NodeType[], index: number): NodeType[] {
     return sourceNodes.reduce((addedNodes, sourceNode) => {
-      if (this.canMoveNode(targetNode, sourceNode, index)) {
+      if (!targetNode.canMove(sourceNode, index)) return addedNodes;
+      if (this.isPositionChanged(targetNode, sourceNode, index)) {
         const addedNode = this.moveNode(targetNode, sourceNode, index);
-        if (addedNode) {
-          addedNodes.push(addedNode);
-          index++; // Increment the index after a successful addition
-        }
+        addedNodes.push(addedNode);
       }
+      index++; // Increment the index
       return addedNodes;
     }, [] as NodeType[]);
   }
 
   /**
-   * Determines if a source node can be moved to the target node at the given index.
+   * Determines if a source node position has changed.
    *
    * @param targetNode - The node where the source node will be moved.
    * @param sourceNode - The node being moved.
    * @param index - The index at which to move the source node.
    * @returns Whether the node can be moved.
    */
-  private canMoveNode(targetNode: NodeType, sourceNode: NodeType, index: number): boolean {
-    if (!targetNode.canMove(sourceNode, index)) return false;
-
+  private isPositionChanged(targetNode: NodeType, sourceNode: NodeType, index: number): boolean {
     const parent = sourceNode.getParent();
     const initialSourceIndex = parent ? parent.indexOfChild(sourceNode) : -1;
     if (parent?.model.cid === targetNode.model.cid && initialSourceIndex < index) {
