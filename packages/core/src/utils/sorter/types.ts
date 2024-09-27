@@ -96,7 +96,7 @@ export interface SorterDragBehaviorOptions {
 
 export interface SorterOptions<T, NodeType extends SortableTreeNode<T>> {
   em: EditorModel;
-  treeClass: new (model: T) => NodeType;
+  treeClass: new (model: T, content?: any) => NodeType;
 
   containerContext: SorterContainerContext;
   positionOptions: PositionOptions;

@@ -18,7 +18,7 @@ import { SorterOptions } from './types';
 
 export default class Sorter<T, NodeType extends SortableTreeNode<T>> {
   em: EditorModel;
-  treeClass: new (model: T) => NodeType;
+  treeClass: new (model: T, content?: any) => NodeType;
   placeholder: PlaceholderClass;
   dropLocationDeterminer: DropLocationDeterminer<T, NodeType>;
 
@@ -65,6 +65,66 @@ export default class Sorter<T, NodeType extends SortableTreeNode<T>> {
     });
   }
 
+  /**
+   * Picking components to move
+   * @param {HTMLElement[]} sources[]
+   * */
+  startSort(sources: { element?: HTMLElement; content?: any }[]) {
+    const validSources = sources.filter((source) => !!source.content || this.findValidSourceElement(source.element));
+
+    const sourcesWithModel: { model: T; content?: any }[] = validSources.map((source) => {
+      return {
+        model: $(source.element)?.data('model'),
+        content: source.content,
+      };
+    });
+    const sortedSources = sourcesWithModel.sort((a, b) => {
+      return sortDom(a.model, b.model);
+    });
+    const sourceNodes = sortedSources.map((source) => new this.treeClass(source.model, source.content));
+    this.sourceNodes = sourceNodes;
+    this.dropLocationDeterminer.startSort(sourceNodes);
+    this.bindDragEventHandlers();
+
+    this.eventHandlers.onStartSort?.(this.sourceNodes, this.containerContext.container);
+
+    // For backward compatibility, leave it to a single node
+    const model = this.sourceNodes[0]?.model;
+    this.eventHandlers.legacyOnStartSort?.({
+      sorter: this,
+      target: model,
+      // @ts-ignore
+      parent: model && model.parent?.(),
+      // @ts-ignore
+      index: model && model.index?.(),
+    });
+
+    // For backward compatibility, leave it to a single node
+    this.em.trigger('sorter:drag:start', sources[0], sourcesWithModel[0]);
+  }
+
+  /**
+   * This method is should be called when the user scrolls within the container.
+   */
+  recalculateTargetOnScroll(): void {
+    this.dropLocationDeterminer.recalculateTargetOnScroll();
+  }
+
+  /**
+   * Called when the drag operation should be cancelled
+   */
+  cancelDrag(): void {
+    this.triggerNullOnEndMove(true);
+    this.dropLocationDeterminer.cancelDrag();
+  }
+
+  /**
+   * Called to drop an item onto a valid target.
+   */
+  endDrag() {
+    this.dropLocationDeterminer.endDrag();
+  }
+
   private handlePlaceholderMove(elementDimension: Dimension, placement: Placement) {
     this.ensurePlaceholderElement();
     this.updatePlaceholderPosition(elementDimension, placement);
@@ -103,59 +163,6 @@ export default class Sorter<T, NodeType extends SortableTreeNode<T>> {
     const offset = this.em?.get('canvasOffset') || {};
     this.positionOptions.offsetTop = offset.top;
     this.positionOptions.offsetLeft = offset.left;
-  }
-
-  /**
-   * Picking components to move
-   * @param {HTMLElement[]} sourceElements[]
-   * */
-  startSort(sourceElements: HTMLElement[]) {
-    const validSourceElements = sourceElements.map((element) => this.findValidSourceElement(element));
-
-    const sourceModels: T[] = validSourceElements.map((element) => $(element).data('model'));
-    const sortedModels = sourceModels.sort(sortDom);
-    const sourceNodes = sortedModels.map((model) => new this.treeClass(model));
-    this.sourceNodes = sourceNodes;
-    this.dropLocationDeterminer.startSort(sourceNodes);
-    this.bindDragEventHandlers();
-
-    this.eventHandlers.onStartSort?.(this.sourceNodes, this.containerContext.container);
-
-    // For backward compatibility, leave it to a single node
-    const model = this.sourceNodes[0]?.model;
-    this.eventHandlers.legacyOnStartSort?.({
-      sorter: this,
-      target: model,
-      // @ts-ignore
-      parent: model && model.parent?.(),
-      // @ts-ignore
-      index: model && model.index?.(),
-    });
-
-    // For backward compatibility, leave it to a single node
-    this.em.trigger('sorter:drag:start', sourceElements[0], sourceModels[0]);
-  }
-
-  /**
-   * This method is should be called when the user scrolls within the container.
-   */
-  recalculateTargetOnScroll(): void {
-    this.dropLocationDeterminer.recalculateTargetOnScroll();
-  }
-
-  /**
-   * Called when the drag operation should be cancelled
-   */
-  cancelDrag(): void {
-    this.triggerNullOnEndMove(true);
-    this.dropLocationDeterminer.cancelDrag();
-  }
-
-  /**
-   * Called to drop an item onto a valid target.
-   */
-  endDrag() {
-    this.dropLocationDeterminer.endDrag();
   }
 
   /**

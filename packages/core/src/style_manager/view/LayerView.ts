@@ -69,7 +69,7 @@ export default class LayerView extends View<Layer> {
   }
 
   initSorter() {
-    this.sorter?.startSort([this.el]);
+    this.sorter?.startSort([{ element: this.el }]);
   }
 
   removeItem(ev: Event) {

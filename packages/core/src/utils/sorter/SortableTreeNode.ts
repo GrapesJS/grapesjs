@@ -7,8 +7,10 @@ import { $, View } from '../../common';
  */
 export abstract class SortableTreeNode<T> {
   protected _model: T;
-  constructor(model: T) {
+  protected _content: any;
+  constructor(model: T, content?: any) {
     this._model = model;
+    this._content = content;
   }
   /**
    * Get the list of children of this node.
@@ -78,6 +80,10 @@ export abstract class SortableTreeNode<T> {
    */
   get model(): T {
     return this._model;
+  }
+
+  get content(): T {
+    return this._content;
   }
 
   equals(node?: SortableTreeNode<T>): boolean {

@@ -24,7 +24,7 @@ export default class ComponentSorter<NodeType extends BaseComponentNode> extends
     eventHandlers = {},
   }: {
     em: EditorModel;
-    treeClass: new (model: Component) => NodeType;
+    treeClass: new (model: Component, content?: any) => NodeType;
     containerContext: SorterContainerContext;
     dragBehavior: SorterDragBehaviorOptions;
     positionOptions?: PositionOptions;
@@ -155,7 +155,6 @@ export default class ComponentSorter<NodeType extends BaseComponentNode> extends
         index--; // Adjust index if moving within the same collection and after the initial position
       }
     }
-
     const addedNode = targetNode.addChildAt(sourceNode, index, { action: 'move-component' }) as NodeType;
     this.triggerEndMoveEvent(addedNode);
 
@@ -171,9 +170,9 @@ export default class ComponentSorter<NodeType extends BaseComponentNode> extends
     this.eventHandlers.legacyOnEndMove?.(addedNode.model, this, {
       target: addedNode.model,
       // @ts-ignore
-      parent: addedNode.model && addedNode.model.parent(),
+      parent: addedNode.model && addedNode.model.parent?.(),
       // @ts-ignore
-      index: addedNode.model && addedNode.model.index(),
+      index: addedNode.model && addedNode.model.index?.(),
     });
   }
 

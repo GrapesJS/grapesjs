@@ -43,7 +43,9 @@ export default {
         if (canvasScroll) this.sorter.recalculateTargetOnScroll();
       }).bind(this),
     );
-    sourceElements && sourceElements.length > 0 && this.sorter.startSort(sourceElements);
+    sourceElements &&
+      sourceElements.length > 0 &&
+      this.sorter.startSort(sourceElements.map((element) => ({ element })));
   },
 
   /**

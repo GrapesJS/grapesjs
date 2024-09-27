@@ -26,7 +26,7 @@ export default class Droppable {
   getSorterOptions?: (sorter: any) => Record<string, any> | null;
   over?: boolean;
   dragStop?: DragStop;
-  content: any;
+  draggedNode?: CanvasNewComponentNode;
   sorter!: ComponentSorter<CanvasNewComponentNode>;
 
   constructor(em: EditorModel, rootEl?: HTMLElement) {
@@ -36,15 +36,7 @@ export default class Droppable {
     const els = Array.isArray(el) ? el : [el];
     this.el = els[0];
     this.counter = 0;
-    bindAll(
-      this,
-      'handleDragEnter',
-      'handleOnDrop',
-      'handleDragOver',
-      'handleDrop',
-      'handleDragLeave',
-      'handleDragEnd',
-    );
+    bindAll(this, 'handleDragEnter', 'handleDragOver', 'handleDrop', 'handleDragLeave', 'handleDragEnd');
     els.forEach((el) => this.toggleEffects(el, true));
   }
 
@@ -185,14 +177,6 @@ export default class Droppable {
           canvasRelative: true,
         },
         eventHandlers: {
-          onDrop: (
-            targetNode: CanvasNewComponentNode | undefined,
-            sourceNodes: CanvasNewComponentNode[],
-            index: number | undefined,
-          ) => {
-            const addedModel = this.handleOnDrop(targetNode, sourceNodes, index);
-            this.handleDragEnd(addedModel, dt);
-          },
           legacyOnEndMove: this.handleDragEnd,
         },
       });
@@ -211,8 +195,9 @@ export default class Droppable {
       );
       let dropModel = this.getTempDropModel(content);
       const el = dropModel.view?.el;
-      sorter.startSort(el ? [el] : []);
+      sorter.startSort(el ? [{ element: el, content }] : []);
       this.sorter = sorter;
+      this.draggedNode = sorter.sourceNodes?.[0];
       dragStop = (cancel?: boolean) => {
         if (cancel) {
           sorter.cancelDrag();
@@ -230,7 +215,7 @@ export default class Droppable {
    * Generates a temporary model of the content being dragged for use with the sorter.
    * @returns The temporary model representing the dragged content.
    */
-  private getTempDropModel(content: any) {
+  private getTempDropModel(content?: any) {
     const comps = this.em.Components.getComponents();
     const opts = {
       avoidChildren: 1,
@@ -243,27 +228,6 @@ export default class Droppable {
     dropModel = dropModel instanceof Array ? dropModel[0] : dropModel;
     dropModel.view?.$el.data('model', dropModel);
     return dropModel;
-  }
-
-  private handleOnDrop(
-    targetNode: CanvasNewComponentNode | undefined,
-    sourceNodes: CanvasNewComponentNode[],
-    index: number | undefined,
-  ) {
-    if (!targetNode) return;
-    const insertingTextableIntoText =
-      targetNode.model?.isInstanceOf?.('text') && sourceNodes?.some((node) => node.model?.get?.('textable'));
-    let model;
-    if (insertingTextableIntoText) {
-      // @ts-ignore
-      model = targetNode.model?.getView?.()?.insertComponent?.(this.content, { action: 'add-component' });
-    } else {
-      model = targetNode.model
-        .components()
-        .add(this.content, { at: targetNode.getRealIndex(index || -1), action: 'add-component' });
-    }
-
-    return model;
   }
 
   handleDragEnd(model: any, dt: any) {
@@ -293,7 +257,9 @@ export default class Droppable {
     ev.preventDefault();
     const dt = (ev as DragEvent).dataTransfer;
     const content = this.getContentByData(dt).content;
-    this.content = content;
+    if (this.draggedNode) {
+      this.draggedNode.content = content;
+    }
     this.endDrop(!content, ev);
   }
 
