@@ -32,7 +32,16 @@ export default class Sorter<T, NodeType extends SortableTreeNode<T>> {
   constructor(sorterOptions: SorterOptions<T, NodeType>) {
     const mergedOptions = getMergedOptions<T, NodeType>(sorterOptions);
 
-    bindAll(this, 'startSort', 'cancelDrag', 'rollback', 'updateOffset', 'handlePlaceholderMove', 'finalizeMove');
+    bindAll(
+      this,
+      'startSort',
+      'cancelDrag',
+      'recalculateTargetOnScroll',
+      'rollback',
+      'updateOffset',
+      'handlePlaceholderMove',
+      'finalizeMove',
+    );
     this.containerContext = mergedOptions.containerContext;
     this.positionOptions = mergedOptions.positionOptions;
     this.dragBehavior = mergedOptions.dragBehavior;
@@ -140,6 +149,28 @@ export default class Sorter<T, NodeType extends SortableTreeNode<T>> {
   }
 
   /**
+   * This method is should be called when the user scrolls within the container.
+   */
+  recalculateTargetOnScroll(): void {
+    this.dropLocationDeterminer.recalculateTargetOnScroll();
+  }
+
+  /**
+   * Called when the drag operation should be cancelled
+   */
+  cancelDrag(): void {
+    this.triggerNullOnEndMove(true);
+    this.dropLocationDeterminer.cancelDrag();
+  }
+
+  /**
+   * Called to drop an item onto a valid target.
+   */
+  endDrag() {
+    this.dropLocationDeterminer.endDrag();
+  }
+
+  /**
    * Finds the closest valid source element within the container context.
   
    * @param sourceElement - The initial source element to check.
@@ -168,21 +199,6 @@ export default class Sorter<T, NodeType extends SortableTreeNode<T>> {
 
   private updatePlaceholderPosition(targetDimension: Dimension, placement: Placement) {
     this.placeholder.move(targetDimension, placement);
-  }
-
-  /**
-   * Called when the drag operation should be cancelled
-   */
-  cancelDrag(): void {
-    this.triggerNullOnEndMove(true);
-    this.dropLocationDeterminer.cancelDrag();
-  }
-
-  /**
-   * Called to drop an item onto a valid target.
-   */
-  endDrag() {
-    this.dropLocationDeterminer.endDrag();
   }
 
   /**
