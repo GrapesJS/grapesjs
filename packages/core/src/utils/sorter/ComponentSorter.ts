@@ -73,7 +73,7 @@ export default class ComponentSorter<NodeType extends BaseComponentNode> extends
   /**
    * Handles the drop action by moving the source nodes to the target node.
    * Calls appropriate handlers based on whether the move was successful or not.
-   * 
+   *
    * @param targetNode - The node where the source nodes will be dropped.
    * @param sourceNodes - The nodes being dropped.
    * @param index - The index at which to drop the source nodes.
@@ -82,7 +82,7 @@ export default class ComponentSorter<NodeType extends BaseComponentNode> extends
     const at = typeof index === 'number' ? index : -1;
     if (targetNode && sourceNodes.length > 0) {
       const addedNodes = this.handleNodeAddition(targetNode, sourceNodes, at);
-      if (addedNodes.length === 0) this.triggerNullOnEndMove(false)
+      if (addedNodes.length === 0) this.triggerNullOnEndMove(false);
     } else {
       this.triggerNullOnEndMove(true);
     }
@@ -94,7 +94,7 @@ export default class ComponentSorter<NodeType extends BaseComponentNode> extends
   /**
    * Handles the addition of multiple source nodes to the target node.
    * If the move is valid, adds the nodes at the specified index and increments the index.
-   * 
+   *
    * @param targetNode - The target node where source nodes will be added.
    * @param sourceNodes - The nodes being added.
    * @param index - The initial index at which to add the source nodes.
@@ -115,7 +115,7 @@ export default class ComponentSorter<NodeType extends BaseComponentNode> extends
 
   /**
    * Determines if a source node can be moved to the target node at the given index.
-   * 
+   *
    * @param targetNode - The node where the source node will be moved.
    * @param sourceNode - The node being moved.
    * @param index - The index at which to move the source node.
@@ -139,7 +139,7 @@ export default class ComponentSorter<NodeType extends BaseComponentNode> extends
 
   /**
    * Moves a source node to the target node at the specified index, handling edge cases.
-   * 
+   *
    * @param targetNode - The node where the source node will be moved.
    * @param sourceNode - The node being moved.
    * @param index - The index at which to move the source node.
@@ -164,7 +164,7 @@ export default class ComponentSorter<NodeType extends BaseComponentNode> extends
 
   /**
    * Triggers the end move event for a node that was added to the target.
-   * 
+   *
    * @param addedNode - The node that was moved and added to the target.
    */
   private triggerEndMoveEvent(addedNode: NodeType): void {

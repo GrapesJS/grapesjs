@@ -3,8 +3,8 @@ import Component from '../../dom_components/model/Component';
 import { SortableTreeNode } from './SortableTreeNode';
 
 /**
- * BaseComponentNode is an abstract class that provides basic operations 
- * for managing component nodes in a tree structure. It extends 
+ * BaseComponentNode is an abstract class that provides basic operations
+ * for managing component nodes in a tree structure. It extends
  * SortableTreeNode to handle sorting behavior for components.
  * Subclasses must implement the `view` and `element` methods.
  */
@@ -15,7 +15,7 @@ export abstract class BaseComponentNode extends SortableTreeNode<Component> {
 
   /**
    * Get the list of child components.
-   * @returns {BaseComponentNode[] | null} - The list of children wrapped in 
+   * @returns {BaseComponentNode[] | null} - The list of children wrapped in
    * BaseComponentNode, or null if there are no children.
    */
   getChildren(): BaseComponentNode[] | null {
@@ -24,12 +24,12 @@ export abstract class BaseComponentNode extends SortableTreeNode<Component> {
 
   /**
    * Get the list of displayed children, i.e., components that have a valid HTML element.
-   * @returns {BaseComponentNode[] | null} - The list of displayed children wrapped in 
+   * @returns {BaseComponentNode[] | null} - The list of displayed children wrapped in
    * BaseComponentNode, or null if there are no displayed children.
    */
   private getDisplayedChildren(): BaseComponentNode[] | null {
     const children = this.model.components();
-    const displayedChildren = children.filter(child => {
+    const displayedChildren = children.filter((child) => {
       const element = child.getEl();
 
       return isDisplayed(element);
@@ -40,7 +40,7 @@ export abstract class BaseComponentNode extends SortableTreeNode<Component> {
 
   /**
    * Get the parent component of this node.
-   * @returns {BaseComponentNode | null} - The parent wrapped in BaseComponentNode, 
+   * @returns {BaseComponentNode | null} - The parent wrapped in BaseComponentNode,
    * or null if no parent exists.
    */
   getParent(): BaseComponentNode | null {
@@ -69,7 +69,7 @@ export abstract class BaseComponentNode extends SortableTreeNode<Component> {
 
     const newModel = this.model.components().add(node.model, {
       at: this.getRealIndex(displayIndex),
-      action: options.action
+      action: options.action,
     });
 
     return new (this.constructor as any)(newModel);
@@ -213,9 +213,11 @@ export abstract class BaseComponentNode extends SortableTreeNode<Component> {
 }
 
 function isDisplayed(element: HTMLElement | undefined) {
-  if (!!!element) return false
-  return element instanceof HTMLElement
-    && window.getComputedStyle(element).display !== 'none'
-    && element.offsetWidth > 0
-    && element.offsetHeight > 0;
+  if (!!!element) return false;
+  return (
+    element instanceof HTMLElement &&
+    window.getComputedStyle(element).display !== 'none' &&
+    element.offsetWidth > 0 &&
+    element.offsetHeight > 0
+  );
 }

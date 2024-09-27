@@ -39,7 +39,7 @@ export default class Sorter<T, NodeType extends SortableTreeNode<T>> {
     this.eventHandlers = {
       ...mergedOptions.eventHandlers,
       onPlaceholderPositionChange: this.handlePlaceholderMove,
-      onEnd: this.finalizeMove
+      onEnd: this.finalizeMove,
     };
 
     this.em = sorterOptions.em;

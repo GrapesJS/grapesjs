@@ -57,7 +57,7 @@ export class PlaceholderClass extends View {
     if (placement === 'inside') {
       this.setOrientation('horizontal');
       if (!this.allowNesting) {
-        this.hide()
+        this.hide();
         return;
       }
       const defaultMargin = 5;

@@ -37,20 +37,20 @@ export default class LayersView extends View<Layer> {
     const utils = em?.Utils;
     this.sorter = utils
       ? new utils.StyleManagerSorter({
-        em,
-        containerContext: {
-          container: this.el,
-          containerSel: `.${pfx}layers`,
-          itemSel: `.${pfx}layer`,
-          pfx: config.pStylePrefix,
-          documents: [document],
-          placeholderElement: placeholderElement,
-        },
-        dragBehavior: {
-          dragDirection: DragDirection.Vertical,
-          nested: false,
-        },
-      })
+          em,
+          containerContext: {
+            container: this.el,
+            containerSel: `.${pfx}layers`,
+            itemSel: `.${pfx}layer`,
+            pfx: config.pStylePrefix,
+            documents: [document],
+            placeholderElement: placeholderElement,
+          },
+          dragBehavior: {
+            dragDirection: DragDirection.Vertical,
+            nested: false,
+          },
+        })
       : undefined;
     // @ts-ignore
     coll.view = this;

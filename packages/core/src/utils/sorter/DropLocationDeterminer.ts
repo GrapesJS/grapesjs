@@ -29,22 +29,22 @@ interface DropLocationDeterminerOptions<T, NodeType extends SortableTreeNode<T>>
  */
 type LastMoveData<NodeType> =
   | {
-    /** The target node under the mouse pointer during the last move. */
-    lastTargetNode: NodeType;
-    /** The index where the placeholder or dragged element should be inserted. */
-    lastIndex: number;
-    /** Placement relative to the target ('before' or 'after'). */
-    lastPlacement: Placement;
-    /** The dimensions of the child elements within the target node. */
-    lastChildrenDimensions: Dimension[];
-  }
+      /** The target node under the mouse pointer during the last move. */
+      lastTargetNode: NodeType;
+      /** The index where the placeholder or dragged element should be inserted. */
+      lastIndex: number;
+      /** Placement relative to the target ('before' or 'after'). */
+      lastPlacement: Placement;
+      /** The dimensions of the child elements within the target node. */
+      lastChildrenDimensions: Dimension[];
+    }
   | {
-    /** Indicates that there is no valid target node. */
-    lastTargetNode: undefined;
-    lastIndex: undefined;
-    lastPlacement: undefined;
-    lastChildrenDimensions: undefined;
-  };
+      /** Indicates that there is no valid target node. */
+      lastTargetNode: undefined;
+      lastIndex: undefined;
+      lastPlacement: undefined;
+      lastChildrenDimensions: undefined;
+    };
 
 export class DropLocationDeterminer<T, NodeType extends SortableTreeNode<T>> extends View {
   em: EditorModel;
@@ -444,9 +444,7 @@ export class DropLocationDeterminer<T, NodeType extends SortableTreeNode<T>> ext
    * @param {HTMLElement} el
    * @return {Dimension}
    */
-  private getDim(
-    el: HTMLElement,
-  ): Dimension {
+  private getDim(el: HTMLElement): Dimension {
     const em = this.em;
     const relative = this.positionOptions.relative;
     const windowMargin = this.positionOptions.windowMargin;

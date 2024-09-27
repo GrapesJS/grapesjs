@@ -94,8 +94,8 @@ export function matches(el: HTMLElement, selector: string): boolean {
  * @param {Object} model1
  */
 export function sortDom(model1: any, model2: any) {
-  const model1Parents = parents(model1)
-  const model2Parents = parents(model2)
+  const model1Parents = parents(model1);
+  const model2Parents = parents(model2);
   // common ancesters
   const ancesters = model2Parents.filter((p: any) => model1Parents.includes(p));
   const ancester = ancesters[0];

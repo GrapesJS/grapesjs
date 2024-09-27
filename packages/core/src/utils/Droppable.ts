@@ -36,7 +36,15 @@ export default class Droppable {
     const els = Array.isArray(el) ? el : [el];
     this.el = els[0];
     this.counter = 0;
-    bindAll(this, 'handleDragEnter', 'handleOnDrop', 'handleDragOver', 'handleDrop', 'handleDragLeave', 'handleDragEnd');
+    bindAll(
+      this,
+      'handleDragEnter',
+      'handleOnDrop',
+      'handleDragOver',
+      'handleDrop',
+      'handleDragLeave',
+      'handleDragEnd',
+    );
     els.forEach((el) => this.toggleEffects(el, true));
   }
 
@@ -177,14 +185,15 @@ export default class Droppable {
           canvasRelative: true,
         },
         eventHandlers: {
-          onDrop: (targetNode: CanvasNewComponentNode | undefined,
+          onDrop: (
+            targetNode: CanvasNewComponentNode | undefined,
             sourceNodes: CanvasNewComponentNode[],
             index: number | undefined,
           ) => {
             const addedModel = this.handleOnDrop(targetNode, sourceNodes, index);
-            this.handleDragEnd(addedModel, dt)
+            this.handleDragEnd(addedModel, dt);
           },
-          legacyOnEndMove: this.handleDragEnd
+          legacyOnEndMove: this.handleDragEnd,
         },
       });
       const sorterOptions = this.getSorterOptions?.(sorter);
@@ -242,7 +251,9 @@ export default class Droppable {
       // @ts-ignore
       model = targetNode.model?.getView?.()?.insertComponent?.(this.content, { action: 'add-component' });
     } else {
-      model = targetNode.model.components().add(this.content, { at: targetNode.getRealIndex(index || -1), action: 'add-component' });
+      model = targetNode.model
+        .components()
+        .add(this.content, { at: targetNode.getRealIndex(index || -1), action: 'add-component' });
     }
 
     return model;
