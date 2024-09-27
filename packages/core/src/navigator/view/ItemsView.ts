@@ -50,7 +50,7 @@ export default class ItemsView extends View {
           containerSel: `.${this.className}`,
           itemSel: `.${pfx}layer`,
           pfx: config.pStylePrefix,
-          documents: [document],
+          document: document,
           placeholderElement: placeholderElement,
         },
         dragBehavior: {

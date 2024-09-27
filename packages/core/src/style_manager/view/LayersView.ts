@@ -43,7 +43,7 @@ export default class LayersView extends View<Layer> {
             containerSel: `.${pfx}layers`,
             itemSel: `.${pfx}layer`,
             pfx: config.pStylePrefix,
-            documents: [document],
+            document: document,
             placeholderElement: placeholderElement,
           },
           dragBehavior: {

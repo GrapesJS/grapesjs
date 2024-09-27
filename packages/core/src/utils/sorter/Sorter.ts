@@ -26,8 +26,6 @@ export default class Sorter<T, NodeType extends SortableTreeNode<T>> {
   containerContext: SorterContainerContext;
   dragBehavior: SorterDragBehaviorOptions;
   eventHandlers: SorterEventHandlers<NodeType>;
-
-  docs: Document[] = [document];
   sourceNodes?: NodeType[];
   constructor(sorterOptions: SorterOptions<T, NodeType>) {
     const mergedOptions = getMergedOptions<T, NodeType>(sorterOptions);
@@ -118,16 +116,6 @@ export default class Sorter<T, NodeType extends SortableTreeNode<T>> {
     const sortedModels = sourceModels.sort(sortDom);
     const sourceNodes = sortedModels.map((model) => new this.treeClass(model));
     this.sourceNodes = sourceNodes;
-    const uniqueDocs = new Set<Document>();
-    validSourceElements.forEach((element) => {
-      const doc = getDocument(this.em, element);
-      if (doc) {
-        uniqueDocs.add(doc);
-      }
-    });
-
-    const docs = Array.from(uniqueDocs);
-    this.updateDocs(docs);
     this.dropLocationDeterminer.startSort(sourceNodes);
     this.bindDragEventHandlers();
 
@@ -188,13 +176,7 @@ export default class Sorter<T, NodeType extends SortableTreeNode<T>> {
   }
 
   private bindDragEventHandlers() {
-    on(this.docs, 'keydown', this.rollback);
-  }
-
-  private updateDocs(docs: Document[]) {
-    const uniqueDocs = new Set([...this.docs, ...docs]);
-    this.docs = Array.from(uniqueDocs);
-    this.dropLocationDeterminer.updateDocs(this.docs);
+    on(this.containerContext.document, 'keydown', this.rollback);
   }
 
   private updatePlaceholderPosition(targetDimension: Dimension, placement: Placement) {
@@ -204,11 +186,10 @@ export default class Sorter<T, NodeType extends SortableTreeNode<T>> {
   /**
    * Clean up event listeners that were attached during the move.
    *
-   * @param {Document[]} docs - List of documents.
    * @private
    */
-  private cleanupEventListeners(docs: Document[]): void {
-    off(docs, 'keydown', this.rollback);
+  private cleanupEventListeners(): void {
+    off(this.containerContext.document, 'keydown', this.rollback);
   }
 
   /**
@@ -217,8 +198,7 @@ export default class Sorter<T, NodeType extends SortableTreeNode<T>> {
    * @private
    */
   protected finalizeMove(): void {
-    const docs = this.docs;
-    this.cleanupEventListeners(docs);
+    this.cleanupEventListeners();
     this.placeholder.hide();
     delete this.sourceNodes;
   }
@@ -228,7 +208,7 @@ export default class Sorter<T, NodeType extends SortableTreeNode<T>> {
    * @param {KeyboardEvent} e - The keyboard event object.
    */
   private rollback(e: KeyboardEvent) {
-    off(this.docs, 'keydown', this.rollback);
+    off(this.containerContext.document, 'keydown', this.rollback);
     const ESC_KEY = 'Escape';
 
     if (e.key === ESC_KEY) {
