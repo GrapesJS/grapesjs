@@ -206,7 +206,6 @@ export default class Droppable {
         'frame:scroll',
         ((...agrs: any[]) => {
           const canvasScroll = this.canvas.getCanvasView().frame === agrs[0].frame;
-          console.log('🚀 ~ Droppable ~ handleDragEnter ~ canvasScroll:', canvasScroll);
           if (canvasScroll) sorter.recalculateTargetOnScroll();
         }).bind(this),
       );
