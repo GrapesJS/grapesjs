@@ -298,7 +298,7 @@ export class DropLocationDeterminer<T, NodeType extends SortableTreeNode<T>> ext
   private getFirstElementWithAModel(mouseTargetEl: HTMLElement | null): HTMLElement | null {
     const isModelPresent = (el: HTMLElement) => $(el).data('model') !== undefined;
 
-    while (mouseTargetEl && mouseTargetEl !== this.containerContext.container) {
+    while (mouseTargetEl && this.containerContext.container.contains(mouseTargetEl)) {
       if (isModelPresent(mouseTargetEl)) {
         return mouseTargetEl;
       }
