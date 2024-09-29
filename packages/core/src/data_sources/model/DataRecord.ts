@@ -32,8 +32,11 @@ import EditorModel from '../../editor/model/Editor';
 import { _StringKey } from 'backbone';
 
 export default class DataRecord<T extends DataRecordProps = DataRecordProps> extends Model<T> {
+  public mutable: boolean;
+
   constructor(props: T, opts = {}) {
     super(props, opts);
+    this.mutable = props.mutable ?? true;
     this.on('change', this.handleChange);
   }
 
@@ -137,6 +140,10 @@ export default class DataRecord<T extends DataRecordProps = DataRecordProps> ext
     options?: SetOptions | undefined,
   ): this;
   set(attributeName: unknown, value?: unknown, options?: SetOptions): DataRecord {
+    if (!this.isNew() && this.attributes.mutable === false) {
+      throw new Error('Cannot modify immutable record');
+    }
+
     const onRecordSetValue = this.dataSource?.transformers?.onRecordSetValue;
 
     const applySet = (key: string, val: unknown) => {
