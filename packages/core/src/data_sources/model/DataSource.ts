@@ -153,7 +153,7 @@ export default class DataSource extends Model<DataSourceProps> {
    */
   removeRecord(id: string | number, opts?: RemoveOptions): DataRecord | undefined {
     const record = this.getRecord(id);
-    if (record?.mutable === false) {
+    if (record?.mutable === false && !opts?.dangerously) {
       throw new Error('Cannot remove immutable record');
     }
 
