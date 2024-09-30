@@ -158,8 +158,9 @@ export abstract class BaseComponentNode extends SortableTreeNode<Component> {
    */
   restNodeState(): void {
     this.clearState();
+    const { model } = this;
     this.setContentEditable(false);
-    this.disableEditing();
+    model.em.getEditing() === model && this.disableEditing();
   }
 
   /**
@@ -167,7 +168,7 @@ export abstract class BaseComponentNode extends SortableTreeNode<Component> {
    * @param {boolean} value - True to make the content editable, false to disable editing.
    */
   setContentEditable(value: boolean): void {
-    if (this.element) {
+    if (this.element && this.isTextNode()) {
       this.element.contentEditable = value ? 'true' : 'false';
     }
   }
