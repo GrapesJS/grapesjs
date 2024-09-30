@@ -7,6 +7,11 @@ export interface DataRecordProps extends ObjectAny {
    * Record id.
    */
   id: string;
+
+  /**
+   * Specifies if the record is mutable. Defaults to `true`.
+   */
+  mutable?: boolean;
 }
 
 export interface DataVariableListener {

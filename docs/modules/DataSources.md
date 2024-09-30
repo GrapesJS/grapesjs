@@ -211,6 +211,30 @@ console.log(loadedDataSource.getRecord('id1').get('content')); // Outputs: "This
 
 Remember that DataSources with `skipFromStorage: true` will not be available after a project is loaded unless you add them programmatically.
 
+
+## Record Mutability
+
+DataSource records are mutable by default, but can be set as immutable to prevent modifications. Use the mutable flag when creating records to control this behavior.
+
+```ts
+const dataSource = {
+  id: 'my-datasource',
+  records: [
+    { id: 'id1', content: 'Mutable content' },
+    { id: 'id2', content: 'Immutable content', mutable: false },
+  ],
+};
+
+
+editor.DataSources.add(dataSource);
+
+const ds = editor.DataSources.get('my-datasource');
+ds.getRecord('id1').set('content', 'Updated content'); // Succeeds
+ds.getRecord('id2').set('content', 'New content'); // Throws error
+```
+
+Immutable records cannot be modified or removed, ensuring data integrity for critical information.
+
 ## Benefits of Using DataSources
 
 DataSources are integrated with GrapesJS's runtime and BackboneJS models, enabling dynamic updates and synchronization between your data and UI components. This allows you to:
