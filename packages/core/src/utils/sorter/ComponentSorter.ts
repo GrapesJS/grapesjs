@@ -200,6 +200,11 @@ export default class ComponentSorter<NodeType extends BaseComponentNode> extends
     } else {
       this.placeholder.show();
     }
+
+    const { Canvas } = this.em;
+    const { Select, Hover, Spacing } = CanvasSpotBuiltInTypes;
+    [Select, Hover, Spacing].forEach((type) => Canvas.removeSpots({ type }));
+    Canvas.addSpot({ ...spotTarget, component: newTargetNode.model });
   };
 
   private updateTextViewCursorPosition(e: any) {
