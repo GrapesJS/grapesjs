@@ -48,7 +48,7 @@ export default extend({}, SelectPosition, SelectComponent, {
     this.cacheEl = null;
     this.startSelectPosition(e.target, this.frameEl.contentDocument);
     this.sorter.draggable = drag;
-    this.sorter.onEndMove = this.onEndMove.bind(this);
+    this.sorter.eventHandlers.legacyOnEndMove = this.onEndMove.bind(this);
     this.stopSelectComponent();
     this.$wrapper.off('mousedown', this.initSorter);
     on(this.getContentWindow(), 'keydown', this.rollback);
@@ -68,7 +68,7 @@ export default extend({}, SelectPosition, SelectComponent, {
     var el = model.view.el;
     this.startSelectPosition(el, this.frameEl.contentDocument);
     this.sorter.draggable = drag;
-    this.sorter.onEndMove = this.onEndMoveFromModel.bind(this);
+    this.sorter.eventHandlers.legacyOnEndMove = this.onEndMoveFromModel.bind(this);
 
     /*
     this.sorter.setDragHelper(el);
@@ -95,11 +95,10 @@ export default extend({}, SelectPosition, SelectComponent, {
     const frameView = this.em.getCurrentFrame();
     const el = lastModel.getEl(frameView?.model)!;
     const doc = el.ownerDocument;
-    this.startSelectPosition(el, doc, { onStart: this.onStart });
-    this.sorter.draggable = lastModel.get('draggable');
-    this.sorter.toMove = models;
-    this.sorter.onMoveClb = this.onDrag;
-    this.sorter.onEndMove = this.onEndMoveFromModel.bind(this);
+    const elements = models.map((model) => model?.view?.el);
+    this.startSelectPosition(elements, doc, { onStart: this.onStart });
+    this.sorter.eventHandlers.legacyOnMoveClb = this.onDrag;
+    this.sorter.eventHandlers.legacyOnEndMove = this.onEndMoveFromModel.bind(this);
     this.stopSelectComponent();
     on(this.getContentWindow(), 'keydown', this.rollback);
   },
@@ -134,8 +133,7 @@ export default extend({}, SelectPosition, SelectComponent, {
   rollback(e: any, force: boolean) {
     var key = e.which || e.keyCode;
     if (key == 27 || force) {
-      this.sorter.moved = false;
-      this.sorter.endMove();
+      this.sorter.cancelDrag();
     }
     return;
   },

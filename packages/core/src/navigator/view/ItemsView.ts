@@ -5,10 +5,16 @@ import EditorModel from '../../editor/model/Editor';
 import ItemView from './ItemView';
 import Components from '../../dom_components/model/Components';
 import LayerManager from '..';
+import { DragDirection } from '../../utils/sorter/types';
+import LayersComponentNode from '../../utils/sorter/LayersComponentNode';
+import ComponentSorter from '../../utils/sorter/ComponentSorter';
 
 export default class ItemsView extends View {
   items: ItemView[];
-  opt: any;
+  opt: {
+    sorter: ComponentSorter<LayersComponentNode>;
+    [k: string]: any;
+  };
   config: any;
   parentView: ItemView;
   module: LayerManager;
@@ -34,23 +40,46 @@ export default class ItemsView extends View {
 
     if (config.sortable && !this.opt.sorter) {
       const utils = em.Utils;
-      this.opt.sorter = new utils.Sorter({
-        // @ts-ignore
-        container: config.sortContainer || this.el,
-        containerSel: `.${this.className}`,
-        itemSel: `.${pfx}layer`,
-        ignoreViewChildren: 1,
-        avoidSelectOnEnd: 1,
-        nested: 1,
-        ppfx,
-        pfx,
+      const container = config.sortContainer || this.el;
+      const placeholderElement = this.createPlaceholder(pfx);
+      this.opt.sorter = new utils.ComponentSorter({
         em,
+        treeClass: LayersComponentNode,
+        containerContext: {
+          container: container,
+          containerSel: `.${this.className}`,
+          itemSel: `.${pfx}layer`,
+          pfx: config.pStylePrefix,
+          document: document,
+          placeholderElement: placeholderElement,
+        },
+        dragBehavior: {
+          dragDirection: DragDirection.Vertical,
+          nested: true,
+        },
       });
     }
 
     // For the sorter
     this.$el.data('collection', coll);
     opt.parent && this.$el.data('model', opt.parent);
+  }
+
+  /**
+   * Create placeholder
+   * @return {HTMLElement}
+   */
+  private createPlaceholder(pfx: string) {
+    const el = document.createElement('div');
+    const ins = document.createElement('div');
+    this.el.parentNode;
+    el.className = pfx + 'placeholder';
+    el.style.display = 'none';
+    el.style.pointerEvents = 'none';
+    ins.className = pfx + 'placeholder-int';
+    el.appendChild(ins);
+
+    return el;
   }
 
   removeChildren(removed: Component) {

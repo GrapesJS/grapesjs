@@ -1,6 +1,9 @@
 import { View } from '../../common';
 import EditorModel from '../../editor/model/Editor';
+import StyleManagerSorter from '../../utils/sorter/StyleManagerSorter';
+import { DragDirection } from '../../utils/sorter/types';
 import Layer from '../model/Layer';
+import Layers from '../model/Layers';
 import LayerView from './LayerView';
 import PropertyStackView from './PropertyStackView';
 
@@ -10,7 +13,7 @@ export default class LayersView extends View<Layer> {
   config: any;
   propertyView: PropertyStackView;
   items: LayerView[];
-  sorter: any;
+  sorter?: StyleManagerSorter;
 
   constructor(o: any) {
     super(o);
@@ -27,20 +30,28 @@ export default class LayersView extends View<Layer> {
     this.listenTo(coll, 'add', this.addTo);
     this.listenTo(coll, 'reset', this.reset);
     this.items = [];
+    const placeholderElement = this.createPlaceholder(config.pStylePrefix);
+    this.$el.append(placeholderElement);
 
     // For the Sorter
     const utils = em?.Utils;
     this.sorter = utils
-      ? new utils.Sorter({
-          // @ts-ignore
-          container: this.el,
-          ignoreViewChildren: 1,
-          containerSel: `.${pfx}layers`,
-          itemSel: `.${pfx}layer`,
-          pfx: config.pStylePrefix,
+      ? new utils.StyleManagerSorter({
           em,
+          containerContext: {
+            container: this.el,
+            containerSel: `.${pfx}layers`,
+            itemSel: `.${pfx}layer`,
+            pfx: config.pStylePrefix,
+            document: document,
+            placeholderElement: placeholderElement,
+          },
+          dragBehavior: {
+            dragDirection: DragDirection.Vertical,
+            nested: false,
+          },
         })
-      : '';
+      : undefined;
     // @ts-ignore
     coll.view = this;
     this.$el.data('model', coll);
@@ -107,14 +118,30 @@ export default class LayersView extends View<Layer> {
   }
 
   render() {
-    const { $el, sorter } = this;
+    const { $el } = this;
     const frag = document.createDocumentFragment();
     $el.empty();
     this.collection.forEach((m) => this.addToCollection(m, frag));
     $el.append(frag);
     $el.attr('class', this.className!);
-    if (sorter) sorter.plh = null;
 
     return this;
+  }
+
+  /**
+   * Create placeholder
+   * @return {HTMLElement}
+   */
+  private createPlaceholder(pfx: string) {
+    const el = document.createElement('div');
+    const ins = document.createElement('div');
+    this.el.parentNode;
+    el.className = pfx + 'placeholder';
+    el.style.display = 'none';
+    el.style.pointerEvents = 'none';
+    ins.className = pfx + 'placeholder-int';
+    el.appendChild(ins);
+
+    return el;
   }
 }
