@@ -130,7 +130,7 @@ data record, and optional property path.
 
 Store data sources to a JSON object.
 
-Returns **[Object][6]** Stored data sources.
+Returns **[Array][8]** Stored data sources.
 
 ## load
 
@@ -155,3 +155,5 @@ Returns **[Object][6]** Loaded data sources.
 [6]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
 
 [7]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
+
+[8]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array
