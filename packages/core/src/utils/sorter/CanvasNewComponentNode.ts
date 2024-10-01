@@ -1,3 +1,4 @@
+import { isFunction } from 'underscore';
 import CanvasComponentNode from './CanvasComponentNode';
 
 export default class CanvasNewComponentNode extends CanvasComponentNode {
@@ -8,14 +9,13 @@ export default class CanvasNewComponentNode extends CanvasComponentNode {
    */
   addChildAt(node: CanvasNewComponentNode, index: number): CanvasNewComponentNode {
     const insertingTextableIntoText = this.isTextNode() && node.isTextable();
+    const content = isFunction(node._content) ? node._content() : node._content;
     let model;
     if (insertingTextableIntoText) {
       // @ts-ignore
-      model = this.model?.getView?.()?.insertComponent?.(node._content, { action: 'add-component' });
+      model = this.model?.getView?.()?.insertComponent?.(content, { action: 'add-component' });
     } else {
-      model = this.model
-        .components()
-        .add(node._content, { at: this.getRealIndex(index || -1), action: 'add-component' });
+      model = this.model.components().add(content, { at: this.getRealIndex(index || -1), action: 'add-component' });
     }
 
     return new (this.constructor as any)(model);
