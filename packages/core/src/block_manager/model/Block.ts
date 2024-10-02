@@ -4,7 +4,8 @@ import Editor from '../../editor';
 import Category, { CategoryProperties } from '../../abstract/ModuleCategory';
 import { ComponentDefinition } from '../../dom_components/model/types';
 import Blocks from './Blocks';
-import { ContentType } from '..';
+
+export type ContentType = string | Block | ComponentDefinition | (string | ComponentDefinition)[];
 
 /** @private */
 export interface BlockProperties {
@@ -18,7 +19,7 @@ export interface BlockProperties {
    * This property is used to specify the component definition that determines the validity of the drag operation.
    * @type {ComponentDefinition | undefined}
    */
-  dragSource?: ComponentDefinition;
+  definition?: ComponentDefinition;
   /**
    * The content of the block. Might be an HTML string or a [Component Defintion](/modules/Components.html#component-definition)
    */

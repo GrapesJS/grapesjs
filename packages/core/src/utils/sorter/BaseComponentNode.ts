@@ -1,13 +1,13 @@
-import { ContentType } from '../../block_manager';
+import { ContentType } from '../../block_manager/model/Block';
 import Component from '../../dom_components/model/Component';
 import { ComponentDefinition } from '../../dom_components/model/types';
 import { SortableTreeNode } from './SortableTreeNode';
 
-interface DragSource {
+type ComponentDragSource = {
   model?: Component; // For passing main symbol model
   content?: ContentType | (() => ContentType);
   definition?: ComponentDefinition;
-}
+};
 
 /**
  * BaseComponentNode is an abstract class that provides basic operations
@@ -16,10 +16,6 @@ interface DragSource {
  * Subclasses must implement the `view` and `element` methods.
  */
 export abstract class BaseComponentNode extends SortableTreeNode<Component> {
-  constructor(model: Component, dragSource: DragSource = {}) {
-    super(model, dragSource);
-  }
-
   /**
    * Get the list of child components.
    * @returns {BaseComponentNode[] | null} - The list of children wrapped in

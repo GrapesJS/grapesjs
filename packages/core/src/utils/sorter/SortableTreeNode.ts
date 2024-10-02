@@ -1,10 +1,10 @@
 import { View } from '../../common';
 
-export interface DragSource<T> {
+type DragSource<T> = {
   symbolModel?: T; // For passing main symbol model
-  content?: any | (() => any);
+  content?: any;
   definition?: any;
-}
+};
 
 /**
  * Base class for managing tree-like structures with sortable nodes.

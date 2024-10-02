@@ -38,11 +38,8 @@ import Categories from '../abstract/ModuleCategories';
 import Category, { getItemsByCategory } from '../abstract/ModuleCategory';
 import { BlocksByCategory, BlocksEvents } from './types';
 import BlocksView from './view/BlocksView';
-import { ComponentDefinition } from '../dom_components/model/types';
 
 export type BlockEvent = `${BlocksEvents}`;
-
-export type ContentType = string | Block | ComponentDefinition | (string | ComponentDefinition)[] | undefined;
 
 export default class BlockManager extends ItemManagerModule<BlockManagerConfig, Blocks> {
   blocks: Blocks;

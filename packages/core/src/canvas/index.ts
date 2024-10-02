@@ -43,14 +43,10 @@ import Frame from './model/Frame';
 import { CanvasEvents, CanvasRefreshOptions, ToWorldOption } from './types';
 import CanvasView, { FitViewportOptions } from './view/CanvasView';
 import FrameView from './view/FrameView';
-import ComponentSorter from '../utils/sorter/ComponentSorter';
-import { DragDirection } from '../utils/sorter/types';
 import { ComponentDefinition } from '../dom_components/model/types';
-import CanvasNewComponentNode from '../utils/sorter/CanvasNewComponentNode';
+import { ContentType } from '../block_manager/model/Block';
 
 export type CanvasEvent = `${CanvasEvents}`;
-
-type contentType = string | ComponentDefinition | (string | ComponentDefinition)[];
 
 export default class CanvasModule extends Module<CanvasConfig> {
   /**
@@ -514,13 +510,11 @@ export default class CanvasModule extends Module<CanvasConfig> {
     };
   }
 
-  startSort(
-    dragSource: {
-      symbolModel: Component;
-      content: contentType | (() => contentType);
-      definition?: ComponentDefinition;
-    },
-  ) {
+  startSort(dragSource: {
+    symbolModel: Component;
+    content: ContentType | (() => ContentType);
+    definition?: ComponentDefinition;
+  }) {
     this.em.set('dragSource', dragSource);
   }
 
