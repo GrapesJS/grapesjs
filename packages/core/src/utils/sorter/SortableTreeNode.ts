@@ -1,6 +1,6 @@
 import { View } from '../../common';
 
-type DragSource<T> = {
+export type DragSource<T> = {
   symbolModel?: T; // For passing main symbol model
   content?: any;
   definition?: any;

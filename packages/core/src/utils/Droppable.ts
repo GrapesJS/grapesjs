@@ -120,7 +120,7 @@ export default class Droppable {
     // For security reason I can't read the drag data on dragenter, but
     // as I need it for the Sorter context I will use `dragContent` or just
     // any not empty element
-    let content = dragSource.content || '<br>';
+    let content = dragSource?.content || '<br>';
     let dragStop: DragStop;
     let dragContent;
     em.stopDefault();
@@ -195,16 +195,8 @@ export default class Droppable {
       );
       let dropModel = this.getTempDropModel(content);
       const el = dropModel.view?.el;
-      sorter.startSort(
-        el
-          ? [
-              {
-                element: el,
-                dragSource,
-              },
-            ]
-          : [],
-      );
+      const sources = el ? [{ element: el, dragSource }] : [];
+      sorter.startSort(sources);
       this.sorter = sorter;
       this.draggedNode = sorter.sourceNodes?.[0];
       dragStop = (cancel?: boolean) => {
@@ -293,7 +285,7 @@ export default class Droppable {
           });
         }
       }
-    } else if (dragSource.content) {
+    } else if (dragSource?.content) {
       content = dragSource.content;
     } else if (indexOf(types, 'text/html') >= 0) {
       content = dt && dt.getData('text/html').replace(/<\/?meta[^>]*>/g, '');
