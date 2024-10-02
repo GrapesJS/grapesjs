@@ -113,7 +113,7 @@ export default class BlockManager extends ItemManagerModule<BlockManagerConfig, 
       dragContent: content,
       dragSource: {
         content,
-        dragSource: block.get('definition'),
+        definition: block.getDefinition(),
       },
     });
     [em, blocks].map((i) => i.trigger(events.dragStart, block, ev));

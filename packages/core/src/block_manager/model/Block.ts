@@ -100,6 +100,7 @@ export default class Block extends Model<BlockProperties> {
       disable: false,
       onClick: undefined,
       attributes: {},
+      definition: {},
     };
   }
 
@@ -142,6 +143,14 @@ export default class Block extends Model<BlockProperties> {
    */
   getContent() {
     return this.get('content');
+  }
+
+  /**
+   * Get block component definition
+   * @returns {ComponentDefinition}
+   */
+  getDefinition() {
+    return this.get('definition');
   }
 
   /**
