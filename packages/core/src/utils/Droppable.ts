@@ -107,9 +107,9 @@ export default class Droppable {
   handleDragEnter(ev: DragEvent | Event) {
     const { em, canvas } = this;
     const dt = (ev as DragEvent).dataTransfer;
-    const dragContentOrigin = em.get('dragContent');
+    const dragSource = em.get('dragSource');
 
-    if (!dragContentOrigin && !canvas.getConfig().allowExternalDrop) {
+    if (!dragSource?.content && !canvas.getConfig().allowExternalDrop) {
       return;
     }
 
@@ -120,7 +120,7 @@ export default class Droppable {
     // For security reason I can't read the drag data on dragenter, but
     // as I need it for the Sorter context I will use `dragContent` or just
     // any not empty element
-    let content = dragContentOrigin || '<br>';
+    let content = dragSource.content || '<br>';
     let dragStop: DragStop;
     let dragContent;
     em.stopDefault();
@@ -195,8 +195,16 @@ export default class Droppable {
       );
       let dropModel = this.getTempDropModel(content);
       const el = dropModel.view?.el;
-      const node = new CanvasNewComponentNode(dropModel, content);
-      sorter.sortFromNodeInstances(el ? [node] : []);
+      sorter.startSort(
+        el
+          ? [
+              {
+                element: el,
+                dragSource,
+              },
+            ]
+          : [],
+      );
       this.sorter = sorter;
       this.draggedNode = sorter.sourceNodes?.[0];
       dragStop = (cancel?: boolean) => {
@@ -268,7 +276,7 @@ export default class Droppable {
     const em = this.em;
     const types = dt && dt.types;
     const files = (dt && dt.files) || [];
-    const dragContent = em.get('dragContent');
+    const dragSource = em.get('dragSource');
     let content = dt && dt.getData('text');
 
     if (files.length) {
@@ -285,8 +293,8 @@ export default class Droppable {
           });
         }
       }
-    } else if (dragContent) {
-      content = dragContent;
+    } else if (dragSource.content) {
+      content = dragSource.content;
     } else if (indexOf(types, 'text/html') >= 0) {
       content = dt && dt.getData('text/html').replace(/<\/?meta[^>]*>/g, '');
     } else if (indexOf(types, 'text/uri-list') >= 0) {

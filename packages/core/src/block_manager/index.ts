@@ -38,8 +38,11 @@ import Categories from '../abstract/ModuleCategories';
 import Category, { getItemsByCategory } from '../abstract/ModuleCategory';
 import { BlocksByCategory, BlocksEvents } from './types';
 import BlocksView from './view/BlocksView';
+import { ComponentDefinition } from '../dom_components/model/types';
 
 export type BlockEvent = `${BlocksEvents}`;
+
+export type ContentType = string | Block | ComponentDefinition | (string | ComponentDefinition)[] | undefined;
 
 export default class BlockManager extends ItemManagerModule<BlockManagerConfig, Blocks> {
   blocks: Blocks;
@@ -106,9 +109,16 @@ export default class BlockManager extends ItemManagerModule<BlockManagerConfig, 
 
   __startDrag(block: Block, ev?: Event) {
     const { em, events, blocks } = this;
-    const content = block.getContent ? block.getContent() : block;
     this._dragBlock = block;
-    em.set({ dragResult: null, dragContent: content });
+    const content = block.getContent();
+    em.set({
+      dragResult: null,
+      dragContent: content,
+      dragSource: {
+        content,
+        dragSource: block.get('dragSource'),
+      },
+    });
     [em, blocks].map((i) => i.trigger(events.dragStart, block, ev));
   }
 
@@ -145,7 +155,7 @@ export default class BlockManager extends ItemManagerModule<BlockManagerConfig, 
       }
     }
 
-    em.set({ dragResult: null, dragContent: null });
+    em.set({ dragResult: null, dragContent: null, dragSource: undefined });
 
     if (block) {
       [em, blocks].map((i) => i.trigger(events.dragEnd, cmp, block));

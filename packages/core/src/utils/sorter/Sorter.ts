@@ -2,7 +2,7 @@ import { bindAll } from 'underscore';
 import { $ } from '../../common';
 import EditorModel from '../../editor/model/Editor';
 import { off, on } from '../dom';
-import { SortableTreeNode } from './SortableTreeNode';
+import { DragSource, SortableTreeNode } from './SortableTreeNode';
 import { DropLocationDeterminer } from './DropLocationDeterminer';
 import { PlaceholderClass } from './PlaceholderClass';
 import { getMergedOptions, getDocument, matches, closest, sortDom } from './SorterUtils';
@@ -18,7 +18,7 @@ import { SorterOptions } from './types';
 
 export default class Sorter<T, NodeType extends SortableTreeNode<T>> {
   em: EditorModel;
-  treeClass: new (model: T) => NodeType;
+  treeClass: new (model: T, dragSource?: any) => NodeType;
   placeholder: PlaceholderClass;
   dropLocationDeterminer: DropLocationDeterminer<T, NodeType>;
 
@@ -32,9 +32,7 @@ export default class Sorter<T, NodeType extends SortableTreeNode<T>> {
 
     bindAll(
       this,
-      'sortFromHtmlElements',
-      'sortFromNodeInstances',
-      'endDrag',
+      'startSort',
       'cancelDrag',
       'recalculateTargetOnScroll',
       'rollback',
@@ -68,39 +66,22 @@ export default class Sorter<T, NodeType extends SortableTreeNode<T>> {
   }
 
   /**
-   * Start sorting for HTML elements.
-   * @param {HTMLElement[]} elements - Array of HTML elements
-   */
-  sortFromHtmlElements(elements: HTMLElement[]): void {
-    const validSources = elements.filter((element) => this.findValidSourceElement(element));
+   * Picking components to move
+   * @param {HTMLElement[]} sources[]
+   * */
+  startSort(sources: { element?: HTMLElement; dragSource?: DragSource<T> }[]) {
+    const validSources = sources.filter((source) => !!source.dragSource || this.findValidSourceElement(source.element));
 
-    const sourcesWithModel = validSources.map((element) => {
-      const model = $(element)?.data('model') as T;
-      return { model };
+    const sourcesWithModel: { model: T; content?: any }[] = validSources.map((source) => {
+      return {
+        model: $(source.element)?.data('model'),
+        content: source.dragSource,
+      };
     });
-
-    const sortedSources = sourcesWithModel.sort((a, b) => sortDom(a.model, b.model));
-
-    const sourceNodes = sortedSources.map((source) => new this.treeClass(source.model) as NodeType);
-
-    this.startSort(sourceNodes);
-  }
-
-  /**
-   * Start sorting for NodeType instances directly.
-   * @param {NodeType[]} nodes - Array of NodeType instances
-   */
-  sortFromNodeInstances(nodes: NodeType[]): void {
-    this.startSort(nodes);
-  }
-
-  /**
-   * Finalize sorting and trigger events.
-   * @param {NodeType[]} sourceNodes - Array of sorted source nodes
-   */
-  private startSort(sourceNodes: NodeType[]): void {
-    if (sourceNodes.length === 0) return;
-
+    const sortedSources = sourcesWithModel.sort((a, b) => {
+      return sortDom(a.model, b.model);
+    });
+    const sourceNodes = sortedSources.map((source) => new this.treeClass(source.model, source.content));
     this.sourceNodes = sourceNodes;
     this.dropLocationDeterminer.startSort(sourceNodes);
     this.bindDragEventHandlers();
@@ -119,7 +100,7 @@ export default class Sorter<T, NodeType extends SortableTreeNode<T>> {
     });
 
     // For backward compatibility, leave it to a single node
-    this.em.trigger('sorter:drag:start', sourceNodes[0].model, sourceNodes[0].model);
+    this.em.trigger('sorter:drag:start', sources[0], sourcesWithModel[0]);
   }
 
   /**

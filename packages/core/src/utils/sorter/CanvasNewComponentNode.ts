@@ -1,22 +1,27 @@
 import { isFunction } from 'underscore';
 import CanvasComponentNode from './CanvasComponentNode';
+import { getSymbolMain, getSymbolTop, isSymbol, isSymbolMain } from '../../dom_components/model/SymbolUtils';
 import Component from '../../dom_components/model/Component';
 
 export default class CanvasNewComponentNode extends CanvasComponentNode {
-  private _content: any;
-  constructor(tempModel: Component, content?: any) {
-    super(tempModel);
-    this._content = content;
+  canMove(source: CanvasNewComponentNode, index: number): boolean {
+    const realIndex = this.getRealIndex(index);
+    const symbolModel = source._dragSource.symbolModel;
+    const canMoveSymbol = !symbolModel || !this.isSourceSameSymbol(symbolModel);
+    let canMoveComponent;
+    if (isFunction(source._dragSource.content)) {
+      canMoveComponent = this.model.em.Components.canMove(this.model, source._dragSource.definition, realIndex).result;
+    } else {
+      canMoveComponent = this.model.em.Components.canMove(this.model, source._dragSource.content, realIndex).result;
+    }
+
+    return canMoveComponent && canMoveSymbol;
   }
 
-  /**
-   * **Note:** For new components, this method will not directly add them to the target collection.
-   * Instead, the adding logic is handled in `Droppable.ts` to accommodate dragging various content types,
-   * such as images.
-   */
   addChildAt(node: CanvasNewComponentNode, index: number): CanvasNewComponentNode {
+    const dragSource = node._dragSource;
     const insertingTextableIntoText = this.isTextNode() && node.isTextable();
-    const content = isFunction(node._content) ? node._content() : node._content;
+    const content = isFunction(dragSource.content) ? dragSource.content() : dragSource.content;
     let model;
     if (insertingTextableIntoText) {
       // @ts-ignore
@@ -28,7 +33,20 @@ export default class CanvasNewComponentNode extends CanvasComponentNode {
     return new (this.constructor as any)(model);
   }
 
+  private isSourceSameSymbol(symbolModel: Component | undefined) {
+    if (isSymbol(this.model)) {
+      const targetRootSymbol = getSymbolTop(this.model);
+      const targetMainSymbol = isSymbolMain(targetRootSymbol) ? targetRootSymbol : getSymbolMain(targetRootSymbol);
+
+      if (targetMainSymbol === symbolModel) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
   set content(content: any) {
-    this._content = content;
+    this._dragSource.content = content;
   }
 }

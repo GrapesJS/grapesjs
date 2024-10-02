@@ -1,5 +1,13 @@
+import { ContentType } from '../../block_manager';
 import Component from '../../dom_components/model/Component';
+import { ComponentDefinition } from '../../dom_components/model/types';
 import { SortableTreeNode } from './SortableTreeNode';
+
+interface DragSource {
+  model?: Component; // For passing main symbol model
+  content?: ContentType | (() => ContentType);
+  definition?: ComponentDefinition;
+}
 
 /**
  * BaseComponentNode is an abstract class that provides basic operations
@@ -8,8 +16,8 @@ import { SortableTreeNode } from './SortableTreeNode';
  * Subclasses must implement the `view` and `element` methods.
  */
 export abstract class BaseComponentNode extends SortableTreeNode<Component> {
-  constructor(model: Component) {
-    super(model);
+  constructor(model: Component, dragSource: DragSource = {}) {
+    super(model, dragSource);
   }
 
   /**

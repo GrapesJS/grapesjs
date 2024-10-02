@@ -1,5 +1,11 @@
 import { View } from '../../common';
 
+export interface DragSource<T> {
+  symbolModel?: T; // For passing main symbol model
+  content?: any | (() => any);
+  definition?: any;
+}
+
 /**
  * Base class for managing tree-like structures with sortable nodes.
  *
@@ -7,8 +13,10 @@ import { View } from '../../common';
  */
 export abstract class SortableTreeNode<T> {
   protected _model: T;
-  constructor(model: T) {
+  protected _dragSource: DragSource<T>;
+  constructor(model: T, dragSource: DragSource<T> = {}) {
     this._model = model;
+    this._dragSource = dragSource;
   }
   /**
    * Get the list of children of this node.
@@ -78,6 +86,10 @@ export abstract class SortableTreeNode<T> {
    */
   get model(): T {
     return this._model;
+  }
+
+  get dragSource() {
+    return this._dragSource;
   }
 
   equals(node?: SortableTreeNode<T>): boolean {

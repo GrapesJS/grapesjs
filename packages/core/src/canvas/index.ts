@@ -44,9 +44,9 @@ import { CanvasEvents, CanvasRefreshOptions, ToWorldOption } from './types';
 import CanvasView, { FitViewportOptions } from './view/CanvasView';
 import FrameView from './view/FrameView';
 import ComponentSorter from '../utils/sorter/ComponentSorter';
-import CanvasNewSymbolComponentNode from '../utils/sorter/CanvasNewSymbolComponentNode';
 import { DragDirection } from '../utils/sorter/types';
 import { ComponentDefinition } from '../dom_components/model/types';
+import CanvasNewComponentNode from '../utils/sorter/CanvasNewComponentNode';
 
 export type CanvasEvent = `${CanvasEvents}`;
 
@@ -73,7 +73,7 @@ export default class CanvasModule extends Module<CanvasConfig> {
   spots: CanvasSpots;
   events = CanvasEvents;
   framesById: Record<string, Frame | undefined> = {};
-  symbolsSorter?: ComponentSorter<CanvasNewSymbolComponentNode>;
+  sorter?: ComponentSorter<CanvasNewComponentNode>;
   private canvasView?: CanvasView;
 
   /**
@@ -515,27 +515,26 @@ export default class CanvasModule extends Module<CanvasConfig> {
     };
   }
 
-  startSortFromSymbols(
-    symbols: {
-      rootSymbol: Component;
+  startSort(
+    dragSources: {
+      symbolModel: Component;
       content: contentType | (() => contentType);
-      dragSource: any;
+      definition?: ComponentDefinition;
     }[],
   ) {
     this.ensureSorter();
-    const nodes = symbols.map(
-      (symbol) => new CanvasNewSymbolComponentNode(symbol.rootSymbol, symbol.content, symbol.dragSource),
-    );
-    this.symbolsSorter!.sortFromNodeInstances(nodes);
+    this.sorter!.startSort(dragSources.map((dragSource) => ({ dragSource })));
   }
 
   endSort() {
-    this.symbolsSorter?.endDrag();
+    this.sorter?.endDrag();
   }
 
   private ensureSorter() {
-    const sorterOptions = {
+    if (this.sorter) return;
+    this.sorter = new this.em.Utils.ComponentSorter({
       em: this.em,
+      treeClass: CanvasNewComponentNode,
       containerContext: {
         container: this.getBody(),
         containerSel: '*',
@@ -552,14 +551,7 @@ export default class CanvasModule extends Module<CanvasConfig> {
         dragDirection: DragDirection.BothDirections,
         nested: true,
       },
-    };
-
-    if (!this.symbolsSorter) {
-      this.symbolsSorter = new this.em.Utils.ComponentSorter({
-        ...sorterOptions,
-        treeClass: CanvasNewSymbolComponentNode,
-      });
-    }
+    });
   }
 
   /**
