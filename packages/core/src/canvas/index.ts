@@ -73,7 +73,6 @@ export default class CanvasModule extends Module<CanvasConfig> {
   spots: CanvasSpots;
   events = CanvasEvents;
   framesById: Record<string, Frame | undefined> = {};
-  sorter?: ComponentSorter<CanvasNewComponentNode>;
   private canvasView?: CanvasView;
 
   /**
@@ -516,42 +515,17 @@ export default class CanvasModule extends Module<CanvasConfig> {
   }
 
   startSort(
-    dragSources: {
+    dragSource: {
       symbolModel: Component;
       content: contentType | (() => contentType);
       definition?: ComponentDefinition;
-    }[],
+    },
   ) {
-    this.ensureSorter();
-    this.sorter!.startSort(dragSources.map((dragSource) => ({ dragSource })));
+    this.em.set('dragSource', dragSource);
   }
 
   endSort() {
-    this.sorter?.endDrag();
-  }
-
-  private ensureSorter() {
-    if (this.sorter) return;
-    this.sorter = new this.em.Utils.ComponentSorter({
-      em: this.em,
-      treeClass: CanvasNewComponentNode,
-      containerContext: {
-        container: this.getBody(),
-        containerSel: '*',
-        itemSel: '*',
-        pfx: '',
-        document: this.getDocument(),
-        placeholderElement: this.getPlacerEl()!,
-      },
-      positionOptions: {
-        windowMargin: 1,
-        canvasRelative: true,
-      },
-      dragBehavior: {
-        dragDirection: DragDirection.BothDirections,
-        nested: true,
-      },
-    });
+    this.em.set({ dragResult: null, dragContent: null, dragSource: undefined });
   }
 
   /**
