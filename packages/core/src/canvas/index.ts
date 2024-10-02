@@ -43,8 +43,14 @@ import Frame from './model/Frame';
 import { CanvasEvents, CanvasRefreshOptions, ToWorldOption } from './types';
 import CanvasView, { FitViewportOptions } from './view/CanvasView';
 import FrameView from './view/FrameView';
+import ComponentSorter from '../utils/sorter/ComponentSorter';
+import CanvasNewSymbolComponentNode from '../utils/sorter/CanvasNewSymbolComponentNode';
+import { DragDirection } from '../utils/sorter/types';
+import { ComponentDefinition } from '../dom_components/model/types';
 
 export type CanvasEvent = `${CanvasEvents}`;
+
+type contentType = string | ComponentDefinition | (string | ComponentDefinition)[];
 
 export default class CanvasModule extends Module<CanvasConfig> {
   /**
@@ -67,6 +73,7 @@ export default class CanvasModule extends Module<CanvasConfig> {
   spots: CanvasSpots;
   events = CanvasEvents;
   framesById: Record<string, Frame | undefined> = {};
+  symbolsSorter?: ComponentSorter<CanvasNewSymbolComponentNode>;
   private canvasView?: CanvasView;
 
   /**
@@ -506,6 +513,53 @@ export default class CanvasModule extends Module<CanvasConfig> {
       y: ev.clientY * zoom + top,
       x: ev.clientX * zoom + left,
     };
+  }
+
+  startSortFromSymbols(
+    symbols: {
+      rootSymbol: Component;
+      content: contentType | (() => contentType);
+      dragSource: any;
+    }[],
+  ) {
+    this.ensureSorter();
+    const nodes = symbols.map(
+      (symbol) => new CanvasNewSymbolComponentNode(symbol.rootSymbol, symbol.content, symbol.dragSource),
+    );
+    this.symbolsSorter!.sortFromNodeInstances(nodes);
+  }
+
+  endSort() {
+    this.symbolsSorter?.endDrag();
+  }
+
+  private ensureSorter() {
+    const sorterOptions = {
+      em: this.em,
+      containerContext: {
+        container: this.getBody(),
+        containerSel: '*',
+        itemSel: '*',
+        pfx: '',
+        document: this.getDocument(),
+        placeholderElement: this.getPlacerEl()!,
+      },
+      positionOptions: {
+        windowMargin: 1,
+        canvasRelative: true,
+      },
+      dragBehavior: {
+        dragDirection: DragDirection.BothDirections,
+        nested: true,
+      },
+    };
+
+    if (!this.symbolsSorter) {
+      this.symbolsSorter = new this.em.Utils.ComponentSorter({
+        ...sorterOptions,
+        treeClass: CanvasNewSymbolComponentNode,
+      });
+    }
   }
 
   /**

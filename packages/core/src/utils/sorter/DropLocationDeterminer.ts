@@ -16,7 +16,7 @@ type ContainerContext = {
 
 interface DropLocationDeterminerOptions<T, NodeType extends SortableTreeNode<T>> {
   em: EditorModel;
-  treeClass: new (model: T, content?: any) => NodeType;
+  treeClass: new (model: T) => NodeType;
   containerContext: ContainerContext;
   positionOptions: PositionOptions;
   dragDirection: DragDirection;

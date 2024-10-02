@@ -332,7 +332,7 @@ export default class ItemView extends View {
         ...sorter.eventHandlers,
       };
       const element = (toMove as any).viewLayer?.el || ev.target;
-      sorter.startSort([{ element }]);
+      sorter.sortFromHtmlElements([element]);
     }
   }
 

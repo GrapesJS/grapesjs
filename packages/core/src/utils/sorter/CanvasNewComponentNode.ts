@@ -1,7 +1,14 @@
 import { isFunction } from 'underscore';
 import CanvasComponentNode from './CanvasComponentNode';
+import Component from '../../dom_components/model/Component';
 
 export default class CanvasNewComponentNode extends CanvasComponentNode {
+  private _content: any;
+  constructor(tempModel: Component, content?: any) {
+    super(tempModel);
+    this._content = content;
+  }
+
   /**
    * **Note:** For new components, this method will not directly add them to the target collection.
    * Instead, the adding logic is handled in `Droppable.ts` to accommodate dragging various content types,

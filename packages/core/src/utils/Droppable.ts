@@ -195,7 +195,8 @@ export default class Droppable {
       );
       let dropModel = this.getTempDropModel(content);
       const el = dropModel.view?.el;
-      sorter.startSort(el ? [{ element: el, content }] : []);
+      const node = new CanvasNewComponentNode(dropModel, content);
+      sorter.sortFromNodeInstances(el ? [node] : []);
       this.sorter = sorter;
       this.draggedNode = sorter.sourceNodes?.[0];
       dragStop = (cancel?: boolean) => {

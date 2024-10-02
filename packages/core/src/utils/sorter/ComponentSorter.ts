@@ -24,7 +24,7 @@ export default class ComponentSorter<NodeType extends BaseComponentNode> extends
     eventHandlers = {},
   }: {
     em: EditorModel;
-    treeClass: new (model: Component, content?: any) => NodeType;
+    treeClass: new (model: Component) => NodeType;
     containerContext: SorterContainerContext;
     dragBehavior: SorterDragBehaviorOptions;
     positionOptions?: PositionOptions;

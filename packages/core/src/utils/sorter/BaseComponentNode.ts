@@ -1,4 +1,3 @@
-import { View } from '../../common';
 import Component from '../../dom_components/model/Component';
 import { SortableTreeNode } from './SortableTreeNode';
 
@@ -9,8 +8,8 @@ import { SortableTreeNode } from './SortableTreeNode';
  * Subclasses must implement the `view` and `element` methods.
  */
 export abstract class BaseComponentNode extends SortableTreeNode<Component> {
-  constructor(model: Component, content?: any) {
-    super(model, content);
+  constructor(model: Component) {
+    super(model);
   }
 
   /**
