@@ -16,10 +16,10 @@ export interface BlockProperties {
   /**
    * Determines if a block can be moved inside a given component when the content is a function.
    *
-   * This property is used to specify the component definition that determines the validity of the drag operation.
+   * This property is used to determine the validity of the drag operation.
    * @type {ComponentDefinition | undefined}
    */
-  definition?: ComponentDefinition;
+  dragSource?: ComponentDefinition;
   /**
    * The content of the block. Might be an HTML string or a [Component Defintion](/modules/Components.html#component-definition)
    */
@@ -146,11 +146,11 @@ export default class Block extends Model<BlockProperties> {
   }
 
   /**
-   * Get block component definition
+   * Get block component dragSource
    * @returns {ComponentDefinition}
    */
-  getDefinition() {
-    return this.get('definition');
+  getDragSource() {
+    return this.get('dragSource');
   }
 
   /**
