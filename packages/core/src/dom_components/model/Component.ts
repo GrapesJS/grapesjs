@@ -221,6 +221,8 @@ export default class Component extends StyleableModel<ComponentProperties> {
     return this.frame?.getPage();
   }
 
+  preInit() {}
+
   /**
    * Hook method, called once the model is created
    */
@@ -288,6 +290,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
       ...(this.get('attributes') || {}),
     });
     this.ccid = Component.createId(this, opt);
+    this.preInit();
     this.initClasses();
     this.initComponents();
     this.initTraits();

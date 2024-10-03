@@ -259,7 +259,7 @@ Component> {
     const parsed = em.Parser.parseHtml(value, { asDocument, ...opt.parserOptions });
     let components = parsed.html;
 
-    if (asDocument) {
+    if (asDocument || parsed.doctype) {
       const root = parent as ComponentWrapper;
       const { components: bodyCmps, ...restBody } = (parsed.html as ComponentDefinitionDefined) || {};
       const { components: headCmps, ...restHead } = parsed.head || {};
