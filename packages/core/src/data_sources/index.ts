@@ -42,8 +42,6 @@ import { get, stringToPath } from '../utils/mixins';
 import DataRecord from './model/DataRecord';
 import DataSource from './model/DataSource';
 import DataSources from './model/DataSources';
-import DataVariableListenerManager, { DataVariableListenerManagerOptions } from './model/DataVariableListenerManager';
-import DataVariable from './model/DataVariable';
 import { DataSourcesEvents, DataSourceProps } from './types';
 import { Events } from 'backbone';
 
@@ -179,13 +177,5 @@ export default class DataSourceManager extends ItemManagerModule<ModuleConfig, D
    */
   load(data: any) {
     return this.loadProjectData(data);
-  }
-
-  newDataVariableListenerManager(options: Omit<DataVariableListenerManagerOptions, 'em'>) {
-    return new DataVariableListenerManager({ ...options, em: this.em });
-  }
-
-  newDataVariable(options: any) {
-    return new DataVariable(options, { em: this.em });
   }
 }
