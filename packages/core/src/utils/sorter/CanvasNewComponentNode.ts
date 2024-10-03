@@ -60,8 +60,8 @@ export default class CanvasNewComponentNode extends CanvasComponentNode {
 
     if (Array.isArray(sourceContent)) {
       return (
-        // @ts-ignore
         sourceContent.every((contentItem, i) =>
+          // @ts-ignore
           this.canMoveSingleContent(source.cacheSrcModelForContent(contentItem), realIndex + i),
         ) && canMoveSymbol
       );
