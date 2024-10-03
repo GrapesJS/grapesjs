@@ -1,13 +1,7 @@
-import { ContentType } from '../../block_manager/model/Block';
+import { ContentType } from './types';
 import Component from '../../dom_components/model/Component';
 import { ComponentDefinition } from '../../dom_components/model/types';
 import { SortableTreeNode } from './SortableTreeNode';
-
-type ComponentDragSource = {
-  model?: Component; // For passing main symbol model
-  content?: ContentType | (() => ContentType);
-  definition?: ComponentDefinition;
-};
 
 /**
  * BaseComponentNode is an abstract class that provides basic operations

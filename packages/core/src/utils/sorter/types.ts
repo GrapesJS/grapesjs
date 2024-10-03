@@ -1,6 +1,27 @@
 import CanvasModule from '../../canvas';
+import { ComponentDefinition } from '../../dom_components/model/types';
 import EditorModel from '../../editor/model/Editor';
 import { SortableTreeNode } from './SortableTreeNode';
+
+export type ContentType = string | ComponentDefinition | (string | ComponentDefinition)[];
+
+export interface DraggableContent {
+  /**
+   * Determines if a block can be moved inside a given component when the content is a function.
+   *
+   * This property is used to determine the validity of the drag operation.
+   * @type {ComponentDefinition | undefined}
+   */
+  dragDef?: ComponentDefinition;
+  /**
+   * The content being dragged. Might be an HTML string or a [Component Defintion](/modules/Components.html#component-definition)
+   */
+  content?: ContentType | (() => ContentType);
+}
+
+export type DragSource<T> = DraggableContent & {
+  symbolModel?: T; // For passing main symbol model
+};
 
 export interface Dimension {
   top: number;
