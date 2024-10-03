@@ -3,23 +3,72 @@ import CanvasComponentNode from './CanvasComponentNode';
 import { getSymbolMain, getSymbolTop, isSymbol, isSymbolMain } from '../../dom_components/model/SymbolUtils';
 import Component from '../../dom_components/model/Component';
 import { ContentElement, ContentType } from './types';
+import { isComponent } from '../mixins';
 
 type CanMoveSource = Component | ContentType;
 
 export default class CanvasNewComponentNode extends CanvasComponentNode {
+  /**
+   * A cache of shallow editor models stored in the source node.
+   * This is a map where each content item is associated with its corresponding shallow wrapper model.
+   */
+  private _cachedShallowModels: Map<ContentElement, Component> = new Map();
+
+  /**
+   * Ensures the shallow editor model for the given contentItem is cached in the source node.
+   * If not cached, retrieves it from the shallow wrapper and stores it in the cache.
+   * @param contentItem - The content item to retrieve or cache.
+   * @returns {Component | null} - The shallow wrapper model, either cached or retrieved.
+   */
+  cacheSrcModelForContent(contentItem: ContentElement): Component | null {
+    // Check if the contentItem is already cached in the source node
+    if (this._cachedShallowModels.has(contentItem)) {
+      return this._cachedShallowModels.get(contentItem)!;
+    }
+
+    let srcModel: Component | null = null;
+
+    // If contentItem is already a component, directly cache it
+    if (isComponent(contentItem)) {
+      srcModel = contentItem;
+    } else {
+      // Fetch the shallow model from the wrapper
+      const wrapper = this.model.em.Components.getShallowWrapper();
+      srcModel = wrapper?.append(contentItem)[0] || null;
+    }
+
+    // Cache the shallow model for future reference
+    if (srcModel) {
+      this._cachedShallowModels.set(contentItem, srcModel);
+    }
+
+    return srcModel;
+  }
+
+  /**
+   * Moves the content from the source node at a specified index.
+   * @param {CanvasNewComponentNode} source - The source node.
+   * @param {number} index - The index where the content is to be moved.
+   * @returns {boolean} Whether the move is allowed.
+   */
   canMove(source: CanvasNewComponentNode, index: number): boolean {
     const realIndex = this.getRealIndex(index);
     const { model: symbolModel, content, dragDef } = source._dragSource;
 
     const canMoveSymbol = !symbolModel || !this.isSourceSameSymbol(symbolModel);
     const sourceContent: CanMoveSource = (isFunction(content) ? dragDef : content) || source.model;
+
     if (Array.isArray(sourceContent)) {
       return (
-        sourceContent.every((contentItem, i) => this.canMoveSingleContent(contentItem, realIndex + i)) && canMoveSymbol
+        // @ts-ignore
+        sourceContent.every((contentItem, i) =>
+          this.canMoveSingleContent(source.cacheSrcModelForContent(contentItem), realIndex + i),
+        ) && canMoveSymbol
       );
     }
 
-    return this.canMoveSingleContent(sourceContent, realIndex) && canMoveSymbol;
+    // @ts-ignore
+    return this.canMoveSingleContent(source.cacheSrcModelForContent(sourceContent), realIndex) && canMoveSymbol;
   }
 
   private canMoveSingleContent(contentItem: ContentElement | Component, index: number): boolean {
@@ -39,12 +88,21 @@ export default class CanvasNewComponentNode extends CanvasComponentNode {
     return this.addSingleChild(content, index, insertingTextableIntoText);
   }
 
+  /**
+   * Adds a single content item to the current node.
+   * The source node will first ensure that the model for the content is cached.
+   * @param {ContentType} content - The content to add.
+   * @param {number} index - The index where the content is to be added.
+   * @param {boolean} insertingTextableIntoText - Whether the operation involves textable content.
+   * @returns {CanvasNewComponentNode} - The newly added node.
+   */
   private addSingleChild(
     content: ContentType,
     index: number,
     insertingTextableIntoText: boolean,
   ): CanvasNewComponentNode {
     let model;
+
     if (insertingTextableIntoText) {
       // @ts-ignore
       model = this.model?.getView?.()?.insertComponent?.(content, { action: 'add-component' });
