@@ -1,6 +1,11 @@
 import { View } from '../../common';
 import { Dimension, Placement } from './types';
 
+type PlaceHolderPosition = {
+  elementDimension: Dimension;
+  placement: Placement;
+};
+
 export class PlaceholderClass extends View {
   pfx: string;
   allowNesting: boolean;
@@ -10,6 +15,10 @@ export class PlaceholderClass extends View {
     top: number;
     left: number;
   };
+  private moveThreshold: number = 100; // Threshold in milliseconds
+  private lastMoveTimeout: NodeJS.Timeout | null = null; // Store the last timeout
+  private latestPosition?: PlaceHolderPosition;
+
   constructor(options: {
     container: HTMLElement;
     pfx?: string;
@@ -40,11 +49,30 @@ export class PlaceholderClass extends View {
   }
 
   /**
-   * Updates the position of the placeholder.
+   * Updates the position of the placeholder with a movement threshold.
    * @param {Dimension} elementDimension element dimensions.
-   * @param {Position} placement either before or after the target.
+   * @param {Placement} placement either before or after the target.
    */
   move(elementDimension: Dimension, placement: Placement) {
+    console.log('🚀 ~ PlaceholderClass ~ move ~ move:');
+    this.latestPosition = {
+      elementDimension,
+      placement,
+    };
+
+    if (this.lastMoveTimeout === null) {
+      // Set a new timeout to update the styles after the threshold period
+      this.lastMoveTimeout = setTimeout(() => {
+        if (this.latestPosition) {
+          const { elementDimension, placement } = this.latestPosition;
+          this._move(elementDimension, placement);
+        }
+        this.lastMoveTimeout = null;
+      }, this.moveThreshold);
+    }
+  }
+
+  private _move(elementDimension: Dimension, placement: string) {
     const marginOffset = 0;
     const unit = 'px';
     let top = 0;
