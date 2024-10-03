@@ -213,6 +213,14 @@ export default class Component extends StyleableModel<ComponentProperties> {
     return this.get('locked');
   }
 
+  get frame() {
+    return this.opt.frame;
+  }
+
+  get page() {
+    return this.frame?.getPage();
+  }
+
   /**
    * Hook method, called once the model is created
    */
@@ -238,7 +246,6 @@ export default class Component extends StyleableModel<ComponentProperties> {
   views!: ComponentView[];
   view?: ComponentView;
   viewLayer?: ItemView;
-  frame?: Frame;
   rule?: CssRule;
   prevColl?: Components;
   __hasUm?: boolean;
@@ -275,7 +282,6 @@ export default class Component extends StyleableModel<ComponentProperties> {
     opt.em = em;
     this.opt = opt;
     this.em = em!;
-    this.frame = opt.frame;
     this.config = opt.config || {};
     this.set('attributes', {
       ...(result(this, 'defaults').attributes || {}),
