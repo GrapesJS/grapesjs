@@ -156,4 +156,54 @@ describe('StyleDataVariable', () => {
     const updatedStyle = cmp.getStyle();
     expect(updatedStyle).toHaveProperty('color', 'blue');
   });
+
+  describe('.addToCollection', () => {
+    test('should add a datavariable to css rule made via .addToCollection', () => {
+      const dsId = 'globalStyles';
+      const drId = 'red-header';
+      const selector = 'h1';
+
+      const addToCollectionDataSource: DataSourceProps = {
+        id: dsId,
+        records: [
+          {
+            id: drId,
+            property: 'color',
+            value: 'red',
+            selector,
+            label: 'Red Header',
+          },
+        ],
+      };
+      dsm.add(addToCollectionDataSource);
+
+      cmpRoot.append({
+        tagName: 'h1',
+        type: 'text',
+        content: 'Hello World',
+      })[0];
+
+      em.getEditor().CssComposer.addCollection([
+        {
+          selectors: [],
+          selectorsAdd: selector,
+          group: `globalStyles:${drId}`,
+          style: {
+            color: {
+              type: DataVariableType,
+              defaultValue: 'black',
+              path: `${dsId}.${drId}.value`,
+            },
+          },
+        },
+      ]);
+
+      expect(em.getEditor().getCss()).toContain(`${selector}{color:red;}`);
+
+      const ds = dsm.get(dsId);
+      ds.getRecord(drId)?.set({ value: 'blue' });
+
+      expect(em.getEditor().getCss()).toContain(`${selector}{color:blue;}`);
+    });
+  });
 });
