@@ -2,19 +2,15 @@ import { Model } from '../../common';
 import { isFunction } from 'underscore';
 import Editor from '../../editor';
 import Category, { CategoryProperties } from '../../abstract/ModuleCategory';
-import { ComponentDefinition } from '../../dom_components/model/types';
 import Blocks from './Blocks';
+import { DraggableContent } from '../../utils/sorter/types';
 
 /** @private */
-export interface BlockProperties {
+export interface BlockProperties extends DraggableContent {
   /**
    * Block label, eg. `My block`
    */
   label: string;
-  /**
-   * The content of the block. Might be an HTML string or a [Component Defintion](/modules/Components.html#component-definition)
-   */
-  content: string | ComponentDefinition | (string | ComponentDefinition)[];
   /**
    * HTML string for the media/icon of the block, eg. `<svg ...`, `<img ...`, etc.
    * @default ''
@@ -91,6 +87,7 @@ export default class Block extends Model<BlockProperties> {
       disable: false,
       onClick: undefined,
       attributes: {},
+      dragDef: {},
     };
   }
 
@@ -133,6 +130,14 @@ export default class Block extends Model<BlockProperties> {
    */
   getContent() {
     return this.get('content');
+  }
+
+  /**
+   * Get block component dragDef
+   * @returns {ComponentDefinition}
+   */
+  getDragDef() {
+    return this.get('dragDef');
   }
 
   /**

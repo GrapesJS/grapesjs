@@ -43,6 +43,7 @@ import Frame from './model/Frame';
 import { CanvasEvents, CanvasRefreshOptions, ToWorldOption } from './types';
 import CanvasView, { FitViewportOptions } from './view/CanvasView';
 import FrameView from './view/FrameView';
+import { DragSource } from '../utils/sorter/types';
 
 export type CanvasEvent = `${CanvasEvents}`;
 
@@ -506,6 +507,24 @@ export default class CanvasModule extends Module<CanvasConfig> {
       y: ev.clientY * zoom + top,
       x: ev.clientX * zoom + left,
     };
+  }
+
+  /**
+   * Sets the drag source in the editor so it's used in Droppable.ts.
+   * This method can be used for custom drag-and-drop content by passing in a `DragSource` object.
+   *
+   * @param {DragSource<Component>} dragSource - The source object for the drag operation, containing the component being dragged.
+   */
+  startDrag(dragSource: DragSource<Component>) {
+    this.em.set('dragSource', dragSource);
+  }
+
+  /**
+   * Ends the drag-and-drop process, resetting the drag source and clearing any drag results.
+   * This method can be used to finalize custom drag-and-drop content operations.
+   */
+  endDrag() {
+    this.em.set({ dragResult: null, dragSource: undefined });
   }
 
   /**

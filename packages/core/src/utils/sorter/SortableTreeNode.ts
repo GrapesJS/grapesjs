@@ -1,4 +1,5 @@
-import { $, View } from '../../common';
+import { View } from '../../common';
+import { DragSource } from './types';
 
 /**
  * Base class for managing tree-like structures with sortable nodes.
@@ -7,10 +8,10 @@ import { $, View } from '../../common';
  */
 export abstract class SortableTreeNode<T> {
   protected _model: T;
-  protected _content: any;
-  constructor(model: T, content?: any) {
+  protected _dragSource: DragSource<T>;
+  constructor(model: T, dragSource: DragSource<T> = {}) {
     this._model = model;
-    this._content = content;
+    this._dragSource = dragSource;
   }
   /**
    * Get the list of children of this node.
@@ -82,8 +83,8 @@ export abstract class SortableTreeNode<T> {
     return this._model;
   }
 
-  get content(): T {
-    return this._content;
+  get dragSource() {
+    return this._dragSource;
   }
 
   equals(node?: SortableTreeNode<T>): boolean {

@@ -3,6 +3,7 @@ import { $ } from '../../common';
 import EditorModel from '../../editor/model/Editor';
 import { off, on } from '../dom';
 import { SortableTreeNode } from './SortableTreeNode';
+import { DragSource } from './types';
 import { DropLocationDeterminer } from './DropLocationDeterminer';
 import { PlaceholderClass } from './PlaceholderClass';
 import { getMergedOptions, getDocument, matches, closest, sortDom } from './SorterUtils';
@@ -18,7 +19,7 @@ import { SorterOptions } from './types';
 
 export default class Sorter<T, NodeType extends SortableTreeNode<T>> {
   em: EditorModel;
-  treeClass: new (model: T, content?: any) => NodeType;
+  treeClass: new (model: T, dragSource?: DragSource<T>) => NodeType;
   placeholder: PlaceholderClass;
   dropLocationDeterminer: DropLocationDeterminer<T, NodeType>;
 
@@ -69,13 +70,13 @@ export default class Sorter<T, NodeType extends SortableTreeNode<T>> {
    * Picking components to move
    * @param {HTMLElement[]} sources[]
    * */
-  startSort(sources: { element?: HTMLElement; content?: any }[]) {
-    const validSources = sources.filter((source) => !!source.content || this.findValidSourceElement(source.element));
+  startSort(sources: { element?: HTMLElement; dragSource?: DragSource<T> }[]) {
+    const validSources = sources.filter((source) => !!source.dragSource || this.findValidSourceElement(source.element));
 
     const sourcesWithModel: { model: T; content?: any }[] = validSources.map((source) => {
       return {
         model: $(source.element)?.data('model'),
-        content: source.content,
+        content: source.dragSource,
       };
     });
     const sortedSources = sourcesWithModel.sort((a, b) => {
