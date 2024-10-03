@@ -1,6 +1,4 @@
-import { ContentType } from './types';
 import Component from '../../dom_components/model/Component';
-import { ComponentDefinition } from '../../dom_components/model/types';
 import { SortableTreeNode } from './SortableTreeNode';
 
 /**

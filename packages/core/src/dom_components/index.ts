@@ -534,8 +534,6 @@ export default class ComponentManager extends ItemManagerModule<DomComponentsCon
    * @return {this}
    */
   addType(type: string, methods: AddComponentTypeOptions) {
-    console.log('🚀 ~ ComponentManager ~ addType ~ type: string', type);
-    console.log('🚀 ~ ComponentManager ~ addType ~ methods:', methods);
     const { em } = this;
     const { model = {}, view = {}, isComponent, extend, extendView, extendFn = [], extendFnView = [], block } = methods;
     const compType = this.getType(type);
