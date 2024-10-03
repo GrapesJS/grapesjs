@@ -2,6 +2,9 @@ import { isFunction } from 'underscore';
 import CanvasComponentNode from './CanvasComponentNode';
 import { getSymbolMain, getSymbolTop, isSymbol, isSymbolMain } from '../../dom_components/model/SymbolUtils';
 import Component from '../../dom_components/model/Component';
+import { ContentElement, ContentType } from './types';
+
+type CanMoveSource = Component | ContentType;
 
 export default class CanvasNewComponentNode extends CanvasComponentNode {
   canMove(source: CanvasNewComponentNode, index: number): boolean {
@@ -9,8 +12,7 @@ export default class CanvasNewComponentNode extends CanvasComponentNode {
     const { model: symbolModel, content, dragDef } = source._dragSource;
 
     const canMoveSymbol = !symbolModel || !this.isSourceSameSymbol(symbolModel);
-    const sourceContent = isFunction(content) ? dragDef : content || source.model;
-
+    const sourceContent: CanMoveSource = (isFunction(content) ? dragDef : content) || source.model;
     if (Array.isArray(sourceContent)) {
       return (
         sourceContent.every((contentItem, i) => this.canMoveSingleContent(contentItem, realIndex + i)) && canMoveSymbol
@@ -20,14 +22,15 @@ export default class CanvasNewComponentNode extends CanvasComponentNode {
     return this.canMoveSingleContent(sourceContent, realIndex) && canMoveSymbol;
   }
 
-  private canMoveSingleContent(contentItem: any, index: number): boolean {
+  private canMoveSingleContent(contentItem: ContentElement | Component, index: number): boolean {
     return this.model.em.Components.canMove(this.model, contentItem, index).result;
   }
 
   addChildAt(node: CanvasNewComponentNode, index: number): CanvasNewComponentNode {
     const dragSource = node._dragSource;
+    const dragSourceContent = dragSource.content!;
     const insertingTextableIntoText = this.isTextNode() && node.isTextable();
-    const content = isFunction(dragSource.content) ? dragSource.content() : dragSource.content;
+    const content = isFunction(dragSourceContent) ? dragSourceContent() : dragSourceContent;
 
     if (Array.isArray(content)) {
       return this.addMultipleChildren(content, index, insertingTextableIntoText);
@@ -36,7 +39,11 @@ export default class CanvasNewComponentNode extends CanvasComponentNode {
     return this.addSingleChild(content, index, insertingTextableIntoText);
   }
 
-  private addSingleChild(content: any, index: number, insertingTextableIntoText: boolean): CanvasNewComponentNode {
+  private addSingleChild(
+    content: ContentType,
+    index: number,
+    insertingTextableIntoText: boolean,
+  ): CanvasNewComponentNode {
     let model;
     if (insertingTextableIntoText) {
       // @ts-ignore
@@ -55,7 +62,7 @@ export default class CanvasNewComponentNode extends CanvasComponentNode {
    * @returns {CanvasNewComponentNode} The last added node
    */
   private addMultipleChildren(
-    contentArray: any[],
+    contentArray: ContentType[],
     index: number,
     insertingTextableIntoText: boolean,
   ): CanvasNewComponentNode {
@@ -83,7 +90,7 @@ export default class CanvasNewComponentNode extends CanvasComponentNode {
     return false;
   }
 
-  set content(content: any) {
+  set content(content: ContentType | (() => ContentType)) {
     this._dragSource.content = content;
   }
 }

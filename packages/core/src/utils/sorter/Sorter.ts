@@ -19,7 +19,7 @@ import { SorterOptions } from './types';
 
 export default class Sorter<T, NodeType extends SortableTreeNode<T>> {
   em: EditorModel;
-  treeClass: new (model: T, dragSource?: any) => NodeType;
+  treeClass: new (model: T, dragSource?: DragSource<T>) => NodeType;
   placeholder: PlaceholderClass;
   dropLocationDeterminer: DropLocationDeterminer<T, NodeType>;
 

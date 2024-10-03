@@ -3,9 +3,10 @@ import CanvasModule from '../canvas';
 import { ObjectStrings } from '../common';
 import EditorModel from '../editor/model/Editor';
 import { getDocumentScroll, off, on } from './dom';
-import { DragDirection } from './sorter/types';
+import { DragDirection, DragSource } from './sorter/types';
 import CanvasNewComponentNode from './sorter/CanvasNewComponentNode';
 import ComponentSorter from './sorter/ComponentSorter';
+import Component from '../dom_components/model/Component';
 
 // TODO move in sorter
 type SorterOptions = {
@@ -107,7 +108,7 @@ export default class Droppable {
   handleDragEnter(ev: DragEvent | Event) {
     const { em, canvas } = this;
     const dt = (ev as DragEvent).dataTransfer;
-    const dragSourceOrigin = em.get('dragSource');
+    const dragSourceOrigin: DragSource<Component> = em.get('dragSource');
 
     if (!dragSourceOrigin?.content && !canvas.getConfig().allowExternalDrop) {
       return;
@@ -268,7 +269,7 @@ export default class Droppable {
     const em = this.em;
     const types = dt && dt.types;
     const files = (dt && dt.files) || [];
-    const dragSource = em.get('dragSource');
+    const dragSource: DragSource<Component> = em.get('dragSource');
     let content = dt && dt.getData('text');
 
     if (files.length) {

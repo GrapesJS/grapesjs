@@ -3,7 +3,8 @@ import { ComponentDefinition } from '../../dom_components/model/types';
 import EditorModel from '../../editor/model/Editor';
 import { SortableTreeNode } from './SortableTreeNode';
 
-export type ContentType = string | ComponentDefinition | (string | ComponentDefinition)[];
+export type ContentElement = string | ComponentDefinition;
+export type ContentType = ContentElement | ContentElement[];
 
 export interface DraggableContent {
   /**
@@ -117,7 +118,7 @@ export interface SorterDragBehaviorOptions {
 
 export interface SorterOptions<T, NodeType extends SortableTreeNode<T>> {
   em: EditorModel;
-  treeClass: new (model: T, dragSource?: any) => NodeType;
+  treeClass: new (model: T, dragSource?: DragSource<T>) => NodeType;
 
   containerContext: SorterContainerContext;
   positionOptions: PositionOptions;

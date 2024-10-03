@@ -4,7 +4,13 @@ import EditorModel from '../../editor/model/Editor';
 import { getPointerEvent } from '../dom';
 import { BaseComponentNode } from './BaseComponentNode';
 import Sorter from './Sorter';
-import { SorterContainerContext, PositionOptions, SorterDragBehaviorOptions, SorterEventHandlers } from './types';
+import {
+  SorterContainerContext,
+  PositionOptions,
+  SorterDragBehaviorOptions,
+  SorterEventHandlers,
+  DragSource,
+} from './types';
 
 const targetSpotType = CanvasSpotBuiltInTypes.Target;
 
@@ -24,7 +30,7 @@ export default class ComponentSorter<NodeType extends BaseComponentNode> extends
     eventHandlers = {},
   }: {
     em: EditorModel;
-    treeClass: new (model: Component, dragSource?: any) => NodeType;
+    treeClass: new (model: Component, dragSource?: DragSource<Component>) => NodeType;
     containerContext: SorterContainerContext;
     dragBehavior: SorterDragBehaviorOptions;
     positionOptions?: PositionOptions;
