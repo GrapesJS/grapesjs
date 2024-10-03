@@ -12,9 +12,9 @@ import {
   PositionOptions,
   SorterDragBehaviorOptions,
   SorterEventHandlers,
-  Dimension,
   Placement,
 } from './types';
+import Dimension from './Dimension';
 import { SorterOptions } from './types';
 
 export default class Sorter<T, NodeType extends SortableTreeNode<T>> {

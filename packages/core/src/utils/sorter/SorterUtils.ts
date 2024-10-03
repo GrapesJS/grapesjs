@@ -3,7 +3,8 @@ import EditorModel from '../../editor/model/Editor';
 import { isTextNode } from '../dom';
 import { matches as matchesMixin } from '../mixins';
 import { SortableTreeNode } from './SortableTreeNode';
-import { Dimension, Placement, DragDirection, SorterOptions } from './types';
+import { Placement, DragDirection, SorterOptions } from './types';
+import Dimension from './Dimension';
 
 /**
  * Find the position based on passed dimensions and coordinates
