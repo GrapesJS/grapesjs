@@ -43,8 +43,7 @@ import Frame from './model/Frame';
 import { CanvasEvents, CanvasRefreshOptions, ToWorldOption } from './types';
 import CanvasView, { FitViewportOptions } from './view/CanvasView';
 import FrameView from './view/FrameView';
-import { ComponentDefinition } from '../dom_components/model/types';
-import { ContentType } from '../utils/sorter/types';
+import { DragSource } from '../utils/sorter/types';
 
 export type CanvasEvent = `${CanvasEvents}`;
 
@@ -510,11 +509,7 @@ export default class CanvasModule extends Module<CanvasConfig> {
     };
   }
 
-  startSort(dragSource: {
-    model: Component;
-    content: ContentType | (() => ContentType);
-    dragDef?: ComponentDefinition;
-  }) {
+  startSort(dragSource: DragSource<Component>) {
     this.em.set('dragSource', dragSource);
   }
 
