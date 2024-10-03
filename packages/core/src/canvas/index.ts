@@ -511,7 +511,7 @@ export default class CanvasModule extends Module<CanvasConfig> {
   }
 
   startSort(dragSource: {
-    symbolModel: Component;
+    model: Component;
     content: ContentType | (() => ContentType);
     dragDef?: ComponentDefinition;
   }) {
@@ -519,7 +519,7 @@ export default class CanvasModule extends Module<CanvasConfig> {
   }
 
   endSort() {
-    this.em.set({ dragResult: null, dragContent: null, dragSource: undefined });
+    this.em.set({ dragResult: null, dragSource: undefined });
   }
 
   /**

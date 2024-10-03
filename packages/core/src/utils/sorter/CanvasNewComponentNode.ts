@@ -6,7 +6,7 @@ import Component from '../../dom_components/model/Component';
 export default class CanvasNewComponentNode extends CanvasComponentNode {
   canMove(source: CanvasNewComponentNode, index: number): boolean {
     const realIndex = this.getRealIndex(index);
-    const { symbolModel, content, dragDef } = source._dragSource;
+    const { model: symbolModel, content, dragDef } = source._dragSource;
 
     const canMoveSymbol = !symbolModel || !this.isSourceSameSymbol(symbolModel);
     const sourceContent = isFunction(content) ? dragDef : content || source.model;

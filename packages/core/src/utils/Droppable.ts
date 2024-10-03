@@ -107,9 +107,9 @@ export default class Droppable {
   handleDragEnter(ev: DragEvent | Event) {
     const { em, canvas } = this;
     const dt = (ev as DragEvent).dataTransfer;
-    const dragSource = em.get('dragSource');
+    const dragSourceOrigin = em.get('dragSource');
 
-    if (!dragSource?.content && !canvas.getConfig().allowExternalDrop) {
+    if (!dragSourceOrigin?.content && !canvas.getConfig().allowExternalDrop) {
       return;
     }
 
@@ -118,11 +118,11 @@ export default class Droppable {
     this.over = true;
     const utils = em.Utils;
     // For security reason I can't read the drag data on dragenter, but
-    // as I need it for the Sorter context I will use `dragContent` or just
+    // as I need it for the Sorter context I will use `dragSource` or just
     // any not empty element
-    let content = dragSource?.content || '<br>';
+    let content = dragSourceOrigin?.content || '<br>';
     let dragStop: DragStop;
-    let dragContent;
+    let dragSource;
     em.stopDefault();
 
     // Select the right drag provider
@@ -155,7 +155,7 @@ export default class Droppable {
         },
       });
       dragStop = (cancel?: boolean) => dragger.stop(ev, { cancel });
-      dragContent = (cnt: any) => (content = cnt);
+      dragSource = (cnt: any) => (content = cnt);
     } else {
       const sorter = new utils.ComponentSorter({
         em,
@@ -195,7 +195,7 @@ export default class Droppable {
       );
       let dropModel = this.getTempDropModel(content);
       const el = dropModel.view?.el;
-      const sources = el ? [{ element: el, dragSource }] : [];
+      const sources = el ? [{ element: el, dragSource: dragSourceOrigin }] : [];
       sorter.startSort(sources);
       this.sorter = sorter;
       this.draggedNode = sorter.sourceNodes?.[0];

@@ -20,7 +20,7 @@ export interface DraggableContent {
 }
 
 export type DragSource<T> = DraggableContent & {
-  symbolModel?: T; // For passing main symbol model
+  model?: T;
 };
 
 export interface Dimension {
