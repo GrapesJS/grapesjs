@@ -8,6 +8,8 @@ import { SortableTreeNode } from './SortableTreeNode';
  * Subclasses must implement the `view` and `element` methods.
  */
 export abstract class BaseComponentNode extends SortableTreeNode<Component> {
+  private displayCache: Map<Component, boolean> = new Map();
+
   /**
    * Get the list of child components.
    * @returns {BaseComponentNode[] | null} - The list of children wrapped in
@@ -19,18 +21,43 @@ export abstract class BaseComponentNode extends SortableTreeNode<Component> {
 
   /**
    * Get the list of displayed children, i.e., components that have a valid HTML element.
+   * Cached values are used to avoid recalculating the display status unnecessarily.
    * @returns {BaseComponentNode[] | null} - The list of displayed children wrapped in
    * BaseComponentNode, or null if there are no displayed children.
    */
   private getDisplayedChildren(): BaseComponentNode[] | null {
     const children = this.model.components();
-    const displayedChildren = children.filter((child) => {
-      const element = child.getEl();
-
-      return isDisplayed(element);
-    });
+    const displayedChildren = children.filter((child) => this.isChildDisplayed(child));
 
     return displayedChildren.map((comp: Component) => new (this.constructor as any)(comp));
+  }
+
+  /**
+   * Check if a child is displayed, using cached value if available.
+   * @param {Component} child - The child component to check.
+   * @returns {boolean} - Whether the child is displayed.
+   */
+  private isChildDisplayed(child: Component): boolean {
+    // Check if display status is cached
+    if (this.displayCache.has(child)) {
+      return this.displayCache.get(child)!;
+    }
+
+    const element = child.getEl();
+    const displayed = isDisplayed(element);
+
+    // Cache the display status
+    this.displayCache.set(child, displayed);
+
+    return displayed;
+  }
+
+  /**
+   * Invalidate the cache for a specific child when necessary, such as when the display state might have changed.
+   * @param {Component} child - The child component whose cache to invalidate.
+   */
+  invalidateDisplayCache(child: Component): void {
+    this.displayCache.delete(child);
   }
 
   /**
@@ -170,7 +197,7 @@ export abstract class BaseComponentNode extends SortableTreeNode<Component> {
 
   /**
    * Disable editing capabilities for the component's view.
-   * This method depends on the presence of the `disableEditing` method in the view.
+   * This method depends on the presence of the disableEditing method in the view.
    */
   private disableEditing(): void {
     // @ts-ignore
@@ -208,8 +235,13 @@ export abstract class BaseComponentNode extends SortableTreeNode<Component> {
   }
 }
 
-function isDisplayed(element: HTMLElement | undefined) {
-  if (!!!element) return false;
+/**
+ * Function to check if an element is displayed in the DOM.
+ * @param {HTMLElement | undefined} element - The element to check.
+ * @returns {boolean} - Whether the element is displayed.
+ */
+function isDisplayed(element: HTMLElement | undefined): boolean {
+  if (!element) return false;
   return (
     element instanceof HTMLElement &&
     window.getComputedStyle(element).display !== 'none' &&
