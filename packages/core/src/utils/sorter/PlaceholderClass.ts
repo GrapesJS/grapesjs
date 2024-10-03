@@ -1,5 +1,7 @@
 import { View } from '../../common';
-import { Dimension, Placement } from './types';
+import { Placement } from './types';
+import Dimension from './Dimension';
+import { RateLimiter } from './RateLimiter';
 
 type PlaceHolderPosition = {
   elementDimension: Dimension;
@@ -15,9 +17,7 @@ export class PlaceholderClass extends View {
     top: number;
     left: number;
   };
-  private moveThreshold: number = 100; // Threshold in milliseconds
-  private lastMoveTimeout: NodeJS.Timeout | null = null; // Store the last timeout
-  private latestPosition?: PlaceHolderPosition;
+  private moveLimiter: RateLimiter<PlaceHolderPosition>;
 
   constructor(options: {
     container: HTMLElement;
@@ -38,6 +38,9 @@ export class PlaceholderClass extends View {
       top: options.offset.top || 0,
       left: options.offset.left || 0,
     };
+
+    // Initialize the RateLimiter with the moveThreshold
+    this.moveLimiter = new RateLimiter<PlaceHolderPosition>(100);
   }
 
   show() {
@@ -45,6 +48,7 @@ export class PlaceholderClass extends View {
   }
 
   hide() {
+    this.moveLimiter.clearTimeout();
     this.el.style.display = 'none';
   }
 
@@ -54,25 +58,18 @@ export class PlaceholderClass extends View {
    * @param {Placement} placement either before or after the target.
    */
   move(elementDimension: Dimension, placement: Placement) {
-    console.log('🚀 ~ PlaceholderClass ~ move ~ move:');
-    this.latestPosition = {
-      elementDimension,
-      placement,
-    };
+    const position: PlaceHolderPosition = { elementDimension, placement };
 
-    if (this.lastMoveTimeout === null) {
-      // Set a new timeout to update the styles after the threshold period
-      this.lastMoveTimeout = setTimeout(() => {
-        if (this.latestPosition) {
-          const { elementDimension, placement } = this.latestPosition;
-          this._move(elementDimension, placement);
-        }
-        this.lastMoveTimeout = null;
-      }, this.moveThreshold);
-    }
+    // Update the position arguments in the RateLimiter
+    this.moveLimiter.updateArgs(position);
+
+    // Execute the callback with a threshold
+    this.moveLimiter.execute(({ elementDimension, placement }) => {
+      this._move(elementDimension, placement);
+    });
   }
 
-  private _move(elementDimension: Dimension, placement: string) {
+  private _move(elementDimension: Dimension, placement: Placement) {
     const marginOffset = 0;
     const unit = 'px';
     let top = 0;
