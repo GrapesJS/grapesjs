@@ -1,6 +1,6 @@
-import CanvasModule from '../../canvas';
 import { ComponentDefinition } from '../../dom_components/model/types';
 import EditorModel from '../../editor/model/Editor';
+import Dimension from './Dimension';
 import { SortableTreeNode } from './SortableTreeNode';
 
 export type ContentElement = string | ComponentDefinition;
@@ -23,17 +23,6 @@ export interface DraggableContent {
 export type DragSource<T> = DraggableContent & {
   model?: T;
 };
-
-export interface Dimension {
-  top: number;
-  left: number;
-  height: number;
-  width: number;
-  offsets: ReturnType<CanvasModule['getElementOffsets']>;
-  dir?: boolean;
-  el?: HTMLElement;
-  indexEl?: number;
-}
 
 export type Placement = 'inside' | 'before' | 'after';
 
