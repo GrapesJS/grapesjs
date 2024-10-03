@@ -19,6 +19,12 @@ export type DraggableDroppableFn = (source: Component, target: Component, index?
 
 export interface AddComponentsOption extends AddOptions, OptionAsDocument {}
 
+export interface ResetComponentsOptions extends AddComponentsOption {
+  previousModels?: Component[];
+  keepIds?: string[];
+  skipDomReset?: boolean;
+}
+
 interface ComponentWithCheck<C extends Component> {
   new (props: any, opt: ComponentOptions): C;
   isComponent(node: HTMLElement, opts?: ParseNodeOptions): ComponentDefinitionDefined | undefined | boolean;
