@@ -34,7 +34,7 @@ export default class DataVariableListenerManager {
     this.updateValueFromDataVariable(value);
   };
 
-  private listenToDataVariable() {
+  listenToDataVariable() {
     const { em, dataVariable, model } = this;
     const { path } = dataVariable.attributes;
     const normPath = stringToPath(path || '').join('.');
