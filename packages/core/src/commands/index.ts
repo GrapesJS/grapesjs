@@ -37,7 +37,7 @@
 
 import { isFunction, includes } from 'underscore';
 import CommandAbstract, { Command, CommandOptions, CommandObject, CommandFunction } from './view/CommandAbstract';
-import defaults, { CommandsConfig } from './config/config';
+import defConfig, { CommandsConfig } from './config/config';
 import { Module } from '../abstract';
 import Component, { eventDrag } from '../dom_components/model/Component';
 import Editor from '../editor/model/Editor';
@@ -107,7 +107,7 @@ export default class CommandsModule extends Module<CommandsConfig & { pStylePref
    * @private
    */
   constructor(em: Editor) {
-    super(em, 'Commands', defaults);
+    super(em, 'Commands', defConfig());
     const { config } = this;
     const ppfx = config.pStylePrefix;
     const { defaultCommands } = this;

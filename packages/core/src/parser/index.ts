@@ -26,7 +26,7 @@
  */
 import { Module } from '../abstract';
 import EditorModel from '../editor/model/Editor';
-import defaults, { HTMLParserOptions, ParserConfig } from './config/config';
+import defConfig, { HTMLParserOptions, ParserConfig } from './config/config';
 import ParserCss from './model/ParserCss';
 import ParserHtml from './model/ParserHtml';
 
@@ -35,7 +35,7 @@ export default class ParserModule extends Module<ParserConfig & { name?: string 
   parserCss: ReturnType<typeof ParserCss>;
 
   constructor(em: EditorModel) {
-    super(em, 'Parser', defaults);
+    super(em, 'Parser', defConfig());
     const { config } = this;
     this.parserCss = ParserCss(em, config);
     this.parserHtml = ParserHtml(em, config);

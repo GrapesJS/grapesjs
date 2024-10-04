@@ -45,7 +45,7 @@ import Module from '../abstract/Module';
 import Component from '../dom_components/model/Component';
 import EditorModel from '../editor/model/Editor';
 import { hasWin, isComponent, isDef } from '../utils/mixins';
-import defaults, { LayerManagerConfig } from './config/config';
+import defConfig, { LayerManagerConfig } from './config/config';
 import View from './view/ItemView';
 import { ComponentsEvents } from '../dom_components/types';
 
@@ -91,7 +91,7 @@ export default class LayerManager extends Module<LayerManagerConfig> {
   events = events;
 
   constructor(em: EditorModel) {
-    super(em, 'LayerManager', defaults);
+    super(em, 'LayerManager', defConfig());
     bindAll(this, 'componentChanged', '__onRootChange', '__onComponent');
     this.model = new ModuleModel(this, { opened: {} });
     // @ts-ignore

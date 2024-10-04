@@ -89,7 +89,7 @@ import TraitManager from '../trait_manager';
 import UndoManagerModule from '../undo_manager';
 import UtilsModule from '../utils';
 import html from '../utils/html';
-import defaults, { EditorConfig, EditorConfigKeys } from './config/config';
+import defConfig, { EditorConfig, EditorConfigKeys } from './config/config';
 import EditorModel, { EditorLoadOptions } from './model/Editor';
 import EditorView from './view/EditorView';
 
@@ -132,6 +132,7 @@ export default class Editor implements IBaseModule<EditorConfig> {
   config: EditorConfigType;
 
   constructor(config: EditorConfig = {}, opts: any = {}) {
+    const defaults = defConfig();
     this.config = {
       ...defaults,
       ...config,

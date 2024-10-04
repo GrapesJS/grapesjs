@@ -66,7 +66,7 @@
 import { isUndefined, isArray, isString, debounce, bindAll } from 'underscore';
 import { isComponent } from '../utils/mixins';
 import { AddOptions, Debounced, Model } from '../common';
-import defaults, { StyleManagerConfig } from './config/config';
+import defConfig, { StyleManagerConfig } from './config/config';
 import Sector, { SectorProperties } from './model/Sector';
 import Sectors from './model/Sectors';
 import Properties from './model/Properties';
@@ -157,7 +157,7 @@ export default class StyleManager extends ItemManagerModule<
    * @private
    */
   constructor(em: EditorModel) {
-    super(em, 'StyleManager', new Sectors([], { em }), stylesEvents, defaults);
+    super(em, 'StyleManager', new Sectors([], { em }), stylesEvents, defConfig());
     bindAll(this, '__clearStateTarget');
     const c = this.config;
     const ppfx = c.pStylePrefix;

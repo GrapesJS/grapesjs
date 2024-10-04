@@ -11,9 +11,9 @@ export interface UndoManagerConfig {
   trackSelection?: boolean;
 }
 
-const config: UndoManagerConfig = {
+const config: () => UndoManagerConfig = () => ({
   maximumStackLength: 500,
   trackSelection: true,
-};
+});
 
 export default config;

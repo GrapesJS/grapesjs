@@ -80,11 +80,11 @@ export interface RichTextEditorConfig {
   custom?: boolean;
 }
 
-const config: RichTextEditorConfig = {
+const config: () => RichTextEditorConfig = () => ({
   stylePrefix: 'rte-',
   adjustToolbar: true,
   actions: ['bold', 'italic', 'underline', 'strikethrough', 'link', 'wrap'],
   custom: false,
-};
+});
 
 export default config;

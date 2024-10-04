@@ -110,7 +110,7 @@ export interface ParserConfig {
   optionsHtml?: HTMLParserOptions;
 }
 
-const config: ParserConfig = {
+const config: () => ParserConfig = () => ({
   textTags: ['br', 'b', 'i', 'u', 'a', 'ul', 'ol'],
   textTypes: ['text', 'textnode', 'comment'],
   parserCss: undefined,
@@ -122,6 +122,6 @@ const config: ParserConfig = {
     allowUnsafeAttrValue: false,
     keepEmptyTextNodes: false,
   },
-};
+});
 
 export default config;
