@@ -61,7 +61,6 @@ export default class CanvasNewComponentNode extends CanvasComponentNode {
   }
 
   private canMoveSingleContent(contentItem: ContentElement | Component, index: number): boolean {
-    // console.log("🚀 ~ CanvasNewComponentNode ~ canMoveSingleContent ~ contentItem:", contentItem)
     return this.model.em.Components.canMove(this.model, contentItem, index).result;
   }
 
