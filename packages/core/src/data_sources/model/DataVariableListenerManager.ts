@@ -29,14 +29,18 @@ export default class DataVariableListenerManager {
     this.listenToDataVariable();
   }
 
+  private onChange = () => {
+    const value = this.dataVariable.getDataValue();
+    this.updateValueFromDataVariable(value);
+  };
+
   listenToDataVariable() {
-    const { em, dataVariable, model, updateValueFromDataVariable } = this;
+    const { em, dataVariable, model } = this;
     const { path } = dataVariable.attributes;
     const normPath = stringToPath(path || '').join('.');
-    const prevListeners = this.dataListeners || [];
     const [ds, dr] = this.em.DataSources.fromPath(path);
 
-    prevListeners.forEach((ls) => model.stopListening(ls.obj, ls.event, updateValueFromDataVariable));
+    this.removeListeners();
 
     const dataListeners: DataVariableListener[] = [];
     ds && dataListeners.push({ obj: ds.records, event: 'add remove reset' });
@@ -47,14 +51,14 @@ export default class DataVariableListenerManager {
       { obj: em, event: `${DataSourcesEvents.path}:${normPath}` },
     );
 
-    dataListeners.forEach((ls) =>
-      model.listenTo(ls.obj, ls.event, () => {
-        const value = dataVariable.getDataValue();
-
-        updateValueFromDataVariable(value);
-      }),
-    );
+    dataListeners.forEach((ls) => model.listenTo(ls.obj, ls.event, this.onChange));
 
     this.dataListeners = dataListeners;
+  }
+
+  private removeListeners() {
+    const { model } = this;
+    this.dataListeners.forEach((ls) => model.stopListening(ls.obj, ls.event, this.onChange));
+    this.dataListeners = [];
   }
 }
