@@ -271,9 +271,11 @@ export class DropLocationDeterminer<T, NodeType extends SortableTreeNode<T>> ext
    */
   private getOrCreateHoveredNode(hoveredModel: T): NodeType {
     const lastHoveredNode = this.lastMoveData.hoveredNode;
-    const newHoveredNode = new this.treeClass(hoveredModel);
+    const hoveredNode = new this.treeClass(hoveredModel);
+    const newHoveredNode = hoveredNode.equals(lastHoveredNode) ? lastHoveredNode : hoveredNode;
+    this.lastMoveData.hoveredNode = newHoveredNode;
 
-    return newHoveredNode.equals(lastHoveredNode) ? lastHoveredNode : newHoveredNode;
+    return newHoveredNode;
   }
 
   /**
