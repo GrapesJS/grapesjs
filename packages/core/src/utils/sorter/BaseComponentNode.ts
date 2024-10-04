@@ -133,8 +133,7 @@ export abstract class BaseComponentNode extends SortableTreeNode<Component> {
 
     for (let i = 0; i < children.length; i++) {
       const child = children.at(i);
-      const element = child.getEl();
-      const displayed = isDisplayed(element);
+      const displayed = this.isChildDisplayed(child);
 
       if (displayed) displayedCount++;
       if (displayedCount === index + 1) return i;
