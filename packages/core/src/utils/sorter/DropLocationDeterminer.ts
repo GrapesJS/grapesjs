@@ -136,7 +136,8 @@ export class DropLocationDeterminer<T, NodeType extends SortableTreeNode<T>> ext
     const moveData: MoveData<NodeType> = this.getMoveData(targetNode, mouseX, mouseY);
 
     const placeHolderPositionChanged = moveData.placeholderDimensions !== this.lastMoveData.placeholderDimensions;
-    if (placeHolderPositionChanged) {
+    const placeHolderPlacmentChanged = moveData.placement !== this.lastMoveData.placement;
+    if (placeHolderPositionChanged || placeHolderPlacmentChanged) {
       this.eventHandlers.onPlaceholderPositionChange?.(moveData.placeholderDimensions!, moveData.placement!);
     }
 
