@@ -96,8 +96,10 @@ export abstract class SortableTreeNode<T> {
     return !!node?._model && this._model === node._model;
   }
 
-  adjustDimensions(difference: { topDifference: number; leftDifference: number }) {
-    this.nodeDimensions?.adjustDimensions(difference);
-    this.childrenDimensions?.forEach((dims) => dims.adjustDimensions(difference));
+  adjustDimensions(diff: { topDifference: number; leftDifference: number }) {
+    if (diff.topDifference === 0 && diff.leftDifference === 0) return;
+
+    this.nodeDimensions?.adjustDimensions(diff);
+    this.childrenDimensions?.forEach((dims) => dims.adjustDimensions(diff));
   }
 }
