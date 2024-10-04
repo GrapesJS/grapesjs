@@ -12,8 +12,6 @@ export default class Dimension {
   public width: number;
   public offsets: ReturnType<CanvasModule['getElementOffsets']>;
   public dir?: boolean;
-  public el?: HTMLElement;
-  public indexEl?: number;
 
   /**
    * Initializes the DimensionCalculator with the given initial dimensions.
@@ -36,8 +34,6 @@ export default class Dimension {
     this.width = initialDimensions.width;
     this.offsets = initialDimensions.offsets;
     this.dir = initialDimensions.dir;
-    this.el = initialDimensions.el;
-    this.indexEl = initialDimensions.indexEl;
   }
 
   /**
@@ -82,5 +78,39 @@ export default class Dimension {
     } else {
       return mouseX < xCenter ? 'before' : 'after';
     }
+  }
+
+  /**
+   * Compares the current dimension object with another dimension to check equality.
+   *
+   * @param {Dimension} dimension - The dimension to compare against.
+   * @returns {boolean} True if the dimensions are equal, otherwise false.
+   */
+  public equals(dimension: Dimension | undefined): boolean {
+    if (!dimension) return false;
+    return (
+      this.top === dimension.top &&
+      this.left === dimension.left &&
+      this.height === dimension.height &&
+      this.width === dimension.width &&
+      this.dir === dimension.dir &&
+      JSON.stringify(this.offsets) === JSON.stringify(dimension.offsets)
+    );
+  }
+
+  /**
+   * Creates a clone of the current Dimension object.
+   *
+   * @returns {Dimension} A new Dimension object with the same properties.
+   */
+  public clone(): Dimension {
+    return new Dimension({
+      top: this.top,
+      left: this.left,
+      height: this.height,
+      width: this.width,
+      offsets: { ...this.offsets }, // Shallow copy of offsets
+      dir: this.dir,
+    });
   }
 }

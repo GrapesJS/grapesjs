@@ -131,32 +131,44 @@ export class DropLocationDeterminer<T, NodeType extends SortableTreeNode<T>> ext
     }
 
     // Handle movement over the valid target node
-    const moveData = this.getDropPosition(targetNode, mouseX, mouseY);
+    const { index, placement, placeholderDimensions } = this.getDropPosition(targetNode, mouseX, mouseY);
 
     const placeHolderMoved =
-      moveData.placeholderDimensions !== this.lastMoveData.placeholderDimensions ||
-      moveData.placement !== this.lastMoveData.placement;
+      !placeholderDimensions.equals(this.lastMoveData.placeholderDimensions) ||
+      placement !== this.lastMoveData.placement;
     if (placeHolderMoved) {
-      this.eventHandlers.onPlaceholderPositionChange?.(moveData.placeholderDimensions!, moveData.placement!);
+      this.eventHandlers.onPlaceholderPositionChange?.(placeholderDimensions!, placement!);
     }
 
     this.lastMoveData = {
-      targetNode: targetNode,
-      mouseEvent: mouseEvent,
-      ...moveData,
+      ...this.lastMoveData,
+      targetNode,
+      mouseEvent,
+      index,
+      placement,
+      placeholderDimensions,
     };
 
     this.triggerMoveEvent(mouseX, mouseY);
-    this.triggerLegacyOnMoveCallback(mouseEvent, moveData.index);
+    this.triggerLegacyOnMoveCallback(mouseEvent, index);
   }
 
   private adjustForScroll() {
-    const lastNode = this.lastMoveData.targetNode;
-    if (lastNode?.element) {
-      const dims = this.getDim(lastNode?.element);
-      const diff = lastNode.nodeDimensions?.calculateDimensionDifference(dims);
+    const lastTargetNode = this.lastMoveData.targetNode;
+    if (lastTargetNode?.element) {
+      const dims = this.getDim(lastTargetNode?.element);
+      const diff = lastTargetNode.nodeDimensions?.calculateDimensionDifference(dims);
       if (diff) {
-        lastNode.adjustDimensions(diff);
+        lastTargetNode.adjustDimensions(diff);
+      }
+    }
+
+    const lastHoveredNode = this.lastMoveData.hoveredNode;
+    if (lastHoveredNode?.element) {
+      const dims = this.getDim(lastHoveredNode?.element);
+      const diff = lastHoveredNode.nodeDimensions?.calculateDimensionDifference(dims);
+      if (diff) {
+        lastHoveredNode.adjustDimensions(diff);
       }
     }
   }
@@ -204,26 +216,26 @@ export class DropLocationDeterminer<T, NodeType extends SortableTreeNode<T>> ext
    * Handles the movement of the dragged element over a target node.
    * Updates the placeholder position and triggers relevant events when necessary.
    *
-   * @param hoveredNode - The node currently being hovered over.
+   * @param node - The node currently being hovered over.
    * @param mouseX - The x-coordinate of the mouse relative to the container.
    * @param mouseY - The y-coordinate of the mouse relative to the container.
    */
-  private getDropPosition(hoveredNode: NodeType, mouseX: number, mouseY: number) {
-    let { nodeDimensions, childrenDimensions } = hoveredNode;
-    const children = hoveredNode.getChildren();
+  private getDropPosition(node: NodeType, mouseX: number, mouseY: number) {
+    let { nodeDimensions, childrenDimensions } = node;
+    const children = node.getChildren();
     const nodeHasChildren = children && children.length > 0;
 
-    nodeDimensions = !nodeDimensions ? this.getDim(hoveredNode.element!) : nodeDimensions;
-    hoveredNode.nodeDimensions = nodeDimensions;
+    nodeDimensions = !nodeDimensions ? this.getDim(node.element!) : nodeDimensions;
+    node.nodeDimensions = nodeDimensions;
 
-    childrenDimensions = !childrenDimensions ? this.getChildrenDim(hoveredNode) : childrenDimensions;
-    hoveredNode.childrenDimensions = childrenDimensions;
-    let placeholderDimensions = nodeDimensions,
+    childrenDimensions = !childrenDimensions ? this.getChildrenDim(node) : childrenDimensions;
+    node.childrenDimensions = childrenDimensions;
+    let placeholderDimensions = nodeDimensions.clone(),
       index = 0,
       placement = 'inside' as Placement;
     if (nodeHasChildren) {
       ({ index, placement } = findPosition(childrenDimensions, mouseX, mouseY));
-      placeholderDimensions = childrenDimensions[index];
+      placeholderDimensions = childrenDimensions[index].clone();
       index = index + (placement == 'after' ? 1 : 0);
     }
 
@@ -429,7 +441,7 @@ export class DropLocationDeterminer<T, NodeType extends SortableTreeNode<T>> ext
    * @return {boolean} Returns `true` if the element is in flow, otherwise `false`.
    * @private
    */
-  getDirection(el: HTMLElement, parent: HTMLElement): boolean {
+  private getDirection(el: HTMLElement, parent: HTMLElement): boolean {
     let dirValue: boolean;
 
     if (this.dragDirection === DragDirection.Vertical) dirValue = true;
