@@ -20,24 +20,20 @@ export default class CanvasNewComponentNode extends CanvasComponentNode {
    * @param contentItem - The content item to retrieve or cache.
    * @returns {Component | null} - The shallow wrapper model, either cached or retrieved.
    */
-  cacheSrcModelForContent(contentItem: ContentElement): Component | null {
-    // Check if the contentItem is already cached in the source node
+  cacheSrcModelForContent(contentItem: ContentElement | Component): Component | undefined {
+    if (isComponent(contentItem)) {
+      return contentItem;
+    }
+
     if (this._cachedShallowModels.has(contentItem)) {
       return this._cachedShallowModels.get(contentItem)!;
     }
 
-    let srcModel: Component | null = null;
+    let srcModel;
 
-    // If contentItem is already a component, directly cache it
-    if (isComponent(contentItem)) {
-      srcModel = contentItem;
-    } else {
-      // Fetch the shallow model from the wrapper
-      const wrapper = this.model.em.Components.getShallowWrapper();
-      srcModel = wrapper?.append(contentItem)[0] || null;
-    }
+    const wrapper = this.model.em.Components.getShallowWrapper();
+    srcModel = wrapper?.append(contentItem)[0];
 
-    // Cache the shallow model for future reference
     if (srcModel) {
       this._cachedShallowModels.set(contentItem, srcModel);
     }
@@ -45,12 +41,6 @@ export default class CanvasNewComponentNode extends CanvasComponentNode {
     return srcModel;
   }
 
-  /**
-   * Moves the content from the source node at a specified index.
-   * @param {CanvasNewComponentNode} source - The source node.
-   * @param {number} index - The index where the content is to be moved.
-   * @returns {boolean} Whether the move is allowed.
-   */
   canMove(source: CanvasNewComponentNode, index: number): boolean {
     const realIndex = this.getRealIndex(index);
     const { model: symbolModel, content, dragDef } = source._dragSource;
@@ -61,14 +51,12 @@ export default class CanvasNewComponentNode extends CanvasComponentNode {
     if (Array.isArray(sourceContent)) {
       return (
         sourceContent.every((contentItem, i) =>
-          // @ts-ignore
-          this.canMoveSingleContent(source.cacheSrcModelForContent(contentItem), realIndex + i),
+          this.canMoveSingleContent(source.cacheSrcModelForContent(contentItem)!, realIndex + i),
         ) && canMoveSymbol
       );
     }
 
-    // @ts-ignore
-    return this.canMoveSingleContent(source.cacheSrcModelForContent(sourceContent), realIndex) && canMoveSymbol;
+    return this.canMoveSingleContent(source.cacheSrcModelForContent(sourceContent)!, realIndex) && canMoveSymbol;
   }
 
   private canMoveSingleContent(contentItem: ContentElement | Component, index: number): boolean {
