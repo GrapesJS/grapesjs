@@ -5,7 +5,7 @@ import { isTextNode, off, on } from '../dom';
 import { SortableTreeNode } from './SortableTreeNode';
 import { Placement, PositionOptions, DragDirection, SorterEventHandlers, CustomTarget, DragSource } from './types';
 import { bindAll, each } from 'underscore';
-import { matches, findPosition, offset, isInFlow } from './SorterUtils';
+import { matches, findPosition, offset, isStyleInFlow } from './SorterUtils';
 import { RateLimiter } from './RateLimiter';
 import Dimension from './Dimension';
 
@@ -135,9 +135,10 @@ export class DropLocationDeterminer<T, NodeType extends SortableTreeNode<T>> ext
     // Handle movement over the valid target node
     const moveData: MoveData<NodeType> = this.getMoveData(targetNode, mouseX, mouseY);
 
-    const placeHolderPositionChanged = moveData.placeholderDimensions !== this.lastMoveData.placeholderDimensions;
-    const placeHolderPlacmentChanged = moveData.placement !== this.lastMoveData.placement;
-    if (placeHolderPositionChanged || placeHolderPlacmentChanged) {
+    const placeHolderMoved =
+      moveData.placeholderDimensions !== this.lastMoveData.placeholderDimensions ||
+      moveData.placement !== this.lastMoveData.placement;
+    if (placeHolderMoved) {
       this.eventHandlers.onPlaceholderPositionChange?.(moveData.placeholderDimensions!, moveData.placement!);
     }
 
@@ -266,7 +267,7 @@ export class DropLocationDeterminer<T, NodeType extends SortableTreeNode<T>> ext
 
     let targetNode;
     if (index !== this.lastMoveData.index || !this.lastMoveData.node?.equals(hoveredNode)) {
-      targetNode = this.getValidParent(hoveredNode, index);
+      targetNode = this.getValidParent(hoveredNode, index, mouseEvent.clientX, mouseEvent.clientY);
     } else {
       targetNode = this.lastMoveData.node;
     }
@@ -359,18 +360,23 @@ export class DropLocationDeterminer<T, NodeType extends SortableTreeNode<T>> ext
     return null;
   }
 
-  private getValidParent(targetNode: NodeType, index: number): NodeType | undefined {
+  private getValidParent(targetNode: NodeType, index: number, mouseX: number, mouseY: number): NodeType | undefined {
     if (!targetNode) return;
     const positionNotChanged = targetNode.equals(this.lastMoveData.node) && index === this.lastMoveData.index;
     if (positionNotChanged) return targetNode;
+
     const canMove = this.sourceNodes.some((node) => targetNode.canMove(node, index));
     this.triggerDragValidation(canMove, targetNode);
-    if (canMove) {
-      return targetNode;
-    }
+    if (canMove) return targetNode;
 
     const parent = targetNode.getParent() as NodeType;
-    return this.getValidParent(parent, parent?.indexOfChild(targetNode));
+    if (!parent) return;
+
+    let indexInParent = parent?.indexOfChild(targetNode);
+    const nodeDimensions = this.getDim(targetNode.element!);
+    nodeDimensions.dir = this.getDirection(targetNode.element!, parent.element!);
+    indexInParent = indexInParent + (nodeDimensions.determinePlacement(mouseX, mouseY) == 'after' ? 1 : 0);
+    return this.getValidParent(parent, indexInParent, mouseX, mouseY);
   }
 
   private triggerDragValidation(canMove: boolean, targetNode: NodeType) {
@@ -401,6 +407,25 @@ export class DropLocationDeterminer<T, NodeType extends SortableTreeNode<T>> ext
   }
 
   /**
+   * Determines if an element is in the normal flow of the document.
+   * This checks whether the element is not floated or positioned in a way that removes it from the flow.
+   *
+   * @param  {HTMLElement} el - The element to check.
+   * @param  {HTMLElement} [parent=document.body] - The parent element for additional checks (defaults to `document.body`).
+   * @return {boolean} Returns `true` if the element is in flow, otherwise `false`.
+   * @private
+   */
+  getDirection(el: HTMLElement, parent: HTMLElement): boolean {
+    let dirValue: boolean;
+
+    if (this.dragDirection === DragDirection.Vertical) dirValue = true;
+    else if (this.dragDirection === DragDirection.Horizontal) dirValue = false;
+    else dirValue = isStyleInFlow(el, parent);
+
+    return dirValue;
+  }
+
+  /**
    * Get children dimensions
    * @param {NodeType} el Element root
    * @return {Array}
@@ -426,14 +451,7 @@ export class DropLocationDeterminer<T, NodeType extends SortableTreeNode<T>> ext
       }
 
       const dim = this.getDim(el);
-      let dir = this.dragDirection;
-      let dirValue: boolean;
-
-      if (dir === DragDirection.Vertical) dirValue = true;
-      else if (dir === DragDirection.Horizontal) dirValue = false;
-      else dirValue = isInFlow(el, targetElement);
-
-      dim.dir = dirValue;
+      dim.dir = this.getDirection(el, targetElement);
       dims.push(dim);
     });
 

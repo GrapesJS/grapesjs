@@ -1,4 +1,5 @@
 import CanvasModule from '../../canvas';
+import { Placement } from './types';
 
 /**
  * A class representing dimensions of an element, including position, size, offsets, and other metadata.
@@ -63,5 +64,23 @@ export default class Dimension {
     this.left += difference.leftDifference;
 
     return this;
+  }
+
+  /**
+   * Determines the placement ('before' or 'after') based on the X and Y coordinates and center points.
+   *
+   * @param {number} mouseX X coordinate of the mouse
+   * @param {number} mouseY Y coordinate of the mouse
+   * @return {Placement} 'before' or 'after'
+   */
+  public determinePlacement(mouseX: number, mouseY: number): Placement {
+    const xCenter = this.left + this.width / 2;
+    const yCenter = this.top + this.height / 2;
+
+    if (this.dir) {
+      return mouseY < yCenter ? 'before' : 'after';
+    } else {
+      return mouseX < xCenter ? 'before' : 'after';
+    }
   }
 }

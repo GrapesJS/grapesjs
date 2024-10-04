@@ -29,10 +29,8 @@ export default class CanvasNewComponentNode extends CanvasComponentNode {
       return this._cachedShallowModels.get(contentItem)!;
     }
 
-    let srcModel;
-
     const wrapper = this.model.em.Components.getShallowWrapper();
-    srcModel = wrapper?.append(contentItem)[0];
+    const srcModel = wrapper?.append(contentItem)[0];
 
     if (srcModel) {
       this._cachedShallowModels.set(contentItem, srcModel);
