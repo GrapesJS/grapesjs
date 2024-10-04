@@ -3,7 +3,15 @@ import { $, View } from '../../common';
 import EditorModel from '../../editor/model/Editor';
 import { isTextNode, off, on } from '../dom';
 import { SortableTreeNode } from './SortableTreeNode';
-import { Dimension, Placement, PositionOptions, DragDirection, SorterEventHandlers, CustomTarget } from './types';
+import {
+  Dimension,
+  Placement,
+  PositionOptions,
+  DragDirection,
+  SorterEventHandlers,
+  CustomTarget,
+  DragSource,
+} from './types';
 import { bindAll, each } from 'underscore';
 import { matches, findPosition, offset, isInFlow } from './SorterUtils';
 
@@ -16,7 +24,7 @@ type ContainerContext = {
 
 interface DropLocationDeterminerOptions<T, NodeType extends SortableTreeNode<T>> {
   em: EditorModel;
-  treeClass: new (model: T, content?: any) => NodeType;
+  treeClass: new (model: T, dragSource?: DragSource<T>) => NodeType;
   containerContext: ContainerContext;
   positionOptions: PositionOptions;
   dragDirection: DragDirection;
@@ -44,7 +52,7 @@ type LastMoveData<NodeType> = {
 
 export class DropLocationDeterminer<T, NodeType extends SortableTreeNode<T>> extends View {
   em: EditorModel;
-  treeClass: new (model: any) => NodeType;
+  treeClass: new (model: any, dragSource?: DragSource<T>) => NodeType;
 
   positionOptions: PositionOptions;
   containerContext: ContainerContext;
