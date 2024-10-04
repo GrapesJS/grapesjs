@@ -53,14 +53,6 @@ export abstract class BaseComponentNode extends SortableTreeNode<Component> {
   }
 
   /**
-   * Invalidate the cache for a specific child when necessary, such as when the display state might have changed.
-   * @param {Component} child - The child component whose cache to invalidate.
-   */
-  invalidateDisplayCache(child: Component): void {
-    this.displayCache.delete(child);
-  }
-
-  /**
    * Get the parent component of this node.
    * @returns {BaseComponentNode | null} - The parent wrapped in BaseComponentNode,
    * or null if no parent exists.
@@ -197,7 +189,7 @@ export abstract class BaseComponentNode extends SortableTreeNode<Component> {
 
   /**
    * Disable editing capabilities for the component's view.
-   * This method depends on the presence of the disableEditing method in the view.
+   * This method depends on the presence of the `disableEditing` method in the view.
    */
   private disableEditing(): void {
     // @ts-ignore
