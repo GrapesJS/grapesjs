@@ -107,7 +107,7 @@ export default class Sorter<T, NodeType extends SortableTreeNode<T>> {
   /**
    * This method is should be called when the user scrolls within the container.
    */
-  recalculateTargetOnScroll(): void {
+  protected recalculateTargetOnScroll(): void {
     this.dropLocationDeterminer.recalculateTargetOnScroll();
   }
 
@@ -183,7 +183,7 @@ export default class Sorter<T, NodeType extends SortableTreeNode<T>> {
     return sourceElement;
   }
 
-  private bindDragEventHandlers() {
+  protected bindDragEventHandlers() {
     on(this.containerContext.document, 'keydown', this.rollback);
   }
 
@@ -196,7 +196,7 @@ export default class Sorter<T, NodeType extends SortableTreeNode<T>> {
    *
    * @private
    */
-  private cleanupEventListeners(): void {
+  protected cleanupEventListeners(): void {
     off(this.containerContext.document, 'keydown', this.rollback);
   }
 
