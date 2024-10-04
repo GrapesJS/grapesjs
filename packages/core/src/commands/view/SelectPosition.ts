@@ -13,7 +13,7 @@ export default {
     const utils = this.em.Utils;
     const container = sourceElements[0].ownerDocument.body;
 
-    if (utils && !this.sorter)
+    if (utils)
       this.sorter = new utils.ComponentSorter({
         em: this.em,
         treeClass: CanvasComponentNode,
