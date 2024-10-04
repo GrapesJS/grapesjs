@@ -31,6 +31,9 @@ export default class CanvasNewComponentNode extends CanvasComponentNode {
 
     const wrapper = this.model.em.Components.getShallowWrapper();
     const srcModel = wrapper?.append(contentItem)[0];
+    // Replace getEl as the element would be removed in the shallow wrapper after 100ms
+    const el = srcModel?.getEl();
+    srcModel!.getEl = () => el;
 
     if (srcModel) {
       this._cachedShallowModels.set(contentItem, srcModel);
@@ -58,6 +61,7 @@ export default class CanvasNewComponentNode extends CanvasComponentNode {
   }
 
   private canMoveSingleContent(contentItem: ContentElement | Component, index: number): boolean {
+    // console.log("🚀 ~ CanvasNewComponentNode ~ canMoveSingleContent ~ contentItem:", contentItem)
     return this.model.em.Components.canMove(this.model, contentItem, index).result;
   }
 
