@@ -78,7 +78,6 @@ export default class CanvasNewComponentNode extends CanvasComponentNode {
 
   /**
    * Adds a single content item to the current node.
-   * The source node will first ensure that the model for the content is cached.
    * @param {ContentType} content - The content to add.
    * @param {number} index - The index where the content is to be added.
    * @param {boolean} insertingTextableIntoText - Whether the operation involves textable content.
@@ -90,7 +89,6 @@ export default class CanvasNewComponentNode extends CanvasComponentNode {
     insertingTextableIntoText: boolean,
   ): CanvasNewComponentNode {
     let model;
-
     if (insertingTextableIntoText) {
       // @ts-ignore
       model = this.model?.getView?.()?.insertComponent?.(content, { action: 'add-component' });
