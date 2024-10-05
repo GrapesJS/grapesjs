@@ -187,13 +187,6 @@ export default class Droppable {
         sorter.eventHandlers.legacyOnEnd = sorterOptions.legacyOnEnd;
         sorter.containerContext.customTarget = sorterOptions.customTarget;
       }
-      this.em.on(
-        'frame:scroll',
-        ((...agrs: any[]) => {
-          const canvasScroll = this.canvas.getCanvasView().frame === agrs[0].frame;
-          if (canvasScroll) sorter.recalculateTargetOnScroll();
-        }).bind(this),
-      );
       let dropModel = this.getTempDropModel(content);
       const el = dropModel.view?.el;
       const sources = el ? [{ element: el, dragSource: dragSourceOrigin }] : [];

@@ -3,23 +3,61 @@ import CanvasComponentNode from './CanvasComponentNode';
 import { getSymbolMain, getSymbolTop, isSymbol, isSymbolMain } from '../../dom_components/model/SymbolUtils';
 import Component from '../../dom_components/model/Component';
 import { ContentElement, ContentType } from './types';
+import { isComponent } from '../mixins';
 
 type CanMoveSource = Component | ContentType;
 
 export default class CanvasNewComponentNode extends CanvasComponentNode {
+  /**
+   * A cache of shallow editor models stored in the source node.
+   * This is a map where each content item is associated with its corresponding shallow wrapper model.
+   */
+  private _cachedShallowModels: Map<ContentElement, Component> = new Map();
+
+  /**
+   * Ensures the shallow editor model for the given contentItem is cached in the source node.
+   * If not cached, retrieves it from the shallow wrapper and stores it in the cache.
+   * @param contentItem - The content item to retrieve or cache.
+   * @returns {Component | null} - The shallow wrapper model, either cached or retrieved.
+   */
+  cacheSrcModelForContent(contentItem: ContentElement | Component): Component | undefined {
+    if (isComponent(contentItem)) {
+      return contentItem;
+    }
+
+    if (this._cachedShallowModels.has(contentItem)) {
+      return this._cachedShallowModels.get(contentItem)!;
+    }
+
+    const wrapper = this.model.em.Components.getShallowWrapper();
+    const srcModel = wrapper?.append(contentItem)[0];
+    // Replace getEl as the element would be removed in the shallow wrapper after 100ms
+    const el = srcModel?.getEl();
+    srcModel!.getEl = () => el;
+
+    if (srcModel) {
+      this._cachedShallowModels.set(contentItem, srcModel);
+    }
+
+    return srcModel;
+  }
+
   canMove(source: CanvasNewComponentNode, index: number): boolean {
     const realIndex = this.getRealIndex(index);
     const { model: symbolModel, content, dragDef } = source._dragSource;
 
     const canMoveSymbol = !symbolModel || !this.isSourceSameSymbol(symbolModel);
     const sourceContent: CanMoveSource = (isFunction(content) ? dragDef : content) || source.model;
+
     if (Array.isArray(sourceContent)) {
       return (
-        sourceContent.every((contentItem, i) => this.canMoveSingleContent(contentItem, realIndex + i)) && canMoveSymbol
+        sourceContent.every((contentItem, i) =>
+          this.canMoveSingleContent(source.cacheSrcModelForContent(contentItem)!, realIndex + i),
+        ) && canMoveSymbol
       );
     }
 
-    return this.canMoveSingleContent(sourceContent, realIndex) && canMoveSymbol;
+    return this.canMoveSingleContent(source.cacheSrcModelForContent(sourceContent)!, realIndex) && canMoveSymbol;
   }
 
   private canMoveSingleContent(contentItem: ContentElement | Component, index: number): boolean {
@@ -39,6 +77,13 @@ export default class CanvasNewComponentNode extends CanvasComponentNode {
     return this.addSingleChild(content, index, insertingTextableIntoText);
   }
 
+  /**
+   * Adds a single content item to the current node.
+   * @param {ContentType} content - The content to add.
+   * @param {number} index - The index where the content is to be added.
+   * @param {boolean} insertingTextableIntoText - Whether the operation involves textable content.
+   * @returns {CanvasNewComponentNode} - The newly added node.
+   */
   private addSingleChild(
     content: ContentType,
     index: number,

@@ -13,7 +13,7 @@ export default {
     const utils = this.em.Utils;
     const container = sourceElements[0].ownerDocument.body;
 
-    if (utils && !this.sorter)
+    if (utils)
       this.sorter = new utils.ComponentSorter({
         em: this.em,
         treeClass: CanvasComponentNode,
@@ -36,13 +36,6 @@ export default {
       });
 
     if (opts.onStart) this.sorter.eventHandlers.legacyOnStartSort = opts.onStart;
-    this.em.on(
-      'frame:scroll',
-      ((...agrs: any[]) => {
-        const canvasScroll = this.canvas.getCanvasView().frame === agrs[0].frame;
-        if (canvasScroll) this.sorter.recalculateTargetOnScroll();
-      }).bind(this),
-    );
     sourceElements &&
       sourceElements.length > 0 &&
       this.sorter.startSort(sourceElements.map((element) => ({ element })));
