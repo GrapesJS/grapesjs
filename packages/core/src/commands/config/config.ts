@@ -21,10 +21,10 @@ export interface CommandsConfig {
   strict?: boolean;
 }
 
-const config: CommandsConfig = {
+const config: () => CommandsConfig = () => ({
   stylePrefix: 'com-',
   defaults: {},
   strict: true,
-};
+});
 
 export default config;

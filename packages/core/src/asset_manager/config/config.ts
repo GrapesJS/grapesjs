@@ -141,7 +141,7 @@ export interface AssetManagerConfig {
   dropzoneContent?: string;
 }
 
-const config: AssetManagerConfig = {
+const config: () => AssetManagerConfig = () => ({
   assets: [],
   noAssets: '',
   stylePrefix: 'am-',
@@ -163,6 +163,6 @@ const config: AssetManagerConfig = {
   dropzone: false,
   openAssetsOnDrop: true,
   dropzoneContent: '',
-};
+});
 
 export default config;

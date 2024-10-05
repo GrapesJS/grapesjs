@@ -37,13 +37,13 @@ export interface I18nConfig {
   messagesAdd?: Record<string, any>;
 }
 
-const config: I18nConfig = {
+const config: () => I18nConfig = () => ({
   locale: 'en',
   localeFallback: 'en',
   detectLocale: true,
   debug: false,
   messages: { en },
   messagesAdd: undefined,
-};
+});
 
 export default config;

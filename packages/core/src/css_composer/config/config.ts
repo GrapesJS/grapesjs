@@ -11,9 +11,9 @@ export interface CssComposerConfig {
   rules?: Array<string>; // TODO
 }
 
-const config: CssComposerConfig = {
+const config: () => CssComposerConfig = () => ({
   stylePrefix: 'css-',
   rules: [],
-};
+});
 
 export default config;

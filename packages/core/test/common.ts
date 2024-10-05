@@ -47,6 +47,17 @@ export function setupTestEditor(opts?: { withCanvas?: boolean; config?: Partial<
   return { editor, em, dsm, cmpRoot, fixtures: fixtures as HTMLElement };
 }
 
+export function fixJsDom(editor: Editor) {
+  fixJsDomIframe(editor);
+}
+
+export const fixJsDomIframe = (em: EditorModel | Editor) => {
+  em.on(CanvasEvents.frameLoad, ({ el, view }) => {
+    // this seems to fix the issue of the loop
+    el.onload = null;
+  });
+};
+
 export function waitEditorEvent(em: Editor | EditorModel, event: string) {
   return new Promise((resolve) => em.once(event, resolve));
 }

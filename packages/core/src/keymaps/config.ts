@@ -24,7 +24,7 @@ export interface KeymapsConfig {
   defaults?: Record<string, Omit<Keymap, 'id'> & { opts?: KeymapOptions }>;
 }
 
-const config: KeymapsConfig = {
+const config: () => KeymapsConfig = () => ({
   defaults: {
     'core:undo': {
       keys: '⌘+z, ctrl+z',
@@ -66,6 +66,6 @@ const config: KeymapsConfig = {
       opts: { prevent: true },
     },
   },
-};
+});
 
 export default config;

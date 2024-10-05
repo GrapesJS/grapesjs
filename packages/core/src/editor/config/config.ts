@@ -432,7 +432,7 @@ export interface EditorConfig {
 
 export type EditorConfigKeys = keyof EditorConfig;
 
-const config: EditorConfig = {
+const config: () => EditorConfig = () => ({
   stylePrefix: 'gjs-',
   components: '',
   style: '',
@@ -506,6 +506,6 @@ const config: EditorConfig = {
   textViewCode: 'Code',
   keepUnusedStyles: false,
   customUI: false,
-};
+});
 
 export default config;

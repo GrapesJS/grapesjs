@@ -108,7 +108,7 @@ export interface LayerManagerConfig {
   extend?: Record<string, any>;
 }
 
-const config: LayerManagerConfig = {
+const config: () => LayerManagerConfig = () => ({
   stylePrefix: '',
   appendTo: '',
   sortable: true,
@@ -124,6 +124,6 @@ const config: LayerManagerConfig = {
   onInit: () => {},
   onRender: () => {},
   extend: {},
-};
+});
 
 export default config;

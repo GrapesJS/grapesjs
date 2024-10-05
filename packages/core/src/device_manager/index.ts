@@ -35,7 +35,7 @@
 import { isString } from 'underscore';
 import { ItemManagerModule } from '../abstract/Module';
 import EditorModel from '../editor/model/Editor';
-import defaults, { DeviceManagerConfig } from './config/config';
+import defConfig, { DeviceManagerConfig } from './config/config';
 import Device, { DeviceProperties } from './model/Device';
 import Devices from './model/Devices';
 import DevicesView from './view/DevicesView';
@@ -74,7 +74,7 @@ export default class DeviceManager extends ItemManagerModule<
   storageKey = '';
 
   constructor(em: EditorModel) {
-    super(em, 'DeviceManager', new Devices(), deviceEvents, defaults);
+    super(em, 'DeviceManager', new Devices(), deviceEvents, defConfig());
     this.devices = this.all;
     this.config.devices?.forEach((device) => this.add(device, { silent: true }));
     this.select(this.config.default || this.devices.at(0));

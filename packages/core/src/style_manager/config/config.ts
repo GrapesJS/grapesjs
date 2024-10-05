@@ -66,7 +66,7 @@ export interface StyleManagerConfig {
   pStylePrefix?: string;
 }
 
-export default {
+const config: () => StyleManagerConfig = () => ({
   sectors: [
     {
       name: 'General',
@@ -128,4 +128,6 @@ export default {
   showComputed: true,
   clearProperties: true,
   avoidComputed: ['width', 'height'],
-} as StyleManagerConfig;
+});
+
+export default config;

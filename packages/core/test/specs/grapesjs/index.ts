@@ -1,6 +1,8 @@
 import grapesjs, { Component, Editor, usePlugin } from '../../../src';
 import ComponentWrapper from '../../../src/dom_components/model/ComponentWrapper';
+import { EditorConfig } from '../../../src/editor/config/config';
 import type { Plugin } from '../../../src/plugin_manager';
+import { fixJsDom, fixJsDomIframe } from '../../common';
 
 type TestPlugin = Plugin<{ cVal: string }>;
 
@@ -22,6 +24,16 @@ describe('GrapesJS', () => {
       load() {
         return storage;
       },
+    };
+
+    const initTestEditor = (config: Partial<EditorConfig>) => {
+      const editor = grapesjs.init({
+        ...config,
+        plugins: [fixJsDom, ...(config.plugins || [])],
+      });
+      fixJsDomIframe(editor.getModel().shallow);
+
+      return editor;
     };
 
     beforeAll(() => {
@@ -86,23 +98,33 @@ describe('GrapesJS', () => {
       expect(editor.getStyle().length).toEqual(0);
     });
 
-    test.skip('Editor canvas baseCSS can be overwritten', () => {
+    test('Editor canvas baseCSS can be overwritten', (done) => {
       config.components = htmlString;
       config.baseCss = '#wrapper { background-color: #eee; }';
       config.protectedCss = '';
-      const editor = grapesjs.init(config);
-      const body = editor.Canvas.getBody();
-      expect(body.outerHTML).toContain(config.baseCss);
-      expect(body.outerHTML.replace(/\s+/g, ' ')).not.toContain('body { margin: 0;');
+      const editor = initTestEditor({
+        ...config,
+        components: htmlString,
+        baseCss: '#wrapper { background-color: #eee; }',
+        protectedCss: '',
+      });
+      editor.onReady(() => {
+        const body = editor.Canvas.getBody();
+        expect(body.outerHTML).toContain(config.baseCss);
+        expect(body.outerHTML.replace(/\s+/g, ' ')).not.toContain('body { margin: 0;');
+        done();
+      });
     });
 
-    test.skip('Editor canvas baseCSS defaults to sensible values if not defined', () => {
+    test('Editor canvas baseCSS defaults to sensible values if not defined', (done) => {
       config.components = htmlString;
       config.protectedCss = '';
-      grapesjs.init(config);
-      expect(window.frames[0].document.documentElement.outerHTML.replace(/\s+/g, ' ')).toContain(
-        'body { background-color: #fff',
-      );
+      const editor = initTestEditor(config);
+      editor.onReady(() => {
+        const htmlEl = editor.Canvas.getDocument().documentElement;
+        expect(htmlEl.outerHTML.replace(/\s+/g, ' ')).toContain('body { background-color: #fff');
+        done();
+      });
     });
 
     test('Init editor with html', () => {
@@ -459,25 +481,32 @@ describe('GrapesJS', () => {
       });
     });
 
-    describe.skip('Component selection', () => {
+    describe('Component selection', () => {
       let editor: Editor;
       let wrapper: ComponentWrapper;
       let el1: Component;
       let el2: Component;
       let el3: Component;
 
-      beforeEach(() => {
-        config.storageManager = { type: 0 };
-        config.components = `<div>
-          <div id="el1"></div>
-          <div id="el2"></div>
-          <div id="el3"></div>
-        </div>`;
-        editor = grapesjs.init(config);
+      beforeEach((done) => {
+        editor = grapesjs.init({
+          container: `#${editorName}`,
+          storageManager: false,
+          plugins: [fixJsDom],
+          components: `<div>
+            <div id="el1"></div>
+            <div id="el2"></div>
+            <div id="el3"></div>
+          </div>`,
+        });
+        fixJsDomIframe(editor.getModel().shallow);
         wrapper = editor.DomComponents.getWrapper()!;
-        el1 = wrapper.find('#el1')[0];
-        el2 = wrapper.find('#el2')[0];
-        el3 = wrapper.find('#el3')[0];
+        editor.onReady(() => {
+          el1 = wrapper.find('#el1')[0];
+          el2 = wrapper.find('#el2')[0];
+          el3 = wrapper.find('#el3')[0];
+          done();
+        });
       });
 
       test('Select a single component', () => {

@@ -62,7 +62,7 @@ export interface DomComponentsConfig {
   useFrameDoc?: boolean;
 }
 
-export default {
+const config: () => DomComponentsConfig = () => ({
   stylePrefix: 'comp-',
   components: [],
   draggableComponents: true,
@@ -87,4 +87,6 @@ export default {
     'track',
     'wbr',
   ],
-} as DomComponentsConfig;
+});
+
+export default config;

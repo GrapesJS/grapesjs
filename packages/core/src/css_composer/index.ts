@@ -31,7 +31,7 @@ import { isArray, isString, isUndefined } from 'underscore';
 import { isObject } from '../utils/mixins';
 import Selectors from '../selector_manager/model/Selectors';
 import Selector from '../selector_manager/model/Selector';
-import defaults, { CssComposerConfig } from './config/config';
+import defConfig, { CssComposerConfig } from './config/config';
 import CssRule, { CssRuleJSON, CssRuleProperties } from './model/CssRule';
 import CssRules from './model/CssRules';
 import CssRulesView from './view/CssRulesView';
@@ -85,7 +85,7 @@ export default class CssComposer extends ItemManagerModule<CssComposerConfig & {
    * @private
    */
   constructor(em: EditorModel) {
-    super(em, 'CssComposer', null, {}, defaults);
+    super(em, 'CssComposer', null, {}, defConfig());
     const { config } = this;
 
     const ppfx = config.pStylePrefix;

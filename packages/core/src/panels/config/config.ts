@@ -34,7 +34,7 @@ export interface PanelsConfig {
   defaults?: PanelProps[];
 }
 
-const config: PanelsConfig = {
+const config: () => PanelsConfig = () => ({
   stylePrefix: 'pn-',
   defaults: [
     {
@@ -109,6 +109,6 @@ const config: PanelsConfig = {
       ],
     },
   ],
-};
+});
 
 export default config;

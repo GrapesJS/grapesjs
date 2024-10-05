@@ -91,7 +91,7 @@ export interface CanvasConfig {
   infiniteCanvas?: boolean;
 }
 
-const config: CanvasConfig = {
+const config: () => CanvasConfig = () => ({
   stylePrefix: 'cv-',
   scripts: [],
   styles: [],
@@ -107,6 +107,6 @@ const config: CanvasConfig = {
   `,
   notTextable: ['button', 'a', 'input[type=checkbox]', 'input[type=radio]'],
   allowExternalDrop: true,
-};
+});
 
 export default config;

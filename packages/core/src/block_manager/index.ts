@@ -31,7 +31,7 @@ import { ItemManagerModule } from '../abstract/Module';
 import FrameView from '../canvas/view/FrameView';
 import Component from '../dom_components/model/Component';
 import EditorModel from '../editor/model/Editor';
-import defaults, { BlockManagerConfig } from './config/config';
+import defConfig, { BlockManagerConfig } from './config/config';
 import Block, { BlockProperties } from './model/Block';
 import Blocks from './model/Blocks';
 import Categories from '../abstract/ModuleCategories';
@@ -61,7 +61,7 @@ export default class BlockManager extends ItemManagerModule<BlockManagerConfig, 
   storageKey = '';
 
   constructor(em: EditorModel) {
-    super(em, 'BlockManager', new Blocks(em.config.blockManager?.blocks || [], { em }), BlocksEvents, defaults);
+    super(em, 'BlockManager', new Blocks(em.config.blockManager?.blocks || [], { em }), BlocksEvents, defConfig());
 
     // Global blocks collection
     this.blocks = this.all;
