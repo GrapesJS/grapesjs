@@ -1,3 +1,4 @@
+import { bindAll } from 'underscore';
 import { CanvasSpotBuiltInTypes } from '../../canvas/model/CanvasSpot';
 import Component from '../../dom_components/model/Component';
 import EditorModel from '../../editor/model/Editor';
@@ -62,11 +63,29 @@ export default class ComponentSorter<NodeType extends BaseComponentNode> extends
         },
       },
     });
+
+    bindAll(this, 'handleScrollEvent');
   }
 
   private onStartSort() {
     this.em.clearSelection();
     this.setAutoCanvasScroll(true);
+  }
+
+  protected bindDragEventHandlers() {
+    this.em.on('frame:scroll', this.handleScrollEvent);
+    super.bindDragEventHandlers();
+  }
+
+  protected cleanupEventListeners(): void {
+    this.em.off('frame:scroll', this.handleScrollEvent);
+    super.cleanupEventListeners();
+  }
+
+  handleScrollEvent(...agrs: any[]) {
+    const frame = agrs?.[0]?.frame;
+    const canvasScroll = this.em.Canvas.getCanvasView().frame === frame;
+    if (canvasScroll) this.recalculateTargetOnScroll();
   }
 
   private onMouseMove = (mouseEvent: MouseEvent) => {

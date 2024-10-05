@@ -1,4 +1,5 @@
 import { View } from '../../common';
+import Dimension from './Dimension';
 import { DragSource } from './types';
 
 /**
@@ -9,6 +10,10 @@ import { DragSource } from './types';
 export abstract class SortableTreeNode<T> {
   protected _model: T;
   protected _dragSource: DragSource<T>;
+  /** The dimensions of the node. */
+  public nodeDimensions?: Dimension;
+  /** The dimensions of the child elements within the target node. */
+  public childrenDimensions?: Dimension[];
   constructor(model: T, dragSource: DragSource<T> = {}) {
     this._model = model;
     this._dragSource = dragSource;
@@ -87,7 +92,14 @@ export abstract class SortableTreeNode<T> {
     return this._dragSource;
   }
 
-  equals(node?: SortableTreeNode<T>): boolean {
+  equals(node?: SortableTreeNode<T>): node is SortableTreeNode<T> {
     return !!node?._model && this._model === node._model;
+  }
+
+  adjustDimensions(diff: { topDifference: number; leftDifference: number }) {
+    if (diff.topDifference === 0 && diff.leftDifference === 0) return;
+
+    this.nodeDimensions?.adjustDimensions(diff);
+    this.childrenDimensions?.forEach((dims) => dims.adjustDimensions(diff));
   }
 }

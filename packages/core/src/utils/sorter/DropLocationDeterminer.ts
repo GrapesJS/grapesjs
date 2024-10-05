@@ -3,17 +3,11 @@ import { $, View } from '../../common';
 import EditorModel from '../../editor/model/Editor';
 import { isTextNode, off, on } from '../dom';
 import { SortableTreeNode } from './SortableTreeNode';
-import {
-  Dimension,
-  Placement,
-  PositionOptions,
-  DragDirection,
-  SorterEventHandlers,
-  CustomTarget,
-  DragSource,
-} from './types';
+import { Placement, PositionOptions, DragDirection, SorterEventHandlers, CustomTarget, DragSource } from './types';
 import { bindAll, each } from 'underscore';
-import { matches, findPosition, offset, isInFlow } from './SorterUtils';
+import { matches, findPosition, offset, isStyleInFlow } from './SorterUtils';
+import { RateLimiter } from './RateLimiter';
+import Dimension from './Dimension';
 
 type ContainerContext = {
   container: HTMLElement;
@@ -35,19 +29,19 @@ interface DropLocationDeterminerOptions<T, NodeType extends SortableTreeNode<T>>
  * Represents the data related to the last move event during drag-and-drop sorting.
  * This type is discriminated by the presence or absence of a valid target node.
  */
-type LastMoveData<NodeType> = {
+type lastMoveData<NodeType> = {
   /** The target node under the mouse pointer during the last move. */
-  lastTargetNode?: NodeType;
+  targetNode?: NodeType;
+  /** The node under the mouse pointer during this move*/
+  hoveredNode?: NodeType;
   /** The index where the placeholder or dragged element should be inserted. */
-  lastIndex?: number;
+  index?: number;
   /** Placement relative to the target ('before' or 'after'). */
-  lastPlacement?: Placement;
-  /** The dimensions of the target node. */
-  lastTargetDimensions?: Dimension;
-  /** The dimensions of the child elements within the target node. */
-  lastChildrenDimensions?: Dimension[];
+  placement?: Placement;
   /** The mouse event, used if we want to move placeholder with scrolling. */
-  lastMouseEvent?: MouseEvent;
+  mouseEvent?: MouseEvent;
+
+  placeholderDimensions?: Dimension;
 };
 
 export class DropLocationDeterminer<T, NodeType extends SortableTreeNode<T>> extends View {
@@ -60,11 +54,13 @@ export class DropLocationDeterminer<T, NodeType extends SortableTreeNode<T>> ext
   eventHandlers: SorterEventHandlers<NodeType>;
 
   sourceNodes: NodeType[] = [];
-  lastMoveData!: LastMoveData<NodeType>;
+  lastMoveData!: lastMoveData<NodeType>;
   containerOffset = {
     top: 0,
     left: 0,
   };
+  private moveThreshold: number = 20;
+  private rateLimiter: RateLimiter<MouseEvent>; // Rate limiter for onMove
 
   constructor(options: DropLocationDeterminerOptions<T, NodeType>) {
     super();
@@ -77,6 +73,7 @@ export class DropLocationDeterminer<T, NodeType extends SortableTreeNode<T>> ext
     bindAll(this, 'endDrag', 'cancelDrag', 'recalculateTargetOnScroll', 'startSort', 'onDragStart', 'onMove');
 
     this.restLastMoveData();
+    this.rateLimiter = new RateLimiter<MouseEvent>(this.moveThreshold);
   }
 
   /**
@@ -101,24 +98,31 @@ export class DropLocationDeterminer<T, NodeType extends SortableTreeNode<T>> ext
    * to determine the new target.
    */
   recalculateTargetOnScroll(): void {
-    const { lastTargetNode, lastMouseEvent } = this.lastMoveData;
-
-    // recalculate dimensions when the canvas is scrolled
-    this.restLastMoveData();
-    this.lastMoveData.lastTargetNode = lastTargetNode;
+    const { mouseEvent: lastMouseEvent } = this.lastMoveData;
     if (!lastMouseEvent) {
       return;
     }
 
     this.onMove(lastMouseEvent);
-    this.lastMoveData.lastMouseEvent = lastMouseEvent;
   }
 
   private onMove(mouseEvent: MouseEvent): void {
+    this.rateLimiter.updateArgs(mouseEvent);
+    this.rateLimiter.execute(this.handleMove.bind(this));
+  }
+
+  private handleMove(mouseEvent: MouseEvent): void {
+    this.adjustForScroll();
+
+    const { targetNode: lastTargetNode } = this.lastMoveData;
     this.eventHandlers.onMouseMove?.(mouseEvent);
     const { mouseXRelativeToContainer: mouseX, mouseYRelativeToContainer: mouseY } =
       this.getMousePositionRelativeToContainer(mouseEvent);
     const targetNode = this.getTargetNode(mouseEvent);
+    const targetChanged = !targetNode?.equals(lastTargetNode);
+    if (targetChanged) {
+      this.eventHandlers.onTargetChange?.(lastTargetNode, targetNode);
+    }
     if (!targetNode) {
       this.triggerLegacyOnMoveCallback(mouseEvent, 0);
       this.triggerMoveEvent(mouseX, mouseY);
@@ -127,49 +131,77 @@ export class DropLocationDeterminer<T, NodeType extends SortableTreeNode<T>> ext
     }
 
     // Handle movement over the valid target node
-    const index = this.handleMovementOnTarget(targetNode, mouseX, mouseY);
+    const { index, placement, placeholderDimensions } = this.getDropPosition(targetNode, mouseX, mouseY);
+
+    const placeHolderMoved =
+      !placeholderDimensions.equals(this.lastMoveData.placeholderDimensions) ||
+      placement !== this.lastMoveData.placement;
+    if (placeHolderMoved) {
+      this.eventHandlers.onPlaceholderPositionChange?.(placeholderDimensions!, placement!);
+    }
+
+    this.lastMoveData = {
+      ...this.lastMoveData,
+      targetNode,
+      mouseEvent,
+      index,
+      placement,
+      placeholderDimensions,
+    };
 
     this.triggerMoveEvent(mouseX, mouseY);
     this.triggerLegacyOnMoveCallback(mouseEvent, index);
-    this.lastMoveData.lastMouseEvent = mouseEvent;
+  }
+
+  private adjustForScroll() {
+    const lastTargetNode = this.lastMoveData.targetNode;
+    if (lastTargetNode?.element) {
+      const dims = this.getDim(lastTargetNode?.element);
+      const diff = lastTargetNode.nodeDimensions?.calculateDimensionDifference(dims);
+      if (diff) {
+        lastTargetNode.adjustDimensions(diff);
+      }
+    }
+
+    const lastHoveredNode = this.lastMoveData.hoveredNode;
+    if (lastHoveredNode?.element) {
+      const dims = this.getDim(lastHoveredNode?.element);
+      const diff = lastHoveredNode.nodeDimensions?.calculateDimensionDifference(dims);
+      if (diff) {
+        lastHoveredNode.adjustDimensions(diff);
+      }
+    }
   }
 
   private restLastMoveData() {
     this.lastMoveData = {
-      lastTargetNode: undefined,
-      lastIndex: undefined,
-      lastPlacement: undefined,
-      lastTargetDimensions: undefined,
-      lastChildrenDimensions: undefined,
-      lastMouseEvent: undefined,
+      targetNode: undefined,
+      index: undefined,
+      placement: undefined,
+      mouseEvent: undefined,
     };
   }
 
-  private triggerLegacyOnMoveCallback(mouseEvent: MouseEvent, index: number) {
+  private triggerLegacyOnMoveCallback(mouseEvent: MouseEvent, index?: number) {
     // For backward compatibility, leave it to a single node
     const model = this.sourceNodes[0]?.model;
     this.eventHandlers.legacyOnMoveClb?.({
       event: mouseEvent,
       target: model,
-      parent: this.lastMoveData.lastTargetNode?.model,
+      parent: this.lastMoveData.targetNode?.model,
       index: index,
     });
   }
 
   private triggerMoveEvent(mouseX: number, mouseY: number) {
-    const {
-      lastTargetNode: targetNode,
-      lastPlacement: placement,
-      lastIndex: index,
-      lastChildrenDimensions: childrenDimensions,
-    } = this.lastMoveData;
+    const { targetNode: targetNode, placement: placement, index: index } = this.lastMoveData;
     const legacyIndex = index ? index + (placement === 'after' ? -1 : 0) : 0;
 
     this.em.trigger('sorter:drag', {
       target: targetNode?.element || null,
-      targetModel: this.lastMoveData.lastTargetNode?.model,
+      targetModel: this.lastMoveData.targetNode?.model,
       sourceModel: this.sourceNodes[0].model,
-      dims: childrenDimensions || [],
+      dims: targetNode?.childrenDimensions || [],
       pos: {
         index: legacyIndex,
         indexEl: legacyIndex,
@@ -184,64 +216,100 @@ export class DropLocationDeterminer<T, NodeType extends SortableTreeNode<T>> ext
    * Handles the movement of the dragged element over a target node.
    * Updates the placeholder position and triggers relevant events when necessary.
    *
-   * @param hoveredNode - The node currently being hovered over.
+   * @param node - The node currently being hovered over.
    * @param mouseX - The x-coordinate of the mouse relative to the container.
    * @param mouseY - The y-coordinate of the mouse relative to the container.
-   * @returns The index at which the placeholder should be positioned.
    */
-  private handleMovementOnTarget(hoveredNode: NodeType, mouseX: number, mouseY: number): number {
-    const { lastTargetNode, lastChildrenDimensions } = this.lastMoveData;
-
-    const targetChanged = !hoveredNode.equals(lastTargetNode);
-    if (targetChanged) {
-      this.eventHandlers.onTargetChange?.(lastTargetNode, hoveredNode);
-    }
-
-    let placeholderDimensions, index, placement: Placement;
-    const children = hoveredNode.getChildren();
+  private getDropPosition(node: NodeType, mouseX: number, mouseY: number) {
+    let { nodeDimensions, childrenDimensions } = node;
+    const children = node.getChildren();
     const nodeHasChildren = children && children.length > 0;
 
-    const hoveredNodeDimensions = this.getDim(hoveredNode.element!);
-    const childrenDimensions =
-      targetChanged || !!!lastChildrenDimensions ? this.getChildrenDim(hoveredNode) : lastChildrenDimensions;
+    nodeDimensions = !nodeDimensions ? this.getDim(node.element!) : nodeDimensions;
+    node.nodeDimensions = nodeDimensions;
+
+    childrenDimensions = !childrenDimensions ? this.getChildrenDim(node) : childrenDimensions;
+    node.childrenDimensions = childrenDimensions;
+    let placeholderDimensions = nodeDimensions.clone(),
+      index = 0,
+      placement = 'inside' as Placement;
     if (nodeHasChildren) {
       ({ index, placement } = findPosition(childrenDimensions, mouseX, mouseY));
-      placeholderDimensions = childrenDimensions[index];
-    } else {
-      placeholderDimensions = hoveredNodeDimensions;
-      index = 0;
-      placement = 'inside';
+      placeholderDimensions = childrenDimensions[index].clone();
+      index = index + (placement == 'after' ? 1 : 0);
     }
-    index = index + (placement == 'after' ? 1 : 0);
 
-    this.eventHandlers.onPlaceholderPositionChange?.(placeholderDimensions, placement);
-
-    this.lastMoveData = {
-      lastTargetNode: hoveredNode,
-      lastTargetDimensions: hoveredNodeDimensions,
-      lastChildrenDimensions: childrenDimensions,
-      lastIndex: index,
-      lastPlacement: placement,
+    return {
+      index,
+      placement,
+      placeholderDimensions,
     };
-
-    return index;
   }
 
-  private getTargetNode(mouseEvent: MouseEvent) {
-    const customTarget = this.containerContext.customTarget;
+  /**
+   * Retrieves the target node based on the mouse event.
+   * Determines the element being hovered, its corresponding model, and
+   * calculates the valid parent node to use as the target node.
+   *
+   * @param mouseEvent - The mouse event containing the cursor position and target element.
+   * @returns The target node if a valid one is found, otherwise undefined.
+   */
+  private getTargetNode(mouseEvent: MouseEvent): NodeType | undefined {
     this.cacheContainerPosition(this.containerContext.container);
 
+    // Get the element under the mouse
+    const mouseTargetEl = this.getMouseTargetElement(mouseEvent);
+    const targetEl = this.getFirstElementWithAModel(mouseTargetEl);
+    if (!targetEl) return;
+    const hoveredModel = $(targetEl)?.data('model');
+    if (!hoveredModel) return;
+
+    let hoveredNode = this.getOrCreateHoveredNode(hoveredModel);
+
+    // Get the drop position index based on the mouse position
+    const { index } = this.getDropPosition(hoveredNode, mouseEvent.clientX, mouseEvent.clientY);
+
+    // Determine the valid target node (or its valid parent)
+    let targetNode = this.getValidParent(hoveredNode, index, mouseEvent.clientX, mouseEvent.clientY);
+
+    return this.getOrReuseTargetNode(targetNode);
+  }
+
+  /**
+   * Creates a new hovered node or reuses the last hovered node if it is the same.
+   *
+   * @param hoveredModel - The model corresponding to the hovered element.
+   * @returns The new or reused hovered node.
+   */
+  private getOrCreateHoveredNode(hoveredModel: T): NodeType {
+    const lastHoveredNode = this.lastMoveData.hoveredNode;
+    const hoveredNode = new this.treeClass(hoveredModel);
+    const newHoveredNode = hoveredNode.equals(lastHoveredNode) ? lastHoveredNode : hoveredNode;
+    this.lastMoveData.hoveredNode = newHoveredNode;
+
+    return newHoveredNode;
+  }
+
+  /**
+   * Checks if the target node has changed and returns the last one if they are identical.
+   *
+   * @param targetNode - The newly calculated target node.
+   * @returns The new or reused target node.
+   */
+  private getOrReuseTargetNode(targetNode?: NodeType): NodeType | undefined {
+    const lastTargetNode = this.lastMoveData.targetNode;
+    return targetNode?.equals(lastTargetNode) ? lastTargetNode : targetNode;
+  }
+
+  private getMouseTargetElement(mouseEvent: MouseEvent) {
+    const customTarget = this.containerContext.customTarget;
     let mouseTarget = this.containerContext.document.elementFromPoint(
       mouseEvent.clientX,
       mouseEvent.clientY,
     ) as HTMLElement;
     let mouseTargetEl: HTMLElement | null = customTarget ? customTarget({ event: mouseEvent }) : mouseTarget;
-    const targetEl = this.getFirstElementWithAModel(mouseTargetEl);
-    if (!targetEl) return;
-    const targetModel = $(targetEl)?.data('model');
-    const mouseTargetNode = new this.treeClass(targetModel);
-    const targetNode = this.getValidParentNode(mouseTargetNode);
-    return targetNode;
+
+    return mouseTargetEl;
   }
 
   private onDragStart(mouseEvent: MouseEvent): void {
@@ -253,7 +321,7 @@ export class DropLocationDeterminer<T, NodeType extends SortableTreeNode<T>> ext
   }
 
   cancelDrag() {
-    const { lastTargetNode } = this.lastMoveData;
+    const { targetNode: lastTargetNode } = this.lastMoveData;
     this.eventHandlers.onTargetChange?.(lastTargetNode, undefined);
     this.finalizeMove();
   }
@@ -264,16 +332,17 @@ export class DropLocationDeterminer<T, NodeType extends SortableTreeNode<T>> ext
     this.eventHandlers.onEnd?.();
     this.eventHandlers.legacyOnEnd?.();
     this.restLastMoveData();
+    this.rateLimiter.clearTimeout();
   }
 
   private dropDragged() {
-    const { lastTargetNode, lastIndex } = this.lastMoveData;
+    const { targetNode: lastTargetNode, index: lastIndex } = this.lastMoveData;
     this.eventHandlers.onDrop?.(lastTargetNode, this.sourceNodes, lastIndex);
     this.finalizeMove();
   }
 
   private triggerOnDragEndEvent() {
-    const { lastTargetNode: targetNode } = this.lastMoveData;
+    const { targetNode: targetNode } = this.lastMoveData;
 
     // For backward compatibility, leave it to a single node
     const firstSourceNode = this.sourceNodes[0];
@@ -317,25 +386,36 @@ export class DropLocationDeterminer<T, NodeType extends SortableTreeNode<T>> ext
     return null;
   }
 
-  private getValidParentNode(targetNode: NodeType) {
-    let finalNode = targetNode;
-    while (finalNode !== null) {
-      const canMove = this.sourceNodes.some((node) => finalNode.canMove(node, 0));
+  private getValidParent(targetNode: NodeType, index: number, mouseX: number, mouseY: number): NodeType | undefined {
+    if (!targetNode) return;
+    const positionNotChanged = targetNode.equals(this.lastMoveData.targetNode) && index === this.lastMoveData.index;
+    if (positionNotChanged) return targetNode;
 
-      // For backward compatibility, leave it to a single node
-      const firstSource = this.sourceNodes[0];
-      this.em.trigger('sorter:drag:validation', {
-        valid: canMove,
-        src: firstSource?.element,
-        srcModel: firstSource?.model,
-        trg: finalNode.element,
-        trgModel: finalNode.model,
-      });
-      if (canMove) break;
-      finalNode = finalNode.getParent()! as NodeType;
-    }
+    const canMove = this.sourceNodes.some((node) => targetNode.canMove(node, index));
+    this.triggerDragValidation(canMove, targetNode);
+    if (canMove) return targetNode;
 
-    return finalNode;
+    const parent = targetNode.getParent() as NodeType;
+    if (!parent) return;
+
+    let indexInParent = parent?.indexOfChild(targetNode);
+    const nodeDimensions = this.getDim(targetNode.element!);
+    nodeDimensions.dir = this.getDirection(targetNode.element!, parent.element!);
+    indexInParent = indexInParent + (nodeDimensions.determinePlacement(mouseX, mouseY) == 'after' ? 1 : 0);
+    return this.getValidParent(parent, indexInParent, mouseX, mouseY);
+  }
+
+  private triggerDragValidation(canMove: boolean, targetNode: NodeType) {
+    const firstSource = this.sourceNodes[0];
+    this.em.trigger('sorter:drag:validation', {
+      valid: canMove,
+      src: firstSource?.element,
+      srcModel: firstSource?.model,
+      trg: targetNode.element,
+      trgModel: targetNode.model,
+    });
+
+    return firstSource;
   }
 
   /**
@@ -350,6 +430,25 @@ export class DropLocationDeterminer<T, NodeType extends SortableTreeNode<T>> ext
     off(container, 'dragstart', this.onDragStart);
     off(container, 'mousemove dragover', this.onMove);
     off(this.containerContext.document, 'mouseup dragend touchend', this.endDrag);
+  }
+
+  /**
+   * Determines if an element is in the normal flow of the document.
+   * This checks whether the element is not floated or positioned in a way that removes it from the flow.
+   *
+   * @param  {HTMLElement} el - The element to check.
+   * @param  {HTMLElement} [parent=document.body] - The parent element for additional checks (defaults to `document.body`).
+   * @return {boolean} Returns `true` if the element is in flow, otherwise `false`.
+   * @private
+   */
+  private getDirection(el: HTMLElement, parent: HTMLElement): boolean {
+    let dirValue: boolean;
+
+    if (this.dragDirection === DragDirection.Vertical) dirValue = true;
+    else if (this.dragDirection === DragDirection.Horizontal) dirValue = false;
+    else dirValue = isStyleInFlow(el, parent);
+
+    return dirValue;
   }
 
   /**
@@ -378,14 +477,7 @@ export class DropLocationDeterminer<T, NodeType extends SortableTreeNode<T>> ext
       }
 
       const dim = this.getDim(el);
-      let dir = this.dragDirection;
-      let dirValue: boolean;
-
-      if (dir === DragDirection.Vertical) dirValue = true;
-      else if (dir === DragDirection.Horizontal) dirValue = false;
-      else dirValue = isInFlow(el, targetElement);
-
-      dim.dir = dirValue;
+      dim.dir = this.getDirection(el, targetElement);
       dims.push(dim);
     });
 
@@ -463,6 +555,6 @@ export class DropLocationDeterminer<T, NodeType extends SortableTreeNode<T>> ext
       width = el.offsetWidth;
     }
 
-    return { top, left, height, width, offsets };
+    return new Dimension({ top, left, height, width, offsets });
   }
 }
