@@ -365,6 +365,7 @@ export default class EditorModel extends Model {
       storageManager: false,
       undoManager: false,
     });
+    shallow.set({ isShallow: true });
     // We only need to load a few modules
     shallow.Pages.onLoad();
     shallow.Canvas.postLoad();
