@@ -113,7 +113,7 @@ editor.on('canvas:frame:load', ({ window }) => {
 ```
 
 `canvas:frame:load:head` Frame head loaded in canvas.
-The event is triggered right after iframe's finished to load the head elemenets (eg. scripts)
+The event is triggered right after iframe's finished to load the head elements (eg. scripts)
 ---------------------------------------------------------------------------------------------
 
 ```javascript
@@ -222,7 +222,7 @@ passed to it. For instance, you can scroll smoothly by using
 const selected = editor.getSelected();
 // Scroll smoothly (this behavior can be polyfilled)
 canvas.scrollTo(selected, { behavior: 'smooth' });
-// Force the scroll, even if the element is alredy visible
+// Force the scroll, even if the element is already visible
 canvas.scrollTo(selected, { force: true });
 ```
 
