@@ -101,7 +101,7 @@ var comp2 = wrapperChildren.add({
 // First we have to get the collection inside. Each
 // component has 'components' property
 var comp1Children = comp1.get('components');
-// Procede as before. You could also add multiple objects
+// Proceed as before. You could also add multiple objects
 comp1Children.add([
   { style: { 'background-color': 'blue'}},
   { style: { height: '100px', width: '100px'}}
