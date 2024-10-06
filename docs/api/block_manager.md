@@ -153,7 +153,7 @@ Returns **Collection<[Block]>**&#x20;
 
 ## getAllVisible
 
-Return the visible collection, which containes blocks actually rendered
+Return the visible collection, which contains blocks actually rendered
 
 Returns **Collection<[Block]>**&#x20;
 
