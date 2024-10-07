@@ -29,6 +29,7 @@ export default class Droppable {
   dragStop?: DragStop;
   draggedNode?: CanvasNewComponentNode;
   sorter!: ComponentSorter<CanvasNewComponentNode>;
+  setAbsoluteDragContent?: (cnt: any) => any;
 
   constructor(em: EditorModel, rootEl?: HTMLElement) {
     this.em = em;
@@ -123,7 +124,6 @@ export default class Droppable {
     // any not empty element
     let content = dragSourceOrigin?.content || '<br>';
     let dragStop: DragStop;
-    let dragSource;
     em.stopDefault();
 
     // Select the right drag provider
@@ -137,7 +137,7 @@ export default class Droppable {
         target,
         onEnd: (ev: any, dragger: any, { cancelled }: any) => {
           let comp;
-          if (!cancelled) {
+          if (!cancelled && !!content) {
             comp = wrapper.append(content)[0];
             const canvasOffset = canvas.getOffset();
             const { top, left, position } = target.getStyle() as ObjectStrings;
@@ -156,7 +156,7 @@ export default class Droppable {
         },
       });
       dragStop = (cancel?: boolean) => dragger.stop(ev, { cancel });
-      dragSource = (cnt: any) => (content = cnt);
+      this.setAbsoluteDragContent = (cnt: any) => (content = cnt);
     } else {
       const sorter = new utils.ComponentSorter({
         em,
@@ -255,6 +255,7 @@ export default class Droppable {
     if (this.draggedNode) {
       this.draggedNode.content = content;
     }
+    this.setAbsoluteDragContent?.(content);
     this.endDrop(!content, ev);
   }
 
