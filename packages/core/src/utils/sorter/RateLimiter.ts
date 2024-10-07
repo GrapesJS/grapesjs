@@ -27,5 +27,6 @@ export class RateLimiter<T> {
       clearTimeout(this.timeout);
       this.timeout = null;
     }
+    delete this.lastArgs;
   }
 }
