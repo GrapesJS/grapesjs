@@ -428,7 +428,6 @@ describe('Css Composer', () => {
         `;
         const result = obj.addCollection(cssRule);
         const [rule1, rule2, rule3] = result;
-        console.log({ result: JSON.parse(JSON.stringify(rule1)) });
         expect(result.length).toEqual(3);
         expect(obj.getAll().length).toEqual(3);
 
