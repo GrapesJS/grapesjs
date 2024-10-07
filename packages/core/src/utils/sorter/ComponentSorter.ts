@@ -129,8 +129,9 @@ export default class ComponentSorter<NodeType extends BaseComponentNode> extends
     return sourceNodes.reduce((addedNodes, sourceNode) => {
       if (!targetNode.canMove(sourceNode, index)) return addedNodes;
       if (this.isPositionChanged(targetNode, sourceNode, index)) {
-        const addedNode = this.moveNode(targetNode, sourceNode, index);
+        const { index: lastIndex, addedNode } = this.moveNode(targetNode, sourceNode, index);
         addedNodes.push(addedNode);
+        index = lastIndex;
       }
       index++; // Increment the index
       return addedNodes;
@@ -165,9 +166,9 @@ export default class ComponentSorter<NodeType extends BaseComponentNode> extends
    * @param targetNode - The node where the source node will be moved.
    * @param sourceNode - The node being moved.
    * @param index - The index at which to move the source node.
-   * @returns The node that was moved and added, or null if it couldn't be moved.
+   * @returns An object containing the added node and its new index, or null if it couldn't be moved.
    */
-  private moveNode(targetNode: NodeType, sourceNode: NodeType, index: number): NodeType {
+  private moveNode(targetNode: NodeType, sourceNode: NodeType, index: number) {
     const parent = sourceNode.getParent();
     if (parent) {
       const initialSourceIndex = parent.indexOfChild(sourceNode);
@@ -180,7 +181,7 @@ export default class ComponentSorter<NodeType extends BaseComponentNode> extends
     const addedNode = targetNode.addChildAt(sourceNode, index, { action: 'move-component' }) as NodeType;
     this.triggerEndMoveEvent(addedNode);
 
-    return addedNode;
+    return { addedNode, index };
   }
 
   /**
