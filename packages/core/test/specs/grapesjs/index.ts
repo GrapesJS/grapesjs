@@ -2,7 +2,8 @@ import grapesjs, { Component, Editor, usePlugin } from '../../../src';
 import ComponentWrapper from '../../../src/dom_components/model/ComponentWrapper';
 import { EditorConfig } from '../../../src/editor/config/config';
 import type { Plugin } from '../../../src/plugin_manager';
-import { fixJsDom, fixJsDomIframe } from '../../common';
+import { StorageManagerConfig } from '../../../src/storage_manager/config/config';
+import { fixJsDom, fixJsDomIframe, waitEditorEvent } from '../../common';
 
 type TestPlugin = Plugin<{ cVal: string }>;
 
@@ -11,7 +12,7 @@ describe('GrapesJS', () => {
     let fixture: HTMLElement;
     let editorName = '';
     let htmlString = '';
-    let config: any;
+    let config: Partial<EditorConfig>;
     let cssString = '';
     let documentEl = '';
 
@@ -49,9 +50,9 @@ describe('GrapesJS', () => {
       config = {
         container: '#' + editorName,
         storageManager: {
-          autoload: 0,
-          autosave: 0,
-          type: 0,
+          autoload: false,
+          autosave: false,
+          type: '',
         },
       };
       document.body.innerHTML = `<div id="fixtures"><div id="${editorName}"></div></div>`;
@@ -144,8 +145,8 @@ describe('GrapesJS', () => {
     });
 
     test('Init editor from element', () => {
-      config.fromElement = 1;
-      config.storageManager = { type: 0 };
+      config.fromElement = true;
+      config.storageManager = false;
       fixture.innerHTML = documentEl;
       const editor = grapesjs.init(config);
       const html = editor.getHtml();
@@ -160,8 +161,8 @@ describe('GrapesJS', () => {
     });
 
     test('Init editor from element with multiple font-face at-rules', () => {
-      config.fromElement = 1;
-      config.storageManager = { type: 0 };
+      config.fromElement = true;
+      config.storageManager = false;
       fixture.innerHTML =
         `
       <style>
@@ -284,8 +285,8 @@ describe('GrapesJS', () => {
     });
 
     test('Keep unused css classes/selectors option for getCSS method', () => {
-      config.fromElement = 1;
-      config.storageManager = { type: 0 };
+      config.fromElement = true;
+      config.storageManager = false;
       fixture.innerHTML = documentEl;
       const editor = grapesjs.init(config);
       const css = editor.getCss({ keepUnusedStyles: true });
@@ -298,8 +299,8 @@ describe('GrapesJS', () => {
       cssString =
         '.test2{color:red}.test3{color:blue} @media only screen and (max-width: 620px) { .notused { color: red; } } ';
       documentEl = '<style>' + cssString + '</style>' + htmlString;
-      config.fromElement = 1;
-      config.storageManager = { type: 0 };
+      config.fromElement = true;
+      config.storageManager = false;
       fixture.innerHTML = documentEl;
       const editor = grapesjs.init(config);
       const css = editor.getCss({ keepUnusedStyles: true });
@@ -311,10 +312,10 @@ describe('GrapesJS', () => {
     });
 
     test('Keep unused css classes/selectors option for init method', () => {
-      config.fromElement = 1;
-      config.storageManager = { type: 0 };
+      config.fromElement = true;
+      config.storageManager = false;
       fixture.innerHTML = documentEl;
-      const editor = grapesjs.init({ ...config, keepUnusedStyles: 1 });
+      const editor = grapesjs.init({ ...config, keepUnusedStyles: true });
       const css = editor.getCss();
       const protCss = editor.getConfig().protectedCss;
       expect(editor.getStyle().length).toEqual(2);
@@ -322,25 +323,21 @@ describe('GrapesJS', () => {
     });
 
     describe('Plugins', () => {
-      test.skip('Adds new storage as plugin and store data there', (done) => {
-        const pluginName = storageId + '-p2';
-        grapesjs.plugins.add(pluginName, (e) => e.StorageManager.add(storageId, storageMock));
-        config.storageManager.type = storageId;
-        config.plugins = [pluginName];
-        const editor = grapesjs.init(config);
+      test('Adds new storage as plugin and store data there', async () => {
+        (config.storageManager as StorageManagerConfig).type = storageId;
+        config.plugins = [(e) => e.StorageManager.add(storageId, storageMock)];
+        const editor = initTestEditor(config);
         editor.setComponents(htmlString);
-        editor.store(() => {
-          editor.load((data: any) => {
-            expect(data.html).toEqual(htmlString);
-            done();
-          });
-        });
+        const projectData = editor.getProjectData();
+        await editor.store();
+        const data = await editor.load();
+        expect(data).toEqual(projectData);
       });
 
-      test.skip('Adds a new storage and fetch correctly data from it', async () => {
+      test('Adds a new storage and fetch correctly data from it', async () => {
         fixture.innerHTML = documentEl;
         const styleResult = { color: 'white', display: 'block' };
-        const style = [
+        const styles = [
           {
             selectors: [{ name: 'sclass1' }],
             style: { color: 'green' },
@@ -355,21 +352,19 @@ describe('GrapesJS', () => {
           },
         ];
         storage = {
-          css: '* { box-sizing: border-box; } body {margin: 0;}',
-          styles: JSON.stringify(style),
+          styles,
           pages: [{}],
         };
-
-        const pluginName = storageId + '-p';
-        grapesjs.plugins.add(pluginName, (e) => e.StorageManager.add(storageId, storageMock));
         config.fromElement = true;
-        config.storageManager.type = storageId;
-        config.plugins = [pluginName];
-        config.storageManager.autoload = 1;
-        const editor = grapesjs.init(config);
-        const cc = editor.CssComposer;
-        expect(cc.getAll().length).toEqual(style.length);
-        expect(cc.getClassRule('test2')!.getStyle()).toEqual(styleResult);
+        config.plugins = [(e) => e.StorageManager.add(storageId, storageMock)];
+        const configStorage = config.storageManager as StorageManagerConfig;
+        configStorage.type = storageId;
+        configStorage.autoload = true;
+        const editor = initTestEditor(config);
+        await waitEditorEvent(editor, 'load');
+        const { Css } = editor;
+        expect(Css.getAll().length).toEqual(styles.length);
+        expect(Css.getClassRule('test2')!.getStyle()).toEqual(styleResult);
       });
 
       test('Execute plugins with custom options', () => {
