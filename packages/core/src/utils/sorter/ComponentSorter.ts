@@ -213,8 +213,10 @@ export default class ComponentSorter<NodeType extends BaseComponentNode> extends
 
   private onTargetChange = (oldTargetNode: NodeType | undefined, newTargetNode: NodeType | undefined) => {
     oldTargetNode?.restNodeState();
+    const { Canvas } = this.em;
     if (!newTargetNode) {
       this.placeholder.hide();
+      Canvas.removeSpots(spotTarget);
       return;
     }
     newTargetNode?.setSelectedParentState();
@@ -227,7 +229,6 @@ export default class ComponentSorter<NodeType extends BaseComponentNode> extends
       this.placeholder.show();
     }
 
-    const { Canvas } = this.em;
     const { Select, Hover, Spacing } = CanvasSpotBuiltInTypes;
     [Select, Hover, Spacing].forEach((type) => Canvas.removeSpots({ type }));
     Canvas.addSpot({ ...spotTarget, component: newTargetNode.model });
