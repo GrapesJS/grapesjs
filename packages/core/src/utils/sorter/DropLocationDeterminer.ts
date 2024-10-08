@@ -126,6 +126,7 @@ export class DropLocationDeterminer<T, NodeType extends SortableTreeNode<T>> ext
     if (!targetNode) {
       this.triggerLegacyOnMoveCallback(mouseEvent, 0);
       this.triggerMoveEvent(mouseX, mouseY);
+      this.restLastMoveData();
 
       return;
     }
