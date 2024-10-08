@@ -1,5 +1,5 @@
 import { isEmpty, forEach, isString, isArray } from 'underscore';
-import { Model, ObjectAny } from '../../common';
+import { Model, ObjectAny, View } from '../../common';
 import StyleableModel from '../../domain_abstract/model/StyleableModel';
 import Selectors from '../../selector_manager/model/Selectors';
 import { getMediaLength } from '../../code_manager/model/CssGenerator';

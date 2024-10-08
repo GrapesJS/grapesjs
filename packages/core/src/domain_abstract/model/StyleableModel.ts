@@ -1,5 +1,5 @@
 import { isArray, isString, keys } from 'underscore';
-import { Model, ObjectAny, ObjectHash, SetOptions } from '../../common';
+import { Model, ObjectAny, ObjectHash, SetOptions, View } from '../../common';
 import ParserHtml from '../../parser/model/ParserHtml';
 import Selectors from '../../selector_manager/model/Selectors';
 import { shallowDiff } from '../../utils/mixins';
@@ -8,6 +8,7 @@ import StyleDataVariable from '../../data_sources/model/StyleDataVariable';
 import { DataVariableType } from '../../data_sources/model/DataVariable';
 import DataVariableListenerManager from '../../data_sources/model/DataVariableListenerManager';
 import CssRuleView from '../../css_composer/view/CssRuleView';
+import ComponentView from '../../dom_components/view/ComponentView';
 
 export type StyleProps = Record<
   string,
@@ -36,7 +37,7 @@ export const getLastStyleValue = (value: string | string[]) => {
 export default class StyleableModel<T extends ObjectHash = any> extends Model<T> {
   em?: EditorModel;
   dataVariableListeners: Record<string, DataVariableListenerManager> = {};
-  view?: CssRuleView;
+  view?: ComponentView | CssRuleView;
 
   constructor(attributes: T, options: { em?: EditorModel } = {}) {
     super(attributes, options);
@@ -163,7 +164,7 @@ export default class StyleableModel<T extends ObjectHash = any> extends Model<T>
     this.updateView();
   }
 
-  setView(view: CssRuleView) {
+  setView(view: ComponentView | CssRuleView) {
     this.view = view;
   }
 
