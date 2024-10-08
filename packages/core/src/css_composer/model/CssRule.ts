@@ -6,6 +6,8 @@ import { getMediaLength } from '../../code_manager/model/CssGenerator';
 import { isEmptyObj, hasWin } from '../../utils/mixins';
 import Selector, { SelectorProps } from '../../selector_manager/model/Selector';
 import EditorModel from '../../editor/model/Editor';
+import CssRuleView from '../view/CssRuleView';
+import DataVariableListenerManager from '../../data_sources/model/DataVariableListenerManager';
 
 /** @private */
 export interface CssRuleProperties {
@@ -92,6 +94,8 @@ export default class CssRule extends StyleableModel<CssRuleProperties> {
   config: CssRuleProperties;
   em?: EditorModel;
   opt: any;
+  view?: CssRuleView;
+  dataVariableListeners: Record<string, DataVariableListenerManager> = {};
 
   defaults() {
     return {
@@ -117,6 +121,7 @@ export default class CssRule extends StyleableModel<CssRuleProperties> {
     this.em = opt.em;
     this.ensureSelectors(null, null, {});
     this.on('change', this.__onChange);
+    super.setStyle(this.get('style'));
   }
 
   __onChange(m: CssRule, opts: any) {
@@ -359,5 +364,13 @@ export default class CssRule extends StyleableModel<CssRuleProperties> {
     }
 
     return true;
+  }
+
+  setView(cssRuleView: CssRuleView) {
+    super.setView(cssRuleView);
+  }
+
+  getView() {
+    return this.view;
   }
 }

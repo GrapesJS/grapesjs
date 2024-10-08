@@ -7,6 +7,7 @@ import EditorModel from '../../editor/model/Editor';
 import StyleDataVariable from '../../data_sources/model/StyleDataVariable';
 import { DataVariableType } from '../../data_sources/model/DataVariable';
 import DataVariableListenerManager from '../../data_sources/model/DataVariableListenerManager';
+import CssRuleView from '../../css_composer/view/CssRuleView';
 
 export type StyleProps = Record<
   string,
@@ -35,6 +36,12 @@ export const getLastStyleValue = (value: string | string[]) => {
 export default class StyleableModel<T extends ObjectHash = any> extends Model<T> {
   em?: EditorModel;
   dataVariableListeners: Record<string, DataVariableListenerManager> = {};
+  view?: CssRuleView;
+
+  constructor(attributes: T, options: { em?: EditorModel } = {}) {
+    super(attributes, options);
+    this.em = options.em;
+  }
 
   /**
    * Parse style string to an object
@@ -153,6 +160,17 @@ export default class StyleableModel<T extends ObjectHash = any> extends Model<T>
     style[prop] = value;
     this.setStyle(style, { noEvent: true });
     this.trigger(`change:style:${prop}`);
+    this.updateView();
+  }
+
+  setView(view: CssRuleView) {
+    this.view = view;
+  }
+
+  updateView() {
+    if (this.view) {
+      this.view.render();
+    }
   }
 
   /**

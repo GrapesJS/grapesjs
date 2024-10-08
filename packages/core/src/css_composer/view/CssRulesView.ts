@@ -82,6 +82,8 @@ export default class CssRulesView extends View {
       rendered = view.render().el;
     }
 
+    model.setView(view);
+
     const clsName = this.className!;
     const mediaText = model.get('mediaText');
     const defaultBlockId = getBlockId(clsName);

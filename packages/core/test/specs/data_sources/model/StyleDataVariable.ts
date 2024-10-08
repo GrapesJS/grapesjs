@@ -183,7 +183,9 @@ describe('StyleDataVariable', () => {
         content: 'Hello World',
       })[0];
 
-      const [rule] = em.getEditor().CssComposer.addCollection([
+      const cssComposer = em.getEditor().CssComposer;
+
+      const [rule] = cssComposer.addCollection([
         {
           selectors: [],
           selectorsAdd: selector,
@@ -198,14 +200,19 @@ describe('StyleDataVariable', () => {
         },
       ]);
 
+      cssComposer.render();
+      const view = rule.getView();
+
       expect(rule.getStyle()).toHaveProperty('color', 'red');
       expect(em.getEditor().getCss()).toContain(`${selector}{color:red;}`);
+      expect(view?.el.innerHTML).toContain(`h1{color:red;}`);
 
       const ds = dsm.get(dsId);
       ds.getRecord(drId)?.set({ value: 'blue' });
 
       expect(rule.getStyle()).toHaveProperty('color', 'blue');
       expect(em.getEditor().getCss()).toContain(`${selector}{color:blue;}`);
+      expect(view?.el.innerHTML).toContain(`h1{color:blue;}`);
     });
   });
 });
