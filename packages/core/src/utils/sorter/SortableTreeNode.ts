@@ -1,5 +1,6 @@
 import { View } from '../../common';
 import Dimension from './Dimension';
+import { DroppableZoneConfig } from './types';
 import { DragSource } from './types';
 
 /**
@@ -10,6 +11,11 @@ import { DragSource } from './types';
 export abstract class SortableTreeNode<T> {
   protected _model: T;
   protected _dragSource: DragSource<T>;
+  protected _dropAreaConfig: DroppableZoneConfig = {
+    ratio: 1,
+    minDroppableDimension: Number.MAX_VALUE,
+    maxUndroppableDimension: 0,
+  };
   /** The dimensions of the node. */
   public nodeDimensions?: Dimension;
   /** The dimensions of the child elements within the target node. */
@@ -90,6 +96,23 @@ export abstract class SortableTreeNode<T> {
 
   get dragSource() {
     return this._dragSource;
+  }
+
+  get dropArea(): Dimension | undefined {
+    // If no parent, there's no reason to reduce the drop zone
+    if (!this.getParent()) return this.nodeDimensions?.clone();
+    return this.nodeDimensions?.getDropArea(this._dropAreaConfig);
+  }
+
+  /**
+   * Checks if the given coordinates are within the bounds of this node.
+   *
+   * @param {number} x - The X coordinate to check.
+   * @param {number} y - The Y coordinate to check.
+   * @returns {boolean} - True if the coordinates are within bounds, otherwise false.
+   */
+  public isWithinDropBounds(x: number, y: number): boolean {
+    return !!this.dropArea && this.dropArea.isWithinBounds(x, y);
   }
 
   equals(node?: SortableTreeNode<T>): node is SortableTreeNode<T> {
