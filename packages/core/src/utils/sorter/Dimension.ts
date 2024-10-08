@@ -1,5 +1,5 @@
 import CanvasModule from '../../canvas';
-import { Placement } from './types';
+import { Placement, DroppableZoneConfig } from './types';
 
 /**
  * A class representing dimensions of an element, including position, size, offsets, and other metadata.
@@ -112,5 +112,52 @@ export default class Dimension {
       offsets: { ...this.offsets }, // Shallow copy of offsets
       dir: this.dir,
     });
+  }
+
+  public getDropArea(config: DroppableZoneConfig): Dimension {
+    const dropZone = this.clone();
+    // Adjust width
+    const { newSize: newWidth, newPosition: newLeft } = this.adjustDropDimension(this.width, this.left, config);
+    dropZone.width = newWidth;
+    dropZone.left = newLeft;
+
+    // Adjust height
+    const { newSize: newHeight, newPosition: newTop } = this.adjustDropDimension(this.height, this.top, config);
+    dropZone.height = newHeight;
+    dropZone.top = newTop;
+
+    return dropZone;
+  }
+
+  private adjustDropDimension(
+    size: number,
+    position: number,
+    config: DroppableZoneConfig,
+  ): { newSize: number; newPosition: number } {
+    const { ratio, minDroppableDimension, maxUndroppableDimension } = config;
+
+    // Calculate the desired new size based on the ratio, ensuring it doesn't go below minDroppable
+    const minSize = Math.min(size, minDroppableDimension);
+    let newSize = Math.max(size * ratio, minSize);
+
+    // Adjust the newSize based on maxUndroppable to prevent exceeding the maximum undroppable area
+    newSize = size - Math.min(size - newSize, maxUndroppableDimension);
+
+    // Calculate the new position by adjusting it by half the reduction
+    const reduction = size - newSize;
+    const newPosition = position + reduction / 2;
+
+    return { newSize, newPosition };
+  }
+
+  /**
+   * Checks if the given coordinates are within the bounds of this dimension instance.
+   *
+   * @param {number} x - The X coordinate to check.
+   * @param {number} y - The Y coordinate to check.
+   * @returns {boolean} - True if the coordinates are within bounds, otherwise false.
+   */
+  public isWithinBounds(x: number, y: number): boolean {
+    return x >= this.left && x <= this.left + this.width && y >= this.top && y <= this.top + this.height;
   }
 }
