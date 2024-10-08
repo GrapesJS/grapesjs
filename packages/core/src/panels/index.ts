@@ -27,7 +27,7 @@
  */
 import { Module } from '../abstract';
 import EditorModel from '../editor/model/Editor';
-import defaults, { PanelsConfig } from './config/config';
+import defConfig, { PanelsConfig } from './config/config';
 import Panel, { PanelProperties } from './model/Panel';
 import Panels from './model/Panels';
 import PanelsView from './view/PanelsView';
@@ -42,13 +42,8 @@ export default class PanelManager extends Module<PanelsConfig> {
    * @private
    */
   constructor(em: EditorModel) {
-    super(em, 'Panels', defaults);
+    super(em, 'Panels', defConfig());
     this.panels = new Panels(this, this.config.defaults!);
-    for (var name in defaults) {
-      //@ts-ignore
-      if (!(name in this.config)) this.config[name] = defaults[name];
-    }
-    return this;
   }
 
   /**

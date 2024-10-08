@@ -3,6 +3,7 @@ import CanvasComponentNode from './CanvasComponentNode';
 import { getSymbolMain, getSymbolTop, isSymbol, isSymbolMain } from '../../dom_components/model/SymbolUtils';
 import Component from '../../dom_components/model/Component';
 import { ContentElement, ContentType } from './types';
+import { isComponent } from '../mixins';
 
 type CanMoveSource = Component | ContentType;
 
@@ -13,13 +14,14 @@ export default class CanvasNewComponentNode extends CanvasComponentNode {
 
     const canMoveSymbol = !symbolModel || !this.isSourceSameSymbol(symbolModel);
     const sourceContent: CanMoveSource = (isFunction(content) ? dragDef : content) || source.model;
+
     if (Array.isArray(sourceContent)) {
       return (
-        sourceContent.every((contentItem, i) => this.canMoveSingleContent(contentItem, realIndex + i)) && canMoveSymbol
+        canMoveSymbol && sourceContent.every((contentItem, i) => this.canMoveSingleContent(contentItem, realIndex + i))
       );
     }
 
-    return this.canMoveSingleContent(sourceContent, realIndex) && canMoveSymbol;
+    return canMoveSymbol && this.canMoveSingleContent(sourceContent, realIndex);
   }
 
   private canMoveSingleContent(contentItem: ContentElement | Component, index: number): boolean {
@@ -39,6 +41,13 @@ export default class CanvasNewComponentNode extends CanvasComponentNode {
     return this.addSingleChild(content, index, insertingTextableIntoText);
   }
 
+  /**
+   * Adds a single content item to the current node.
+   * @param {ContentType} content - The content to add.
+   * @param {number} index - The index where the content is to be added.
+   * @param {boolean} insertingTextableIntoText - Whether the operation involves textable content.
+   * @returns {CanvasNewComponentNode} - The newly added node.
+   */
   private addSingleChild(
     content: ContentType,
     index: number,

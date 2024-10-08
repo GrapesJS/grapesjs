@@ -33,7 +33,7 @@ import { Module } from '../abstract';
 import { Model } from '../common';
 import Component from '../dom_components/model/Component';
 import EditorModel from '../editor/model/Editor';
-import defaults from './config/config';
+import defConfig from './config/config';
 import {
   CustomTrait,
   TraitCustomData,
@@ -81,7 +81,7 @@ export default class TraitManager extends Module<TraitManagerConfigModule> {
    * @private
    */
   constructor(em: EditorModel) {
-    super(em, 'TraitManager', defaults as any);
+    super(em, 'TraitManager', defConfig() as any);
     const { state, config, events } = this;
     const ppfx = config.pStylePrefix;
     ppfx && (config.stylePrefix = `${ppfx}${config.stylePrefix}`);

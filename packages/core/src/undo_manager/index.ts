@@ -28,7 +28,7 @@ import UndoManager from 'backbone-undo';
 import { isArray, isBoolean, isEmpty, unique, times } from 'underscore';
 import { Module } from '../abstract';
 import EditorModel from '../editor/model/Editor';
-import defaults, { UndoManagerConfig } from './config';
+import defConfig, { UndoManagerConfig } from './config';
 
 export interface UndoGroup {
   index: number;
@@ -47,7 +47,7 @@ export default class UndoManagerModule extends Module<UndoManagerConfig & { name
   um: any;
 
   constructor(em: EditorModel) {
-    super(em, 'UndoManager', defaults);
+    super(em, 'UndoManager', defConfig());
 
     if (this.config._disable) {
       this.config.maximumStackLength = 0;

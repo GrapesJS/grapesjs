@@ -35,7 +35,7 @@ import Component from '../dom_components/model/Component';
 import ComponentView from '../dom_components/view/ComponentView';
 import EditorModel from '../editor/model/Editor';
 import { getElement, getViewEl } from '../utils/mixins';
-import defaults, { CanvasConfig } from './config/config';
+import defConfig, { CanvasConfig } from './config/config';
 import Canvas from './model/Canvas';
 import CanvasSpot, { CanvasSpotBuiltInTypes, CanvasSpotProps } from './model/CanvasSpot';
 import CanvasSpots from './model/CanvasSpots';
@@ -76,7 +76,7 @@ export default class CanvasModule extends Module<CanvasConfig> {
    * @private
    */
   constructor(em: EditorModel) {
-    super(em, 'Canvas', defaults);
+    super(em, 'Canvas', defConfig());
 
     this.canvas = new Canvas(this);
     this.spots = new CanvasSpots(this);
@@ -499,7 +499,7 @@ export default class CanvasModule extends Module<CanvasConfig> {
    * @return {Object}
    * @private
    */
-  getMouseRelativeCanvas(ev: MouseEvent, opts: any) {
+  getMouseRelativeCanvas(ev: MouseEvent | { clientX: number; clientY: number }, opts: any) {
     const zoom = this.getZoomDecimal();
     const { top = 0, left = 0 } = this.getCanvasView().getPosition(opts) ?? {};
 

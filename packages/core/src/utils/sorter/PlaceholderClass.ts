@@ -1,5 +1,12 @@
 import { View } from '../../common';
-import { Dimension, Placement } from './types';
+import { Placement } from './types';
+import Dimension from './Dimension';
+import { RateLimiter } from './RateLimiter';
+
+type PlaceHolderPosition = {
+  elementDimension: Dimension;
+  placement: Placement;
+};
 
 export class PlaceholderClass extends View {
   pfx: string;
@@ -10,6 +17,8 @@ export class PlaceholderClass extends View {
     top: number;
     left: number;
   };
+  private moveLimiter: RateLimiter<PlaceHolderPosition>;
+
   constructor(options: {
     container: HTMLElement;
     pfx?: string;
@@ -29,6 +38,9 @@ export class PlaceholderClass extends View {
       top: options.offset.top || 0,
       left: options.offset.left || 0,
     };
+
+    // Initialize the RateLimiter with the moveThreshold
+    this.moveLimiter = new RateLimiter<PlaceHolderPosition>(100);
   }
 
   show() {
@@ -36,15 +48,28 @@ export class PlaceholderClass extends View {
   }
 
   hide() {
+    this.moveLimiter.clearTimeout();
     this.el.style.display = 'none';
   }
 
   /**
-   * Updates the position of the placeholder.
+   * Updates the position of the placeholder with a movement threshold.
    * @param {Dimension} elementDimension element dimensions.
-   * @param {Position} placement either before or after the target.
+   * @param {Placement} placement either before or after the target.
    */
   move(elementDimension: Dimension, placement: Placement) {
+    const position: PlaceHolderPosition = { elementDimension, placement };
+
+    // Update the position arguments in the RateLimiter
+    this.moveLimiter.updateArgs(position);
+
+    // Execute the callback with a threshold
+    this.moveLimiter.execute(({ elementDimension, placement }) => {
+      this._move(elementDimension, placement);
+    });
+  }
+
+  private _move(elementDimension: Dimension, placement: Placement) {
     const marginOffset = 0;
     const unit = 'px';
     let top = 0;
@@ -70,7 +95,7 @@ export class PlaceholderClass extends View {
       const borderWidth = borderLeftWidth + borderRightWidth;
       top = elTop + paddingTop + borderTopWidth;
       left = elLeft + paddingLeft + borderLeftWidth;
-      width = elWidth - paddingLeft * 2 - borderWidth + 'px';
+      width = Math.max(elWidth - paddingLeft * 2 - borderWidth, 1) + 'px';
       height = 'auto';
     } else {
       if (!dir) {

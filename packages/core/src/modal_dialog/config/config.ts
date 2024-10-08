@@ -26,13 +26,13 @@ export interface ModalConfig {
   extend?: Record<string, any>;
 }
 
-const config: ModalConfig = {
+const config: () => ModalConfig = () => ({
   stylePrefix: 'mdl-',
   title: '',
   content: '',
   backdrop: true,
   custom: false,
   extend: {},
-};
+});
 
 export default config;

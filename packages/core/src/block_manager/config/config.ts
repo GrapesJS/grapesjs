@@ -38,11 +38,11 @@ export interface BlockManagerConfig {
   custom?: boolean;
 }
 
-const config: BlockManagerConfig = {
+const config: () => BlockManagerConfig = () => ({
   appendTo: '',
   blocks: [],
   appendOnClick: false,
   custom: false,
-};
+});
 
 export default config;

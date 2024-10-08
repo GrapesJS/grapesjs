@@ -1,11 +1,11 @@
-import ItemView from 'navigator/view/ItemView';
-import config from 'navigator/config/config';
-import EditorModel from 'editor/model/Editor';
+import defConfig from '../../../../src/navigator/config/config';
+import EditorModel from '../../../../src/editor/model/Editor';
+import ItemView from '../../../../src/navigator/view/ItemView';
 
 describe('ItemView', () => {
-  let itemView;
+  let itemView: ItemView;
 
-  const isVisible = (itemView) => {
+  const isVisible = (itemView: ItemView) => {
     return itemView.module.isVisible(itemView.model);
   };
 
@@ -16,8 +16,8 @@ describe('ItemView', () => {
     itemView = new ItemView({
       model: new defCmp({}, { em }),
       module: em.get('LayerManager'),
-      config: { ...config, em },
-    });
+      config: { ...defConfig(), em },
+    } as any);
   });
 
   describe('.isVisible', () => {

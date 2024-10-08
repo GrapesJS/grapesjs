@@ -18,7 +18,7 @@
  * @module CodeManager
  */
 import { isUndefined } from 'underscore';
-import defaults, { CodeManagerConfig } from './config/config';
+import defConfig, { CodeManagerConfig } from './config/config';
 import gHtml from './model/HtmlGenerator';
 import gCss from './model/CssGenerator';
 import gJson from './model/JsonGenerator';
@@ -39,7 +39,7 @@ export default class CodeManagerModule extends Module<CodeManagerConfig & { pSty
   EditorView = CodeEditorView;
 
   constructor(em: EditorModel) {
-    super(em, 'CodeManager', defaults);
+    super(em, 'CodeManager', defConfig());
     const { config } = this;
     const ppfx = config.pStylePrefix;
     if (ppfx) config.stylePrefix = ppfx + config.stylePrefix;

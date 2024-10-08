@@ -22,11 +22,11 @@ export interface TraitManagerConfig {
   optionsTarget?: Record<string, any>[];
 }
 
-const config: TraitManagerConfig = {
+const config: () => TraitManagerConfig = () => ({
   stylePrefix: 'trt-',
   appendTo: '',
   optionsTarget: [{ value: false }, { value: '_blank' }],
   custom: false,
-};
+});
 
 export default config;

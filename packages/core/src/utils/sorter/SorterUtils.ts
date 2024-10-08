@@ -3,7 +3,8 @@ import EditorModel from '../../editor/model/Editor';
 import { isTextNode } from '../dom';
 import { matches as matchesMixin } from '../mixins';
 import { SortableTreeNode } from './SortableTreeNode';
-import { Dimension, Placement, DragDirection, SorterOptions } from './types';
+import { Placement, DragDirection, SorterOptions } from './types';
+import Dimension from './Dimension';
 
 /**
  * Find the position based on passed dimensions and coordinates
@@ -133,18 +134,6 @@ export function closest(el: HTMLElement, selector: string): HTMLElement | undefi
     elem = elem.parentNode;
   }
 }
-/**
- * Determines if an element is in the normal flow of the document.
- * This checks whether the element is not floated or positioned in a way that removes it from the flow.
- *
- * @param  {HTMLElement} el - The element to check.
- * @param  {HTMLElement} [parent=document.body] - The parent element for additional checks (defaults to `document.body`).
- * @return {boolean} Returns `true` if the element is in flow, otherwise `false`.
- * @private
- */
-export function isInFlow(el: HTMLElement, parent: HTMLElement = document.body): boolean {
-  return !!el && isStyleInFlow(el, parent);
-}
 
 /**
  * Checks if an element has styles that keep it in the document flow.
@@ -155,7 +144,7 @@ export function isInFlow(el: HTMLElement, parent: HTMLElement = document.body): 
  * @return {boolean} Returns `true` if the element is styled to be in flow, otherwise `false`.
  * @private
  */
-function isStyleInFlow(el: HTMLElement, parent: HTMLElement): boolean {
+export function isStyleInFlow(el: HTMLElement, parent: HTMLElement): boolean {
   if (isTextNode(el)) return false;
 
   const elementStyles = el.style || {};

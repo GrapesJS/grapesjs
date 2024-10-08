@@ -78,7 +78,7 @@ export interface StorageManagerConfig {
   };
 }
 
-const config: StorageManagerConfig = {
+const config: () => StorageManagerConfig = () => ({
   id: 'gjs-',
   type: 'local',
   autosave: true,
@@ -103,6 +103,6 @@ const config: StorageManagerConfig = {
       onLoad: (result) => result,
     },
   },
-};
+});
 
 export default config;

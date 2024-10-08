@@ -37,7 +37,7 @@ import { ItemManagerModule } from '../abstract/Module';
 import { AddOptions, RemoveOptions } from '../common';
 import EditorModel from '../editor/model/Editor';
 import { ProjectData } from '../storage_manager';
-import defaults, { AssetManagerConfig } from './config/config';
+import defConfig, { AssetManagerConfig } from './config/config';
 import Asset from './model/Asset';
 import Assets from './model/Assets';
 import AssetsEvents, { AssetOpenOptions } from './types';
@@ -66,7 +66,7 @@ export default class AssetManager extends ItemManagerModule<AssetManagerConfig, 
    */
   constructor(em: EditorModel) {
     // @ts-ignore
-    super(em, 'AssetManager', new Assets([], em), AssetsEvents, defaults);
+    super(em, 'AssetManager', new Assets([], em), AssetsEvents, defConfig());
     const { all, config } = this;
     // @ts-ignore
     this.assetsVis = new Assets([]);

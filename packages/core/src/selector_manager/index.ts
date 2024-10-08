@@ -76,7 +76,7 @@
 import { isString, debounce, isObject, isArray, bindAll } from 'underscore';
 import { isComponent, isRule } from '../utils/mixins';
 import { Model, Collection, RemoveOptions, SetOptions, Debounced } from '../common';
-import defaults, { SelectorManagerConfig } from './config/config';
+import defConfig, { SelectorManagerConfig } from './config/config';
 import Selector from './model/Selector';
 import Selectors from './model/Selectors';
 import State from './model/State';
@@ -86,7 +86,6 @@ import Component from '../dom_components/model/Component';
 import { ItemManagerModule } from '../abstract/Module';
 import { StyleModuleParam } from '../style_manager';
 import StyleableModel from '../domain_abstract/model/StyleableModel';
-import CssRule from '../css_composer/model/CssRule';
 import { ComponentsEvents } from '../dom_components/types';
 
 export type SelectorEvent = 'selector:add' | 'selector:remove' | 'selector:update' | 'selector:state' | 'selector';
@@ -138,7 +137,7 @@ export default class SelectorManager extends ItemManagerModule<SelectorManagerCo
    */
 
   constructor(em: EditorModel) {
-    super(em, 'SelectorManager', new Selectors([]), selectorEvents, defaults, { skipListen: true });
+    super(em, 'SelectorManager', new Selectors([]), selectorEvents, defConfig(), { skipListen: true });
     bindAll(this, '__updateSelectedByComponents');
     const { config } = this;
     const ppfx = config.pStylePrefix;

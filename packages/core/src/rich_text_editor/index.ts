@@ -44,7 +44,7 @@ import ComponentView from '../dom_components/view/ComponentView';
 import EditorModel from '../editor/model/Editor';
 import { createEl, cx, on, removeEl } from '../utils/dom';
 import { hasWin, isDef } from '../utils/mixins';
-import defaults, { CustomRTE, RichTextEditorConfig } from './config/config';
+import defConfig, { CustomRTE, RichTextEditorConfig } from './config/config';
 import RichTextEditor, { RichTextEditorAction } from './model/RichTextEditor';
 import CanvasEvents from '../canvas/types';
 import { ComponentsEvents } from '../dom_components/types';
@@ -87,7 +87,7 @@ export default class RichTextEditorModule extends Module<RichTextEditorConfig & 
    */
 
   constructor(em: EditorModel) {
-    super(em, 'RichTextEditor', defaults);
+    super(em, 'RichTextEditor', defConfig());
     const { config } = this;
     const ppfx = config.pStylePrefix;
 

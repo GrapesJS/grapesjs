@@ -55,10 +55,10 @@
  */
 import { debounce, isArray, isBoolean, isEmpty, isFunction, isString, isSymbol, result } from 'underscore';
 import { ItemManagerModule } from '../abstract/Module';
-import { AddOptions, ObjectAny } from '../common';
+import { ObjectAny } from '../common';
 import EditorModel from '../editor/model/Editor';
 import { isComponent } from '../utils/mixins';
-import defaults, { DomComponentsConfig } from './config/config';
+import defConfig, { DomComponentsConfig } from './config/config';
 import Component, { IComponent, keyUpdate, keyUpdateInside } from './model/Component';
 import ComponentComment from './model/ComponentComment';
 import ComponentFrame from './model/ComponentFrame';
@@ -334,18 +334,13 @@ export default class ComponentManager extends ItemManagerModule<DomComponentsCon
    * @private
    */
   constructor(em: EditorModel) {
-    super(em, 'DomComponents', new Components(undefined, { em }));
+    super(em, 'DomComponents', new Components(undefined, { em }), ComponentsEvents, defConfig());
     const { config } = this;
     this.symbols = new Symbols([], { em, config, domc: this });
 
     if (em) {
       //@ts-ignore
       this.config.components = em.config.components || this.config.components;
-    }
-
-    for (let name in defaults) {
-      //@ts-ignore
-      if (!(name in this.config)) this.config[name] = defaults[name];
     }
 
     const ppfx = this.config.pStylePrefix;
