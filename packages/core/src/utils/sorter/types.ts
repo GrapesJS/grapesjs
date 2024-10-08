@@ -26,6 +26,12 @@ export type DragSource<T> = DraggableContent & {
 
 export type Placement = 'inside' | 'before' | 'after';
 
+export type DroppableZoneConfig = {
+  ratio: number;
+  minUndroppableDimension: number; // In px
+  maxUndroppableDimension: number; // In px
+};
+
 export enum DragDirection {
   Vertical = 'Vertical',
   Horizontal = 'Horizontal',

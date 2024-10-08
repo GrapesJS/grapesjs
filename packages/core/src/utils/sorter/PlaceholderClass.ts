@@ -95,7 +95,7 @@ export class PlaceholderClass extends View {
       const borderWidth = borderLeftWidth + borderRightWidth;
       top = elTop + paddingTop + borderTopWidth;
       left = elLeft + paddingLeft + borderLeftWidth;
-      width = elWidth - paddingLeft * 2 - borderWidth + 'px';
+      width = Math.max(elWidth - paddingLeft * 2 - borderWidth, 1) + 'px';
       height = 'auto';
     } else {
       if (!dir) {
