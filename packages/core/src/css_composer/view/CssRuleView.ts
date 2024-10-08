@@ -13,7 +13,7 @@ export default class CssRuleView extends View<CssRule> {
     this.listenTo(model.get('selectors'), 'change', this.render);
   }
 
-  // @ts-ignore
+  /** @ts-ignore */
   tagName() {
     return 'style';
   }
