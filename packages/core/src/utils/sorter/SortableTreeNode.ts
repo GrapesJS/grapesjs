@@ -13,8 +13,8 @@ export abstract class SortableTreeNode<T> {
   protected _dragSource: DragSource<T>;
   protected _dropAreaConfig: DroppableZoneConfig = {
     ratio: 1,
-    minDroppableDimension: Number.MAX_VALUE,
-    maxUndroppableDimension: 0,
+    minUndroppableDimension: 0, // In px
+    maxUndroppableDimension: 0, // In px
   };
   /** The dimensions of the node. */
   public nodeDimensions?: Dimension;

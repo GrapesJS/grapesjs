@@ -140,8 +140,6 @@ export class DropLocationDeterminer<T, NodeType extends SortableTreeNode<T>> ext
       !placeholderDimensions.equals(this.lastMoveData.placeholderDimensions) ||
       placement !== this.lastMoveData.placement;
     if (placeHolderMoved) {
-      console.log('🚀 ~ DropLocationDeterminer<T, ~ handleMove ~ targetNode:', targetNode);
-      console.log('🚀 ~ DropLocationDeterminer<T, ~ handleMove ~ placeholderDimensions:', placeholderDimensions);
       this.eventHandlers.onPlaceholderPositionChange?.(placeholderDimensions!, placement!);
     }
 

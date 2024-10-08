@@ -3,8 +3,8 @@ import { BaseComponentNode } from './BaseComponentNode';
 export default class CanvasComponentNode extends BaseComponentNode {
   protected _dropAreaConfig = {
     ratio: 0.8,
-    minDroppableDimension: 8, // 5px
-    maxUndroppableDimension: 15, // 15px
+    minUndroppableDimension: 1, // In px
+    maxUndroppableDimension: 15, // In px
   };
   /**
    * Get the associated view of this component.

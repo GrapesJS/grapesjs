@@ -28,7 +28,7 @@ export type Placement = 'inside' | 'before' | 'after';
 
 export type DroppableZoneConfig = {
   ratio: number;
-  minDroppableDimension: number; // In px
+  minUndroppableDimension: number; // In px
   maxUndroppableDimension: number; // In px
 };
 

@@ -134,18 +134,13 @@ export default class Dimension {
     position: number,
     config: DroppableZoneConfig,
   ): { newSize: number; newPosition: number } {
-    const { ratio, minDroppableDimension, maxUndroppableDimension } = config;
+    const { ratio, minUndroppableDimension: minUnDroppableDimension, maxUndroppableDimension } = config;
 
-    // Calculate the desired new size based on the ratio, ensuring it doesn't go below minDroppable
-    const minSize = Math.min(size, minDroppableDimension);
-    let newSize = Math.max(size * ratio, minSize);
-
-    // Adjust the newSize based on maxUndroppable to prevent exceeding the maximum undroppable area
-    newSize = size - Math.min(size - newSize, maxUndroppableDimension);
-
-    // Calculate the new position by adjusting it by half the reduction
-    const reduction = size - newSize;
-    const newPosition = position + reduction / 2;
+    let undroppableDimension = (size * (1 - ratio)) / 2;
+    undroppableDimension = Math.max(undroppableDimension, minUnDroppableDimension);
+    undroppableDimension = Math.min(undroppableDimension, maxUndroppableDimension);
+    const newSize = size - undroppableDimension * 2;
+    const newPosition = position + undroppableDimension;
 
     return { newSize, newPosition };
   }
