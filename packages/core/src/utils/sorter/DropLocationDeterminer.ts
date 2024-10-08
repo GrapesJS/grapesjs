@@ -116,8 +116,10 @@ export class DropLocationDeterminer<T, NodeType extends SortableTreeNode<T>> ext
 
     const { targetNode: lastTargetNode } = this.lastMoveData;
     this.eventHandlers.onMouseMove?.(mouseEvent);
-    const { mouseXRelativeToContainer: mouseX, mouseYRelativeToContainer: mouseY } =
-      this.getMousePositionRelativeToContainer(mouseEvent);
+    const { mouseXRelative: mouseX, mouseYRelative: mouseY } = this.getMousePositionRelativeToContainer(
+      mouseEvent.clientX,
+      mouseEvent.clientY,
+    );
     const targetNode = this.getTargetNode(mouseEvent);
     const targetChanged = !targetNode?.equals(lastTargetNode);
     if (targetChanged) {
@@ -138,6 +140,8 @@ export class DropLocationDeterminer<T, NodeType extends SortableTreeNode<T>> ext
       !placeholderDimensions.equals(this.lastMoveData.placeholderDimensions) ||
       placement !== this.lastMoveData.placement;
     if (placeHolderMoved) {
+      console.log('🚀 ~ DropLocationDeterminer<T, ~ handleMove ~ targetNode:', targetNode);
+      console.log('🚀 ~ DropLocationDeterminer<T, ~ handleMove ~ placeholderDimensions:', placeholderDimensions);
       this.eventHandlers.onPlaceholderPositionChange?.(placeholderDimensions!, placement!);
     }
 
@@ -257,6 +261,10 @@ export class DropLocationDeterminer<T, NodeType extends SortableTreeNode<T>> ext
    */
   private getTargetNode(mouseEvent: MouseEvent): NodeType | undefined {
     this.cacheContainerPosition(this.containerContext.container);
+    const { mouseXRelative, mouseYRelative } = this.getMousePositionRelativeToContainer(
+      mouseEvent.clientX,
+      mouseEvent.clientY,
+    );
 
     // Get the element under the mouse
     const mouseTargetEl = this.getMouseTargetElement(mouseEvent);
@@ -268,10 +276,10 @@ export class DropLocationDeterminer<T, NodeType extends SortableTreeNode<T>> ext
     let hoveredNode = this.getOrCreateHoveredNode(hoveredModel);
 
     // Get the drop position index based on the mouse position
-    const { index } = this.getDropPosition(hoveredNode, mouseEvent.clientX, mouseEvent.clientY);
+    const { index } = this.getDropPosition(hoveredNode, mouseXRelative, mouseYRelative);
 
     // Determine the valid target node (or its valid parent)
-    let targetNode = this.getValidParent(hoveredNode, index, mouseEvent.clientX, mouseEvent.clientY);
+    let targetNode = this.getValidParent(hoveredNode, index, mouseXRelative, mouseYRelative);
 
     return this.getOrReuseTargetNode(targetNode);
   }
@@ -389,21 +397,44 @@ export class DropLocationDeterminer<T, NodeType extends SortableTreeNode<T>> ext
 
   private getValidParent(targetNode: NodeType, index: number, mouseX: number, mouseY: number): NodeType | undefined {
     if (!targetNode) return;
-    const positionNotChanged = targetNode.equals(this.lastMoveData.targetNode) && index === this.lastMoveData.index;
-    if (positionNotChanged) return targetNode;
+
+    const lastTargetNode = this.lastMoveData.targetNode;
+    const targetNotChanged = targetNode.equals(lastTargetNode);
+    targetNode.nodeDimensions = targetNotChanged ? lastTargetNode.nodeDimensions! : this.getDim(targetNode.element!);
+    if (!targetNode.isWithinDropBounds(mouseX, mouseY)) {
+      return this.handleParentTraversal(targetNode, mouseX, mouseY);
+    }
+
+    const positionNotChanged = targetNotChanged && index === this.lastMoveData.index;
+    if (positionNotChanged) return lastTargetNode;
 
     const canMove = this.sourceNodes.some((node) => targetNode.canMove(node, index));
     this.triggerDragValidation(canMove, targetNode);
     if (canMove) return targetNode;
 
+    return this.handleParentTraversal(targetNode, mouseX, mouseY);
+  }
+
+  private handleParentTraversal(targetNode: NodeType, mouseX: number, mouseY: number): NodeType | undefined {
     const parent = targetNode.getParent() as NodeType;
     if (!parent) return;
 
-    let indexInParent = parent?.indexOfChild(targetNode);
-    const nodeDimensions = this.getDim(targetNode.element!);
-    nodeDimensions.dir = this.getDirection(targetNode.element!, parent.element!);
-    indexInParent = indexInParent + (nodeDimensions.determinePlacement(mouseX, mouseY) == 'after' ? 1 : 0);
+    const indexInParent = this.getIndexInParent(parent, targetNode, targetNode.nodeDimensions!, mouseX, mouseY);
     return this.getValidParent(parent, indexInParent, mouseX, mouseY);
+  }
+
+  private getIndexInParent(
+    parent: NodeType,
+    targetNode: NodeType,
+    nodeDimensions: Dimension,
+    mouseX: number,
+    mouseY: number,
+  ) {
+    let indexInParent = parent?.indexOfChild(targetNode);
+    nodeDimensions.dir = this.getDirection(targetNode.element!, parent.element!);
+
+    indexInParent = indexInParent + (nodeDimensions.determinePlacement(mouseX, mouseY) == 'after' ? 1 : 0);
+    return indexInParent;
   }
 
   private triggerDragValidation(canMove: boolean, targetNode: NodeType) {
@@ -488,27 +519,26 @@ export class DropLocationDeterminer<T, NodeType extends SortableTreeNode<T>> ext
   /**
    * Gets the mouse position relative to the container, adjusting for scroll and canvas relative options.
    *
-   * @param {MouseEvent} mouseEvent - The current mouse event.
    * @return {{ mouseXRelativeToContainer: number, mouseYRelativeToContainer: number }} - The mouse X and Y positions relative to the container.
    * @private
    */
-  private getMousePositionRelativeToContainer(mouseEvent: MouseEvent): {
-    mouseXRelativeToContainer: number;
-    mouseYRelativeToContainer: number;
+  private getMousePositionRelativeToContainer(
+    mouseX: number,
+    mouseY: number,
+  ): {
+    mouseXRelative: number;
+    mouseYRelative: number;
   } {
-    const { em } = this;
-    let mouseYRelativeToContainer =
-      mouseEvent.pageY - this.containerOffset.top + this.containerContext.container.scrollTop;
-    let mouseXRelativeToContainer =
-      mouseEvent.pageX - this.containerOffset.left + this.containerContext.container.scrollLeft;
+    let mouseYRelative = mouseY - this.containerOffset.top + this.containerContext.container.scrollTop;
+    let mouseXRelative = mouseX - this.containerOffset.left + this.containerContext.container.scrollLeft;
 
-    if (this.positionOptions.canvasRelative && !!em) {
-      const mousePos = em.Canvas.getMouseRelativeCanvas(mouseEvent, { noScroll: 1 });
-      mouseXRelativeToContainer = mousePos.x;
-      mouseYRelativeToContainer = mousePos.y;
+    if (this.positionOptions.canvasRelative) {
+      const mousePos = this.em.Canvas.getMouseRelativeCanvas({ clientX: mouseX, clientY: mouseY }, { noScroll: 1 });
+      mouseXRelative = mousePos.x;
+      mouseYRelative = mousePos.y;
     }
 
-    return { mouseXRelativeToContainer, mouseYRelativeToContainer };
+    return { mouseXRelative, mouseYRelative };
   }
 
   /**
