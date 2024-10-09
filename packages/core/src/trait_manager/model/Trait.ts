@@ -110,7 +110,7 @@ export default class Trait extends Model<TraitProperties> {
   }
 
   updateValueFromDataVariable(value: string) {
-    this.setTargetValue(value);
+    this.setValue(value);
     this.trigger('change:value');
   }
 
