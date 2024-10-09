@@ -111,8 +111,7 @@ export default class CssComposer extends ItemManagerModule<CssComposerConfig & {
    * @private
    */
   postLoad() {
-    const um = this.em?.get('UndoManager');
-    um && um.add(this.getAll());
+    this.em.UndoManager.add(this.getAll());
   }
 
   store() {

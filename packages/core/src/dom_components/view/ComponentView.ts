@@ -304,6 +304,10 @@ TComp> {
     }
   }
 
+  updateStyles() {
+    this.updateStyle();
+  }
+
   /**
    * Update classe attribute
    * @private
