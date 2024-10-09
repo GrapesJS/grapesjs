@@ -1,0 +1,24 @@
+name: GrapesJS Tests
+on:
+  push:
+    branches: [dev]
+  pull_request:
+    branches: [dev]
+
+jobs:
+  test-core:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-project
+      - name: Core Tests
+        run: pnpm test
+        working-directory: ./packages/core
+  test-cli:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-project
+      - name: CLI Tests
+        run: pnpm test
+        working-directory: ./packages/cli

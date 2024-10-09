@@ -11,13 +11,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup-project
+      - name: TS Check
+        run: pnpm ts:check
       - name: Lint
         run: pnpm lint
       - name: Format Check
         run: pnpm format:check
-      - name: Build
-        run: pnpm build --force
-      - name: Test
-        run: pnpm test
       - name: Docs
         run: pnpm docs:api

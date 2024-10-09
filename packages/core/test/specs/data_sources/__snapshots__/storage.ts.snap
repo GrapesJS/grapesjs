@@ -1,0 +1,123 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`DataSource Storage .getProjectData ComponentDataVariable 1`] = `
+{
+  "assets": [],
+  "dataSources": [
+    {
+      "id": "data-variable-id",
+      "records": [
+        {
+          "content": "Hello World",
+          "id": "data-variable-id",
+        },
+      ],
+    },
+  ],
+  "pages": [
+    {
+      "frames": [
+        {
+          "component": {
+            "components": [
+              {
+                "components": [
+                  {
+                    "defaultValue": "default",
+                    "path": "component-storage.id1.content",
+                    "type": "data-variable",
+                  },
+                ],
+                "tagName": "h1",
+                "type": "text",
+              },
+            ],
+            "docEl": {
+              "tagName": "html",
+            },
+            "head": {
+              "type": "head",
+            },
+            "stylable": [
+              "background",
+              "background-color",
+              "background-image",
+              "background-repeat",
+              "background-attachment",
+              "background-position",
+              "background-size",
+            ],
+            "type": "wrapper",
+          },
+          "id": "data-variable-id",
+        },
+      ],
+      "id": "data-variable-id",
+      "type": "main",
+    },
+  ],
+  "styles": [],
+  "symbols": [],
+}
+`;
+
+exports[`DataSource Storage .loadProjectData ComponentDataVariable 1`] = `
+{
+  "assets": [],
+  "dataSources": [
+    {
+      "id": "data-variable-id",
+      "records": [
+        {
+          "content": "Hello World Updated",
+          "id": "data-variable-id",
+        },
+      ],
+    },
+  ],
+  "pages": [
+    {
+      "frames": [
+        {
+          "component": {
+            "components": [
+              {
+                "components": [
+                  {
+                    "defaultValue": "default",
+                    "path": "component-storage.id1.content",
+                    "type": "data-variable",
+                  },
+                ],
+                "tagName": "h1",
+                "type": "text",
+              },
+            ],
+            "docEl": {
+              "tagName": "html",
+            },
+            "head": {
+              "type": "head",
+            },
+            "stylable": [
+              "background",
+              "background-color",
+              "background-image",
+              "background-repeat",
+              "background-attachment",
+              "background-position",
+              "background-size",
+            ],
+            "type": "wrapper",
+          },
+          "id": "data-variable-id",
+        },
+      ],
+      "id": "data-variable-id",
+      "type": "main",
+    },
+  ],
+  "styles": [],
+  "symbols": [],
+}
+`;

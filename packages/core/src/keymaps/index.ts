@@ -48,7 +48,7 @@ import { hasWin } from '../utils/mixins';
 import keymaster from '../utils/keymaster';
 import { Module } from '../abstract';
 import EditorModel from '../editor/model/Editor';
-import defaults, { Keymap, KeymapOptions, KeymapsConfig } from './config';
+import defConfig, { Keymap, KeymapOptions, KeymapsConfig } from './config';
 
 export type KeymapEvent = 'keymap:add' | 'keymap:remove' | 'keymap:emit' | `keymap:emit:${string}`;
 
@@ -59,7 +59,7 @@ export default class KeymapsModule extends Module<KeymapsConfig & { name?: strin
   keymaps: Record<string, Keymap>;
 
   constructor(em: EditorModel) {
-    super(em, 'Keymaps', defaults);
+    super(em, 'Keymaps', defConfig());
     this.keymaps = {};
   }
 

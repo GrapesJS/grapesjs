@@ -117,13 +117,15 @@ export default class TraitView extends View<Trait> {
    * On change callback
    * @private
    */
-  onValueChange(model: Trait, value: string, opts: SetOptions & { fromTarget?: boolean } = {}) {
+  onValueChange(_m: Trait, _v: string, opts: SetOptions & { fromTarget?: boolean } = {}) {
+    const { model } = this;
+    const value = this.getValueForTarget();
+
     if (opts.fromTarget) {
-      this.setInputValue(model.get('value'));
+      this.setInputValue(value);
       this.postUpdate();
     } else {
-      const val = this.getValueForTarget();
-      model?.setTargetValue(val, opts);
+      model.setValue(value, opts as any);
     }
   }
 

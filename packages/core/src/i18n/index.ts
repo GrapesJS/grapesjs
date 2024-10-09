@@ -27,7 +27,7 @@ import { isUndefined, isString } from 'underscore';
 import { Module } from '../abstract';
 import EditorModel from '../editor/model/Editor';
 import { hasWin, deepMerge } from '../utils/mixins';
-import defaults, { I18nConfig } from './config';
+import defConfig, { I18nConfig } from './config';
 import I18nEvents, { Messages } from './types';
 
 export default class I18nModule extends Module<I18nConfig & { stylePrefix?: string }> {
@@ -39,7 +39,7 @@ export default class I18nModule extends Module<I18nConfig & { stylePrefix?: stri
    * @private
    */
   constructor(em: EditorModel) {
-    super(em, 'I18n', defaults);
+    super(em, 'I18n', defConfig());
     const add = this.config.messagesAdd;
     add && this.addMessages(add);
 

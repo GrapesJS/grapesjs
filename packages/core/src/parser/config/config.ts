@@ -61,6 +61,11 @@ export interface HTMLParserOptions extends OptionAsDocument {
   keepEmptyTextNodes?: boolean;
 
   /**
+   * Indicate if or how to detect if the passed HTML string should be parsed as a document.
+   */
+  detectDocument?: boolean | ((html: string) => boolean);
+
+  /**
    * Custom transformer to run before passing the input HTML to the parser.
    * A common use case might be to sanitize the input string.
    * @example
@@ -105,7 +110,7 @@ export interface ParserConfig {
   optionsHtml?: HTMLParserOptions;
 }
 
-const config: ParserConfig = {
+const config: () => ParserConfig = () => ({
   textTags: ['br', 'b', 'i', 'u', 'a', 'ul', 'ol'],
   textTypes: ['text', 'textnode', 'comment'],
   parserCss: undefined,
@@ -117,6 +122,6 @@ const config: ParserConfig = {
     allowUnsafeAttrValue: false,
     keepEmptyTextNodes: false,
   },
-};
+});
 
 export default config;

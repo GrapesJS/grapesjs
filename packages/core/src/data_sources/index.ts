@@ -46,7 +46,7 @@ import { DataSourcesEvents, DataSourceProps } from './types';
 import { Events } from 'backbone';
 
 export default class DataSourceManager extends ItemManagerModule<ModuleConfig, DataSources> {
-  storageKey = '';
+  storageKey = 'dataSources';
   events = DataSourcesEvents;
   destroy(): void {}
 
@@ -146,5 +146,35 @@ export default class DataSourceManager extends ItemManagerModule<ModuleConfig, D
     }
 
     return result;
+  }
+
+  /**
+   * Store data sources to a JSON object.
+   * @returns {Array} Stored data sources.
+   */
+  store() {
+    const data: any[] = [];
+    this.all.forEach((dataSource) => {
+      const skipFromStorage = dataSource.get('skipFromStorage');
+      if (!skipFromStorage) {
+        data.push({
+          id: dataSource.id,
+          name: dataSource.get('name' as any),
+          records: dataSource.records.toJSON(),
+          skipFromStorage,
+        });
+      }
+    });
+
+    return { [this.storageKey]: data };
+  }
+
+  /**
+   * Load data sources from a JSON object.
+   * @param {Object} data The data object containing data sources.
+   * @returns {Object} Loaded data sources.
+   */
+  load(data: any) {
+    return this.loadProjectData(data);
   }
 }

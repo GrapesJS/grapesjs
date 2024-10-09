@@ -63,7 +63,7 @@ const editor = grapesjs.init({
 });
 ```
 
-If you want a complete list of available properties check out the source [AssetImage Model](https://github.com/GrapesJS/grapesjs/blob/dev/src/asset_manager/model/AssetImage.ts)
+If you want a complete list of available properties check out the source [AssetImage Model](https://github.com/GrapesJS/grapesjs/blob/dev/packages/core/src/asset_manager/model/AssetImage.ts)
 
 The built-in Asset Manager modal is implemented and is showing up when requested. By default, you can make it appear by dragging Image Components in canvas, double clicking on images and all other stuff related to images (eg. CSS styling)
 
@@ -78,7 +78,7 @@ editor.runCommand('open-assets');
 ```
 
 
-Worth nothing that by doing this you can't do much with assets (if you double click on them nothing happens) and this is because you've not indicated any target. Try just to select an image in your canvas and run this in console (you should first make the editor globally available `window.editor = editor;` in your script)
+Worth noting that by doing this you can't do much with assets (if you double click on them nothing happens) and this is because you've not indicated any target. Try just to select an image in your canvas and run this in console (you should first make the editor globally available `window.editor = editor;` in your script)
 
 ```js
 editor.runCommand('open-assets', {
@@ -225,7 +225,7 @@ am.getAll().length; // <- 3
 am.getAllVisible().length; // <- 3
 ```
 
-Ok, now let's show only assets form the first category
+Ok, now let's show only assets from the first category
 
 ```js
 const assets = am.getAll();
@@ -325,7 +325,7 @@ Here an example of using custom Asset Manager with a Vue component.
 The example above is the right way if you need to replace the default UI, but as you might notice we append the mounted element to the container `props.container.appendChild(this.$el);`.
 This is required as the Asset Manager, by default, is placed in the [Modal](/modules/Modal.html).
 
-How to approach the case when your Asset Manager is a completely independent/external module (eg. should be showed in its own custom modal)? Not a problem, you can bind the Asset Manager state via `assetManager.custom.open`.
+How to approach the case when your Asset Manager is a completely independent/external module (eg. should be shown in its own custom modal)? Not a problem, you can bind the Asset Manager state via `assetManager.custom.open`.
 
 ```js
 const editor = grapesjs.init({
@@ -339,7 +339,7 @@ const editor = grapesjs.init({
         // Init and open your external Asset Manager
         // ...
         // IMPORTANT:
-        // When the external library is closed you have to comunicate
+        // When the external library is closed you have to communicate
         // this state back to the editor, otherwise GrapesJS will think
         // the Asset Manager is still open.
         // example: myAssetManager.on('close', () => props.close())
@@ -357,10 +357,10 @@ It's important to declare also the `close` function, the editor should be able t
 <!--
 ### Define new Asset type
 
-Generally speaking, images aren't the only asset you'll use, it could be a `video`, `svg-icon`, or any other kind of `document`. Each type of asset is applied in our templates/pages differently. If you need to change the image of the Component all you need is another `url` in `src` attribute. However In case of a `svg-icon`, its not the same, you might want to replace the element with a new `<svg>` content. Besides this you also have to deal with the presentation/preview of the asset inside the panel/modal. For example, showing a thumbnail for big images or the possibility to preview videos.
+Generally speaking, images aren't the only asset you'll use, it could be a `video`, `svg-icon`, or any other kind of `document`. Each type of asset is applied in our templates/pages differently. If you need to change the image of the Component all you need is another `url` in `src` attribute. However In case of a `svg-icon`, it's not the same, you might want to replace the element with a new `<svg>` content. Besides this you also have to deal with the presentation/preview of the asset inside the panel/modal. For example, showing a thumbnail for big images or the possibility to preview videos.
 
 
-Defining a new asset it means we have to push on top of the 'Stack of Types' a new layer. This stack is iterated over by the editor at any addition of the asset and tries to associate the correct type.
+Defining a new asset means we have to push on top of the 'Stack of Types' a new layer. This stack is iterated over by the editor at any addition of the asset and tries to associate the correct type.
 
 ```js
 am.add('https://.../image.png');
@@ -429,7 +429,7 @@ am.addType('svg-icon', {
     // `getPreview()` and `getInfo()` are just few helpers, you can
     // override the entire template with `template()`
     // Check the base `template()` here:
-    // https://github.com/GrapesJS/grapesjs/blob/dev/src/asset_manager/view/AssetView.js
+    // https://github.com/GrapesJS/grapesjs/blob/dev/packages/core/src/asset_manager/view/AssetView.ts
     getPreview() {
       return `<div style="text-align: center">${this.model.get('svgContent')}</div>`;
     },
@@ -543,7 +543,7 @@ am.addType('image', {
   // but you can eventually extend some other type
   view: {
     // If you want to see more methods to extend check out
-    // https://github.com/GrapesJS/grapesjs/blob/dev/src/asset_manager/view/AssetImageView.js
+    // https://github.com/GrapesJS/grapesjs/blob/dev/packages/core/src/asset_manager/view/AssetImageView.ts
     onRemove(e) {
       e.stopPropagation();
       const model = this.model;

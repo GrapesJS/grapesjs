@@ -37,7 +37,7 @@
 
 import { isFunction, includes } from 'underscore';
 import CommandAbstract, { Command, CommandOptions, CommandObject, CommandFunction } from './view/CommandAbstract';
-import defaults, { CommandsConfig } from './config/config';
+import defConfig, { CommandsConfig } from './config/config';
 import { Module } from '../abstract';
 import Component, { eventDrag } from '../dom_components/model/Component';
 import Editor from '../editor/model/Editor';
@@ -82,9 +82,11 @@ export const getOnComponentDrag = (em: Editor) => (data: any) => em.trigger(even
 export const getOnComponentDragEnd =
   (em: Editor, targets: Component[], opts: { altMode?: boolean } = {}) =>
   (a: any, b: any, data: any) => {
-    targets.forEach((trg) => trg.set('status', trg.get('selectable') ? 'selected' : ''));
-    em.setSelected(targets);
-    targets[0].emitUpdate();
+    setTimeout(() => {
+      targets.forEach((trg) => trg.set('status', trg.get('selectable') ? 'selected' : ''));
+      em.setSelected(targets);
+      targets[0].emitUpdate();
+    });
     em.trigger(`${eventDrag}:end`, data);
 
     // Defer selectComponent in order to prevent canvas "freeze" #2692
@@ -105,7 +107,7 @@ export default class CommandsModule extends Module<CommandsConfig & { pStylePref
    * @private
    */
   constructor(em: Editor) {
-    super(em, 'Commands', defaults);
+    super(em, 'Commands', defConfig());
     const { config } = this;
     const ppfx = config.pStylePrefix;
     const { defaultCommands } = this;
@@ -139,7 +141,7 @@ export default class CommandsModule extends Module<CommandsConfig & { pStylePref
         const em = ed.getModel();
         const { event } = opts;
         const trg = opts.target as Component | undefined;
-        const trgs = trg ? [trg] : [...ed.getSelectedAll()];
+        const trgs = Array.isArray(trg) ? trg : trg ? [trg] : [...ed.getSelectedAll()];
         const targets = trgs.map((trg) => trg.delegate?.move?.(trg) || trg).filter(Boolean);
         const target = targets[targets.length - 1] as Component | undefined;
         const nativeDrag = event?.type === 'dragstart';

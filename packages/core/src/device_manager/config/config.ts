@@ -25,7 +25,7 @@ export interface DeviceManagerConfig {
   devices?: DeviceProperties[];
 }
 
-const config: DeviceManagerConfig = {
+const config: () => DeviceManagerConfig = () => ({
   default: '',
   devices: [
     {
@@ -52,6 +52,6 @@ const config: DeviceManagerConfig = {
       widthMedia: '480px',
     },
   ],
-};
+});
 
 export default config;

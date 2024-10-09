@@ -12,9 +12,9 @@ export interface CodeManagerConfig {
   optsCodeViewer?: Record<string, any>;
 }
 
-const config: CodeManagerConfig = {
+const config: () => CodeManagerConfig = () => ({
   stylePrefix: 'cm-',
   optsCodeViewer: {},
-};
+});
 
 export default config;

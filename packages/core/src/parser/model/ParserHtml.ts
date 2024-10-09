@@ -5,6 +5,7 @@ import EditorModel from '../../editor/model/Editor';
 import { HTMLParseResult, HTMLParserOptions, ParseNodeOptions, ParserConfig } from '../config/config';
 import BrowserParserHtml from './BrowserParserHtml';
 import { doctypeToString } from '../../utils/dom';
+import { isDef } from '../../utils/mixins';
 
 const modelAttrStart = 'data-gjs-';
 const event = 'parse:html';
@@ -313,11 +314,15 @@ const ParserHtml = (em?: EditorModel, config: ParserConfig & { returnArray?: boo
       const conf = em?.get('Config') || {};
       const res: HTMLParseResult = { html: [] };
       const cf = { ...config, ...opts };
-      const options = {
+      const preOptions = {
         ...config.optionsHtml,
         // @ts-ignore Support previous `configParser.htmlType` option
         htmlType: config.optionsHtml?.htmlType || config.htmlType,
         ...opts,
+      };
+      const options = {
+        ...preOptions,
+        asDocument: this.__checkAsDocument(str, preOptions),
       };
       const { preParser, asDocument } = options;
       const input = isFunction(preParser) ? preParser(str, { editor: em?.getEditor()! }) : str;
@@ -374,7 +379,7 @@ const ParserHtml = (em?: EditorModel, config: ParserConfig & { returnArray?: boo
       }
 
       res.html = resHtml;
-      em?.trigger(event, { input, output: res });
+      em?.trigger(event, { input, output: res, options });
 
       return res;
     },
@@ -391,6 +396,16 @@ const ParserHtml = (em?: EditorModel, config: ParserConfig & { returnArray?: boo
       });
       toRemove.map((name) => node.removeAttribute(name));
       each(nodes, (node) => this.__sanitizeNode(node as HTMLElement, opts));
+    },
+
+    __checkAsDocument(str: string, opts: HTMLParserOptions) {
+      if (isDef(opts.asDocument)) {
+        return opts.asDocument;
+      } else if (isFunction(opts.detectDocument)) {
+        return !!opts.detectDocument(str);
+      } else if (opts.detectDocument) {
+        return str.toLowerCase().trim().startsWith('<!doctype');
+      }
     },
   };
 };

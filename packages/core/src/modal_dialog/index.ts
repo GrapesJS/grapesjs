@@ -38,7 +38,7 @@ import { Module } from '../abstract';
 import EditorView from '../editor/view/EditorView';
 import EditorModel from '../editor/model/Editor';
 import { createText } from '../utils/dom';
-import defaults, { ModalConfig } from './config/config';
+import defConfig, { ModalConfig } from './config/config';
 import ModalM from './model/Modal';
 import ModalView from './view/ModalView';
 import { EventHandler } from '../common';
@@ -54,7 +54,7 @@ export default class ModalModule extends Module<ModalConfig> {
    * @private
    */
   constructor(em: EditorModel) {
-    super(em, 'Modal', defaults);
+    super(em, 'Modal', defConfig());
 
     this.model = new ModalM(this);
     this.model.on('change:open', (m: ModalM, enable: boolean) => {

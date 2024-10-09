@@ -42,7 +42,7 @@
 
 import { isEmpty, isFunction } from 'underscore';
 import { Module } from '../abstract';
-import defaults, { StorageManagerConfig } from './config/config';
+import defConfig, { StorageManagerConfig } from './config/config';
 import LocalStorage from './model/LocalStorage';
 import RemoteStorage from './model/RemoteStorage';
 import EditorModel from '../editor/model/Editor';
@@ -65,7 +65,7 @@ export default class StorageManager extends Module<
   events = StorageEvents;
 
   constructor(em: EditorModel) {
-    super(em, 'StorageManager', defaults);
+    super(em, 'StorageManager', defConfig());
     const { config } = this;
     if (config._disable) config.type = undefined;
     this.storages = {};

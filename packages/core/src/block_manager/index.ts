@@ -31,7 +31,7 @@ import { ItemManagerModule } from '../abstract/Module';
 import FrameView from '../canvas/view/FrameView';
 import Component from '../dom_components/model/Component';
 import EditorModel from '../editor/model/Editor';
-import defaults, { BlockManagerConfig } from './config/config';
+import defConfig, { BlockManagerConfig } from './config/config';
 import Block, { BlockProperties } from './model/Block';
 import Blocks from './model/Blocks';
 import Categories from '../abstract/ModuleCategories';
@@ -61,7 +61,7 @@ export default class BlockManager extends ItemManagerModule<BlockManagerConfig, 
   storageKey = '';
 
   constructor(em: EditorModel) {
-    super(em, 'BlockManager', new Blocks(em.config.blockManager?.blocks || [], { em }), BlocksEvents, defaults);
+    super(em, 'BlockManager', new Blocks(em.config.blockManager?.blocks || [], { em }), BlocksEvents, defConfig());
 
     // Global blocks collection
     this.blocks = this.all;
@@ -108,7 +108,13 @@ export default class BlockManager extends ItemManagerModule<BlockManagerConfig, 
     const { em, events, blocks } = this;
     const content = block.getContent ? block.getContent() : block;
     this._dragBlock = block;
-    em.set({ dragResult: null, dragContent: content });
+    em.set({
+      dragResult: null,
+      dragSource: {
+        content,
+        dragDef: block.getDragDef(),
+      },
+    });
     [em, blocks].map((i) => i.trigger(events.dragStart, block, ev));
   }
 
@@ -145,7 +151,7 @@ export default class BlockManager extends ItemManagerModule<BlockManagerConfig, 
       }
     }
 
-    em.set({ dragResult: null, dragContent: null });
+    em.set({ dragResult: null, dragSource: undefined });
 
     if (block) {
       [em, blocks].map((i) => i.trigger(events.dragEnd, cmp, block));

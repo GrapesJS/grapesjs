@@ -1,5 +1,5 @@
 import { isArray, isString, keys } from 'underscore';
-import { Model, ObjectAny, ObjectHash, SetOptions } from '../../common';
+import { Model, ObjectAny, ObjectHash, SetOptions, View } from '../../common';
 import ParserHtml from '../../parser/model/ParserHtml';
 import Selectors from '../../selector_manager/model/Selectors';
 import { shallowDiff } from '../../utils/mixins';
@@ -7,6 +7,9 @@ import EditorModel from '../../editor/model/Editor';
 import StyleDataVariable from '../../data_sources/model/StyleDataVariable';
 import { DataVariableType } from '../../data_sources/model/DataVariable';
 import DataVariableListenerManager from '../../data_sources/model/DataVariableListenerManager';
+import CssRuleView from '../../css_composer/view/CssRuleView';
+import ComponentView from '../../dom_components/view/ComponentView';
+import Frame from '../../canvas/model/Frame';
 
 export type StyleProps = Record<
   string,
@@ -26,6 +29,8 @@ export type UpdateStyleOptions = SetOptions & {
   noEvent?: boolean;
 };
 
+export type StyleableView = ComponentView | CssRuleView;
+
 const parserHtml = ParserHtml();
 
 export const getLastStyleValue = (value: string | string[]) => {
@@ -35,6 +40,12 @@ export const getLastStyleValue = (value: string | string[]) => {
 export default class StyleableModel<T extends ObjectHash = any> extends Model<T> {
   em?: EditorModel;
   dataVariableListeners: Record<string, DataVariableListenerManager> = {};
+  views: StyleableView[] = [];
+
+  constructor(attributes: T, options: { em?: EditorModel } = {}) {
+    super(attributes, options);
+    this.em = options.em;
+  }
 
   /**
    * Parse style string to an object
@@ -153,6 +164,27 @@ export default class StyleableModel<T extends ObjectHash = any> extends Model<T>
     style[prop] = value;
     this.setStyle(style, { noEvent: true });
     this.trigger(`change:style:${prop}`);
+    this.updateView();
+  }
+
+  getView(frame?: Frame) {
+    let { views, em } = this;
+    const frm = frame || em?.getCurrentFrameModel();
+    return frm ? views.find((v) => v.frameView === frm.view) : views[0];
+  }
+
+  setView(view: StyleableView) {
+    let { views } = this;
+    !views.includes(view) && views.push(view);
+  }
+
+  removeView(view: StyleableView) {
+    const { views } = this;
+    views.splice(views.indexOf(view), 1);
+  }
+
+  updateView() {
+    this.views.forEach((view) => view.updateStyles());
   }
 
   /**

@@ -20,13 +20,13 @@ import Selectors from '../../selector_manager/model/Selectors';
 import Traits from '../../trait_manager/model/Traits';
 import EditorModel from '../../editor/model/Editor';
 import {
-  AddComponentsOption,
   ComponentAdd,
   ComponentDefinition,
   ComponentDefinitionDefined,
   ComponentOptions,
   ComponentProperties,
   DragMode,
+  ResetComponentsOptions,
   SymbolToUpOptions,
   ToHTMLOptions,
 } from './types';
@@ -213,6 +213,16 @@ export default class Component extends StyleableModel<ComponentProperties> {
     return this.get('locked');
   }
 
+  get frame() {
+    return this.opt.frame;
+  }
+
+  get page() {
+    return this.frame?.getPage();
+  }
+
+  preInit() {}
+
   /**
    * Hook method, called once the model is created
    */
@@ -238,7 +248,6 @@ export default class Component extends StyleableModel<ComponentProperties> {
   views!: ComponentView[];
   view?: ComponentView;
   viewLayer?: ItemView;
-  frame?: Frame;
   rule?: CssRule;
   prevColl?: Components;
   __hasUm?: boolean;
@@ -275,13 +284,13 @@ export default class Component extends StyleableModel<ComponentProperties> {
     opt.em = em;
     this.opt = opt;
     this.em = em!;
-    this.frame = opt.frame;
     this.config = opt.config || {};
     this.set('attributes', {
       ...(result(this, 'defaults').attributes || {}),
       ...(this.get('attributes') || {}),
     });
     this.ccid = Component.createId(this, opt);
+    this.preInit();
     this.initClasses();
     this.initComponents();
     this.initTraits();
@@ -999,7 +1008,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
    */
   components<T extends ComponentAdd | undefined>(
     components?: T,
-    opts: AddComponentsOption = {},
+    opts: ResetComponentsOptions = {},
   ): undefined extends T ? Components : Component[] {
     const coll = this.get('components')!;
 
@@ -1428,19 +1437,43 @@ export default class Component extends StyleableModel<ComponentProperties> {
    * // -> <span title="Custom attribute"></span>
    */
   toHTML(opts: ToHTMLOptions = {}): string {
-    const model = this;
-    const attrs = [];
     const customTag = opts.tag;
-    const tag = customTag || model.get('tagName');
-    const sTag = model.get('void');
+    const tag = customTag || this.get('tagName');
+    delete opts.tag;
+
+    const attr = this.__attrToString(opts);
+    const attrString = attr ? ` ${attr}` : '';
+    const inner = this.getInnerHTML(opts);
+    const skipEndTag = !inner && this.get('void');
+    let code = `<${tag}${attrString}${skipEndTag ? '/' : ''}>${inner}`;
+    !skipEndTag && (code += `</${tag}>`);
+
+    return code;
+  }
+
+  /**
+   * Get inner HTML of the component
+   * @param {Object} [opts={}] Same options of `toHTML`
+   * @returns {String} HTML string
+   */
+  getInnerHTML(opts?: ToHTMLOptions) {
+    return this.__innerHTML(opts);
+  }
+
+  __innerHTML(opts: ToHTMLOptions = {}) {
+    const cmps = this.components();
+    return !cmps.length ? this.content : cmps.map((c) => c.toHTML(opts)).join('');
+  }
+
+  __attrToString(opts: ToHTMLOptions = {}) {
+    const attrs = [];
     const customAttr = opts.attributes;
     let attributes = this.getAttrToHTML(opts);
-    delete opts.tag;
 
     // Get custom attributes if requested
     if (customAttr) {
       if (isFunction(customAttr)) {
-        attributes = customAttr(model, attributes) || {};
+        attributes = customAttr(this, attributes) || {};
       } else if (isObject(customAttr)) {
         attributes = customAttr;
       }
@@ -1448,7 +1481,6 @@ export default class Component extends StyleableModel<ComponentProperties> {
 
     if (opts.withProps) {
       const props = this.toJSON();
-
       forEach(props, (value, key) => {
         const skipProps = ['classes', 'attributes', 'components'];
         if (key[0] !== '_' && skipProps.indexOf(key) < 0) {
@@ -1478,26 +1510,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
       }
     }
 
-    const attrString = attrs.length ? ` ${attrs.join(' ')}` : '';
-    const inner = model.getInnerHTML(opts);
-    let code = `<${tag}${attrString}${sTag ? '/' : ''}>${inner}`;
-    !sTag && (code += `</${tag}>`);
-
-    return code;
-  }
-
-  /**
-   * Get inner HTML of the component
-   * @param {Object} [opts={}] Same options of `toHTML`
-   * @returns {String} HTML string
-   */
-  getInnerHTML(opts?: ToHTMLOptions) {
-    return this.__innerHTML(opts);
-  }
-
-  __innerHTML(opts: ToHTMLOptions = {}) {
-    const cmps = this.components();
-    return !cmps.length ? this.content : cmps.map((c) => c.toHTML(opts)).join('');
+    return attrs.join(' ');
   }
 
   /**

@@ -7,7 +7,7 @@ Thank you for your interest in contributing to GrapesJS! We welcome all types of
 ### Prerequisites
 
 - Node.js (version 20 LTS)
-- pnpm (version 8.6.3 or later)
+- pnpm (version 9.10.0 or later)
 
 ### Setup
 
@@ -21,7 +21,7 @@ Thank you for your interest in contributing to GrapesJS! We welcome all types of
 2. Install pnpm globally:
 
    ```bash
-   npm install -g pnpm@8.6.3
+   npm install -g pnpm@9.10.0
    ```
 
 3. Clone the repository:

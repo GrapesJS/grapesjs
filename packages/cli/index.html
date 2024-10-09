@@ -1,0 +1,42 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title><%= title %></title>
+    <link
+      href="<%= pathGjsCss ? pathGjsCss : 'https://unpkg.com/grapesjs@' + gjsVersion + '/dist/css/grapes.min.css' %>"
+      rel="stylesheet"
+    />
+    <script src="<%= pathGjs ? pathGjs : 'https://unpkg.com/grapesjs@' + gjsVersion %>"></script>
+    <style>
+      body,
+      html {
+        height: 100%;
+        margin: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="gjs" style="height: 0px; overflow: hidden">
+      <div style="margin: 100px 100px 25px; padding: 25px; font: caption">
+        This is a demo content generated from <b>GrapesJS CLI</b>. For the development, you should create a _index.html
+        template file (might be a copy of this one) and on the next server start the new file will be served, and it
+        will be ignored by git.
+      </div>
+    </div>
+
+    <script type="text/javascript">
+      window.onload = () => {
+        window.editor = grapesjs.init({
+          height: '100%',
+          container: '#gjs',
+          showOffsets: 1,
+          noticeOnUnload: 0,
+          storageManager: false,
+          fromElement: true,
+          plugins: ['<%= name %>'],
+        });
+      };
+    </script>
+  </body>
+</html>

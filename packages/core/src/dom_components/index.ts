@@ -55,10 +55,10 @@
  */
 import { debounce, isArray, isBoolean, isEmpty, isFunction, isString, isSymbol, result } from 'underscore';
 import { ItemManagerModule } from '../abstract/Module';
-import { AddOptions, ObjectAny } from '../common';
+import { ObjectAny } from '../common';
 import EditorModel from '../editor/model/Editor';
 import { isComponent } from '../utils/mixins';
-import defaults, { DomComponentsConfig } from './config/config';
+import defConfig, { DomComponentsConfig } from './config/config';
 import Component, { IComponent, keyUpdate, keyUpdateInside } from './model/Component';
 import ComponentComment from './model/ComponentComment';
 import ComponentFrame from './model/ComponentFrame';
@@ -116,6 +116,8 @@ import {
   isSymbolInstance,
   detachSymbolInstance,
   isSymbolRoot,
+  isSymbol as isSymbolComponent,
+  getSymbolTop,
 } from './model/SymbolUtils';
 import { ComponentsEvents, SymbolInfo } from './types';
 import Symbols from './model/Symbols';
@@ -332,18 +334,13 @@ export default class ComponentManager extends ItemManagerModule<DomComponentsCon
    * @private
    */
   constructor(em: EditorModel) {
-    super(em, 'DomComponents', new Components(undefined, { em }));
+    super(em, 'DomComponents', new Components(undefined, { em }), ComponentsEvents, defConfig());
     const { config } = this;
     this.symbols = new Symbols([], { em, config, domc: this });
 
     if (em) {
       //@ts-ignore
       this.config.components = em.config.components || this.config.components;
-    }
-
-    for (let name in defaults) {
-      //@ts-ignore
-      if (!(name in this.config)) this.config[name] = defaults[name];
     }
 
     const ppfx = this.config.pStylePrefix;
@@ -840,8 +837,19 @@ export default class ComponentManager extends ItemManagerModule<DomComponentsCon
       target,
       source: null,
     };
-
     if (!source || !target) return result;
+
+    // Check if the target and source belong to the same root symbol
+    if (isSymbolComponent(target) && source instanceof Component && isSymbolComponent(source)) {
+      const targetRootSymbol = getSymbolTop(target);
+      const targetMain = isSymbolMain(targetRootSymbol) ? targetRootSymbol : getSymbolMain(targetRootSymbol);
+      const sourceRootSymbol = getSymbolTop(source as Component);
+      const sourceMain = isSymbolMain(sourceRootSymbol) ? sourceRootSymbol : getSymbolMain(sourceRootSymbol);
+
+      const sameRoot = targetMain === sourceMain;
+      const differentInstance = targetRootSymbol !== sourceRootSymbol;
+      if (sameRoot && differentInstance) return { ...result, reason: CanMoveReason.TargetReject };
+    }
 
     let srcModel = isComponent(source) ? source : null;
 

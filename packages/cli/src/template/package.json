@@ -1,0 +1,23 @@
+{
+  "name": "<%= rName %>",
+  "version": "1.0.0",
+  "description": "<%= name %>",
+  "main": "dist/index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/<%= user %>/<%= rName %>.git"
+  },
+  "scripts": {
+    "start": "grapesjs-cli serve",
+    "build": "grapesjs-cli build",
+    "bump": "npm version patch -m 'Bump v%s'"
+  },
+  "keywords": [
+    "grapesjs",
+    "plugin"
+  ],
+  "devDependencies": {
+    "grapesjs-cli": "^<%= version %>"
+  },
+  "license": "<%= license %>"
+}

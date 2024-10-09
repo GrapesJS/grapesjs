@@ -6,6 +6,7 @@ import { Component } from '../../../src';
 import ComponentWrapper from '../../../src/dom_components/model/ComponentWrapper';
 import { flattenHTML, setupTestEditor } from '../../common';
 import { ProjectData } from '../../../src/storage_manager';
+import { CanMoveReason } from '../../../src/dom_components';
 
 describe('DOM Components', () => {
   describe('Main', () => {
@@ -47,6 +48,7 @@ describe('DOM Components', () => {
     var setEm = () => {
       config.em = editorModel;
     };
+    const createSymbol = (component: Component) => obj.addSymbol(component)!;
 
     beforeEach(() => {
       const editor = new Editor({
@@ -314,6 +316,76 @@ describe('DOM Components', () => {
         expect(rule.getStyle()).toEqual(newStyle);
       });
     });
+
+    describe('Custom components with styles', () => {
+      test('canMove returns false if source is not provided', () => {
+        const target = obj.addComponent({ tagName: 'div' }) as Component;
+        const result = obj.canMove(target);
+        expect(result.result).toBe(false);
+        expect(result.reason).toBe(CanMoveReason.InvalidSource);
+      });
+
+      test('canMove returns false if target is not provided', () => {
+        const source = obj.addComponent({ tagName: 'div' }) as Component;
+        const result = obj.canMove(undefined as any, source);
+        expect(result.result).toBe(false);
+        expect(result.reason).toBe(CanMoveReason.InvalidSource);
+      });
+
+      test('canMove returns false when source and target have the same main symbol', () => {
+        const component = obj.addComponent({ tagName: 'div' }) as Component;
+        const mainSymbol = obj.addSymbol(component) as Component;
+        const target = obj.addSymbol(mainSymbol) as Component;
+        const source = obj.addSymbol(mainSymbol) as Component;
+        expect(obj.canMove(mainSymbol, source)).toMatchObject({
+          result: false,
+          reason: CanMoveReason.TargetReject,
+        });
+
+        expect(obj.canMove(target, source)).toMatchObject({
+          result: false,
+          reason: CanMoveReason.TargetReject,
+        });
+      });
+
+      test('canMove returns true when source and target are the same instance', () => {
+        const component = obj.addComponent('<div><p>child</p></div>') as Component;
+        const mainSymbol = obj.addSymbol(component) as Component;
+        const childSymbol = mainSymbol.components().at(0);
+        expect(obj.canMove(mainSymbol, childSymbol).result).toBe(true);
+      });
+
+      test('canMove returns false when source is not draggable in the target', () => {
+        const target = obj.addComponent({ tagName: 'div', droppable: true }) as Component;
+        const source = obj.addComponent({ tagName: 'span', draggable: false }) as Component;
+        const result = obj.canMove(target, source);
+        expect(result.result).toBe(false);
+        expect(result.reason).toBe(CanMoveReason.SourceReject);
+      });
+
+      test('canMove returns false when target does not accept the source', () => {
+        const target = obj.addComponent({ tagName: 'div', droppable: false }) as Component;
+        const source = obj.addComponent({ tagName: 'span', draggable: true }) as Component;
+        const result = obj.canMove(target, source);
+        expect(result.result).toBe(false);
+        expect(result.reason).toBe(CanMoveReason.TargetReject);
+      });
+
+      test('canMove returns true when source is draggable and target is droppable', () => {
+        const target = obj.addComponent({ tagName: 'div', droppable: true }) as Component;
+        const source = obj.addComponent({ tagName: 'span', draggable: true }) as Component;
+        const result = obj.canMove(target, source);
+        expect(result.result).toBe(true);
+      });
+
+      test('canMove returns false when target is inside the source', () => {
+        const source = obj.addComponent({ tagName: 'div' }) as Component;
+        const target = source.append({ tagName: 'span' })[0];
+        const result = obj.canMove(target, source);
+        expect(result.result).toBe(false);
+        expect(result.reason).toBe(CanMoveReason.TargetReject);
+      });
+    });
   });
 
   describe('Rendered components', () => {
@@ -411,6 +483,33 @@ describe('DOM Components', () => {
       // https://github.com/GrapesJS/grapesjs/issues/6116
       test('editor loads properly document data from projectData', () => {
         editor.loadProjectData(projectData);
+        const newRoot = editor.getWrapper()!;
+
+        const { head, doctype } = newRoot;
+        expect(head.components().length).toBe(1);
+        expect(doctype).toBe('<!DOCTYPE html>');
+
+        expect(newRoot.toHTML()).toBe(flattenHTML(docHtml));
+      });
+
+      test('load projectData containing HTML document, without document detect', () => {
+        editor.loadProjectData({
+          pages: [{ component: docHtml }],
+        });
+        const newRoot = editor.getWrapper()!;
+        const { head, doctype } = newRoot;
+
+        // Components from the head are moved inside the body
+        expect(head.components().length).toBe(0);
+        expect(doctype).toBe('');
+        expect(newRoot.components().length).toBe(2);
+      });
+
+      test('load projectData containing HTML document, with document detect', () => {
+        editor.Parser.getConfig().optionsHtml!.detectDocument = true;
+        editor.loadProjectData({
+          pages: [{ component: docHtml }],
+        });
         const newRoot = editor.getWrapper()!;
 
         const { head, doctype } = newRoot;

@@ -159,6 +159,82 @@ const testDataSource = {
 
 In this example, the `onRecordSetValue` transformer ensures that the `content` property is always an uppercase string.
 
+## Storing DataSources in Project JSON
+
+GrapesJS allows you to control whether a DataSource should be stored statically in the project JSON. This is useful for managing persistent data across project saves and loads.
+
+### Using the `skipFromStorage` Key
+
+When creating a DataSource, you can use the `skipFromStorage` key to specify whether it should be included in the project JSON.
+
+**Example: Creating a DataSource with `skipFromStorage`**
+
+```ts
+const persistentDataSource = {
+  id: 'persistent-datasource',
+  records: [
+    { id: 'id1', content: 'This data will be saved' },
+    { id: 'id2', color: 'blue' },
+  ],
+};
+
+editor.DataSources.add(persistentDataSource);
+
+const temporaryDataSource = {
+  id: 'temporary-datasource',
+  records: [
+    { id: 'id1', content: 'This data will not be saved' },
+  ],
+  skipFromStorage: true,
+};
+
+editor.DataSources.add(temporaryDataSource);
+```
+
+In this example, `persistentDataSource` will be included in the project JSON when the project is saved, while `temporaryDataSource` will not.
+
+### Benefits of Using `skipFromStorage`
+
+1. **Persistent Configuration**: Store configuration data that should persist across project saves and loads.
+2. **Default Data**: Include default data that should always be available in the project.
+3. **Selective Storage**: Choose which DataSources to include in the project JSON, optimizing storage and load times.
+
+### Accessing Stored DataSources
+
+When a project is loaded, GrapesJS will automatically restore the DataSources that were saved. You can then access and use these DataSources as usual.
+
+```ts
+// After loading a project
+const loadedDataSource = editor.DataSources.get('persistent-datasource');
+console.log(loadedDataSource.getRecord('id1').get('content')); // Outputs: "This data will be saved"
+```
+
+Remember that DataSources with `skipFromStorage: true` will not be available after a project is loaded unless you add them programmatically.
+
+
+## Record Mutability
+
+DataSource records are mutable by default, but can be set as immutable to prevent modifications. Use the mutable flag when creating records to control this behavior.
+
+```ts
+const dataSource = {
+  id: 'my-datasource',
+  records: [
+    { id: 'id1', content: 'Mutable content' },
+    { id: 'id2', content: 'Immutable content', mutable: false },
+  ],
+};
+
+
+editor.DataSources.add(dataSource);
+
+const ds = editor.DataSources.get('my-datasource');
+ds.getRecord('id1').set('content', 'Updated content'); // Succeeds
+ds.getRecord('id2').set('content', 'New content'); // Throws error
+```
+
+Immutable records cannot be modified or removed, ensuring data integrity for critical information.
+
 ## Benefits of Using DataSources
 
 DataSources are integrated with GrapesJS's runtime and BackboneJS models, enabling dynamic updates and synchronization between your data and UI components. This allows you to:

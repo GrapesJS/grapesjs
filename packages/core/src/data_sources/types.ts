@@ -7,6 +7,11 @@ export interface DataRecordProps extends ObjectAny {
    * Record id.
    */
   id: string;
+
+  /**
+   * Specifies if the record is mutable. Defaults to `true`.
+   */
+  mutable?: boolean;
 }
 
 export interface DataVariableListener {
@@ -28,8 +33,12 @@ export interface DataSourceProps {
   /**
    * DataSource validation and transformation factories.
    */
-
   transformers?: DataSourceTransformers;
+
+  /**
+   * If true will store the data source in the GrapesJS project.json file.
+   */
+  skipFromStorage?: boolean;
 }
 
 export interface DataSourceTransformers {

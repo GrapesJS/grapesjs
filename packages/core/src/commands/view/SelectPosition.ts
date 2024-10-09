@@ -1,36 +1,44 @@
 import { $ } from '../../common';
+import CanvasComponentNode from '../../utils/sorter/CanvasComponentNode';
+import { DragDirection } from '../../utils/sorter/types';
 import { CommandObject } from './CommandAbstract';
-
 export default {
   /**
    * Start select position event
-   * @param {HTMLElement} trg
+   * @param {HTMLElement[]} sourceElements
    * @private
    * */
-  startSelectPosition(trg: HTMLElement, doc: Document, opts: any = {}) {
+  startSelectPosition(sourceElements: HTMLElement[], doc: Document, opts: any = {}) {
     this.isPointed = false;
     const utils = this.em.Utils;
-    const container = trg.ownerDocument.body;
+    const container = sourceElements[0].ownerDocument.body;
 
-    if (utils && !this.sorter)
-      this.sorter = new utils.Sorter({
-        // @ts-ignore
-        container,
-        placer: this.canvas.getPlacerEl(),
-        containerSel: '*',
-        itemSel: '*',
-        pfx: this.ppfx,
-        direction: 'a',
-        document: doc,
-        wmargin: 1,
-        nested: 1,
+    if (utils)
+      this.sorter = new utils.ComponentSorter({
         em: this.em,
-        canvasRelative: 1,
-        scale: () => this.em.getZoomDecimal(),
+        treeClass: CanvasComponentNode,
+        containerContext: {
+          container,
+          containerSel: '*',
+          itemSel: '*',
+          pfx: this.ppfx,
+          document: doc,
+          placeholderElement: this.canvas.getPlacerEl()!,
+        },
+        positionOptions: {
+          windowMargin: 1,
+          canvasRelative: true,
+        },
+        dragBehavior: {
+          dragDirection: DragDirection.BothDirections,
+          nested: true,
+        },
       });
 
-    if (opts.onStart) this.sorter.onStart = opts.onStart;
-    trg && this.sorter.startSort(trg, { container });
+    if (opts.onStart) this.sorter.eventHandlers.legacyOnStartSort = opts.onStart;
+    sourceElements &&
+      sourceElements.length > 0 &&
+      this.sorter.startSort(sourceElements.map((element) => ({ element })));
   },
 
   /**
@@ -54,8 +62,7 @@ export default {
     this.posTargetCollection = null;
     this.posIndex = this.posMethod == 'after' && this.cDim.length !== 0 ? this.posIndex + 1 : this.posIndex; //Normalize
     if (this.sorter) {
-      this.sorter.moved = 0;
-      this.sorter.endMove();
+      this.sorter.cancelDrag();
     }
     if (this.cDim) {
       this.posIsLastEl = this.cDim.length !== 0 && this.posMethod == 'after' && this.posIndex == this.cDim.length;

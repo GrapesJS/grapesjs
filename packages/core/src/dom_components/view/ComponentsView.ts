@@ -7,6 +7,7 @@ import Component from '../model/Component';
 import ComponentView from './ComponentView';
 import FrameView from '../../canvas/view/FrameView';
 import Components from '../model/Components';
+import { ResetComponentsOptions } from '../model/types';
 
 export default class ComponentsView extends View {
   opts!: any;
@@ -124,9 +125,12 @@ export default class ComponentsView extends View {
     return rendered;
   }
 
-  resetChildren(models: Components, { previousModels = [] } = {}) {
-    this.parentEl!.innerHTML = '';
-    previousModels.forEach((md) => this.removeChildren(md, this.collection));
+  resetChildren(models: Components, opts: ResetComponentsOptions = {}) {
+    const { previousModels } = opts;
+    if (!opts.skipDomReset) {
+      this.parentEl!.innerHTML = '';
+    }
+    previousModels?.forEach((md) => this.removeChildren(md, this.collection));
     models.each((model) => this.addToCollection(model));
   }
 

@@ -254,12 +254,13 @@ Component> {
 
   parseString(value: string, opt: ParseStringOptions = {}) {
     const { em, domc, parent } = this;
-    const asDocument = opt.asDocument && parent?.is('wrapper');
+    const isWrapper = parent?.is('wrapper');
+    const asDocument = opt.asDocument && isWrapper;
     const cssc = em.Css;
     const parsed = em.Parser.parseHtml(value, { asDocument, ...opt.parserOptions });
     let components = parsed.html;
 
-    if (asDocument) {
+    if (isWrapper && parsed.doctype) {
       const root = parent as ComponentWrapper;
       const { components: bodyCmps, ...restBody } = (parsed.html as ComponentDefinitionDefined) || {};
       const { components: headCmps, ...restHead } = parsed.head || {};
