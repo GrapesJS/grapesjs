@@ -21,6 +21,7 @@ export default class CssRuleView extends View<CssRule> {
 
   remove() {
     super.remove();
+    this.model.removeView(this);
     return this;
   }
 

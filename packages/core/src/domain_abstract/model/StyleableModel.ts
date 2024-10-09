@@ -175,9 +175,12 @@ export default class StyleableModel<T extends ObjectHash = any> extends Model<T>
 
   setView(view: StyleableView) {
     let { views } = this;
-    if (!views.includes(view)) {
-      views.push(view);
-    }
+    !views.includes(view) && views.push(view);
+  }
+
+  removeView(view: StyleableView) {
+    const { views } = this;
+    views.splice(views.indexOf(view), 1);
   }
 
   updateView() {
