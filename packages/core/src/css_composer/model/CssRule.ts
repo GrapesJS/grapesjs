@@ -94,7 +94,7 @@ export default class CssRule extends StyleableModel<CssRuleProperties> {
   config: CssRuleProperties;
   em?: EditorModel;
   opt: any;
-  view?: CssRuleView;
+  views: CssRuleView[] = [];
   dataVariableListeners: Record<string, DataVariableListenerManager> = {};
 
   defaults() {
@@ -121,7 +121,7 @@ export default class CssRule extends StyleableModel<CssRuleProperties> {
     this.em = opt.em;
     this.ensureSelectors(null, null, {});
     this.on('change', this.__onChange);
-    super.setStyle(this.get('style'));
+    this.setStyle(this.get('style'));
   }
 
   __onChange(m: CssRule, opts: any) {
@@ -364,13 +364,5 @@ export default class CssRule extends StyleableModel<CssRuleProperties> {
     }
 
     return true;
-  }
-
-  setView(cssRuleView: CssRuleView) {
-    super.setView(cssRuleView);
-  }
-
-  getView() {
-    return this.view;
   }
 }

@@ -9,6 +9,7 @@ import { DataVariableType } from '../../data_sources/model/DataVariable';
 import DataVariableListenerManager from '../../data_sources/model/DataVariableListenerManager';
 import CssRuleView from '../../css_composer/view/CssRuleView';
 import ComponentView from '../../dom_components/view/ComponentView';
+import Frame from '../../canvas/model/Frame';
 
 export type StyleProps = Record<
   string,
@@ -28,6 +29,8 @@ export type UpdateStyleOptions = SetOptions & {
   noEvent?: boolean;
 };
 
+export type StyleableView = ComponentView | CssRuleView;
+
 const parserHtml = ParserHtml();
 
 export const getLastStyleValue = (value: string | string[]) => {
@@ -37,7 +40,7 @@ export const getLastStyleValue = (value: string | string[]) => {
 export default class StyleableModel<T extends ObjectHash = any> extends Model<T> {
   em?: EditorModel;
   dataVariableListeners: Record<string, DataVariableListenerManager> = {};
-  view?: ComponentView | CssRuleView;
+  views: StyleableView[] = [];
 
   constructor(attributes: T, options: { em?: EditorModel } = {}) {
     super(attributes, options);
@@ -164,14 +167,21 @@ export default class StyleableModel<T extends ObjectHash = any> extends Model<T>
     this.updateView();
   }
 
-  setView(view: ComponentView | CssRuleView) {
-    this.view = view;
+  getView(frame?: Frame) {
+    let { views, em } = this;
+    const frm = frame || em?.getCurrentFrameModel();
+    return frm ? views.find((v) => v.frameView === frm.view) : views[0];
+  }
+
+  setView(view: StyleableView) {
+    let { views } = this;
+    if (!views.includes(view)) {
+      views.push(view);
+    }
   }
 
   updateView() {
-    if (this.view) {
-      this.view.render();
-    }
+    this.views.forEach((view) => view.updateStyles());
   }
 
   /**

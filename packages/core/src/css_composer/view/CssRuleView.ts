@@ -1,3 +1,4 @@
+import FrameView from '../../canvas/view/FrameView';
 import { View } from '../../common';
 import CssRule from '../model/CssRule';
 
@@ -11,6 +12,20 @@ export default class CssRuleView extends View<CssRule> {
     this.listenTo(model, 'change', this.render);
     this.listenTo(model, 'destroy remove', this.remove);
     this.listenTo(model.get('selectors'), 'change', this.render);
+    model.setView(this);
+  }
+
+  get frameView(): FrameView {
+    return this.config.frameView;
+  }
+
+  remove() {
+    super.remove();
+    return this;
+  }
+
+  updateStyles() {
+    this.render();
   }
 
   /** @ts-ignore */
