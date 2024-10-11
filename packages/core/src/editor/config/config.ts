@@ -433,7 +433,6 @@ export interface EditorConfig {
    * Telemetry options
    * Default: true
    */
-
   telemetry?: boolean;
 }
 
