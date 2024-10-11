@@ -276,6 +276,7 @@ export default class EditorModel extends Model {
     this.on('change:changesCount', this.updateChanges, this);
     this.on('change:readyLoad change:readyCanvas', this._checkReady, this);
     toLog.forEach((e) => this.listenLog(e));
+    this.trackEditorLoad();
 
     // Deprecations
     [{ from: 'change:selectedComponent', to: 'component:toggled' }].forEach((event) => {
@@ -1135,5 +1136,61 @@ export default class EditorModel extends Model {
     } else {
       el[varName][name] = value;
     }
+  }
+
+  private sendTelemetryData() {
+    const sessionKeyPrefix = 'gjs_telemetry_sent_';
+
+    // @ts-ignore
+    const version = __GJS_VERSION__;
+    const sessionKey = `${sessionKeyPrefix}${version}`;
+
+    if (sessionStorage.getItem(sessionKey)) {
+      console.log(`Telemetry already sent for version ${version} this session`);
+      return;
+    }
+
+    // @ts-ignore
+    const url = __STUDIO_URL__;
+    const path = '/api/gjs/telemetry/collect';
+
+    (async () => {
+      const response = await fetch(`${url}${path}`, {
+        method: 'POST',
+        body: JSON.stringify({
+          type: 'EDITOR:LOAD',
+          domain: window.location.hostname,
+          version,
+          timestamp: Date.now(),
+          url,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to send telemetry data ${await response.text()}`);
+      }
+
+      console.log(`Telemetry data sent successfully for version ${version}`);
+
+      sessionStorage.setItem(sessionKey, 'true');
+
+      Object.keys(sessionStorage).forEach((key) => {
+        if (key.startsWith(sessionKeyPrefix) && key !== sessionKey) {
+          sessionStorage.removeItem(key);
+        }
+      });
+
+      this.trigger('telemetry:sent');
+    })().catch((err) => {
+      console.error('Failed to send telemetry data', err);
+    });
+  }
+
+  trackEditorLoad() {
+    this.on('load', () => {
+      if (this._config.telemetry) {
+        this.sendTelemetryData();
+      }
+    });
   }
 }
