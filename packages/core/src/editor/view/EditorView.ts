@@ -82,7 +82,6 @@ export default class EditorView extends View<EditorModel> {
     const response = await fetch(`${url}${path}`, {
       method: 'POST',
       body: JSON.stringify({
-        type: 'EDITOR:LOAD',
         domain: hostName,
         version,
         url,

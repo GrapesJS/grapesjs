@@ -86,7 +86,6 @@ describe('Editor telemetry', () => {
     expect(fetchMock.mock.calls[0][0]).toContain('/api/gjs/telemetry/collect');
     expect(fetchMock.mock.calls[0][1].method).toBe('POST');
     expect(JSON.parse(fetchMock.mock.calls[0][1].body)).toMatchObject({
-      type: 'EDITOR:LOAD',
       domain: expect.any(String),
       version: expect.any(String),
       url: expect.any(String),
