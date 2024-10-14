@@ -1,6 +1,9 @@
-import grapesjs, { Editor } from '../../../src';
+import grapesjs from '../../../src';
 import { EditorConfig } from '../../../src/editor/config/config';
 import { fixJsDom, fixJsDomIframe, waitEditorEvent } from '../../common';
+
+import * as hostUtil from '../../../src/utils/host-name';
+jest.mock('../../../src/utils/host-name');
 
 describe('Editor telemetry', () => {
   let fixture: HTMLElement;
@@ -13,9 +16,6 @@ describe('Editor telemetry', () => {
   let originalFetch: typeof fetch;
   let fetchMock: jest.Mock;
 
-  // @ts-ignore
-  global.__ENABLE_TELEMETRY_LOCALHOST__ = true;
-
   const initTestEditor = (config: Partial<EditorConfig>) => {
     const editor = grapesjs.init({
       ...config,
@@ -27,6 +27,7 @@ describe('Editor telemetry', () => {
   };
 
   beforeAll(() => {
+    jest.spyOn(hostUtil, 'getHostName').mockReturnValue('example.com');
     editorName = 'editor-fixture';
   });
 
@@ -57,6 +58,12 @@ describe('Editor telemetry', () => {
     };
 
     Object.defineProperty(window, 'sessionStorage', { value: sessionStorageMock });
+
+    Object.defineProperty(window, 'location', {
+      value: {
+        hostname: 'example.com',
+      },
+    });
 
     console.log = jest.fn();
     console.error = jest.fn();

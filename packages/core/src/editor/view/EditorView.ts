@@ -1,4 +1,5 @@
 import { View, $ } from '../../common';
+import { getHostName } from '../../utils/host-name';
 import { appendStyles } from '../../utils/mixins';
 import EditorModel from '../model/Editor';
 
@@ -54,12 +55,9 @@ export default class EditorView extends View<EditorModel> {
   }
 
   private sendTelemetryData() {
-    const hostName = window.location.hostname;
+    const hostName = getHostName();
 
-    // @ts-ignore
-    const enableDevTelemetry = __ENABLE_TELEMETRY_LOCALHOST__;
-
-    if (!enableDevTelemetry && (hostName === 'localhost' || hostName.includes('localhost'))) {
+    if (hostName === 'localhost' || hostName.includes('localhost')) {
       // Don't send telemetry data for localhost
       return;
     }
