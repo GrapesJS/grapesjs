@@ -27,7 +27,8 @@ We use data to:
 You can opt-out of data collection by setting the `telemetry` option to `false` when initializing GrapesJS:
 
 ```js
-const editor = new Editor({
+const editor = grapesjs.init({
+  // ...
   telemetry: false,
 });
 ```
