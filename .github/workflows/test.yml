@@ -14,8 +14,6 @@ jobs:
       - name: Core Tests
         run: pnpm test
         working-directory: ./packages/core
-        env:
-          NODE_ENV: development
   test-cli:
     runs-on: ubuntu-latest
     steps:

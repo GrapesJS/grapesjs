@@ -4,6 +4,8 @@ describe('Editor telemetry', () => {
   let editor = new Editor();
   let originalFetch: typeof fetch;
   let fetchMock: jest.Mock;
+  // @ts-ignore
+  global.__ENABLE_TELEMETRY_LOCALHOST__ = true;
 
   beforeEach(() => {
     originalFetch = global.fetch;
