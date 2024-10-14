@@ -14,7 +14,9 @@ export default class EditorView extends View<EditorModel> {
       UndoManager.clear();
 
       if (model.getConfig().telemetry) {
-        this.sendTelemetryData();
+        this.sendTelemetryData().catch(() => {
+          // Telemetry data silent fail
+        });
       }
 
       setTimeout(() => {
@@ -54,7 +56,7 @@ export default class EditorView extends View<EditorModel> {
     return this;
   }
 
-  private sendTelemetryData() {
+  private async sendTelemetryData() {
     const hostName = getHostName();
 
     if (hostName === 'localhost' || hostName.includes('localhost')) {
@@ -77,32 +79,28 @@ export default class EditorView extends View<EditorModel> {
     const url = __STUDIO_URL__;
     const path = '/api/gjs/telemetry/collect';
 
-    (async () => {
-      const response = await fetch(`${url}${path}`, {
-        method: 'POST',
-        body: JSON.stringify({
-          type: 'EDITOR:LOAD',
-          domain: hostName,
-          version,
-          url,
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error(`Failed to send telemetry data ${await response.text()}`);
-      }
-
-      sessionStorage.setItem(sessionKey, 'true');
-
-      Object.keys(sessionStorage).forEach((key) => {
-        if (key.startsWith(sessionKeyPrefix) && key !== sessionKey) {
-          sessionStorage.removeItem(key);
-        }
-      });
-
-      this.trigger('telemetry:sent');
-    })().catch(() => {
-      // Silently fail
+    const response = await fetch(`${url}${path}`, {
+      method: 'POST',
+      body: JSON.stringify({
+        type: 'EDITOR:LOAD',
+        domain: hostName,
+        version,
+        url,
+      }),
     });
+
+    if (!response.ok) {
+      throw new Error(`Failed to send telemetry data ${await response.text()}`);
+    }
+
+    sessionStorage.setItem(sessionKey, 'true');
+
+    Object.keys(sessionStorage).forEach((key) => {
+      if (key.startsWith(sessionKeyPrefix) && key !== sessionKey) {
+        sessionStorage.removeItem(key);
+      }
+    });
+
+    this.trigger('telemetry:sent');
   }
 }
