@@ -1,13 +1,51 @@
-import Editor from '../../../src/editor';
+import grapesjs, { Editor } from '../../../src';
+import { EditorConfig } from '../../../src/editor/config/config';
+import { fixJsDom, fixJsDomIframe, waitEditorEvent } from '../../common';
 
 describe('Editor telemetry', () => {
-  let editor = new Editor();
+  let fixture: HTMLElement;
+  let editorName = '';
+  let htmlString = '';
+  let config: Partial<EditorConfig>;
+  let cssString = '';
+  let documentEl = '';
+
   let originalFetch: typeof fetch;
   let fetchMock: jest.Mock;
+
   // @ts-ignore
   global.__ENABLE_TELEMETRY_LOCALHOST__ = true;
 
+  const initTestEditor = (config: Partial<EditorConfig>) => {
+    const editor = grapesjs.init({
+      ...config,
+      plugins: [fixJsDom, ...(config.plugins || [])],
+    });
+    fixJsDomIframe(editor.getModel().shallow);
+
+    return editor;
+  };
+
+  beforeAll(() => {
+    editorName = 'editor-fixture';
+  });
+
   beforeEach(() => {
+    const initHtml = '<div class="test1"></div><div class="test2"></div>';
+    htmlString = `<body>${initHtml}</body>`;
+    cssString = '.test2{color:red}.test3{color:blue}';
+    documentEl = '<style>' + cssString + '</style>' + initHtml;
+    config = {
+      container: '#' + editorName,
+      storageManager: {
+        autoload: false,
+        autosave: false,
+        type: '',
+      },
+    };
+    document.body.innerHTML = `<div id="fixtures"><div id="${editorName}"></div></div>`;
+    fixture = document.body.querySelector(`#${editorName}`)!;
+
     originalFetch = global.fetch;
     fetchMock = jest.fn(() => Promise.resolve({ ok: true }));
     global.fetch = fetchMock;
@@ -29,21 +67,13 @@ describe('Editor telemetry', () => {
     jest.resetAllMocks();
   });
 
-  const triggerLoadAndWait = (editor: Editor) => {
-    return new Promise<void>((resolve) => {
-      editor.on('telemetry:sent', () => {
-        resolve();
-      });
-      editor.getModel().trigger('load');
-    });
-  };
-
   test('Telemetry is sent when enabled', async () => {
-    editor = new Editor({
+    const editor = initTestEditor({
+      ...config,
       telemetry: true,
     });
 
-    await triggerLoadAndWait(editor);
+    await waitEditorEvent(editor, 'load');
 
     expect(fetchMock).toHaveBeenCalledTimes(1);
     expect(fetchMock.mock.calls[0][0]).toContain('/api/gjs/telemetry/collect');
@@ -57,11 +87,11 @@ describe('Editor telemetry', () => {
   });
 
   test('Telemetry is not sent when disabled', async () => {
-    editor = new Editor({
+    const editor = initTestEditor({
+      ...config,
       telemetry: false,
     });
-
-    await triggerLoadAndWait(editor);
+    await waitEditorEvent(editor, 'load');
 
     expect(fetchMock).not.toHaveBeenCalled();
   });
@@ -72,28 +102,27 @@ describe('Editor telemetry', () => {
 
     window.sessionStorage.getItem = jest.fn(() => 'true');
 
-    editor = new Editor({
+    const editor = initTestEditor({
+      ...config,
       telemetry: true,
     });
+    await waitEditorEvent(editor, 'load');
 
-    await triggerLoadAndWait(editor);
-
-    expect(window.sessionStorage.getItem).toHaveBeenCalledWith(`gjs_telemetry_sent_${version}`);
     expect(fetchMock).not.toHaveBeenCalled();
-    expect(console.log).toHaveBeenCalledWith(`Telemetry already sent for version ${version} this session`);
   });
 
   test('Telemetry handles fetch errors gracefully', async () => {
     fetchMock.mockRejectedValueOnce(new Error('Network error'));
 
-    editor = new Editor({
+    const editor = initTestEditor({
+      ...config,
       telemetry: true,
     });
-
-    await triggerLoadAndWait(editor);
+    await waitEditorEvent(editor, 'load');
 
     expect(fetchMock).toHaveBeenCalledTimes(1);
-    expect(console.error).toHaveBeenCalledWith('Failed to send telemetry data', expect.any(Error));
+    expect(console.log).not.toHaveBeenCalled();
+    expect(console.error).not.toHaveBeenCalled();
   });
 
   test('Telemetry cleans up old version keys', async () => {
@@ -104,24 +133,25 @@ describe('Editor telemetry', () => {
       getItem: jest.fn(() => null),
       setItem: jest.fn(),
       removeItem: jest.fn(),
+      'gjs_telemetry_sent_0.9.0': 'true',
+      'gjs_telemetry_sent_0.9.1': 'true',
+      other_key: 'true',
     };
     Object.defineProperty(window, 'sessionStorage', { value: sessionStorageMock });
     Object.defineProperty(sessionStorageMock, 'length', { value: 3 });
-    Object.defineProperty(sessionStorageMock, 'key', {
-      value: (index: number) => {
-        const keys = ['gjs_telemetry_sent_0.9.0', 'gjs_telemetry_sent_0.9.1', 'other_key'];
-        return keys[index];
-      },
-    });
 
-    editor = new Editor({
+    fetchMock.mockResolvedValueOnce({ ok: true });
+
+    const editor = initTestEditor({
+      ...config,
       telemetry: true,
     });
+    await waitEditorEvent(editor, 'load');
 
-    await triggerLoadAndWait(editor);
-
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+    expect(sessionStorageMock.setItem).toHaveBeenCalledWith(`gjs_telemetry_sent_${version}`, 'true');
     expect(sessionStorageMock.removeItem).toHaveBeenCalledWith('gjs_telemetry_sent_0.9.0');
     expect(sessionStorageMock.removeItem).toHaveBeenCalledWith('gjs_telemetry_sent_0.9.1');
     expect(sessionStorageMock.removeItem).not.toHaveBeenCalledWith('other_key');
-  });
+  }, 10000);
 });

@@ -276,7 +276,6 @@ export default class EditorModel extends Model {
     this.on('change:changesCount', this.updateChanges, this);
     this.on('change:readyLoad change:readyCanvas', this._checkReady, this);
     toLog.forEach((e) => this.listenLog(e));
-    this.trackEditorLoad();
 
     // Deprecations
     [{ from: 'change:selectedComponent', to: 'component:toggled' }].forEach((event) => {
@@ -1136,68 +1135,5 @@ export default class EditorModel extends Model {
     } else {
       el[varName][name] = value;
     }
-  }
-
-  private sendTelemetryData() {
-    const hostName = window.location.hostname;
-
-    // @ts-ignore
-    const enableDevTelemetry = __ENABLE_TELEMETRY_LOCALHOST__;
-
-    if (!enableDevTelemetry && (hostName === 'localhost' || hostName.includes('localhost'))) {
-      // Don't send telemetry data for localhost
-      return;
-    }
-
-    const sessionKeyPrefix = 'gjs_telemetry_sent_';
-
-    // @ts-ignore
-    const version = __GJS_VERSION__;
-    const sessionKey = `${sessionKeyPrefix}${version}`;
-
-    if (sessionStorage.getItem(sessionKey)) {
-      // `Telemetry already sent for version this session
-      return;
-    }
-
-    // @ts-ignore
-    const url = __STUDIO_URL__;
-    const path = '/api/gjs/telemetry/collect';
-
-    (async () => {
-      const response = await fetch(`${url}${path}`, {
-        method: 'POST',
-        body: JSON.stringify({
-          type: 'EDITOR:LOAD',
-          domain: hostName,
-          version,
-          url,
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error(`Failed to send telemetry data ${await response.text()}`);
-      }
-
-      sessionStorage.setItem(sessionKey, 'true');
-
-      Object.keys(sessionStorage).forEach((key) => {
-        if (key.startsWith(sessionKeyPrefix) && key !== sessionKey) {
-          sessionStorage.removeItem(key);
-        }
-      });
-
-      this.trigger('telemetry:sent');
-    })().catch((err) => {
-      console.error('Failed to send telemetry data', err);
-    });
-  }
-
-  trackEditorLoad() {
-    this.on('load', () => {
-      if (this._config.telemetry) {
-        this.sendTelemetryData();
-      }
-    });
   }
 }
