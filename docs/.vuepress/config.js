@@ -139,6 +139,7 @@ module.exports = {
             ['/guides/Symbols', 'Symbols'],
             ['/guides/Replace-Rich-Text-Editor', 'Replace Rich Text Editor'],
             ['/guides/Custom-CSS-parser', 'Use Custom CSS Parser'],
+            ['/guides/Telemetry', 'GrapesJS Telemetry'],
           ],
         },
       ],
