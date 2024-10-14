@@ -1171,7 +1171,6 @@ export default class EditorModel extends Model {
           type: 'EDITOR:LOAD',
           domain: hostName,
           version,
-          timestamp: Date.now(),
           url,
         }),
       });

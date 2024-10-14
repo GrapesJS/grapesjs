@@ -50,7 +50,6 @@ describe('Editor telemetry', () => {
       type: 'EDITOR:LOAD',
       domain: expect.any(String),
       version: expect.any(String),
-      timestamp: expect.any(Number),
       url: expect.any(String),
     });
   });
