@@ -1139,6 +1139,16 @@ export default class EditorModel extends Model {
   }
 
   private sendTelemetryData() {
+    const hostName = window.location.hostname;
+
+    // @ts-ignore
+    const enableDevTelemetry = __ENABLE_TELEMETRY_LOCALHOST__;
+
+    if (!enableDevTelemetry && (hostName === 'localhost' || hostName.includes('localhost'))) {
+      // Don't send telemetry data for localhost
+      return;
+    }
+
     const sessionKeyPrefix = 'gjs_telemetry_sent_';
 
     // @ts-ignore
@@ -1159,7 +1169,7 @@ export default class EditorModel extends Model {
         method: 'POST',
         body: JSON.stringify({
           type: 'EDITOR:LOAD',
-          domain: window.location.hostname,
+          domain: hostName,
           version,
           timestamp: Date.now(),
           url,

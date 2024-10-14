@@ -45,6 +45,7 @@ module.exports = ({ config, pkg, webpack }) => {
       new webpack.DefinePlugin({
         __GJS_VERSION__: `'${pkg.version}'`,
         __STUDIO_URL__: `'${process.env.STUDIO_URL || 'http://localhost:3000'}'`,
+        __ENABLE_TELEMETRY_LOCALHOST__: `'${process.env.NODE_ENV === 'development' ? 'true' : '' || ''}'`,
       }),
       ...config.plugins,
     ],
