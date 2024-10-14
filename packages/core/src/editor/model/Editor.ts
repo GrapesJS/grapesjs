@@ -1156,7 +1156,7 @@ export default class EditorModel extends Model {
     const sessionKey = `${sessionKeyPrefix}${version}`;
 
     if (sessionStorage.getItem(sessionKey)) {
-      console.log(`Telemetry already sent for version ${version} this session`);
+      // `Telemetry already sent for version this session
       return;
     }
 
@@ -1178,8 +1178,6 @@ export default class EditorModel extends Model {
       if (!response.ok) {
         throw new Error(`Failed to send telemetry data ${await response.text()}`);
       }
-
-      console.log(`Telemetry data sent successfully for version ${version}`);
 
       sessionStorage.setItem(sessionKey, 'true');
 
