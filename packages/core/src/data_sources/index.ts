@@ -36,7 +36,7 @@
  */
 
 import { ItemManagerModule, ModuleConfig } from '../abstract/Module';
-import { AddOptions, ObjectAny, RemoveOptions } from '../common';
+import { AddOptions, collectionEvents, ObjectAny, RemoveOptions } from '../common';
 import EditorModel from '../editor/model/Editor';
 import { get, stringToPath } from '../utils/mixins';
 import DataRecord from './model/DataRecord';
@@ -176,5 +176,10 @@ export default class DataSourceManager extends ItemManagerModule<ModuleConfig, D
    */
   load(data: any) {
     return this.loadProjectData(data);
+  }
+
+  postLoad() {
+    const { em, all } = this;
+    em.listenTo(all, collectionEvents, (m, c, o) => em.changesUp(o || c));
   }
 }
