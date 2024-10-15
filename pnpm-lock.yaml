@@ -108,8 +108,8 @@ importers:
         specifier: 1.0.0
         version: 1.0.0
       html-entities:
-        specifier: ~1.4.0
-        version: 1.4.0
+        specifier: ~2.5.2
+        version: 2.5.2
     devDependencies:
       '@types/markdown-it':
         specifier: 14.1.2
@@ -227,8 +227,8 @@ importers:
         specifier: 1.0.0
         version: 1.0.0
       html-entities:
-        specifier: ~1.4.0
-        version: 1.4.0
+        specifier: ~2.5.2
+        version: 2.5.2
       promise-polyfill:
         specifier: 8.3.0
         version: 8.3.0

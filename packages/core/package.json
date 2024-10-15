@@ -35,7 +35,7 @@
     "backbone-undo": "0.2.6",
     "codemirror": "5.63.0",
     "codemirror-formatting": "1.0.0",
-    "html-entities": "~1.4.0",
+    "html-entities": "~2.5.2",
     "promise-polyfill": "8.3.0",
     "underscore": "1.13.1"
   },
