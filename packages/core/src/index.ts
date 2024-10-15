@@ -5,7 +5,7 @@ import PluginManager, { Plugin, getPlugin, logPluginWarn } from './plugin_manage
 import $ from './utils/cash-dom';
 import polyfills from './utils/polyfills';
 
-interface InitEditorConfig extends EditorConfig {
+export interface InitEditorConfig extends EditorConfig {
   grapesjs?: typeof grapesjs;
 }
 
@@ -36,7 +36,7 @@ export const grapesjs = {
   usePlugin,
 
   // @ts-ignore Will be replaced on build
-  version: __GJS_VERSION__,
+  version: __GJS_VERSION__ as string,
 
   /**
    * Initialize the editor with passed options

@@ -16,7 +16,6 @@ const localStorage = {
 
 global._ = _;
 global.__GJS_VERSION__ = '';
-global.__STUDIO_URL__ = '';
 global.grapesjs = require('./../src').default;
 global.$ = global.grapesjs.$;
 global.localStorage = localStorage;

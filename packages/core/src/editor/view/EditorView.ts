@@ -57,17 +57,15 @@ export default class EditorView extends View<EditorModel> {
   }
 
   private async sendTelemetryData() {
-    const hostName = getHostName();
+    const domain = getHostName();
 
-    if (hostName === 'localhost' || hostName.includes('localhost')) {
+    if (domain === 'localhost' || domain.includes('localhost')) {
       // Don't send telemetry data for localhost
       return;
     }
 
     const sessionKeyPrefix = 'gjs_telemetry_sent_';
-
-    // @ts-ignore
-    const version = __GJS_VERSION__;
+    const { version } = this.model;
     const sessionKey = `${sessionKeyPrefix}${version}`;
 
     if (sessionStorage.getItem(sessionKey)) {
@@ -75,17 +73,10 @@ export default class EditorView extends View<EditorModel> {
       return;
     }
 
-    // @ts-ignore
-    const url = __STUDIO_URL__;
-    const path = '/api/gjs/telemetry/collect';
-
-    const response = await fetch(`${url}${path}`, {
+    const url = 'https://app.grapesjs.com';
+    const response = await fetch(`${url}/api/gjs/telemetry/collect`, {
       method: 'POST',
-      body: JSON.stringify({
-        domain: hostName,
-        version,
-        url,
-      }),
+      body: JSON.stringify({ domain, version }),
     });
 
     if (!response.ok) {

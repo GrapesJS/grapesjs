@@ -44,7 +44,6 @@ module.exports = ({ config, pkg, webpack }) => {
     plugins: [
       new webpack.DefinePlugin({
         __GJS_VERSION__: `'${pkg.version}'`,
-        __STUDIO_URL__: `'${process.env.STUDIO_URL || 'http://localhost:3000'}'`,
       }),
       ...config.plugins,
     ],

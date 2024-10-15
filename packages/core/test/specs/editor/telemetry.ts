@@ -6,6 +6,7 @@ import * as hostUtil from '../../../src/utils/host-name';
 jest.mock('../../../src/utils/host-name');
 
 describe('Editor telemetry', () => {
+  const version = '1.0.0';
   let fixture: HTMLElement;
   let editorName = '';
   let htmlString = '';
@@ -17,6 +18,7 @@ describe('Editor telemetry', () => {
   let fetchMock: jest.Mock;
 
   const initTestEditor = (config: Partial<EditorConfig>) => {
+    grapesjs.version = version;
     const editor = grapesjs.init({
       ...config,
       plugins: [fixJsDom, ...(config.plugins || [])],
@@ -88,7 +90,6 @@ describe('Editor telemetry', () => {
     expect(JSON.parse(fetchMock.mock.calls[0][1].body)).toMatchObject({
       domain: expect.any(String),
       version: expect.any(String),
-      url: expect.any(String),
     });
   });
 
@@ -103,9 +104,6 @@ describe('Editor telemetry', () => {
   });
 
   test('Telemetry is not sent twice in the same session', async () => {
-    const version = '1.0.0';
-    (global as any).__GJS_VERSION__ = version;
-
     window.sessionStorage.getItem = jest.fn(() => 'true');
 
     const editor = initTestEditor({
@@ -132,9 +130,6 @@ describe('Editor telemetry', () => {
   });
 
   test('Telemetry cleans up old version keys', async () => {
-    const version = '1.0.0';
-    (global as any).__GJS_VERSION__ = version;
-
     const sessionStorageMock = {
       getItem: jest.fn(() => null),
       setItem: jest.fn(),
