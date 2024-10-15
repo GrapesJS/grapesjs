@@ -151,20 +151,9 @@ export default class StyleableModel<T extends ObjectHash = any> extends Model<T>
         model: this,
         em: this.em!,
         dataVariable: dataVar,
-        updateValueFromDataVariable: (newValue: string) => this.updateStyleProp(styleProp, newValue),
+        updateValueFromDataVariable: () => this.updateView(),
       });
     }
-  }
-
-  /**
-   * Update a specific style property
-   */
-  updateStyleProp(prop: string, value: string) {
-    const style = this.getStyle();
-    style[prop] = value;
-    this.setStyle(style, { noEvent: true });
-    this.trigger(`change:style:${prop}`);
-    this.updateView();
   }
 
   getView(frame?: Frame) {

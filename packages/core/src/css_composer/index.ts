@@ -254,7 +254,7 @@ export default class CssComposer extends ItemManagerModule<CssComposerConfig & {
 
       if (updateStyle) {
         const styleUpdate = opts.extend ? { ...model.get('style'), ...style } : style;
-        model.set('style', styleUpdate, opts);
+        model.setStyle(styleUpdate, opts);
       }
 
       result.push(model);
