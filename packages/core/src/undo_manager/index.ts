@@ -36,7 +36,7 @@ export interface UndoGroup {
   labels: string[];
 }
 
-const hasSkip = (opts: any) => opts.avoidStore || opts.noUndo;
+const hasSkip = (opts: any) => opts.avoidStore || opts.noUndo || opts.partial;
 
 const getChanged = (obj: any) => Object.keys(obj.changedAttributes());
 

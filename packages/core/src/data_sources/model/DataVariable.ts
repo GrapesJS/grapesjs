@@ -37,7 +37,7 @@ export default class DataVariable extends Model {
 
   getDataValue() {
     const { path, defaultValue } = this.attributes;
-    const val = this.em?.DataSources?.getValue?.(path, defaultValue);
+    const val = this.em?.DataSources.getValue(path, defaultValue);
 
     return val;
   }

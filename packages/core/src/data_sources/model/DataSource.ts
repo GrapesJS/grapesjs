@@ -29,7 +29,7 @@
  * @extends {Model<DataSourceProps>}
  */
 
-import { AddOptions, CombinedModelConstructorOptions, Model, RemoveOptions } from '../../common';
+import { AddOptions, collectionEvents, CombinedModelConstructorOptions, Model, RemoveOptions } from '../../common';
 import EditorModel from '../../editor/model/Editor';
 import { DataRecordProps, DataSourceProps, DataSourceTransformers } from '../types';
 import DataRecord from './DataRecord';
@@ -74,6 +74,7 @@ export default class DataSource extends Model<DataSourceProps> {
     }
 
     this.listenTo(this.records, 'add', this.onAdd);
+    this.listenTo(this.records, collectionEvents, this.handleChanges);
   }
 
   /**
@@ -173,5 +174,9 @@ export default class DataSource extends Model<DataSourceProps> {
     records.forEach((record) => {
       this.records.add(record);
     });
+  }
+
+  private handleChanges(m: any, c: any, o: any) {
+    this.em.changesUp(o || c);
   }
 }
