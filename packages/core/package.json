@@ -74,7 +74,7 @@
     "build:css": "sass src/styles/scss/main.scss dist/css/grapes.min.css --no-source-map --style=compressed --load-path=node_modules",
     "ts:build": "node node_modules/grapesjs-cli/dist/cli.js build --dts='only' --patch=false",
     "ts:check": "tsc --noEmit --esModuleInterop dist/index.d.ts",
-    "start": "run-p start:*",
+    "start": "cross-env NODE_ENV=development run-p start:*",
     "start:js": "node node_modules/grapesjs-cli/dist/cli.js serve",
     "start:css": "npm run build:css -- --watch",
     "test": "jest --forceExit",
