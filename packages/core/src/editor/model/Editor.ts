@@ -44,6 +44,7 @@ import ComponentWrapper from '../../dom_components/model/ComponentWrapper';
 import { CanvasSpotBuiltInTypes } from '../../canvas/model/CanvasSpot';
 import DataSourceManager from '../../data_sources';
 import { ComponentsEvents } from '../../dom_components/types';
+import { InitEditorConfig } from '../..';
 
 Backbone.$ = $;
 
@@ -113,7 +114,7 @@ export default class EditorModel extends Model {
   __skip = false;
   defaultRunning = false;
   destroyed = false;
-  _config: EditorConfig;
+  _config: InitEditorConfig;
   _storageTimeout?: ReturnType<typeof setTimeout>;
   attrsOrig: any;
   timedInterval?: ReturnType<typeof setTimeout>;
@@ -305,6 +306,10 @@ export default class EditorModel extends Model {
 
   get config() {
     return this._config;
+  }
+
+  get version() {
+    return this.config.grapesjs?.version || '';
   }
 
   /**

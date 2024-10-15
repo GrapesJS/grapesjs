@@ -41,6 +41,11 @@ module.exports = ({ config, pkg, webpack }) => {
         underscore: `${rootDir}/node_modules/underscore`,
       },
     },
-    plugins: [new webpack.DefinePlugin({ __GJS_VERSION__: `'${pkg.version}'` }), ...config.plugins],
+    plugins: [
+      new webpack.DefinePlugin({
+        __GJS_VERSION__: `'${pkg.version}'`,
+      }),
+      ...config.plugins,
+    ],
   };
 };
