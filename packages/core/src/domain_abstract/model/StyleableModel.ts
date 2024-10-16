@@ -62,21 +62,23 @@ export default class StyleableModel<T extends ObjectHash = any> extends Model<T>
    * @return {Object}
    */
   extendStyle(prop: ObjectAny): ObjectAny {
-    return { ...this.getStyle(), ...prop };
+    return { ...this.getStyle('', { skipResolve: true }), ...prop };
   }
 
   /**
    * Get style object
    * @return {Object}
    */
-  getStyle(prop?: string | ObjectAny): StyleProps {
+  getStyle(prop?: string | ObjectAny, opts: { skipResolve?: boolean } = {}): StyleProps {
     const style = this.get('style') || {};
     const result: ObjectAny = { ...style };
-    if (this.em) {
+
+    if (this.em && !opts.skipResolve) {
       const resolvedStyle = this.resolveDataVariables({ ...result });
       // @ts-ignore
       return prop && isString(prop) ? resolvedStyle[prop] : resolvedStyle;
     }
+
     return prop && isString(prop) ? result[prop] : result;
   }
 
