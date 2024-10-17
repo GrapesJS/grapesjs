@@ -1,0 +1,17 @@
+name: Publish GrapesJS CLI
+on:
+  push:
+    branches: [dev]
+    paths:
+      - 'packages/cli/**'
+
+jobs:
+  publish:
+    if: "contains(github.event.head_commit.message, 'Release GrapesJS cli:')"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-project
+      - name: Publish Core
+        run: pnpm publish --access public
+        working-directory: ./packages/cli
