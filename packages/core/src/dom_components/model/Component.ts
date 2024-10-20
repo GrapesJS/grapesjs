@@ -927,8 +927,8 @@ export default class Component extends StyleableModel<ComponentProperties> {
         if (name && value) attrs[name] = value;
       }
 
-      if (trait.dataVariable) {
-        traitDataVariableAttr[name] = trait.dataVariable;
+      if (trait.dynamicVariable) {
+        traitDataVariableAttr[name] = trait.dynamicVariable;
       }
     });
     traits.length && this.set('attributes', attrs);

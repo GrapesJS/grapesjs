@@ -7,10 +7,9 @@ import { isDef } from '../../utils/mixins';
 import TraitsEvents, { TraitGetValueOptions, TraitOption, TraitProperties, TraitSetValueOptions } from '../types';
 import TraitView from '../view/TraitView';
 import Traits from './Traits';
-import { DataVariableListener } from '../../data_sources/types';
 import TraitDataVariable from '../../data_sources/model/TraitDataVariable';
 import { DataVariableType } from '../../data_sources/model/DataVariable';
-import DataVariableListenerManager from '../../data_sources/model/DataVariableListenerManager';
+import DynamicVariableListenerManager from '../../data_sources/model/DataVariableListenerManager';
 
 /**
  * @property {String} id Trait id, eg. `my-trait-id`.
@@ -30,9 +29,8 @@ export default class Trait extends Model<TraitProperties> {
   em: EditorModel;
   view?: TraitView;
   el?: HTMLElement;
-  dataListeners: DataVariableListener[] = [];
-  dataVariable?: TraitDataVariable;
-  dataVariableListener?: DataVariableListenerManager;
+  dynamicVariable?: TraitDataVariable;
+  dynamicVariableListener?: DynamicVariableListenerManager;
 
   defaults() {
     return {
@@ -59,19 +57,22 @@ export default class Trait extends Model<TraitProperties> {
     }
     this.em = em;
 
-    if (
-      this.attributes.value &&
-      typeof this.attributes.value === 'object' &&
-      this.attributes.value.type === DataVariableType
-    ) {
-      this.dataVariable = new TraitDataVariable(this.attributes.value, { em: this.em, trait: this });
+    if (this.attributes.value && typeof this.attributes.value === 'object') {
+      const dataType = this.attributes.value.type;
+      switch (dataType) {
+        case DataVariableType:
+          this.dynamicVariable = new TraitDataVariable(this.attributes.value, { em: this.em, trait: this });
+          break;
+        default:
+          throw new Error(`Invalid data variable type. Expected '${DataVariableType}', but found '${dataType}'.`);
+      }
 
-      const dv = this.dataVariable.getDataValue();
+      const dv = this.dynamicVariable.getDataValue();
       this.set({ value: dv });
-      this.dataVariableListener = new DataVariableListenerManager({
+      this.dynamicVariableListener = new DynamicVariableListenerManager({
         model: this,
         em: this.em,
-        dataVariable: this.dataVariable,
+        dataVariable: this.dynamicVariable,
         updateValueFromDataVariable: this.updateValueFromDataVariable.bind(this),
       });
     }
@@ -159,8 +160,8 @@ export default class Trait extends Model<TraitProperties> {
    * @returns {any}
    */
   getValue(opts?: TraitGetValueOptions) {
-    if (this.dataVariable) {
-      const dValue = this.dataVariable.getDataValue();
+    if (this.dynamicVariable) {
+      const dValue = this.dynamicVariable.getDataValue();
 
       return dValue;
     }
