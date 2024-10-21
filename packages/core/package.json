@@ -78,6 +78,8 @@
     "start:js": "node node_modules/grapesjs-cli/dist/cli.js serve",
     "start:css": "npm run build:css -- --watch",
     "test": "jest --forceExit",
-    "test:dev": "jest --watch"
+    "test:dev": "jest --watch",
+    "version:rc": "npm version --prerelease --preid rc --no-git-tag-version --no-commit-hooks",
+    "version:latest": "npm version --patch --no-git-tag-version --no-commit-hooks"
   }
 }
