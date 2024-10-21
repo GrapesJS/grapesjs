@@ -20,7 +20,8 @@
     "publish:core:rc": "cd packages/core && npm publish --tag rc --access public",
     "publish:core:latest": "cd packages/core && npm publish --access public",
     "build:core": "pnpm --filter grapesjs build",
-    "build:cli": "pnpm --filter grapesjs-cli build"
+    "build:cli": "pnpm --filter grapesjs-cli build",
+    "build:docs": "pnpm --filter @grapesjs/docs build"
   },
   "devDependencies": {
     "@babel/cli": "7.24.8",

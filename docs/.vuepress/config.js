@@ -103,7 +103,7 @@ module.exports = {
         ['/api/keymaps', 'Keymaps'],
         ['/api/undo_manager', 'Undo Manager'],
         ['/api/parser', 'Parser'],
-        ['/api/data_source_manager', 'Data Source Manager'],
+        ['/api/datasources', 'Data Sources'],
         ['/api/datasource', `${subDivider}DataSource`],
         ['/api/datarecord', `${subDivider}DataRecord`],
       ],
@@ -129,7 +129,7 @@ module.exports = {
             ['/modules/Storage', 'Storage Manager'],
             ['/modules/Modal', 'Modal'],
             ['/modules/Plugins', 'Plugins'],
-            ['/modules/DataSources', 'Data Sources'],
+            // ['/modules/DataSources', 'Data Sources'],
           ],
         },
         {
