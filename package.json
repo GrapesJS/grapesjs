@@ -4,6 +4,7 @@
   "packageManager": "pnpm@9.10.0",
   "scripts": {
     "start": "pnpm --filter grapesjs start",
+    "start:docs": "pnpm --filter @grapesjs/docs docs",
     "test": "pnpm -r run test",
     "docs": "pnpm --filter @grapesjs/docs docs",
     "docs:api": "pnpm --filter @grapesjs/docs docs:api",
@@ -20,7 +21,9 @@
     "publish:core:rc": "cd packages/core && npm publish --tag rc --access public",
     "publish:core:latest": "cd packages/core && npm publish --access public",
     "build:core": "pnpm --filter grapesjs build",
-    "build:cli": "pnpm --filter grapesjs-cli build"
+    "build:cli": "pnpm --filter grapesjs-cli build",
+    "build:docs:api": "pnpm --filter @grapesjs/docs docs:api",
+    "build:docs": "pnpm --filter @grapesjs/docs build"
   },
   "devDependencies": {
     "@babel/cli": "7.24.8",

@@ -39,6 +39,12 @@ Get block content
 
 Returns **([Object][2] | [String][1] | [Array][6]<([Object][2] | [String][1])>)**&#x20;
 
+## getDragDef
+
+Get block component dragDef
+
+Returns **ComponentDefinition**&#x20;
+
 ## getCategoryLabel
 
 Get block category label
