@@ -2,11 +2,11 @@ import fs from 'fs';
 import { resolve } from 'path';
 import { runCommand } from './common';
 
-const sdkPath = resolve(__dirname, '../packages/cli');
+const pathLib = resolve(__dirname, '../packages/cli');
 
 async function prepareCoreRelease() {
   try {
-    const releaseTag = process.argv[2];
+    const releaseTag = process.argv[2] || 'rc';
     console.log('Prepare release cli tag:', releaseTag);
 
     // Check if the current branch is clean (no staged changes)
@@ -17,10 +17,10 @@ async function prepareCoreRelease() {
 
     // Increment the CLI version
     const versionCmd = releaseTag === 'latest' ? '--patch' : `--prerelease --preid ${releaseTag}`;
-    // runCommand(`yarn workspace @grapesjs/studio-sdk version ${versionCmd} --no-git-tag-version --no-commit-hooks`);
+    runCommand(`pnpm --filter grapesjs-cli version ${versionCmd} --no-git-tag-version --no-commit-hooks`);
 
     // Create a new release branch
-    const newVersion = JSON.parse(fs.readFileSync(`${sdkPath}/package.json`, 'utf8')).version;
+    const newVersion = JSON.parse(fs.readFileSync(`${pathLib}/package.json`, 'utf8')).version;
     const newBranch = `release-v${newVersion}`;
     runCommand(`git checkout -b ${newBranch}`);
     runCommand('git add .');
