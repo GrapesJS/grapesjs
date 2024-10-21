@@ -37,9 +37,9 @@ import grapesjs from 'grapesjs';
 The first step is to define the interface of our editor. For this purpose we gonna start with basic HTML layouts. Finding a common structure for the UI of any project is not an easy task. That's why GrapesJS prefers to keep this process as simple as possible. We provide a few helpers, but let the user define the interface. This guarantees maximum flexibility.
 The main part of the GrapesJS editor is the canvas, this is where you create the structure of your templates and you can't miss it. Let's try to initiate the editor with the canvas and no panels.
 
-<<< @/docs/.vuepress/components/demos/DemoCanvasOnly.html
-<<< @/docs/.vuepress/components/demos/DemoCanvasOnly.js
-<<< @/docs/.vuepress/components/demos/DemoCanvasOnly.css
+<<< @/.vuepress/components/demos/DemoCanvasOnly.html
+<<< @/.vuepress/components/demos/DemoCanvasOnly.js
+<<< @/.vuepress/components/demos/DemoCanvasOnly.css
 <Demo>
 <DemoCanvasOnly/>
 </Demo>
@@ -277,7 +277,7 @@ Another utility tool you might find useful when working with web elements is the
 <div id="blocks"></div>
 ```
 
-<<< @/docs/.vuepress/components/demos/DemoLayers.css
+<<< @/.vuepress/components/demos/DemoLayers.css
 
 ```js
 const editor = grapesjs.init({

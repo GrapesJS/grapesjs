@@ -196,6 +196,40 @@ Get canvas rectangular data
 
 Returns **[Object][2]**&#x20;
 
+## startDrag
+
+Start custom drag-and-drop process.
+
+### Parameters
+
+*   `dragSource` **DragSource\<Component>** The source object for the drag operation, containing the component being dragged.
+
+### Examples
+
+```javascript
+// as component definition
+canvas.startDrag({
+ content: { type: 'my-component' }
+});
+// as HTML
+canvas.startDrag({
+ content: '<div>...</div>'
+});
+```
+
+## endDrag
+
+Ends the drag-and-drop process, resetting the drag source and clearing any drag results.
+This method can be used to finalize custom drag-and-drop content operations.
+
+### Examples
+
+```javascript
+canvas.startDrag({...});
+// ... drag finished ...
+canvas.endDrag();
+```
+
 ## hasFocus
 
 Check if the canvas is focused

@@ -1,0 +1,26 @@
+name: Publish GrapesJS core rc
+on:
+  push:
+    branches: [dev]
+    paths:
+      - 'packages/core/**'
+
+jobs:
+  publish:
+    if: "contains(github.event.head_commit.message, 'Release GrapesJS core rc:')"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-project
+      - name: Build cli
+        run: pnpm run build:cli
+      - name: Build core
+        run: pnpm run build:core
+      - name: Check core TS
+        run: pnpm run ts:check
+      - name: Publish to npm
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          echo "//registry.npmjs.org/:_authToken=${NODE_AUTH_TOKEN}" >> ./packages/core/.npmrc
+          pnpm publish:core:rc
