@@ -1,13 +1,13 @@
 import ComponentView from '../../dom_components/view/ComponentView';
 import ComponentDataVariable from '../model/ComponentDataVariable';
-import DataVariableListenerManager from '../model/DataVariableListenerManager';
+import DynamicVariableListenerManager from '../model/DataVariableListenerManager';
 
 export default class ComponentDataVariableView extends ComponentView<ComponentDataVariable> {
-  dataVariableListener?: DataVariableListenerManager;
+  dynamicVariableListener?: DynamicVariableListenerManager;
 
   initialize(opt = {}) {
     super.initialize(opt);
-    this.dataVariableListener = new DataVariableListenerManager({
+    this.dynamicVariableListener = new DynamicVariableListenerManager({
       model: this,
       em: this.em!,
       dataVariable: this.model,

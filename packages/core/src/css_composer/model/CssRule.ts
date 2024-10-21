@@ -7,7 +7,7 @@ import { isEmptyObj, hasWin } from '../../utils/mixins';
 import Selector, { SelectorProps } from '../../selector_manager/model/Selector';
 import EditorModel from '../../editor/model/Editor';
 import CssRuleView from '../view/CssRuleView';
-import DataVariableListenerManager from '../../data_sources/model/DataVariableListenerManager';
+import DynamicVariableListenerManager from '../../data_sources/model/DataVariableListenerManager';
 
 /** @private */
 export interface CssRuleProperties {
@@ -95,7 +95,7 @@ export default class CssRule extends StyleableModel<CssRuleProperties> {
   em?: EditorModel;
   opt: any;
   views: CssRuleView[] = [];
-  dataVariableListeners: Record<string, DataVariableListenerManager> = {};
+  dynamicVariableListeners: Record<string, DynamicVariableListenerManager> = {};
 
   defaults() {
     return {
