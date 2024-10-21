@@ -510,10 +510,18 @@ export default class CanvasModule extends Module<CanvasConfig> {
   }
 
   /**
-   * Sets the drag source in the editor so it's used in Droppable.ts.
-   * This method can be used for custom drag-and-drop content by passing in a `DragSource` object.
+   * Start custom drag-and-drop process.
    *
    * @param {DragSource<Component>} dragSource - The source object for the drag operation, containing the component being dragged.
+   * @example
+   * // as component definition
+   * canvas.startDrag({
+   *  content: { type: 'my-component' }
+   * });
+   * // as HTML
+   * canvas.startDrag({
+   *  content: '<div>...</div>'
+   * });
    */
   startDrag(dragSource: DragSource<Component>) {
     this.em.set('dragSource', dragSource);
@@ -522,6 +530,10 @@ export default class CanvasModule extends Module<CanvasConfig> {
   /**
    * Ends the drag-and-drop process, resetting the drag source and clearing any drag results.
    * This method can be used to finalize custom drag-and-drop content operations.
+   * @example
+   * canvas.startDrag({...});
+   * // ... drag finished ...
+   * canvas.endDrag();
    */
   endDrag() {
     this.em.set({ dragResult: null, dragSource: undefined });

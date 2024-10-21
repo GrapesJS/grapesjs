@@ -28,12 +28,13 @@
     "postcss": "8",
     "sass": "1.42.1",
     "vuepress": "1.9.10",
+    "webpack": "4.0.0",
     "whatwg-fetch": "3.6.20"
   },
   "scripts": {
     "docs": "vuepress dev .",
     "docs:api": "node ./api.mjs",
-    "build": "vuepress build .",
+    "build": "npm run docs:api && vuepress build .",
     "docs:deploy": "./deploy.sh"
   }
 }
