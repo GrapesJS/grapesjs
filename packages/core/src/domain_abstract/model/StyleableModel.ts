@@ -6,7 +6,7 @@ import { shallowDiff } from '../../utils/mixins';
 import EditorModel from '../../editor/model/Editor';
 import StyleDataVariable from '../../data_sources/model/StyleDataVariable';
 import { DataVariableType } from '../../data_sources/model/DataVariable';
-import DataVariableListenerManager from '../../data_sources/model/DataVariableListenerManager';
+import DynamicVariableListenerManager from '../../data_sources/model/DataVariableListenerManager';
 import CssRuleView from '../../css_composer/view/CssRuleView';
 import ComponentView from '../../dom_components/view/ComponentView';
 import Frame from '../../canvas/model/Frame';
@@ -39,7 +39,7 @@ export const getLastStyleValue = (value: string | string[]) => {
 
 export default class StyleableModel<T extends ObjectHash = any> extends Model<T> {
   em?: EditorModel;
-  dataVariableListeners: Record<string, DataVariableListenerManager> = {};
+  dynamicVariableListeners: Record<string, DynamicVariableListenerManager> = {};
   views: StyleableView[] = [];
 
   constructor(attributes: T, options: { em?: EditorModel } = {}) {
@@ -114,9 +114,17 @@ export default class StyleableModel<T extends ObjectHash = any> extends Model<T>
 
       const styleValue = newStyle[key];
       if (typeof styleValue === 'object' && styleValue.type === DataVariableType) {
-        const styleDataVariable = new StyleDataVariable(styleValue, { em: this.em });
-        newStyle[key] = styleDataVariable;
-        this.manageDataVariableListener(styleDataVariable, key);
+        const dynamicType = styleValue.type;
+        let styleDynamicVariable;
+        switch (dynamicType) {
+          case DataVariableType:
+            styleDynamicVariable = new StyleDataVariable(styleValue, { em: this.em });
+            break;
+          default:
+            throw new Error(`Invalid data variable type. Expected '${DataVariableType}', but found '${dynamicType}'.`);
+        }
+        newStyle[key] = styleDynamicVariable;
+        this.manageDataVariableListener(styleDynamicVariable, key);
       }
     });
 
@@ -146,10 +154,10 @@ export default class StyleableModel<T extends ObjectHash = any> extends Model<T>
    * Manage DataVariableListenerManager for a style property
    */
   manageDataVariableListener(dataVar: StyleDataVariable, styleProp: string) {
-    if (this.dataVariableListeners[styleProp]) {
-      this.dataVariableListeners[styleProp].listenToDataVariable();
+    if (this.dynamicVariableListeners[styleProp]) {
+      this.dynamicVariableListeners[styleProp].listenToDynamicVariable();
     } else {
-      this.dataVariableListeners[styleProp] = new DataVariableListenerManager({
+      this.dynamicVariableListeners[styleProp] = new DynamicVariableListenerManager({
         model: this,
         em: this.em!,
         dataVariable: dataVar,
