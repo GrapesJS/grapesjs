@@ -1,0 +1,49 @@
+name: Publish Docs
+
+on:
+  push:
+    tags:
+      - 'docs-*'
+    branches:
+      - dev
+
+jobs:
+  publish-docs:
+    runs-on: ubuntu-latest
+    if: github.ref_type == 'tag' && startsWith(github.ref, 'refs/tags/docs-')
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-project
+      - name: Setup Git
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+      - name: Build and Deploy Docs
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        working-directory: ./docs
+        run: |
+          # abort on errors
+          set -e
+          # navigate into the build output directory
+          cd .vuepress/dist
+
+          # Need to deploy all the documentation inside docs folder
+          mkdir docs-new
+
+          # move all the files from the current directory in docs
+          mv `ls -1 ./ | grep -v docs-new` ./docs-new
+
+          # fetch the current site, remove the old docs dir and make current the new one
+          git clone -b main https://github.com/GrapesJS/website.git tmp && mv tmp/* tmp/.* . && rm -rf tmp
+          rm -fR public/docs
+          mv ./docs-new ./public/docs
+
+          # stage all and commit
+          git add -A
+          git commit -m 'deploy docs'
+          git push https://x-access-token:${GITHUB_TOKEN}@github.com/GrapesJS/website.git main
+
+          cd -
