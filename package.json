@@ -12,7 +12,15 @@
     "ts:check": "pnpm --filter grapesjs ts:check",
     "clean": "find . -type d \\( -name \"node_modules\" -o -name \"build\" -o -name \"dist\" \\) -exec rm -rf {} + && rm ./pnpm-lock.yaml",
     "format": "prettier . --write --ignore-path .prettierignore",
-    "format:check": "prettier . --check --ignore-path .prettierignore"
+    "format:check": "prettier . --check --ignore-path .prettierignore",
+    "release:core:rc": "ts-node scripts/releaseCore rc",
+    "release:core:latest": "ts-node scripts/releaseCore latest",
+    "release:cli:rc": "ts-node scripts/releaseCli rc",
+    "release:cli:latest": "ts-node scripts/releaseCli latest",
+    "publish:core:rc": "cd packages/core && npm publish --tag rc --access public",
+    "publish:core:latest": "cd packages/core && npm publish --access public",
+    "build:core": "pnpm --filter grapesjs build",
+    "build:cli": "pnpm --filter grapesjs-cli build"
   },
   "devDependencies": {
     "@babel/cli": "7.24.8",
