@@ -16,7 +16,8 @@ async function prepareCoreRelease() {
     );
 
     // Increment the Core version
-    runCommand(`pnpm --filter grapesjs run version:${releaseTag}`);
+    const versionCmd = releaseTag === 'latest' ? 'patch' : `prerelease --preid ${releaseTag}`;
+    runCommand(`pnpm --filter grapesjs exec npm version ${versionCmd} --no-git-tag-version --no-commit-hooks`);
 
     // Create a new release branch
     const newVersion = JSON.parse(fs.readFileSync(`${pathLib}/package.json`, 'utf8')).version;
