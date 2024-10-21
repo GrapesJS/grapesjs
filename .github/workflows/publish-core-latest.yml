@@ -12,9 +12,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup-project
-      - name: Build
+      - name: Build cli
+        run: pnpm run build:cli
+      - name: Build core
         run: pnpm run build:core
-      - name: Check TS
+      - name: Check core TS
         run: pnpm run ts:check
       - name: Publish to npm
         env:
