@@ -37,7 +37,7 @@
     "@types/node": "22.4.1",
     "@types/underscore": "^1.11.15",
     "@typescript-eslint/eslint-plugin": "8.10.0",
-    "@typescript-eslint/parser": "8.0.1",
+    "@typescript-eslint/parser": "8.10.0",
     "cross-env": "7.0.3",
     "css-loader": "7.1.2",
     "dotenv": "16.4.5",
