@@ -1,16 +1,15 @@
-name: Publish Docs
+name: Publish GrapesJS Docs
 
 on:
   push:
-    tags:
-      - 'docs-*'
-    branches:
-      - dev
+    branches: [dev]
+    paths:
+      - 'packages/docs/**'
 
 jobs:
   publish-docs:
     runs-on: ubuntu-latest
-    if: github.ref_type == 'tag' && startsWith(github.ref, 'refs/tags/docs-')
+    if: "contains(github.event.head_commit.message, 'Release GrapesJS docs:')"
     permissions:
       contents: write
     steps:
