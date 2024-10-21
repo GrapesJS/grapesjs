@@ -1,4 +1,4 @@
-name: Publish GrapesJS Core
+name: Publish GrapesJS core rc
 on:
   push:
     branches: [dev]
@@ -23,4 +23,4 @@ jobs:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
           echo "//registry.npmjs.org/:_authToken=${NODE_AUTH_TOKEN}" >> ./packages/core/.npmrc
-          yarn publish:core:rc
+          pnpm publish:core:rc
