@@ -2,7 +2,7 @@ import fs from 'fs';
 import { resolve } from 'path';
 import { runCommand } from './common';
 
-const pathLib = resolve(__dirname, '../packages/core');
+const pathLib = resolve(__dirname, '../docs');
 
 async function prepareCoreRelease() {
   try {
