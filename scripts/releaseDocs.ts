@@ -21,7 +21,7 @@ async function prepareCoreRelease() {
 
     // Create a new release branch
     const newVersion = JSON.parse(fs.readFileSync(`${pathLib}/package.json`, 'utf8')).version;
-    const newBranch = `release-v${newVersion}`;
+    const newBranch = `release-docs-v${newVersion}`;
     runCommand(`git checkout -b ${newBranch}`);
     runCommand('git add .');
     runCommand(`git commit -m "Release GrapesJS docs ${releaseTag}: v${newVersion}"`);
