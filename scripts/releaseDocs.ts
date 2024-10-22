@@ -6,9 +6,6 @@ const pathLib = resolve(__dirname, '../docs');
 
 async function prepareCoreRelease() {
   try {
-    const releaseTag = process.argv[2];
-    console.log('Prepare release docs tag:', releaseTag);
-
     // Check if the current branch is clean (no staged changes)
     runCommand(
       'git diff-index --quiet HEAD --',
