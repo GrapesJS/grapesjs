@@ -34,7 +34,6 @@
   "scripts": {
     "docs": "vuepress dev .",
     "docs:api": "node ./api.mjs",
-    "build": "npm run docs:api && vuepress build .",
-    "docs:deploy": "./deploy.sh"
+    "build": "npm run docs:api && vuepress build ."
   }
 }

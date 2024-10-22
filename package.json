@@ -21,6 +21,7 @@
     "publish:core:rc": "cd packages/core && npm publish --tag rc --access public",
     "publish:core:latest": "cd packages/core && npm publish --access public",
     "build:core": "pnpm --filter grapesjs build",
+    "release:docs": "ts-node scripts/releaseDocs latest",
     "build:cli": "pnpm --filter grapesjs-cli build",
     "build:docs:api": "pnpm --filter @grapesjs/docs docs:api",
     "build:docs": "pnpm --filter @grapesjs/docs build"
