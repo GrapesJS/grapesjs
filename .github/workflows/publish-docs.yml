@@ -4,12 +4,12 @@ on:
   push:
     branches: [dev]
     paths:
-      - '/docs/**'
+      - 'docs/**'
 
 jobs:
   publish-docs:
     runs-on: ubuntu-latest
-    if: "contains(github.event.head_commit.message, 'Release GrapesJS docs:')"
+    if: "startsWith(github.event.head_commit.message, 'Release GrapesJS docs:')"
     permissions:
       contents: write
     steps:
