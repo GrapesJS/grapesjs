@@ -2,7 +2,7 @@
   "name": "@grapesjs/docs",
   "private": true,
   "description": "Free and Open Source Web Builder Framework",
-  "version": "0.21.14",
+  "version": "0.21.13",
   "license": "BSD-3-Clause",
   "homepage": "http://grapesjs.com",
   "files": [
