@@ -43,6 +43,9 @@ jobs:
           # stage all and commit
           git add -A
           git commit -m 'deploy docs'
+
+          # Pass the GITHUB_TOKEN before push: https://stackoverflow.com/a/69979203
+          git config --unset-all http.https://github.com/.extraheader
           git push https://x-access-token:${GITHUB_TOKEN}@github.com/GrapesJS/website.git main
 
           cd -
