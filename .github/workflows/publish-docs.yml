@@ -36,7 +36,10 @@ jobs:
           mv `ls -1 ./ | grep -v docs-new` ./docs-new
 
           # fetch the current site, remove the old docs dir and make current the new one
-          git clone -b main https://github.com/GrapesJS/website.git tmp && mv tmp/* tmp/.* . && rm -rf tmp
+          git clone -b main https://github.com/GrapesJS/website.git tmp
+          mv tmp/[^.]* . # Move all non-hidden files
+          mv tmp/.[^.]* . 2>/dev/null || true # Move hidden files, ignore errors if none exist
+          rm -rf tmp
           rm -fR public/docs
           mv ./docs-new ./public/docs
 
