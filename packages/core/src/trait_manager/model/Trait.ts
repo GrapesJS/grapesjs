@@ -69,7 +69,9 @@ export default class Trait extends Model<TraitProperties> {
           this.dynamicVariable = new DataCondition(condition, ifTrue, ifFalse, { em: this.em });
           break;
         default:
-          throw new Error(`Invalid data variable type. Expected '${DataVariableType}', but found '${dataType}'.`);
+          throw new Error(
+            `Invalid data variable type. Expected '${DataVariableType} or ${DataConditionType}', but found '${dataType}'.`,
+          );
       }
 
       const dv = this.dynamicVariable.getDataValue();
