@@ -156,7 +156,7 @@ export default class StyleableModel<T extends ObjectHash = any> extends Model<T>
         break;
       case DataConditionType:
         const { condition, ifTrue, ifFalse } = styleValue;
-        styleDynamicVariable = new DataCondition(true, 'red', ifFalse, { em: this.em! });
+        styleDynamicVariable = new DataCondition(condition, ifTrue, ifFalse, { em: this.em! });
         break;
       default:
         throw new Error(
@@ -216,7 +216,7 @@ export default class StyleableModel<T extends ObjectHash = any> extends Model<T>
       }
 
       if (this.isDynamicValue(styleValue)) {
-        const dataVar = new StyleDataVariable(styleValue, { em: this.em });
+        const dataVar = this.resolveDynamicValue(styleValue);
         resolvedStyle[key] = dataVar.getDataValue();
       }
 
