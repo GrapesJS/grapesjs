@@ -59,14 +59,6 @@ export class DataCondition extends Model {
     this.conditionResult = this.evaluate();
   }
 
-  toJSON() {
-    return {
-      condition: this.condition,
-      ifTrue: this.ifTrue,
-      ifFalse: this.ifFalse,
-    };
-  }
-
   private listenToDataVariables() {
     if (!this.em) return;
 

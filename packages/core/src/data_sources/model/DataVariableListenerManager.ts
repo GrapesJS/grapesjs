@@ -2,14 +2,14 @@ import { DataSourcesEvents, DataVariableListener } from '../types';
 import { stringToPath } from '../../utils/mixins';
 import { Model } from '../../common';
 import EditorModel from '../../editor/model/Editor';
-import DataVariable, { DataVariableType } from './DataVariable';
+import { DataVariableType } from './DataVariable';
 import ComponentView from '../../dom_components/view/ComponentView';
-import ComponentDataVariable from './ComponentDataVariable';
+import { DynamicValue } from '../types';
 
 export interface DynamicVariableListenerManagerOptions {
   model: Model | ComponentView;
   em: EditorModel;
-  dataVariable: DataVariable | ComponentDataVariable;
+  dataVariable: DynamicValue;
   updateValueFromDataVariable: (value: any) => void;
 }
 
@@ -17,7 +17,7 @@ export default class DynamicVariableListenerManager {
   private dataListeners: DataVariableListener[] = [];
   private em: EditorModel;
   private model: Model | ComponentView;
-  private dynamicVariable: DataVariable | ComponentDataVariable;
+  private dynamicVariable: DynamicValue;
   private updateValueFromDynamicVariable: (value: any) => void;
 
   constructor(options: DynamicVariableListenerManagerOptions) {
@@ -50,7 +50,7 @@ export default class DynamicVariableListenerManager {
     this.dataListeners = dataListeners;
   }
 
-  private listenToDataVariable(dataVariable: DataVariable | ComponentDataVariable, em: EditorModel) {
+  private listenToDataVariable(dataVariable: DynamicValue, em: EditorModel) {
     const dataListeners: DataVariableListener[] = [];
     const { path } = dataVariable.attributes;
     const normPath = stringToPath(path || '').join('.');

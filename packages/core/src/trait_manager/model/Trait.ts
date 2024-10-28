@@ -1,3 +1,4 @@
+import { DataConditionType, DataCondition } from './../../data_sources/model/conditional_variables/DataCondition';
 import { isString, isUndefined } from 'underscore';
 import Category from '../../abstract/ModuleCategory';
 import { LocaleOptions, Model, SetOptions } from '../../common';
@@ -29,7 +30,7 @@ export default class Trait extends Model<TraitProperties> {
   em: EditorModel;
   view?: TraitView;
   el?: HTMLElement;
-  dynamicVariable?: TraitDataVariable;
+  dynamicVariable?: TraitDataVariable | DataCondition;
   dynamicVariableListener?: DynamicVariableListenerManager;
 
   defaults() {
@@ -62,6 +63,10 @@ export default class Trait extends Model<TraitProperties> {
       switch (dataType) {
         case DataVariableType:
           this.dynamicVariable = new TraitDataVariable(this.attributes.value, { em: this.em, trait: this });
+          break;
+        case DataConditionType:
+          const { condition, ifTrue, ifFalse } = this.attributes.value;
+          this.dynamicVariable = new DataCondition(condition, ifTrue, ifFalse, { em: this.em });
           break;
         default:
           throw new Error(`Invalid data variable type. Expected '${DataVariableType}', but found '${dataType}'.`);

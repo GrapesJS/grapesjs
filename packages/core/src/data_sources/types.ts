@@ -1,7 +1,11 @@
 import { ObjectAny } from '../common';
+import ComponentDataVariable from './model/ComponentDataVariable';
 import DataRecord from './model/DataRecord';
 import DataRecords from './model/DataRecords';
+import DataVariable from './model/DataVariable';
+import { DataCondition } from './model/conditional_variables/DataCondition';
 
+export type DynamicValue = DataVariable | ComponentDataVariable | DataCondition;
 export interface DataRecordProps extends ObjectAny {
   /**
    * Record id.
