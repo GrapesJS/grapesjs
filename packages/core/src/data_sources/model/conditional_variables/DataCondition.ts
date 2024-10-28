@@ -65,9 +65,7 @@ export class DataCondition extends Model {
     // Clear previous listeners to avoid memory leaks
     this.cleanupListeners();
 
-    const dataVariables = this.condition.getDataVariables();
-    if (isDataVariable(this.ifTrue)) dataVariables.push(this.ifTrue);
-    if (isDataVariable(this.ifFalse)) dataVariables.push(this.ifFalse);
+    const dataVariables = this.getDependentDataVariables();
 
     dataVariables.forEach((variable) => {
       const variableInstance = new DataVariable(variable, { em: this.em });
@@ -80,6 +78,14 @@ export class DataCondition extends Model {
 
       this.variableListeners.push(listener);
     });
+  }
+
+  getDependentDataVariables() {
+    const dataVariables = this.condition.getDataVariables();
+    if (isDataVariable(this.ifTrue)) dataVariables.push(this.ifTrue);
+    if (isDataVariable(this.ifFalse)) dataVariables.push(this.ifFalse);
+
+    return dataVariables;
   }
 
   private cleanupListeners() {

@@ -2,9 +2,12 @@ import { DataSourcesEvents, DataVariableListener } from '../types';
 import { stringToPath } from '../../utils/mixins';
 import { Model } from '../../common';
 import EditorModel from '../../editor/model/Editor';
-import { DataVariableType } from './DataVariable';
+import DataVariable, { DataVariableType } from './DataVariable';
 import ComponentView from '../../dom_components/view/ComponentView';
 import { DynamicValue } from '../types';
+import { DataCondition, DataConditionType } from './conditional_variables/DataCondition';
+import ComponentDataVariable from './ComponentDataVariable';
+import ComponentConditionalVariable from './conditional_variables/ComponentConditionalVariable';
 
 export interface DynamicVariableListenerManagerOptions {
   model: Model | ComponentView;
@@ -42,7 +45,13 @@ export default class DynamicVariableListenerManager {
     let dataListeners: DataVariableListener[] = [];
     switch (type) {
       case DataVariableType:
-        dataListeners = this.listenToDataVariable(dynamicVariable, em);
+        dataListeners = this.listenToDataVariable(dynamicVariable as DataVariable | ComponentDataVariable, em);
+        break;
+      case DataConditionType:
+        dataListeners = this.listenToConditionalVariable(
+          dynamicVariable as DataCondition | ComponentConditionalVariable,
+          em,
+        );
         break;
     }
     dataListeners.forEach((ls) => model.listenTo(ls.obj, ls.event, this.onChange));
@@ -50,7 +59,15 @@ export default class DynamicVariableListenerManager {
     this.dataListeners = dataListeners;
   }
 
-  private listenToDataVariable(dataVariable: DynamicValue, em: EditorModel) {
+  private listenToConditionalVariable(dataVariable: DataCondition | ComponentConditionalVariable, em: EditorModel) {
+    const dataListeners = dataVariable.getDependentDataVariables().flatMap((dataVariable) => {
+      return this.listenToDataVariable(dataVariable, em);
+    });
+
+    return dataListeners;
+  }
+
+  private listenToDataVariable(dataVariable: DataVariable | ComponentDataVariable, em: EditorModel) {
     const dataListeners: DataVariableListener[] = [];
     const { path } = dataVariable.attributes;
     const normPath = stringToPath(path || '').join('.');
