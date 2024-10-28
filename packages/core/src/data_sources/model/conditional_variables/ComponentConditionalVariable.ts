@@ -12,9 +12,7 @@ export default class ComponentConditionalVariable extends Component {
   }
 
   getInnerHTML() {
-    const val = this.getDataValue();
-
-    return val;
+    return this.getDataValue();
   }
 
   static isComponent(el: HTMLElement) {
