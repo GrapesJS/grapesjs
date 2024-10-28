@@ -37,6 +37,9 @@ export default class DataVariable extends Model {
 
   getDataValue() {
     const { path, defaultValue } = this.attributes;
+    if (!this.em) {
+      throw new Error('EditorModel instance is not provided for a data variable.');
+    }
     const val = this.em?.DataSources.getValue(path, defaultValue);
 
     return val;
