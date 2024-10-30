@@ -1,4 +1,3 @@
-import { Model, ObjectAny } from '../../../common';
 import Component from '../../../dom_components/model/Component';
 import { ComponentDefinition, ComponentOptions, ComponentProperties } from '../../../dom_components/model/types';
 import { toLowerCase } from '../../../utils/mixins';
@@ -21,7 +20,7 @@ export default class ComponentConditionalVariable extends Component {
 
   constructor(componentDefinition: ConditionalComponentDefinition, opt: ComponentOptions) {
     if (!componentDefinition.condition) {
-      throw new MissingConditionError;
+      throw new MissingConditionError();
     }
 
     const { condition, ifTrue, ifFalse } = componentDefinition;
@@ -44,7 +43,7 @@ export default class ComponentConditionalVariable extends Component {
     return toLowerCase(el.tagName) === DataConditionType;
   }
 
-  toJSON(opts?: ObjectAny): ComponentDefinition {
-    return Model.prototype.toJSON.call(this.componentDefinition, opts)
+  toJSON(): ComponentDefinition {
+    return this.componentDefinition;
   }
 }
