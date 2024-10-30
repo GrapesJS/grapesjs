@@ -48,10 +48,7 @@ export default class DynamicVariableListenerManager {
         dataListeners = this.listenToDataVariable(dynamicVariable as DataVariable | ComponentDataVariable, em);
         break;
       case DataConditionType:
-        dataListeners = this.listenToConditionalVariable(
-          dynamicVariable as DataCondition | ComponentConditionalVariable,
-          em,
-        );
+        dataListeners = this.listenToConditionalVariable(dynamicVariable as DataCondition, em);
         break;
     }
     dataListeners.forEach((ls) => model.listenTo(ls.obj, ls.event, this.onChange));
@@ -59,7 +56,7 @@ export default class DynamicVariableListenerManager {
     this.dataListeners = dataListeners;
   }
 
-  private listenToConditionalVariable(dataVariable: DataCondition | ComponentConditionalVariable, em: EditorModel) {
+  private listenToConditionalVariable(dataVariable: DataCondition, em: EditorModel) {
     const dataListeners = dataVariable.getDependentDataVariables().flatMap((dataVariable) => {
       return this.listenToDataVariable(dataVariable, em);
     });

@@ -127,7 +127,7 @@ import ComponentDataVariableView from '../data_sources/view/ComponentDataVariabl
 import { DataVariableType } from '../data_sources/model/DataVariable';
 import { DataConditionType } from '../data_sources/model/conditional_variables/DataCondition';
 import ComponentConditionalVariable from '../data_sources/model/conditional_variables/ComponentConditionalVariable';
-import ComponentComponentVariableView from '../data_sources/view/ComponentConditionalVariableView';
+import DynamicView from '../data_sources/view/ComponentDynamicView';
 
 export type ComponentEvent =
   | 'component:create'
@@ -196,7 +196,7 @@ export default class ComponentManager extends ItemManagerModule<DomComponentsCon
     {
       id: DataConditionType,
       model: ComponentConditionalVariable,
-      view: ComponentComponentVariableView,
+      view: DynamicView,
     },
     {
       id: DataVariableType,

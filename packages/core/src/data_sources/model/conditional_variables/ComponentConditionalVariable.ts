@@ -1,28 +1,19 @@
 import Component from '../../../dom_components/model/Component';
+import { ComponentOptions, ComponentProperties } from '../../../dom_components/model/types';
 import { toLowerCase } from '../../../utils/mixins';
-import { evaluateVariable, isDataVariable } from '../utils';
-import { Condition } from './Condition';
 import { DataCondition, DataConditionType } from './DataCondition';
 
 export default class ComponentConditionalVariable extends Component {
-  getDataValue(): any {
-    const dataCondtion = this.getDataCondition();
-    return dataCondtion.getDataValue();
-  }
+  dataCondition: DataCondition;
 
-  getDependentDataVariables() {
-    const dataCondtion = this.getDataCondition();
-    return dataCondtion.getDependentDataVariables();
-  }
+  constructor(props: ComponentProperties = {}, opt: ComponentOptions) {
+    let componentProperties = props;
+    const { condition, ifTrue, ifFalse } = props;
+    const dataCondtion = new DataCondition(condition, ifTrue, ifFalse, { em: opt.em });
+    componentProperties = dataCondtion.getDataValue();
 
-  private getDataCondition() {
-    const { condition, ifTrue, ifFalse, em } = this.attributes;
-    const dataCondtion = new DataCondition(condition, ifTrue, ifFalse, { em });
-    return dataCondtion;
-  }
-
-  getInnerHTML() {
-    return this.getDataValue();
+    super(componentProperties, opt);
+    this.dataCondition = dataCondtion;
   }
 
   static isComponent(el: HTMLElement) {
