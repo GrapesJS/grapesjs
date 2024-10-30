@@ -41,6 +41,10 @@ export class DataCondition extends Model {
     private ifFalse: any,
     opts: { em: EditorModel; onValueChange?: () => void },
   ) {
+    if (!condition) {
+      throw new MissingConditionError();
+    }
+
     super();
     this.condition = new Condition(condition, { em: opts.em });
     this.em = opts.em;
@@ -100,3 +104,9 @@ export class DataCondition extends Model {
     this.variableListeners = [];
   }
 }
+export class MissingConditionError extends Error {
+  constructor() {
+    super('No condition was provided to a conditional component.');
+  }
+}
+

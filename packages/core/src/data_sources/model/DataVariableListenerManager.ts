@@ -7,7 +7,6 @@ import ComponentView from '../../dom_components/view/ComponentView';
 import { DynamicValue } from '../types';
 import { DataCondition, DataConditionType } from './conditional_variables/DataCondition';
 import ComponentDataVariable from './ComponentDataVariable';
-import ComponentConditionalVariable from './conditional_variables/ComponentConditionalVariable';
 
 export interface DynamicVariableListenerManagerOptions {
   model: Model | ComponentView;
