@@ -37,7 +37,6 @@ describe('ComponentConditionalVariable', () => {
         content: 'some text',
       },
     })[0];
-
     expect(component).toBeDefined();
     expect(component.get('type')).toBe(ConditionalVariableType);
     expect(component.getInnerHTML()).toBe('<h1>some text</h1>');
