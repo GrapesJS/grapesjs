@@ -1,17 +1,35 @@
+import { Model, ObjectAny } from '../../../common';
 import Component from '../../../dom_components/model/Component';
-import { ComponentOptions, ComponentProperties } from '../../../dom_components/model/types';
+import { ComponentDefinition, ComponentOptions, ComponentProperties } from '../../../dom_components/model/types';
 import { toLowerCase } from '../../../utils/mixins';
-import { DataCondition, DataConditionType } from './DataCondition';
+import { DataCondition, DataConditionType, Expression, LogicGroup } from './DataCondition';
+
+type ConditionalComponentDefinition = {
+  condition?: Expression | LogicGroup | boolean;
+  ifTrue: any;
+  ifFalse: any;
+};
+export class MissingConditionError extends Error {
+  constructor() {
+    super('No condition was provided to a conditional component.');
+  }
+}
 
 export default class ComponentConditionalVariable extends Component {
   dataCondition: DataCondition;
+  componentDefinition: ConditionalComponentDefinition;
 
-  constructor(props: ComponentProperties = {}, opt: ComponentOptions) {
-    const { condition, ifTrue, ifFalse } = props;
+  constructor(componentDefinition: ConditionalComponentDefinition, opt: ComponentOptions) {
+    if (!componentDefinition.condition) {
+      throw new MissingConditionError;
+    }
+
+    const { condition, ifTrue, ifFalse } = componentDefinition;
     const dataCondtion = new DataCondition(condition, ifTrue, ifFalse, { em: opt.em });
-    const componentProperties = dataCondtion.getDataValue();
+    const props = dataCondtion.getDataValue();
 
-    super(componentProperties, opt);
+    super(props, opt);
+    this.componentDefinition = componentDefinition;
     this.dataCondition = dataCondtion;
     this.dataCondition.onValueChange = this.onValueChange.bind(this);
   }
