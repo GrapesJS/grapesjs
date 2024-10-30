@@ -251,11 +251,13 @@ describe('ComponentConditionalVariable', () => {
         operator: NumberOperation.greaterThan,
         right: -1,
       },
-      ifTrue: [{
-        tagName: 'h1',
-        type: 'text',
-        content: 'some text',
-      }],
+      ifTrue: [
+        {
+          tagName: 'h1',
+          type: 'text',
+          content: 'some text',
+        },
+      ],
     };
 
     cmpRoot.append(conditionalCmptDef)[0];
