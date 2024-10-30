@@ -43,4 +43,8 @@ export default class ComponentConditionalVariable extends Component {
   static isComponent(el: HTMLElement) {
     return toLowerCase(el.tagName) === DataConditionType;
   }
+
+  toJSON(opts?: ObjectAny): ComponentDefinition {
+    return Model.prototype.toJSON.call(this.componentDefinition, opts)
+  }
 }
