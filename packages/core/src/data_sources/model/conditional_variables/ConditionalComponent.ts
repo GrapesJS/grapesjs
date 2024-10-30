@@ -46,24 +46,24 @@ export default class ComponentConditionalVariable extends Component {
 
   private refreshComponentState() {
     if (this.dataCondition.lastEvaluationResult) {
-      this.assignComponents({ newIfTrueComponents: this.components() });
+      this.assignComponents({ positiveCaseComponents: this.components() });
     } else {
-      this.assignComponents({ newIfFalseComponents: this.components() });
+      this.assignComponents({ negativeCaseComponents: this.components() });
     }
   }
 
   private assignComponents({
-    newIfTrueComponents,
-    newIfFalseComponents,
+    positiveCaseComponents,
+    negativeCaseComponents,
   }: {
-    newIfTrueComponents?: Components;
-    newIfFalseComponents?: Components;
+    positiveCaseComponents?: Components;
+    negativeCaseComponents?: Components;
   }) {
-    if (newIfTrueComponents) {
-      this.dataCondition.ifTrue = newIfTrueComponents;
+    if (positiveCaseComponents) {
+      this.dataCondition.ifTrue = positiveCaseComponents;
     }
-    if (newIfFalseComponents) {
-      this.dataCondition.ifFalse = newIfFalseComponents;
+    if (negativeCaseComponents) {
+      this.dataCondition.ifFalse = negativeCaseComponents;
     }
   }
 
