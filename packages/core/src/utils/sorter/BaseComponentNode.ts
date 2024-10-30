@@ -234,7 +234,8 @@ export abstract class BaseComponentNode extends SortableTreeNode<Component> {
 function isDisplayed(element: HTMLElement | undefined): boolean {
   if (!element) return false;
   return (
-    element instanceof HTMLElement &&
+    typeof element === 'object' &&
+    element.nodeType === Node.ELEMENT_NODE &&
     window.getComputedStyle(element).display !== 'none' &&
     element.offsetWidth > 0 &&
     element.offsetHeight > 0
