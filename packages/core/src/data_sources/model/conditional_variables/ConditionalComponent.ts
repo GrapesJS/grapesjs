@@ -37,7 +37,7 @@ export default class ComponentConditionalVariable extends Component {
     this.set(updatedProperties);
   }
 
-  refreshComponentState() {
+  private refreshComponentState() {
     if (this.dataCondition.lastEvaluationResult) {
       this.assignComponents({ newIfTrueComponents: this.components() });
     } else {
