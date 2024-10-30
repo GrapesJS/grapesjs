@@ -7,10 +7,9 @@ export default class ComponentConditionalVariable extends Component {
   dataCondition: DataCondition;
 
   constructor(props: ComponentProperties = {}, opt: ComponentOptions) {
-    let componentProperties = props;
     const { condition, ifTrue, ifFalse } = props;
     const dataCondtion = new DataCondition(condition, ifTrue, ifFalse, { em: opt.em });
-    componentProperties = dataCondtion.getDataValue();
+    const componentProperties = dataCondtion.getDataValue();
 
     super(componentProperties, opt);
     this.dataCondition = dataCondtion;
