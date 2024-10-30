@@ -57,7 +57,7 @@ export default class DynamicVariableListenerManager {
 
   private listenToConditionalVariable(dataVariable: DataCondition, em: EditorModel) {
     const dataListeners = dataVariable.getDependentDataVariables().flatMap((dataVariable) => {
-      return this.listenToDataVariable(dataVariable, em);
+      return this.listenToDataVariable(new DataVariable(dataVariable, { em: this.em }), em);
     });
 
     return dataListeners;

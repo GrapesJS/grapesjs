@@ -1,6 +1,6 @@
+import { DataVariableType } from './../DataVariable';
 import { Model } from 'backbone';
 import EditorModel from '../../../editor/model/Editor';
-import DataVariable from '../DataVariable';
 import { evaluateVariable, isDataVariable } from '../utils';
 import { Expression, LogicGroup } from './DataCondition';
 import { LogicalGroupStatement } from './LogicalGroupStatement';
@@ -67,8 +67,8 @@ export class Condition extends Model {
   /**
    * Extracts all data variables from the condition, including nested ones.
    */
-  getDataVariables(): DataVariable[] {
-    const variables: DataVariable[] = [];
+  getDataVariables() {
+    const variables: { type: typeof DataVariableType }[] = [];
     this.extractVariables(this.condition, variables);
     return variables;
   }
@@ -76,7 +76,10 @@ export class Condition extends Model {
   /**
    * Recursively extracts variables from expressions or logic groups.
    */
-  private extractVariables(condition: boolean | LogicGroup | Expression, variables: DataVariable[]): void {
+  private extractVariables(
+    condition: boolean | LogicGroup | Expression,
+    variables: { type: typeof DataVariableType }[],
+  ): void {
     if (this.isExpression(condition)) {
       if (isDataVariable(condition.left)) variables.push(condition.left);
       if (isDataVariable(condition.right)) variables.push(condition.right);

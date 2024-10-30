@@ -71,7 +71,7 @@ export class DataCondition extends Model {
   }
 
   private listenToDataVariables() {
-    if (!this.em || !this._onValueChange) return;
+    if (!this.em) return;
 
     // Clear previous listeners to avoid memory leaks
     this.cleanupListeners();
@@ -84,7 +84,10 @@ export class DataCondition extends Model {
         model: this as any,
         em: this.em!,
         dataVariable: variableInstance,
-        updateValueFromDataVariable: this._onValueChange!,
+        updateValueFromDataVariable: (() => {
+          this.reevaluate();
+          this._onValueChange?.();
+        }).bind(this),
       });
 
       this.variableListeners.push(listener);
