@@ -41,7 +41,7 @@ export class DataCondition extends Model {
     private _ifFalse: any,
     opts: { em: EditorModel; onValueChange?: () => void },
   ) {
-    if (!condition) {
+    if (typeof condition === 'undefined') {
       throw new MissingConditionError();
     }
 
