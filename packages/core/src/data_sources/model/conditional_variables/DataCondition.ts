@@ -26,6 +26,7 @@ export class DataCondition extends Model {
   private condition: Condition;
   private em: EditorModel;
   private variableListeners: DynamicVariableListenerManager[] = [];
+  private _onValueChange?: () => void;
 
   defaults() {
     return {
@@ -38,13 +39,14 @@ export class DataCondition extends Model {
     condition: Expression | LogicGroup | boolean,
     private ifTrue: any,
     private ifFalse: any,
-    opts: { em: EditorModel },
+    opts: { em: EditorModel; onValueChange?: () => void },
   ) {
     super();
     this.condition = new Condition(condition, { em: opts.em });
     this.em = opts.em;
     this.conditionResult = this.evaluate();
     this.listenToDataVariables();
+    this._onValueChange = opts.onValueChange;
   }
 
   evaluate() {
@@ -59,8 +61,13 @@ export class DataCondition extends Model {
     this.conditionResult = this.evaluate();
   }
 
+  set onValueChange(newFunction: () => void) {
+    this._onValueChange = newFunction;
+    this.listenToDataVariables();
+  }
+
   private listenToDataVariables() {
-    if (!this.em) return;
+    if (!this.em || !this._onValueChange) return;
 
     // Clear previous listeners to avoid memory leaks
     this.cleanupListeners();
@@ -73,7 +80,7 @@ export class DataCondition extends Model {
         model: this as any,
         em: this.em!,
         dataVariable: variableInstance,
-        updateValueFromDataVariable: this.reevaluate.bind(this),
+        updateValueFromDataVariable: this._onValueChange!,
       });
 
       this.variableListeners.push(listener);

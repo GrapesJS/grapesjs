@@ -13,6 +13,13 @@ export default class ComponentConditionalVariable extends Component {
 
     super(componentProperties, opt);
     this.dataCondition = dataCondtion;
+    this.dataCondition.onValueChange = this.onValueChange.bind(this);
+  }
+
+  private onValueChange() {
+    this.dataCondition.reevaluate();
+    const componentProperties = this.dataCondition.getDataValue();
+    this.set(componentProperties);
   }
 
   static isComponent(el: HTMLElement) {
