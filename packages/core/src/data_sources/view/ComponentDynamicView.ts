@@ -1,4 +1,4 @@
 import ComponentView from '../../dom_components/view/ComponentView';
-import ComponentConditionalVariable from '../model/conditional_variables/ComponentConditionalVariable';
+import ConditionalComponent from '../model/conditional_variables/ConditionalComponent';
 
-export default class DynamicView extends ComponentView<ComponentConditionalVariable> {}
+export default class ConditionalComponentView extends ComponentView<ConditionalComponent> { }

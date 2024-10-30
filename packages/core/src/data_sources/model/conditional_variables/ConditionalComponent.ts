@@ -4,25 +4,16 @@ import { toLowerCase } from '../../../utils/mixins';
 import { DataCondition, DataConditionType, Expression, LogicGroup } from './DataCondition';
 
 type ConditionalComponentDefinition = {
-  condition?: Expression | LogicGroup | boolean;
+  condition: Expression | LogicGroup | boolean;
   ifTrue: any;
   ifFalse: any;
 };
-export class MissingConditionError extends Error {
-  constructor() {
-    super('No condition was provided to a conditional component.');
-  }
-}
 
 export default class ComponentConditionalVariable extends Component {
   dataCondition: DataCondition;
   componentDefinition: ConditionalComponentDefinition;
 
   constructor(componentDefinition: ConditionalComponentDefinition, opt: ComponentOptions) {
-    if (!componentDefinition.condition) {
-      throw new MissingConditionError();
-    }
-
     const { condition, ifTrue, ifFalse } = componentDefinition;
     const dataCondtion = new DataCondition(condition, ifTrue, ifFalse, { em: opt.em });
     const props = dataCondtion.getDataValue();
