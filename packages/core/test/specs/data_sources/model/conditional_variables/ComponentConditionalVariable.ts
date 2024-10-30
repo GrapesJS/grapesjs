@@ -202,7 +202,49 @@ describe('ComponentConditionalVariable', () => {
     expect(childComponent.getInnerHTML()).toBe('False value');
   });
 
-  it('should test storage for conditional components', () => {
+  it('should change with changing value of data-source', () => {
+    const dataSource: DataSourceProps = {
+      id: 'ds1',
+      records: [
+        { id: 'left_id', left: 'Name1' },
+        { id: 'right_id', right: 'Name1' },
+      ],
+    };
+    dsm.add(dataSource);
+
+    const component = cmpRoot.append({
+      type: ConditionalVariableType,
+      condition: {
+        left: {
+          type: DataVariableType,
+          path: 'ds1.left_id.left',
+        },
+        operator: GenericOperation.equals,
+        right: {
+          type: DataVariableType,
+          path: 'ds1.right_id.right',
+        },
+      },
+      ifTrue: {
+        tagName: 'h1',
+        type: 'text',
+        content: 'True value',
+      },
+      ifFalse: {
+        tagName: 'h1',
+        type: 'text',
+        content: 'False value',
+      },
+    })[0];
+    dsm.get('ds1').getRecord('left_id')?.set('left', 'Diffirent value');
+
+    const childComponent = component.components().at(0);
+    expect(childComponent).toBeDefined();
+    expect(childComponent.get('type')).toBe('text');
+    expect(childComponent.getInnerHTML()).toBe('False value');
+  });
+
+  it('should store conditional components', () => {
     const conditionalCmptDef = {
       type: ConditionalVariableType,
       condition: {

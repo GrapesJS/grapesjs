@@ -32,9 +32,16 @@ export default class ComponentConditionalVariable extends Component {
 
   private handleConditionChange() {
     this.dataCondition.reevaluate();
+    const updatedComponents = this.dataCondition.getDataValue();
+    if (updatedComponents instanceof Components) {
+      const componentsArray = updatedComponents.map((cmp) => cmp);
+      this.components().set(componentsArray);
+    } else {
+      this.components().reset();
+      this.components().add(updatedComponents);
+    }
+
     this.refreshComponentState();
-    const updatedProperties = this.dataCondition.getDataValue();
-    this.set(updatedProperties);
   }
 
   private refreshComponentState() {
