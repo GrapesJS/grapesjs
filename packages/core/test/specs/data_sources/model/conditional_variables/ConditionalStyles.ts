@@ -25,7 +25,7 @@ describe('StyleConditionalVariable', () => {
     em.destroy();
   });
 
-  it.skip('should add a component with a conditionally styled attribute', () => {
+  it('should add a component with a conditionally styled attribute', () => {
     const component = cmpRoot.append({
       tagName: 'h1',
       type: 'text',
@@ -65,35 +65,22 @@ describe('StyleConditionalVariable', () => {
       style: {
         color: {
           type: ConditionalVariableType,
-          condition: false,
+          condition: {
+            left: {
+              type: DataVariableType,
+              path: 'ds1.left_id.left',
+            },
+            operator: GenericOperation.equals,
+            right: {
+              type: DataVariableType,
+              path: 'ds1.right_id.right',
+            },
+          },
           ifTrue: 'green',
           ifFalse: 'blue',
         },
       },
     })[0];
-    // const component = cmpRoot.append({
-    //     tagName: 'h1',
-    //     type: 'text',
-    //     content: 'some text',
-    //     style: {
-    //         color: {
-    //             type: ConditionalVariableType,
-    //             condition: {
-    //                 left: {
-    //                     type: DataVariableType,
-    //                     path: 'ds1.left_id.left',
-    //                 },
-    //                 operator: GenericOperation.equals,
-    //                 right: {
-    //                     type: DataVariableType,
-    //                     path: 'ds1.right_id.right',
-    //                 },
-    //             },
-    //             ifTrue: 'green',
-    //             ifFalse: 'blue',
-    //         },
-    //     },
-    // })[0];
 
     expect(component.getStyle().color).toBe('blue');
 
@@ -101,7 +88,7 @@ describe('StyleConditionalVariable', () => {
     expect(component.getStyle().color).toBe('green');
   });
 
-  it.skip('should throw an error if no condition is passed in style', () => {
+  it('should throw an error if no condition is passed in style', () => {
     expect(() => {
       cmpRoot.append({
         tagName: 'h1',
@@ -118,7 +105,6 @@ describe('StyleConditionalVariable', () => {
     }).toThrow(MissingConditionError);
   });
 
-  // TODO
   it.skip('should store components with conditional styles correctly', () => {
     const conditionalStyleDef = {
       tagName: 'h1',
@@ -144,6 +130,6 @@ describe('StyleConditionalVariable', () => {
     const page = projectData.pages[0];
     const frame = page.frames[0];
     const storedComponent = frame.component.components[0];
-    expect(storedComponent).toEqual(expect.objectContaining({ style: conditionalStyleDef.style }));
+    expect(storedComponent).toEqual(expect.objectContaining(conditionalStyleDef));
   });
 });
