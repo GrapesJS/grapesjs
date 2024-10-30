@@ -52,6 +52,8 @@ import {
   updateSymbolProps,
 } from './SymbolUtils';
 import TraitDataVariable from '../../data_sources/model/TraitDataVariable';
+import { ConditionalVariableType, DataCondition } from '../../data_sources/model/conditional_variables/DataCondition';
+import { DataVariableType } from '../../data_sources/model/DataVariable';
 
 export interface IComponent extends ExtractMethods<Component> {}
 
@@ -769,10 +771,31 @@ export default class Component extends StyleableModel<ComponentProperties> {
       }
     }
 
-    const attrDataVariable = this.get('attributes-data-variable');
+    const attrDataVariable = this.get('attributes-dynamic-value');
     if (attrDataVariable) {
       Object.entries(attrDataVariable).forEach(([key, value]) => {
-        const dataVariable = value instanceof TraitDataVariable ? value : new TraitDataVariable(value, { em });
+        let dataVariable: TraitDataVariable | DataCondition;
+
+        switch (true) {
+          case value instanceof DataCondition:
+          case value instanceof TraitDataVariable:
+            dataVariable = value;
+            break;
+
+          case (value as any).type === ConditionalVariableType: {
+            const { condition, ifTrue, ifFalse } = value as any;
+            dataVariable = new DataCondition(condition, ifTrue, ifFalse, { em });
+            break;
+          }
+
+          case (value as any).type === DataVariableType:
+            dataVariable = new TraitDataVariable(value, { em });
+            break;
+
+          default:
+            throw new Error(`Unexpected data type for key: ${key}`);
+        }
+
         attributes[key] = dataVariable.getDataValue();
       });
     }
@@ -932,7 +955,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
       }
     });
     traits.length && this.set('attributes', attrs);
-    Object.keys(traitDynamicValueAttr).length && this.set('attributes-data-variable', traitDynamicValueAttr);
+    Object.keys(traitDynamicValueAttr).length && this.set('attributes-dynamic-value', traitDynamicValueAttr);
     this.on(event, this.initTraits);
     changed && em && em.trigger('component:toggled');
     return this;

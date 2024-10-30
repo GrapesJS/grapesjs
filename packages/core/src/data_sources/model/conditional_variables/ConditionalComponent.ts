@@ -72,6 +72,6 @@ export default class ComponentConditionalVariable extends Component {
   }
 
   toJSON(): ComponentDefinition {
-    return this.componentDefinition;
+    return this.dataCondition.toJSON();
   }
 }

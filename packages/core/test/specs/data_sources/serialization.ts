@@ -143,8 +143,8 @@ describe('DataSource Serialization', () => {
       const page = projectData.pages[0];
       const frame = page.frames[0];
       const component = frame.component.components[0];
-      expect(component).toHaveProperty('attributes-data-variable');
-      expect(component['attributes-data-variable']).toEqual({
+      expect(component).toHaveProperty('attributes-dynamic-value');
+      expect(component['attributes-dynamic-value']).toEqual({
         value: dataVariable,
       });
       expect(component.attributes).toEqual({
@@ -297,7 +297,7 @@ describe('DataSource Serialization', () => {
                       attributes: {
                         value: 'default',
                       },
-                      'attributes-data-variable': {
+                      'attributes-dynamic-value': {
                         value: {
                           path: 'test-input.id1.value',
                           type: 'data-variable',

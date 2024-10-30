@@ -1,3 +1,4 @@
+import { Model } from 'backbone';
 import EditorModel from '../../../editor/model/Editor';
 import DataVariable from '../DataVariable';
 import { evaluateVariable, isDataVariable } from '../utils';
@@ -9,11 +10,12 @@ import { LogicalOperator } from './operators/LogicalOperator';
 import { NumberOperator, NumberOperation } from './operators/NumberOperator';
 import { StringOperator, StringOperation } from './operators/StringOperations';
 
-export class Condition {
+export class Condition extends Model {
   private condition: Expression | LogicGroup | boolean;
   private em: EditorModel;
 
   constructor(condition: Expression | LogicGroup | boolean, opts: { em: EditorModel }) {
+    super(condition);
     this.condition = condition;
     this.em = opts.em;
   }

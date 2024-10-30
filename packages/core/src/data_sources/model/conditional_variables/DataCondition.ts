@@ -37,8 +37,8 @@ export class DataCondition extends Model {
 
   constructor(
     condition: Expression | LogicGroup | boolean,
-    private _ifTrue: any,
-    private _ifFalse: any,
+    public ifTrue: any,
+    public ifFalse: any,
     opts: { em: EditorModel; onValueChange?: () => void },
   ) {
     if (typeof condition === 'undefined') {
@@ -58,21 +58,11 @@ export class DataCondition extends Model {
   }
 
   getDataValue(): any {
-    return this.lastEvaluationResult
-      ? evaluateVariable(this._ifTrue, this.em)
-      : evaluateVariable(this._ifFalse, this.em);
+    return this.lastEvaluationResult ? evaluateVariable(this.ifTrue, this.em) : evaluateVariable(this.ifFalse, this.em);
   }
 
   reevaluate(): void {
     this.lastEvaluationResult = this.evaluate();
-  }
-
-  set ifFalse(newValue: any) {
-    this._ifFalse = newValue;
-  }
-
-  set ifTrue(newValue: any) {
-    this._ifTrue = newValue;
   }
 
   set onValueChange(newFunction: () => void) {
@@ -103,8 +93,8 @@ export class DataCondition extends Model {
 
   getDependentDataVariables() {
     const dataVariables = this.condition.getDataVariables();
-    if (isDataVariable(this._ifTrue)) dataVariables.push(this._ifTrue);
-    if (isDataVariable(this._ifFalse)) dataVariables.push(this._ifFalse);
+    if (isDataVariable(this.ifTrue)) dataVariables.push(this.ifTrue);
+    if (isDataVariable(this.ifFalse)) dataVariables.push(this.ifFalse);
 
     return dataVariables;
   }
@@ -112,6 +102,15 @@ export class DataCondition extends Model {
   private cleanupListeners() {
     this.variableListeners.forEach((listener) => listener.destroy());
     this.variableListeners = [];
+  }
+
+  toJSON() {
+    return {
+      type: ConditionalVariableType,
+      condition: this.condition,
+      ifTrue: this.ifTrue,
+      ifFalse: this.ifFalse,
+    };
   }
 }
 export class MissingConditionError extends Error {
