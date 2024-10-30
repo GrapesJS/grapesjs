@@ -1,5 +1,5 @@
 import EditorModel from '../../editor/model/Editor';
-import { DataConditionType } from './conditional_variables/DataCondition';
+import { ConditionalVariableType } from './conditional_variables/DataCondition';
 import DataVariable, { DataVariableType } from './DataVariable';
 
 export function isDataVariable(variable: any) {
@@ -7,7 +7,7 @@ export function isDataVariable(variable: any) {
 }
 
 export function isDataCondition(variable: any) {
-  return variable?.type === DataConditionType;
+  return variable?.type === ConditionalVariableType;
 }
 
 export function evaluateVariable(variable: any, em: EditorModel) {

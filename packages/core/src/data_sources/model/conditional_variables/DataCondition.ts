@@ -9,7 +9,7 @@ import { Condition } from './Condition';
 import DataVariable from '../DataVariable';
 import { evaluateVariable, isDataVariable } from '../utils';
 
-export const DataConditionType = 'conditional-variable';
+export const ConditionalVariableType = 'conditional-variable';
 export type Expression = {
   left: any;
   operator: GenericOperation | StringOperation | NumberOperation;
@@ -22,7 +22,7 @@ export type LogicGroup = {
 };
 
 export class DataCondition extends Model {
-  private conditionResult: boolean;
+  lastEvaluationResult: boolean;
   private condition: Condition;
   private em: EditorModel;
   private variableListeners: DynamicVariableListenerManager[] = [];
@@ -30,15 +30,15 @@ export class DataCondition extends Model {
 
   defaults() {
     return {
-      type: DataConditionType,
+      type: ConditionalVariableType,
       condition: false,
     };
   }
 
   constructor(
     condition: Expression | LogicGroup | boolean,
-    private ifTrue: any,
-    private ifFalse: any,
+    private _ifTrue: any,
+    private _ifFalse: any,
     opts: { em: EditorModel; onValueChange?: () => void },
   ) {
     if (!condition) {
@@ -48,7 +48,7 @@ export class DataCondition extends Model {
     super();
     this.condition = new Condition(condition, { em: opts.em });
     this.em = opts.em;
-    this.conditionResult = this.evaluate();
+    this.lastEvaluationResult = this.evaluate();
     this.listenToDataVariables();
     this._onValueChange = opts.onValueChange;
   }
@@ -58,11 +58,21 @@ export class DataCondition extends Model {
   }
 
   getDataValue(): any {
-    return this.conditionResult ? evaluateVariable(this.ifTrue, this.em) : evaluateVariable(this.ifFalse, this.em);
+    return this.lastEvaluationResult
+      ? evaluateVariable(this._ifTrue, this.em)
+      : evaluateVariable(this._ifFalse, this.em);
   }
 
   reevaluate(): void {
-    this.conditionResult = this.evaluate();
+    this.lastEvaluationResult = this.evaluate();
+  }
+
+  set ifFalse(newValue: any) {
+    this._ifFalse = newValue;
+  }
+
+  set ifTrue(newValue: any) {
+    this._ifTrue = newValue;
   }
 
   set onValueChange(newFunction: () => void) {
@@ -93,8 +103,8 @@ export class DataCondition extends Model {
 
   getDependentDataVariables() {
     const dataVariables = this.condition.getDataVariables();
-    if (isDataVariable(this.ifTrue)) dataVariables.push(this.ifTrue);
-    if (isDataVariable(this.ifFalse)) dataVariables.push(this.ifFalse);
+    if (isDataVariable(this._ifTrue)) dataVariables.push(this._ifTrue);
+    if (isDataVariable(this._ifFalse)) dataVariables.push(this._ifFalse);
 
     return dataVariables;
   }
@@ -109,4 +119,3 @@ export class MissingConditionError extends Error {
     super('No condition was provided to a conditional component.');
   }
 }
-

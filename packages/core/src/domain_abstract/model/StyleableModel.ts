@@ -10,7 +10,7 @@ import DynamicVariableListenerManager from '../../data_sources/model/DataVariabl
 import CssRuleView from '../../css_composer/view/CssRuleView';
 import ComponentView from '../../dom_components/view/ComponentView';
 import Frame from '../../canvas/model/Frame';
-import { DataCondition, DataConditionType } from '../../data_sources/model/conditional_variables/DataCondition';
+import { DataCondition, ConditionalVariableType } from '../../data_sources/model/conditional_variables/DataCondition';
 
 export type StyleProps = Record<
   string,
@@ -144,7 +144,7 @@ export default class StyleableModel<T extends ObjectHash = any> extends Model<T>
   }
 
   private isDynamicValue(styleValue: any) {
-    return typeof styleValue === 'object' && [DataVariableType, DataConditionType].includes(styleValue.type);
+    return typeof styleValue === 'object' && [DataVariableType, ConditionalVariableType].includes(styleValue.type);
   }
 
   private resolveDynamicValue(styleValue: any) {
@@ -154,13 +154,13 @@ export default class StyleableModel<T extends ObjectHash = any> extends Model<T>
       case DataVariableType:
         styleDynamicVariable = new StyleDataVariable(styleValue, { em: this.em });
         break;
-      case DataConditionType:
+      case ConditionalVariableType:
         const { condition, ifTrue, ifFalse } = styleValue;
         styleDynamicVariable = new DataCondition(condition, ifTrue, ifFalse, { em: this.em! });
         break;
       default:
         throw new Error(
-          `Invalid data variable type. Expected '${DataVariableType} or ${DataConditionType}', but found '${dynamicType}'.`,
+          `Invalid data variable type. Expected '${DataVariableType} or ${ConditionalVariableType}', but found '${dynamicType}'.`,
         );
     }
 

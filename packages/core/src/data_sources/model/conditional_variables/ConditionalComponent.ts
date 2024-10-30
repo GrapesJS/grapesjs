@@ -1,7 +1,8 @@
 import Component from '../../../dom_components/model/Component';
-import { ComponentDefinition, ComponentOptions, ComponentProperties } from '../../../dom_components/model/types';
+import Components from '../../../dom_components/model/Components';
+import { ComponentDefinition, ComponentOptions } from '../../../dom_components/model/types';
 import { toLowerCase } from '../../../utils/mixins';
-import { DataCondition, DataConditionType, Expression, LogicGroup } from './DataCondition';
+import { DataCondition, ConditionalVariableType, Expression, LogicGroup } from './DataCondition';
 
 type ConditionalComponentDefinition = {
   condition: Expression | LogicGroup | boolean;
@@ -15,23 +16,52 @@ export default class ComponentConditionalVariable extends Component {
 
   constructor(componentDefinition: ConditionalComponentDefinition, opt: ComponentOptions) {
     const { condition, ifTrue, ifFalse } = componentDefinition;
-    const dataCondtion = new DataCondition(condition, ifTrue, ifFalse, { em: opt.em });
-    const props = dataCondtion.getDataValue();
+    const dataConditionInstance = new DataCondition(condition, ifTrue, ifFalse, { em: opt.em });
+    const initialComponentsProps = dataConditionInstance.getDataValue();
+    const conditionalCmptDef = {
+      type: ConditionalVariableType,
+      components: initialComponentsProps,
+    };
+    super(conditionalCmptDef, opt);
 
-    super(props, opt);
     this.componentDefinition = componentDefinition;
-    this.dataCondition = dataCondtion;
-    this.dataCondition.onValueChange = this.onValueChange.bind(this);
+    this.dataCondition = dataConditionInstance;
+    this.dataCondition.onValueChange = this.handleConditionChange.bind(this);
+    this.refreshComponentState();
   }
 
-  private onValueChange() {
+  private handleConditionChange() {
     this.dataCondition.reevaluate();
-    const componentProperties = this.dataCondition.getDataValue();
-    this.set(componentProperties);
+    this.refreshComponentState();
+    const updatedProperties = this.dataCondition.getDataValue();
+    this.set(updatedProperties);
+  }
+
+  refreshComponentState() {
+    if (this.dataCondition.lastEvaluationResult) {
+      this.assignComponents({ newIfTrueComponents: this.components() });
+    } else {
+      this.assignComponents({ newIfFalseComponents: this.components() });
+    }
+  }
+
+  private assignComponents({
+    newIfTrueComponents,
+    newIfFalseComponents,
+  }: {
+    newIfTrueComponents?: Components;
+    newIfFalseComponents?: Components;
+  }) {
+    if (newIfTrueComponents) {
+      this.dataCondition.ifTrue = newIfTrueComponents;
+    }
+    if (newIfFalseComponents) {
+      this.dataCondition.ifFalse = newIfFalseComponents;
+    }
   }
 
   static isComponent(el: HTMLElement) {
-    return toLowerCase(el.tagName) === DataConditionType;
+    return toLowerCase(el.tagName) === ConditionalVariableType;
   }
 
   toJSON(): ComponentDefinition {

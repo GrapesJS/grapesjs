@@ -5,7 +5,7 @@ import EditorModel from '../../editor/model/Editor';
 import DataVariable, { DataVariableType } from './DataVariable';
 import ComponentView from '../../dom_components/view/ComponentView';
 import { DynamicValue } from '../types';
-import { DataCondition, DataConditionType } from './conditional_variables/DataCondition';
+import { DataCondition, ConditionalVariableType } from './conditional_variables/DataCondition';
 import ComponentDataVariable from './ComponentDataVariable';
 
 export interface DynamicVariableListenerManagerOptions {
@@ -46,7 +46,7 @@ export default class DynamicVariableListenerManager {
       case DataVariableType:
         dataListeners = this.listenToDataVariable(dynamicVariable as DataVariable | ComponentDataVariable, em);
         break;
-      case DataConditionType:
+      case ConditionalVariableType:
         dataListeners = this.listenToConditionalVariable(dynamicVariable as DataCondition, em);
         break;
     }

@@ -1,7 +1,7 @@
 import { DataSourceManager, Editor } from '../../../../../src';
 import { DataVariableType } from '../../../../../src/data_sources/model/DataVariable';
-import { MissingConditionError } from '../../../../../src/data_sources/model/conditional_variables/ComponentConditionalVariable';
-import { DataConditionType } from '../../../../../src/data_sources/model/conditional_variables/DataCondition';
+import { MissingConditionError } from '../../../../../src/data_sources/model/conditional_variables/DataCondition';
+import { ConditionalVariableType } from '../../../../../src/data_sources/model/conditional_variables/DataCondition';
 import { GenericOperation } from '../../../../../src/data_sources/model/conditional_variables/operators/GenericOperator';
 import { NumberOperation } from '../../../../../src/data_sources/model/conditional_variables/operators/NumberOperator';
 import { DataSourceProps } from '../../../../../src/data_sources/types';
@@ -25,7 +25,7 @@ describe('ComponentConditionalVariable', () => {
 
   it('should add a component with a condition that evaluates a component definition', () => {
     const component = cmpRoot.append({
-      type: DataConditionType,
+      type: ConditionalVariableType,
       condition: {
         left: 0,
         operator: NumberOperation.greaterThan,
@@ -39,25 +39,33 @@ describe('ComponentConditionalVariable', () => {
     })[0];
 
     expect(component).toBeDefined();
-    expect(component.get('type')).toBe('text');
-    expect(component.getInnerHTML()).toBe('some text');
+    expect(component.get('type')).toBe(ConditionalVariableType);
+    expect(component.getInnerHTML()).toBe('<h1>some text</h1>');
+
+    const childComponent = component.components().at(0);
+    expect(childComponent).toBeDefined();
+    expect(childComponent.get('type')).toBe('text');
+    expect(childComponent.getInnerHTML()).toBe('some text');
   });
 
-  // TODO
-  it.skip('should add a component with a condition that evaluates a string', () => {
+  it('should add a component with a condition that evaluates a string', () => {
     const component = cmpRoot.append({
-      type: DataConditionType,
+      type: ConditionalVariableType,
       condition: {
         left: 0,
         operator: NumberOperation.greaterThan,
         right: -1,
       },
-      ifTrue: '<div>some text</div>',
+      ifTrue: '<h1>some text</h1>',
     })[0];
-
     expect(component).toBeDefined();
-    expect(component.get('type')).toBe('text');
-    expect(component.getInnerHTML()).toBe('some text');
+    expect(component.get('type')).toBe(ConditionalVariableType);
+    expect(component.getInnerHTML()).toBe('<h1>some text</h1>');
+
+    const childComponent = component.components().at(0);
+    expect(childComponent).toBeDefined();
+    expect(childComponent.get('type')).toBe('text');
+    expect(childComponent.getInnerHTML()).toBe('some text');
   });
 
   it('should test component variable with data-source', () => {
@@ -71,7 +79,7 @@ describe('ComponentConditionalVariable', () => {
     dsm.add(dataSource);
 
     const component = cmpRoot.append({
-      type: DataConditionType,
+      type: ConditionalVariableType,
       condition: {
         left: {
           type: DataVariableType,
@@ -90,9 +98,10 @@ describe('ComponentConditionalVariable', () => {
       },
     })[0];
 
-    expect(component).toBeDefined();
-    expect(component.get('type')).toBe('text');
-    expect(component.getInnerHTML()).toBe('Some value');
+    const childComponent = component.components().at(0);
+    expect(childComponent).toBeDefined();
+    expect(childComponent.get('type')).toBe('text');
+    expect(childComponent.getInnerHTML()).toBe('Some value');
   });
 
   it('should test a conditional component with a child that is also a conditional component', () => {
@@ -106,7 +115,7 @@ describe('ComponentConditionalVariable', () => {
     dsm.add(dataSource);
 
     const component = cmpRoot.append({
-      type: DataConditionType,
+      type: ConditionalVariableType,
       condition: {
         left: {
           type: DataVariableType,
@@ -119,12 +128,10 @@ describe('ComponentConditionalVariable', () => {
         },
       },
       ifTrue: {
-        tagName: 'h1',
-        type: 'text',
-        content: 'Some value',
+        tagName: 'div',
         components: [
           {
-            type: DataConditionType,
+            type: ConditionalVariableType,
             condition: {
               left: {
                 type: DataVariableType,
@@ -145,14 +152,12 @@ describe('ComponentConditionalVariable', () => {
         ],
       },
     })[0];
-    const childComponent = component.components().at(0);
 
-    expect(component).toBeDefined();
-    expect(component.get('type')).toBe('text');
-    expect(component.getInnerHTML()).toBe('<h1>Some child value</h1>');
-    expect(childComponent).toBeDefined();
-    expect(childComponent.get('type')).toBe('text');
-    expect(childComponent.getInnerHTML()).toBe('Some child value');
+    const childComponent = component.components().at(0);
+    const innerComponent = childComponent.components().at(0);
+    expect(innerComponent).toBeDefined();
+    expect(innerComponent.get('type')).toBe(ConditionalVariableType);
+    expect(innerComponent.getInnerHTML()).toBe('<h1>Some child value</h1>');
   });
 
   it('should test component variable with changing value of data-source', () => {
@@ -166,7 +171,7 @@ describe('ComponentConditionalVariable', () => {
     dsm.add(dataSource);
 
     const component = cmpRoot.append({
-      type: DataConditionType,
+      type: ConditionalVariableType,
       condition: {
         left: {
           type: DataVariableType,
@@ -191,14 +196,15 @@ describe('ComponentConditionalVariable', () => {
     })[0];
     dsm.get('ds1').getRecord('left_id')?.set('left', 'Diffirent value');
 
-    expect(component).toBeDefined();
-    expect(component.get('type')).toBe('text');
-    expect(component.getInnerHTML()).toBe('False value');
+    const childComponent = component.components().at(0);
+    expect(childComponent).toBeDefined();
+    expect(childComponent.get('type')).toBe('text');
+    expect(childComponent.getInnerHTML()).toBe('False value');
   });
 
   it('should test storage for conditional components', () => {
     const conditionalCmptDef = {
-      type: DataConditionType,
+      type: ConditionalVariableType,
       condition: {
         left: 0,
         operator: NumberOperation.greaterThan,
@@ -222,7 +228,7 @@ describe('ComponentConditionalVariable', () => {
 
   it('should throw an error if no condition is passed', () => {
     const conditionalCmptDef = {
-      type: DataConditionType,
+      type: ConditionalVariableType,
       ifTrue: {
         tagName: 'h1',
         type: 'text',
