@@ -1,5 +1,4 @@
 import { DataVariableType } from './../DataVariable';
-import { Model } from 'backbone';
 import EditorModel from '../../../editor/model/Editor';
 import { evaluateVariable, isDataVariable } from '../utils';
 import { Expression, LogicGroup } from './DataCondition';
@@ -9,6 +8,7 @@ import { GenericOperation, GenericOperator } from './operators/GenericOperator';
 import { LogicalOperator } from './operators/LogicalOperator';
 import { NumberOperator, NumberOperation } from './operators/NumberOperator';
 import { StringOperator, StringOperation } from './operators/StringOperations';
+import { Model } from '../../../common';
 
 export class Condition extends Model {
   private condition: Expression | LogicGroup | boolean;
