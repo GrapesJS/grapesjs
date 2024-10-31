@@ -64,10 +64,11 @@ export default class Trait extends Model<TraitProperties> {
         case DataVariableType:
           this.dynamicVariable = new TraitDataVariable(this.attributes.value, { em: this.em, trait: this });
           break;
-        case ConditionalVariableType:
+        case ConditionalVariableType: {
           const { condition, ifTrue, ifFalse } = this.attributes.value;
           this.dynamicVariable = new DataCondition(condition, ifTrue, ifFalse, { em: this.em });
           break;
+        }
         default:
           throw new Error(
             `Invalid data variable type. Expected '${DataVariableType} or ${ConditionalVariableType}', but found '${dataType}'.`,

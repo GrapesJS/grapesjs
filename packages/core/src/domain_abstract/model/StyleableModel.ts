@@ -154,13 +154,14 @@ export default class StyleableModel<T extends ObjectHash = any> extends Model<T>
       case DataVariableType:
         styleDynamicVariable = new StyleDataVariable(styleValue, { em: this.em });
         break;
-      case ConditionalVariableType:
+      case ConditionalVariableType: {
         const { condition, ifTrue, ifFalse } = styleValue;
         styleDynamicVariable = new DataCondition(condition, ifTrue, ifFalse, { em: this.em! });
         break;
+      }
       default:
         throw new Error(
-          `Invalid data variable type. Expected '${DataVariableType} or ${ConditionalVariableType}', but found '${dynamicType}'.`,
+          `Invalid data variable type. Expected '${DataVariableType}' or '${ConditionalVariableType}', but found '${dynamicType}'.`,
         );
     }
 
