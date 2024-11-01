@@ -172,4 +172,25 @@ describe('TraitConditionalVariable', () => {
       dynamicTrait: conditionalTrait,
     });
   });
+
+  it('should handle objects as traits (other than dynamic values)', () => {
+    const traitValue = {
+      type: 'UNKNOWN_TYPE',
+      condition: "This's not a condition",
+      value: 'random value',
+    };
+
+    const component = cmpRoot.append({
+      tagName: 'h1',
+      type: 'text',
+      traits: [
+        {
+          type: 'text',
+          name: 'some trait',
+          value: traitValue,
+        },
+      ],
+    })[0];
+    expect(component.getTrait('some trait').get('value')).toEqual(traitValue);
+  });
 });

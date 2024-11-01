@@ -782,9 +782,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
         let dataVariable: TraitDataVariable | DataCondition;
         if (isDynamicValue(value)) {
           dataVariable = value;
-        }
-
-        if (isDynamicValueDefinition(value)) {
+        } else if (isDynamicValueDefinition(value)) {
           const type = value.type;
 
           if (type === ConditionalVariableType) {
