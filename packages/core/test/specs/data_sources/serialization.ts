@@ -6,6 +6,7 @@ import EditorModel from '../../../src/editor/model/Editor';
 import { ProjectData } from '../../../src/storage_manager';
 import { DataSourceProps } from '../../../src/data_sources/types';
 import { filterObjectForSnapshot, setupTestEditor } from '../../common';
+import { dynamicAttrKey } from '../../../src/dom_components/model/Component';
 
 describe('DataSource Serialization', () => {
   let editor: Editor;
@@ -143,8 +144,8 @@ describe('DataSource Serialization', () => {
       const page = projectData.pages[0];
       const frame = page.frames[0];
       const component = frame.component.components[0];
-      expect(component).toHaveProperty('attributes-dynamic-value');
-      expect(component['attributes-dynamic-value']).toEqual({
+      expect(component).toHaveProperty(dynamicAttrKey);
+      expect(component[dynamicAttrKey]).toEqual({
         value: dataVariable,
       });
       expect(component.attributes).toEqual({
@@ -297,7 +298,7 @@ describe('DataSource Serialization', () => {
                       attributes: {
                         value: 'default',
                       },
-                      'attributes-dynamic-value': {
+                      [dynamicAttrKey]: {
                         value: {
                           path: 'test-input.id1.value',
                           type: 'data-variable',

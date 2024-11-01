@@ -71,6 +71,7 @@ export const keySymbol = '__symbol';
 export const keySymbolOvrd = '__symbol_ovrd';
 export const keyUpdate = ComponentsEvents.update;
 export const keyUpdateInside = ComponentsEvents.updateInside;
+export const dynamicAttrKey = 'attributes-dynamic-value';
 
 /**
  * The Component object represents a single node of our template structure, so when you update its properties the changes are
@@ -771,7 +772,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
       }
     }
 
-    const attrDataVariable = this.get('attributes-dynamic-value');
+    const attrDataVariable = this.get(dynamicAttrKey);
     if (attrDataVariable) {
       Object.entries(attrDataVariable).forEach(([key, value]) => {
         let dataVariable: TraitDataVariable | DataCondition;
@@ -955,7 +956,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
       }
     });
     traits.length && this.set('attributes', attrs);
-    Object.keys(traitDynamicValueAttr).length && this.set('attributes-dynamic-value', traitDynamicValueAttr);
+    Object.keys(traitDynamicValueAttr).length && this.set(dynamicAttrKey, traitDynamicValueAttr);
     this.on(event, this.initTraits);
     changed && em && em.trigger('component:toggled');
     return this;

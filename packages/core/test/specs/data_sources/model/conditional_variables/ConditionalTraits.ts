@@ -5,6 +5,7 @@ import { ConditionalVariableType } from '../../../../../src/data_sources/model/c
 import { GenericOperation } from '../../../../../src/data_sources/model/conditional_variables/operators/GenericOperator';
 import { NumberOperation } from '../../../../../src/data_sources/model/conditional_variables/operators/NumberOperator';
 import { DataSourceProps } from '../../../../../src/data_sources/types';
+import { dynamicAttrKey } from '../../../../../src/dom_components/model/Component';
 import ComponentWrapper from '../../../../../src/dom_components/model/ComponentWrapper';
 import EditorModel from '../../../../../src/editor/model/Editor';
 import { setupTestEditor } from '../../../../common';
@@ -167,7 +168,7 @@ describe('TraitConditionalVariable', () => {
     const frame = page.frames[0];
     const storedComponent = frame.component.components[0];
 
-    expect(storedComponent['attributes-dynamic-value']).toEqual({
+    expect(storedComponent[dynamicAttrKey]).toEqual({
       dynamicTrait: conditionalTrait,
     });
   });
