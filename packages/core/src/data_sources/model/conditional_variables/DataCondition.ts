@@ -6,7 +6,7 @@ import { LogicalOperation } from './operators/LogicalOperator';
 import DynamicVariableListenerManager from '../DataVariableListenerManager';
 import EditorModel from '../../../editor/model/Editor';
 import { Condition } from './Condition';
-import DataVariable from '../DataVariable';
+import DataVariable, { DataVariableDefinition } from '../DataVariable';
 import { evaluateVariable, isDataVariable } from '../utils';
 
 export const ConditionalVariableType = 'conditional-variable';
@@ -19,6 +19,13 @@ export type Expression = {
 export type LogicGroup = {
   logicalOperator: LogicalOperation;
   statements: (Expression | LogicGroup | boolean)[];
+};
+
+export type ConditionalVariableDefinition = {
+  type: typeof ConditionalVariableType;
+  condition: Expression | LogicGroup | boolean;
+  ifTrue: any;
+  ifFalse: any;
 };
 
 export class DataCondition extends Model {
@@ -95,7 +102,7 @@ export class DataCondition extends Model {
   }
 
   getDependentDataVariables() {
-    const dataVariables = this.condition.getDataVariables();
+    const dataVariables: DataVariableDefinition[] = this.condition.getDataVariables();
     if (isDataVariable(this.ifTrue)) dataVariables.push(this.ifTrue);
     if (isDataVariable(this.ifFalse)) dataVariables.push(this.ifFalse);
 

@@ -11,7 +11,7 @@ import Traits from './Traits';
 import TraitDataVariable from '../../data_sources/model/TraitDataVariable';
 import { DataVariableType } from '../../data_sources/model/DataVariable';
 import DynamicVariableListenerManager from '../../data_sources/model/DataVariableListenerManager';
-import { isDynamicValue } from '../../data_sources/model/utils';
+import { isDynamicValueDefinition } from '../../data_sources/model/utils';
 
 /**
  * @property {String} id Trait id, eg. `my-trait-id`.
@@ -59,7 +59,7 @@ export default class Trait extends Model<TraitProperties> {
     }
     this.em = em;
 
-    if (isDynamicValue(this.attributes.value)) {
+    if (isDynamicValueDefinition(this.attributes.value)) {
       const dataType = this.attributes.value.type;
       switch (dataType) {
         case DataVariableType:

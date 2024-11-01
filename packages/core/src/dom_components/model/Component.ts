@@ -54,6 +54,8 @@ import {
 import TraitDataVariable from '../../data_sources/model/TraitDataVariable';
 import { ConditionalVariableType, DataCondition } from '../../data_sources/model/conditional_variables/DataCondition';
 import { DataVariableType } from '../../data_sources/model/DataVariable';
+import { isDynamicValue, isDynamicValueDefinition } from '../../data_sources/model/utils';
+import { DynamicValue, DynamicValueDefinition } from '../../data_sources/types';
 
 export interface IComponent extends ExtractMethods<Component> {}
 
@@ -772,32 +774,28 @@ export default class Component extends StyleableModel<ComponentProperties> {
       }
     }
 
-    const attrDataVariable = this.get(dynamicAttrKey);
+    const attrDataVariable = this.get(dynamicAttrKey) as {
+      [key: string]: TraitDataVariable | DynamicValueDefinition;
+    };
     if (attrDataVariable) {
       Object.entries(attrDataVariable).forEach(([key, value]) => {
         let dataVariable: TraitDataVariable | DataCondition;
-
-        switch (true) {
-          case value instanceof DataCondition:
-          case value instanceof TraitDataVariable:
-            dataVariable = value;
-            break;
-
-          case (value as any).type === ConditionalVariableType: {
-            const { condition, ifTrue, ifFalse } = value as any;
-            dataVariable = new DataCondition(condition, ifTrue, ifFalse, { em });
-            break;
-          }
-
-          case (value as any).type === DataVariableType:
-            dataVariable = new TraitDataVariable(value, { em });
-            break;
-
-          default:
-            throw new Error(`Unexpected data type for key: ${key}`);
+        if (isDynamicValue(value)) {
+          dataVariable = value;
         }
 
-        attributes[key] = dataVariable.getDataValue();
+        if (isDynamicValueDefinition(value)) {
+          const type = value.type;
+
+          if (type === ConditionalVariableType) {
+            const { condition, ifTrue, ifFalse } = value;
+            dataVariable = new DataCondition(condition, ifTrue, ifFalse, { em });
+          } else {
+            dataVariable = new TraitDataVariable(value, { em });
+          }
+        }
+
+        attributes[key] = dataVariable!.getDataValue();
       });
     }
 

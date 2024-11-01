@@ -2,10 +2,11 @@ import { ObjectAny } from '../common';
 import ComponentDataVariable from './model/ComponentDataVariable';
 import DataRecord from './model/DataRecord';
 import DataRecords from './model/DataRecords';
-import DataVariable from './model/DataVariable';
-import { DataCondition } from './model/conditional_variables/DataCondition';
+import DataVariable, { DataVariableDefinition } from './model/DataVariable';
+import { ConditionalVariableDefinition, DataCondition } from './model/conditional_variables/DataCondition';
 
 export type DynamicValue = DataVariable | ComponentDataVariable | DataCondition;
+export type DynamicValueDefinition = DataVariableDefinition | ConditionalVariableDefinition;
 export interface DataRecordProps extends ObjectAny {
   /**
    * Record id.
