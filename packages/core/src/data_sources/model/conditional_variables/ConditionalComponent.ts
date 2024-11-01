@@ -27,44 +27,13 @@ export default class ComponentConditionalVariable extends Component {
     this.componentDefinition = componentDefinition;
     this.dataCondition = dataConditionInstance;
     this.dataCondition.onValueChange = this.handleConditionChange.bind(this);
-    this.refreshComponentState();
   }
 
   private handleConditionChange() {
     this.dataCondition.reevaluate();
     const updatedComponents = this.dataCondition.getDataValue();
-    if (updatedComponents instanceof Components) {
-      const componentsArray = updatedComponents.map((cmp) => cmp);
-      this.components().set(componentsArray);
-    } else {
-      this.components().reset();
-      this.components().add(updatedComponents);
-    }
-
-    this.refreshComponentState();
-  }
-
-  private refreshComponentState() {
-    if (this.dataCondition.lastEvaluationResult) {
-      this.assignComponents({ positiveCaseComponents: this.components() });
-    } else {
-      this.assignComponents({ negativeCaseComponents: this.components() });
-    }
-  }
-
-  private assignComponents({
-    positiveCaseComponents,
-    negativeCaseComponents,
-  }: {
-    positiveCaseComponents?: Components;
-    negativeCaseComponents?: Components;
-  }) {
-    if (positiveCaseComponents) {
-      this.dataCondition.ifTrue = positiveCaseComponents;
-    }
-    if (negativeCaseComponents) {
-      this.dataCondition.ifFalse = negativeCaseComponents;
-    }
+    this.components().reset();
+    this.components().add(updatedComponents);
   }
 
   static isComponent(el: HTMLElement) {
