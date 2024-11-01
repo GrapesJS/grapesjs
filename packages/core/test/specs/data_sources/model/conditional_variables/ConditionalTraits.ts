@@ -84,6 +84,7 @@ describe('TraitConditionalVariable', () => {
     const traitValue = component.getTrait('title').get('value');
     expect(traitValue).toBe('Valid name');
     expect(component.getAttributes().title).toBe('Valid name');
+    expect(component.getView()?.el.getAttribute('title')).toBe('Valid name');
   });
 
   it('should change trait value with changing data-source value', () => {
@@ -121,12 +122,14 @@ describe('TraitConditionalVariable', () => {
     expect(traitValueBefore).toBe('Correct name');
     const titleBefore = component.getAttributes().title;
     expect(titleBefore).toBe('Correct name');
+    expect(component.getView()?.el.getAttribute('title')).toBe('Correct name');
 
     dsm.get('ds1').getRecord('left_id')?.set('left', 'Different name');
     const traitValueAfter = component.getTrait('title').get('value');
     expect(traitValueAfter).toBe('Incorrect name');
     const titleAfter = component.getAttributes().title;
     expect(titleAfter).toBe('Incorrect name');
+    expect(component.getView()?.el.getAttribute('title')).toBe('Incorrect name');
   });
 
   it('should throw an error if no condition is passed in trait', () => {
