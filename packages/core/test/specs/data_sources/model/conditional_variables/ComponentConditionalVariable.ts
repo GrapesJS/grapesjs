@@ -1,11 +1,14 @@
-import { DataSourceManager, Editor } from '../../../../../src';
+import { Component, DataSourceManager, Editor } from '../../../../../src';
 import { DataVariableType } from '../../../../../src/data_sources/model/DataVariable';
 import { MissingConditionError } from '../../../../../src/data_sources/model/conditional_variables/DataCondition';
 import { ConditionalVariableType } from '../../../../../src/data_sources/model/conditional_variables/DataCondition';
 import { GenericOperation } from '../../../../../src/data_sources/model/conditional_variables/operators/GenericOperator';
 import { NumberOperation } from '../../../../../src/data_sources/model/conditional_variables/operators/NumberOperator';
 import { DataSourceProps } from '../../../../../src/data_sources/types';
+import ConditionalComponentView from '../../../../../src/data_sources/view/ComponentDynamicView';
 import ComponentWrapper from '../../../../../src/dom_components/model/ComponentWrapper';
+import ComponentTableView from '../../../../../src/dom_components/view/ComponentTableView';
+import ComponentTextView from '../../../../../src/dom_components/view/ComponentTextView';
 import EditorModel from '../../../../../src/editor/model/Editor';
 import { setupTestEditor } from '../../../../common';
 
@@ -40,11 +43,17 @@ describe('ComponentConditionalVariable', () => {
     expect(component).toBeDefined();
     expect(component.get('type')).toBe(ConditionalVariableType);
     expect(component.getInnerHTML()).toBe('<h1>some text</h1>');
+    const componentView = component.getView();
+    expect(componentView).toBeInstanceOf(ConditionalComponentView);
+    expect(componentView?.el.textContent).toBe('some text');
 
-    const childComponent = component.components().at(0);
+    const childComponent = getFirstChild(component);
+    const childView = getFirstChildView(component);
     expect(childComponent).toBeDefined();
     expect(childComponent.get('type')).toBe('text');
     expect(childComponent.getInnerHTML()).toBe('some text');
+    expect(childView).toBeInstanceOf(ComponentTextView);
+    expect(childView?.el.innerHTML).toBe('some text');
   });
 
   it('should add a component with a condition that evaluates a string', () => {
@@ -60,11 +69,17 @@ describe('ComponentConditionalVariable', () => {
     expect(component).toBeDefined();
     expect(component.get('type')).toBe(ConditionalVariableType);
     expect(component.getInnerHTML()).toBe('<h1>some text</h1>');
+    const componentView = component.getView();
+    expect(componentView).toBeInstanceOf(ConditionalComponentView);
+    expect(componentView?.el.textContent).toBe('some text');
 
-    const childComponent = component.components().at(0);
+    const childComponent = getFirstChild(component);
+    const childView = getFirstChildView(component);
     expect(childComponent).toBeDefined();
     expect(childComponent.get('type')).toBe('text');
     expect(childComponent.getInnerHTML()).toBe('some text');
+    expect(childView).toBeInstanceOf(ComponentTextView);
+    expect(childView?.el.innerHTML).toBe('some text');
   });
 
   it('should test component variable with data-source', () => {
@@ -102,16 +117,18 @@ describe('ComponentConditionalVariable', () => {
       },
     })[0];
 
-    const childComponent = component.components().at(0);
+    const childComponent = getFirstChild(component);
     expect(childComponent).toBeDefined();
     expect(childComponent.get('type')).toBe('text');
     expect(childComponent.getInnerHTML()).toBe('Some value');
 
     /* Test changing datasources */
-    dsm.get('ds1').getRecord('left_id')?.set('left', 'Diffirent value');
-    expect(component.components().at(0).getInnerHTML()).toBe('False value');
-    dsm.get('ds1').getRecord('left_id')?.set('left', 'Name1');
-    expect(component.components().at(0).getInnerHTML()).toBe('Some value');
+    updatedsmLeftValue(dsm, 'Diffirent value');
+    expect(getFirstChild(component).getInnerHTML()).toBe('False value');
+    expect(getFirstChildView(component)?.el.innerHTML).toBe('False value');
+    updatedsmLeftValue(dsm, 'Name1');
+    expect(getFirstChild(component).getInnerHTML()).toBe('Some value');
+    expect(getFirstChildView(component)?.el.innerHTML).toBe('Some value');
   });
 
   it('should test a conditional component with a child that is also a conditional component', () => {
@@ -154,20 +171,20 @@ describe('ComponentConditionalVariable', () => {
               },
             },
             ifTrue: {
-              tagName: 'h1',
-              type: 'text',
-              content: 'Some child value',
+              tagName: 'table',
+              type: 'table',
             },
           },
         ],
       },
     })[0];
 
-    const childComponent = component.components().at(0);
-    const innerComponent = childComponent.components().at(0);
-    expect(innerComponent).toBeDefined();
-    expect(innerComponent.get('type')).toBe(ConditionalVariableType);
-    expect(innerComponent.getInnerHTML()).toBe('<h1>Some child value</h1>');
+    const innerComponent = getFirstChild(getFirstChild(component));
+    const innerComponentView = getFirstChildView(innerComponent);
+    const innerHTML = '<table><tbody><tr class="row"><td class="cell"></td></tr></tbody></table>';
+    expect(innerComponent.getInnerHTML()).toBe(innerHTML);
+    expect(innerComponentView).toBeInstanceOf(ComponentTableView);
+    expect(innerComponentView?.el.tagName).toBe('TABLE');
   });
 
   it('should store conditional components', () => {
@@ -211,3 +228,15 @@ describe('ComponentConditionalVariable', () => {
     }).toThrow(MissingConditionError);
   });
 });
+
+function updatedsmLeftValue(dsm: DataSourceManager, newValue: string) {
+  dsm.get('ds1').getRecord('left_id')?.set('left', newValue);
+}
+
+function getFirstChildView(component: Component) {
+  return getFirstChild(component).getView();
+}
+
+function getFirstChild(component: Component) {
+  return component.components().at(0);
+}
