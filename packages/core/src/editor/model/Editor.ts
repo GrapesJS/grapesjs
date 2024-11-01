@@ -1025,6 +1025,7 @@ export default class EditorModel extends Model {
    */
   destroyAll() {
     const { config, view } = this;
+    this.trigger('destroy');
     const editor = this.getEditor();
     // @ts-ignore
     const { editors = [] } = config.grapesjs || {};
@@ -1047,6 +1048,7 @@ export default class EditorModel extends Model {
     editors.splice(editors.indexOf(editor), 1);
     //@ts-ignore
     hasWin() && $(config.el).empty().attr(this.attrsOrig);
+    this.trigger('destroyed');
   }
 
   getEditing(): Component | undefined {
