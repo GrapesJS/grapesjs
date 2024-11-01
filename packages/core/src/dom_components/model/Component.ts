@@ -53,9 +53,8 @@ import {
 } from './SymbolUtils';
 import TraitDataVariable from '../../data_sources/model/TraitDataVariable';
 import { ConditionalVariableType, DataCondition } from '../../data_sources/model/conditional_variables/DataCondition';
-import { DataVariableType } from '../../data_sources/model/DataVariable';
 import { isDynamicValue, isDynamicValueDefinition } from '../../data_sources/model/utils';
-import { DynamicValue, DynamicValueDefinition } from '../../data_sources/types';
+import { DynamicValueDefinition } from '../../data_sources/types';
 
 export interface IComponent extends ExtractMethods<Component> {}
 

@@ -168,6 +168,47 @@ describe('TraitConditionalVariable', () => {
     });
   });
 
+  it('should be property on the component with `changeProp:true`', () => {
+    const dataSource: DataSourceProps = {
+      id: 'ds1',
+      records: [{ id: 'left_id', left: 'Name1' }],
+    };
+    dsm.add(dataSource);
+
+    const component = cmpRoot.append({
+      tagName: 'h1',
+      type: 'text',
+      traits: [
+        {
+          type: 'text',
+          name: 'title',
+          changeProp: true,
+          value: {
+            type: ConditionalVariableType,
+            condition: {
+              left: {
+                type: DataVariableType,
+                path: 'ds1.left_id.left',
+              },
+              operator: GenericOperation.equals,
+              right: 'Name1',
+            },
+            ifTrue: 'Correct name',
+            ifFalse: 'Incorrect name',
+          },
+        },
+      ],
+    })[0];
+
+    // TODO: make dynamic values not to change the attributes if `changeProp:true`
+    // expect(component.getView()?.el.getAttribute('title')).toBeNull();
+    expect(component.get('title')).toBe('Correct name');
+
+    dsm.get('ds1').getRecord('left_id')?.set('left', 'Different name');
+    // expect(component.getView()?.el.getAttribute('title')).toBeNull();
+    expect(component.get('title')).toBe('Incorrect name');
+  });
+
   it('should handle objects as traits (other than dynamic values)', () => {
     const traitValue = {
       type: 'UNKNOWN_TYPE',
