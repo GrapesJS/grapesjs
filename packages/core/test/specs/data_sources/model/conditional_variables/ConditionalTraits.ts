@@ -5,7 +5,7 @@ import { ConditionalVariableType } from '../../../../../src/data_sources/model/c
 import { GenericOperation } from '../../../../../src/data_sources/model/conditional_variables/operators/GenericOperator';
 import { NumberOperation } from '../../../../../src/data_sources/model/conditional_variables/operators/NumberOperator';
 import { DataSourceProps } from '../../../../../src/data_sources/types';
-import { dynamicAttrKey } from '../../../../../src/dom_components/model/Component';
+import Component, { dynamicAttrKey } from '../../../../../src/dom_components/model/Component';
 import ComponentWrapper from '../../../../../src/dom_components/model/ComponentWrapper';
 import EditorModel from '../../../../../src/editor/model/Editor';
 import { setupTestEditor } from '../../../../common';
@@ -45,9 +45,7 @@ describe('TraitConditionalVariable', () => {
       ],
     })[0];
 
-    expect(component).toBeDefined();
-    expect(component.getTrait('title').get('value')).toBe('Some title');
-    expect(component.getAttributes().title).toBe('Some title');
+    testComponentAttr(component, 'title', 'Some title');
   });
 
   it('should add a trait with a data-source condition', () => {
@@ -81,10 +79,7 @@ describe('TraitConditionalVariable', () => {
       ],
     })[0];
 
-    const traitValue = component.getTrait('title').get('value');
-    expect(traitValue).toBe('Valid name');
-    expect(component.getAttributes().title).toBe('Valid name');
-    expect(component.getView()?.el.getAttribute('title')).toBe('Valid name');
+    testComponentAttr(component, 'title', 'Valid name');
   });
 
   it('should change trait value with changing data-source value', () => {
@@ -118,18 +113,9 @@ describe('TraitConditionalVariable', () => {
       ],
     })[0];
 
-    const traitValueBefore = component.getTrait('title').get('value');
-    expect(traitValueBefore).toBe('Correct name');
-    const titleBefore = component.getAttributes().title;
-    expect(titleBefore).toBe('Correct name');
-    expect(component.getView()?.el.getAttribute('title')).toBe('Correct name');
-
+    testComponentAttr(component, 'title', 'Correct name');
     dsm.get('ds1').getRecord('left_id')?.set('left', 'Different name');
-    const traitValueAfter = component.getTrait('title').get('value');
-    expect(traitValueAfter).toBe('Incorrect name');
-    const titleAfter = component.getAttributes().title;
-    expect(titleAfter).toBe('Incorrect name');
-    expect(component.getView()?.el.getAttribute('title')).toBe('Incorrect name');
+    testComponentAttr(component, 'title', 'Incorrect name');
   });
 
   it('should throw an error if no condition is passed in trait', () => {
@@ -204,3 +190,10 @@ describe('TraitConditionalVariable', () => {
     expect(component.getAttributes().title).toEqual(traitValue);
   });
 });
+
+function testComponentAttr(component: Component, trait: string, value: string) {
+  expect(component).toBeDefined();
+  expect(component.getTrait(trait).get('value')).toBe(value);
+  expect(component.getAttributes()[trait]).toBe(value);
+  expect(component.getView()?.el.getAttribute(trait)).toBe(value);
+}
