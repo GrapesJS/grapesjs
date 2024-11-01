@@ -36,8 +36,7 @@ export enum CanvasEvents {
   dragEnd = 'canvas:dragend',
 
   /**
-   * @event `canvas:dragdata` On any dataTransfer parse, `DataTransfer` instance and the `result` are passed as arguments.
-   * By changing `result.content` you're able to customize what is dropped.
+   * @event `canvas:dragdata` On any dataTransfer parse, `DataTransfer` instance and the `result` are passed as arguments. By changing `result.content` you're able to customize what is dropped.
    */
   dragData = 'canvas:dragdata',
 
@@ -110,8 +109,7 @@ export enum CanvasEvents {
   pointer = 'canvas:pointer',
 
   /**
-   * @event `canvas:refresh` Canvas was refreshed to update elements on top,
-   * like spots/tools (eg. via `editor.Canvas.refresh()` or on frame resize).
+   * @event `canvas:refresh` Canvas was refreshed to update elements on top, like spots/tools (eg. via `editor.Canvas.refresh()` or on frame resize).
    * @example
    * editor.on('canvas:refresh', (canvasRefreshOptions) => {
    *  console.log('Canvas refreshed with options:', canvasRefreshOptions);
@@ -120,8 +118,7 @@ export enum CanvasEvents {
   refresh = 'canvas:refresh',
 
   /**
-   * @event `canvas:frame:load` Frame loaded in canvas.
-   * The event is triggered right after iframe's `onload`.
+   * @event `canvas:frame:load` Frame loaded in canvas. The event is triggered right after iframe's `onload`.
    * @example
    * editor.on('canvas:frame:load', ({ window }) => {
    *  console.log('Frame loaded', window);
@@ -130,8 +127,7 @@ export enum CanvasEvents {
   frameLoad = 'canvas:frame:load',
 
   /**
-   * @event `canvas:frame:load:head` Frame head loaded in canvas.
-   * The event is triggered right after iframe's finished to load the head elemenets (eg. scripts)
+   * @event `canvas:frame:load:head` Frame head loaded in canvas. The event is triggered right after iframe's finished to load the head elemenets (eg. scripts)
    * @example
    * editor.on('canvas:frame:load:head', ({ window }) => {
    *  console.log('Frame head loaded', window);
@@ -140,8 +136,7 @@ export enum CanvasEvents {
   frameLoadHead = 'canvas:frame:load:head',
 
   /**
-   * @event `canvas:frame:load:body` Frame body loaded in canvas.
-   * The event is triggered when the body is rendered with components.
+   * @event `canvas:frame:load:body` Frame body loaded in canvas. The event is triggered when the body is rendered with components.
    * @example
    * editor.on('canvas:frame:load:body', ({ window }) => {
    *  console.log('Frame completed the body render', window);

@@ -49,7 +49,7 @@
  * * [getType](#gettype)
  * * [getTypes](#gettypes)
  *
- * * [Component]: component.html
+ * [Component]: component.html
  *
  * @module Components
  */

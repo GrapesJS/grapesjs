@@ -11,7 +11,7 @@ export enum CommandsEvents {
   _run = 'run',
 
   /**
-   * @event `command:run:COMMAND_ID` Triggered on run of a specific command.
+   * @event `command:run:COMMAND-ID` Triggered on run of a specific command.
    * @example
    * editor.on('command:run:my-command', ({ result, options }) => { ... });
    */
@@ -19,14 +19,14 @@ export enum CommandsEvents {
   _runCommand = 'run:',
 
   /**
-   * @event `command:run:before:COMMAND_ID` Triggered before the command is called.
+   * @event `command:run:before:COMMAND-ID` Triggered before the command is called.
    * @example
    * editor.on('command:run:before:my-command', ({ options }) => { ... });
    */
   runBeforeCommand = 'command:run:before:',
 
   /**
-   * @event `command:abort:COMMAND_ID` Triggered when the command execution is aborted.
+   * @event `command:abort:COMMAND-ID` Triggered when the command execution is aborted.
    * @example
    * editor.on('command:abort:my-command', ({ options }) => { ... });
    *
@@ -51,7 +51,7 @@ export enum CommandsEvents {
   _stop = 'stop',
 
   /**
-   * @event `command:stop:COMMAND_ID` Triggered on stop of a specific command.
+   * @event `command:stop:COMMAND-ID` Triggered on stop of a specific command.
    * @example
    * editor.on('command:run:my-command', ({ result, options }) => { ... });
    */
@@ -59,7 +59,7 @@ export enum CommandsEvents {
   _stopCommand = 'stop:',
 
   /**
-   * @event `command:stop:before:COMMAND_ID` Triggered before the command is called to stop.
+   * @event `command:stop:before:COMMAND-ID` Triggered before the command is called to stop.
    * @example
    * editor.on('command:stop:before:my-command', ({ options }) => { ... });
    */

@@ -32,19 +32,19 @@ editor.on('command:run', ({ id, result, options }) => {
 });
 ```
 
-* `command:run:COMMAND\_ID` Triggered on run of a specific command.
+* `command:run:COMMAND-ID` Triggered on run of a specific command.
 
 ```javascript
 editor.on('command:run:my-command', ({ result, options }) => { ... });
 ```
 
-* `command:run:before:COMMAND\_ID` Triggered before the command is called.
+* `command:run:before:COMMAND-ID` Triggered before the command is called.
 
 ```javascript
 editor.on('command:run:before:my-command', ({ options }) => { ... });
 ```
 
-* `command:abort:COMMAND\_ID` Triggered when the command execution is aborted.
+* `command:abort:COMMAND-ID` Triggered when the command execution is aborted.
 
 ```javascript
 editor.on('command:abort:my-command', ({ options }) => { ... });
@@ -65,13 +65,13 @@ editor.on('command:stop', ({ id, result, options }) => {
 });
 ```
 
-* `command:stop:COMMAND\_ID` Triggered on stop of a specific command.
+* `command:stop:COMMAND-ID` Triggered on stop of a specific command.
 
 ```javascript
 editor.on('command:run:my-command', ({ result, options }) => { ... });
 ```
 
-* `command:stop:before:COMMAND\_ID` Triggered before the command is called to stop.
+* `command:stop:before:COMMAND-ID` Triggered before the command is called to stop.
 
 ```javascript
 editor.on('command:stop:before:my-command', ({ options }) => { ... });

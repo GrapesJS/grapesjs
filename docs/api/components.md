@@ -48,20 +48,14 @@ cmp.addType(...);
 ## Methods
 
 *   [getWrapper][2]
-
 *   [getComponents][3]
-
 *   [addComponent][4]
-
 *   [clear][5]
-
 *   [addType][6]
-
 *   [getType][7]
-
 *   [getTypes][8]
 
-*   [Component]: component.html
+[Component]: component.html
 
 ## getWrapper
 
