@@ -2,6 +2,10 @@ import EditorModel from '../../editor/model/Editor';
 import { ConditionalVariableType } from './conditional_variables/DataCondition';
 import DataVariable, { DataVariableType } from './DataVariable';
 
+export function isDynamicValue(value: any) {
+  return typeof value === 'object' && [DataVariableType, ConditionalVariableType].includes(value.type);
+}
+
 export function isDataVariable(variable: any) {
   return variable?.type === DataVariableType;
 }

@@ -11,6 +11,7 @@ import Traits from './Traits';
 import TraitDataVariable from '../../data_sources/model/TraitDataVariable';
 import { DataVariableType } from '../../data_sources/model/DataVariable';
 import DynamicVariableListenerManager from '../../data_sources/model/DataVariableListenerManager';
+import { isDynamicValue } from '../../data_sources/model/utils';
 
 /**
  * @property {String} id Trait id, eg. `my-trait-id`.
@@ -58,7 +59,7 @@ export default class Trait extends Model<TraitProperties> {
     }
     this.em = em;
 
-    if (this.attributes.value && typeof this.attributes.value === 'object') {
+    if (isDynamicValue(this.attributes.value)) {
       const dataType = this.attributes.value.type;
       switch (dataType) {
         case DataVariableType:
@@ -70,9 +71,7 @@ export default class Trait extends Model<TraitProperties> {
           break;
         }
         default:
-          throw new Error(
-            `Invalid data variable type. Expected '${DataVariableType} or ${ConditionalVariableType}', but found '${dataType}'.`,
-          );
+          return;
       }
 
       const dv = this.dynamicVariable.getDataValue();

@@ -11,7 +11,7 @@ import CssRuleView from '../../css_composer/view/CssRuleView';
 import ComponentView from '../../dom_components/view/ComponentView';
 import Frame from '../../canvas/model/Frame';
 import { DataCondition, ConditionalVariableType } from '../../data_sources/model/conditional_variables/DataCondition';
-
+import { isDynamicValue } from '../../data_sources/model/utils';
 export type StyleProps = Record<
   string,
   | string
@@ -114,7 +114,7 @@ export default class StyleableModel<T extends ObjectHash = any> extends Model<T>
       }
 
       const styleValue = newStyle[key];
-      if (this.isDynamicValue(styleValue)) {
+      if (isDynamicValue(styleValue)) {
         const styleDynamicVariable = this.resolveDynamicValue(styleValue);
         newStyle[key] = styleDynamicVariable;
         this.manageDataVariableListener(styleDynamicVariable, key);
@@ -141,10 +141,6 @@ export default class StyleableModel<T extends ObjectHash = any> extends Model<T>
     });
 
     return newStyle;
-  }
-
-  private isDynamicValue(styleValue: any) {
-    return typeof styleValue === 'object' && [DataVariableType, ConditionalVariableType].includes(styleValue.type);
   }
 
   private resolveDynamicValue(styleValue: any) {
@@ -216,7 +212,7 @@ export default class StyleableModel<T extends ObjectHash = any> extends Model<T>
         return;
       }
 
-      if (this.isDynamicValue(styleValue)) {
+      if (isDynamicValue(styleValue)) {
         const dataVar = this.resolveDynamicValue(styleValue);
         resolvedStyle[key] = dataVar.getDataValue();
       }
