@@ -8,7 +8,7 @@ import { DataSourceProps } from '../../../../../src/data_sources/types';
 import Component, { dynamicAttrKey } from '../../../../../src/dom_components/model/Component';
 import ComponentWrapper from '../../../../../src/dom_components/model/ComponentWrapper';
 import EditorModel from '../../../../../src/editor/model/Editor';
-import { setupTestEditor } from '../../../../common';
+import { filterObjectForSnapshot, setupTestEditor } from '../../../../common';
 
 describe('TraitConditionalVariable', () => {
   let editor: Editor;
@@ -159,6 +159,8 @@ describe('TraitConditionalVariable', () => {
     })[0];
 
     const projectData = editor.getProjectData();
+    const snapshot = filterObjectForSnapshot(projectData);
+    expect(snapshot).toMatchSnapshot(``);
     const page = projectData.pages[0];
     const frame = page.frames[0];
     const storedComponent = frame.component.components[0];
@@ -166,6 +168,47 @@ describe('TraitConditionalVariable', () => {
     expect(storedComponent[dynamicAttrKey]).toEqual({
       dynamicTrait: conditionalTrait,
     });
+  });
+
+  it('should load traits with conditional values correctly', () => {
+    const projectData = {
+      pages: [
+        {
+          frames: [
+            {
+              component: {
+                components: [
+                  {
+                    attributes: {
+                      dynamicTrait: 'Default',
+                    },
+                    [dynamicAttrKey]: {
+                      dynamicTrait: {
+                        condition: {
+                          left: 0,
+                          operator: '>',
+                          right: -1,
+                        },
+                        ifTrue: 'Positive',
+                        type: 'conditional-variable',
+                      },
+                    },
+                    type: 'text',
+                  },
+                ],
+                type: 'wrapper',
+              },
+            },
+          ],
+          type: 'main',
+        },
+      ],
+    };
+
+    editor.loadProjectData(projectData);
+    const components = editor.getComponents();
+    const component = components.models[0];
+    expect(component.getAttributes()).toEqual({ dynamicTrait: 'Positive' });
   });
 
   it('should be property on the component with `changeProp:true`', () => {

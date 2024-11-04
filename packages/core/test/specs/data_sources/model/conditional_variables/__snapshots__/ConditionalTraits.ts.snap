@@ -1,0 +1,59 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`TraitConditionalVariable should store traits with conditional values correctly 1`] = `
+{
+  "assets": [],
+  "dataSources": [],
+  "pages": [
+    {
+      "frames": [
+        {
+          "component": {
+            "components": [
+              {
+                "attributes": {
+                  "dynamicTrait": "Positive",
+                },
+                "attributes-dynamic-value": {
+                  "dynamicTrait": {
+                    "condition": {
+                      "left": 0,
+                      "operator": ">",
+                      "right": -1,
+                    },
+                    "ifTrue": "Positive",
+                    "type": "conditional-variable",
+                  },
+                },
+                "tagName": "h1",
+                "type": "text",
+              },
+            ],
+            "docEl": {
+              "tagName": "html",
+            },
+            "head": {
+              "type": "head",
+            },
+            "stylable": [
+              "background",
+              "background-color",
+              "background-image",
+              "background-repeat",
+              "background-attachment",
+              "background-position",
+              "background-size",
+            ],
+            "type": "wrapper",
+          },
+          "id": "data-variable-id",
+        },
+      ],
+      "id": "data-variable-id",
+      "type": "main",
+    },
+  ],
+  "styles": [],
+  "symbols": [],
+}
+`;
