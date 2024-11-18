@@ -143,4 +143,20 @@ describe('ComponentView', () => {
     const result = model.getAttributes();
     expect(result.class).toEqual(undefined);
   });
+
+  test('updateStatus removes previous classes and adds new ones', () => {
+    model.addClass('selected');
+
+    model.set('locked', true);
+    view.updateStatus();
+    expect(view.el.getAttribute('class')).toEqual('no-pointer');
+
+    model.set('locked', false);
+    view.updateStatus();
+    expect(view.el.getAttribute('class')).toEqual('pointer-init');
+
+    model.set('locked');
+    view.updateStatus();
+    expect(view.el.getAttribute('class')).toEqual('');
+  });
 });

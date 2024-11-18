@@ -241,7 +241,7 @@ TComp> {
     const hoveredCls = `${ppfx}hovered`;
     const noPointerCls = `${ppfx}no-pointer`;
     const pointerInitCls = `${ppfx}pointer-init`;
-    const toRemove = [selectedCls, selectedParentCls, freezedCls, hoveredCls, noPointerCls];
+    const toRemove = [selectedCls, selectedParentCls, freezedCls, hoveredCls, noPointerCls, pointerInitCls];
     const selCls = extHl && !opts.noExtHl ? '' : selectedCls;
     this.$el.removeClass(toRemove.join(' '));
     const actualCls = el.getAttribute('class') || '';
