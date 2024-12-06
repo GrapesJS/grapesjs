@@ -12,6 +12,7 @@ import {
   SorterEventHandlers,
   DragSource,
 } from './types';
+import Block from '../../block_manager/model/Block';
 
 const targetSpotType = CanvasSpotBuiltInTypes.Target;
 
@@ -22,6 +23,8 @@ const spotTarget = {
 
 export default class ComponentSorter<NodeType extends BaseComponentNode> extends Sorter<Component, NodeType> {
   targetIsText: boolean = false;
+  // For event triggering
+  __currentBlock?: Block;
   constructor({
     em,
     treeClass,

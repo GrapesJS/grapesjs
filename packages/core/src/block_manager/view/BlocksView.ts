@@ -7,6 +7,8 @@ import Block from '../model/Block';
 import Categories from '../../abstract/ModuleCategories';
 import BlockView from './BlockView';
 import CategoryView from '../../abstract/ModuleCategoryView';
+import CanvasNewComponentNode from '../../utils/sorter/CanvasNewComponentNode';
+import { DragDirection } from '../../utils/sorter/types';
 
 export interface BlocksViewConfig {
   em: EditorModel;
@@ -71,23 +73,30 @@ export default class BlocksView extends View {
     if (!this.sorter) {
       const utils = em.Utils;
       const canvas = em.Canvas;
-
-      this.sorter = new utils.Sorter({
-        // @ts-ignore
-        container: canvas.getBody(),
-        placer: canvas.getPlacerEl(),
-        containerSel: '*',
-        itemSel: '*',
-        pfx: this.ppfx,
-        onStart: this.onDrag,
-        onEndMove: this.onDrop,
-        onMove: this.onMove,
-        document: canvas.getFrameEl().contentDocument,
-        direction: 'a',
-        wmargin: 1,
-        nested: 1,
+      this.sorter = new utils.ComponentSorter({
         em,
-        canvasRelative: 1,
+        treeClass: CanvasNewComponentNode,
+        containerContext: {
+          container: canvas.getBody(),
+          containerSel: '*',
+          itemSel: '*',
+          pfx: this.ppfx,
+          placeholderElement: canvas.getPlacerEl()!,
+          document: canvas.getBody().ownerDocument,
+        },
+        dragBehavior: {
+          dragDirection: DragDirection.BothDirections,
+          nested: true,
+        },
+        positionOptions: {
+          windowMargin: 1,
+          canvasRelative: true,
+        },
+        eventHandlers: {
+          legacyOnStartSort: this.onDrag,
+          legacyOnEndMove: this.onDrop,
+          legacyOnMoveClb: this.onMove,
+        },
       });
     }
 

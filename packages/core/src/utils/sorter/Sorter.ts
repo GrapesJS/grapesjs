@@ -71,18 +71,7 @@ export default class Sorter<T, NodeType extends SortableTreeNode<T>> {
    * @param {HTMLElement[]} sources[]
    * */
   startSort(sources: { element?: HTMLElement; dragSource?: DragSource<T> }[]) {
-    const validSources = sources.filter((source) => !!source.dragSource || this.findValidSourceElement(source.element));
-
-    const sourcesWithModel: { model: T; content?: any }[] = validSources.map((source) => {
-      return {
-        model: $(source.element)?.data('model'),
-        content: source.dragSource,
-      };
-    });
-    const sortedSources = sourcesWithModel.sort((a, b) => {
-      return sortDom(a.model, b.model);
-    });
-    const sourceNodes = sortedSources.map((source) => new this.treeClass(source.model, source.content));
+    const { sourceNodes, sourcesWithModel } = this.getSourceNodes(sources);
     this.sourceNodes = sourceNodes;
     this.dropLocationDeterminer.startSort(sourceNodes);
     this.bindDragEventHandlers();
@@ -102,6 +91,33 @@ export default class Sorter<T, NodeType extends SortableTreeNode<T>> {
 
     // For backward compatibility, leave it to a single node
     this.em.trigger('sorter:drag:start', sources[0], sourcesWithModel[0]);
+  }
+
+  validTarget(targetEl: HTMLElement | undefined, sources: { element?: HTMLElement; dragSource?: DragSource<T> }[], index: number): boolean {
+    if (!targetEl) return false;
+    const targetModel = $(targetEl).data('model');
+    if (!targetModel) return false;
+
+    const targetNode = new this.treeClass(targetModel)
+    const { sourceNodes } = this.getSourceNodes(sources);
+    const canMove = sourceNodes.some((node) => targetNode.canMove(node, index));
+    return canMove;
+  }
+
+  private getSourceNodes(sources: { element?: HTMLElement; dragSource?: DragSource<T>; }[]) {
+    const validSources = sources.filter((source) => !!source.dragSource || this.findValidSourceElement(source.element));
+
+    const sourcesWithModel: { model: T; content?: any; }[] = validSources.map((source) => {
+      return {
+        model: $(source.element)?.data('model'),
+        content: source.dragSource,
+      };
+    });
+    const sortedSources = sourcesWithModel.sort((a, b) => {
+      return sortDom(a.model, b.model);
+    });
+    const sourceNodes = sortedSources.map((source) => new this.treeClass(source.model, source.content));
+    return { sourceNodes, sourcesWithModel };
   }
 
   /**

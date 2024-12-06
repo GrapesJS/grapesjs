@@ -5,12 +5,14 @@ import { on, off } from '../../utils/dom';
 import { hasDnd } from '../../utils/mixins';
 import { BlockManagerConfig } from '../config/config';
 import Block from '../model/Block';
+import ComponentSorter from '../../utils/sorter/ComponentSorter';
+import CanvasNewComponentNode from '../../utils/sorter/CanvasNewComponentNode';
 
 export interface BlockViewConfig {
   em?: EditorModel;
   pStylePrefix?: string;
   appendOnClick?: BlockManagerConfig['appendOnClick'];
-  getSorter?: any;
+  getSorter?: () => ComponentSorter<CanvasNewComponentNode>;
 }
 
 export default class BlockView extends View<Block> {
@@ -52,24 +54,27 @@ export default class BlockView extends View<Block> {
     } else if (isFunction(onClick)) {
       return onClick(model, em?.getEditor(), { event: ev });
     }
-    const sorter = config.getSorter();
+    const sorter = config.getSorter?.();
+    if (!sorter) return;
     const content = model.get('content')!;
+    let dropModel = this.getTempDropModel(content);
+    const el = dropModel.view?.el;
+    const sources = el ? [{ element: el, dragSource: { content } }] : [];
     const selected = em.getSelected();
-    sorter.setDropContent(content);
-    let target, valid, insertAt;
+    let target, valid, insertAt, index = 0;
 
     // If there is a selected component, try first to append
     // the block inside, otherwise, try to place it as a next sibling
     if (selected) {
-      valid = sorter.validTarget(selected.getEl(), content);
+      valid = sorter.validTarget(selected.getEl(), sources, index);
 
-      if (valid.valid) {
+      if (valid) {
         target = selected;
       } else {
         const parent = selected.parent();
         if (parent) {
-          valid = sorter.validTarget(parent.getEl(), content);
-          if (valid.valid) {
+          valid = sorter.validTarget(parent.getEl(), sources, index);
+          if (valid) {
             target = parent;
             insertAt = parent.components().indexOf(selected) + 1;
           }
@@ -80,8 +85,8 @@ export default class BlockView extends View<Block> {
     // If no target found yet, try to append the block to the wrapper
     if (!target) {
       const wrapper = em.getWrapper()!;
-      valid = sorter.validTarget(wrapper.getEl(), content);
-      if (valid.valid) target = wrapper;
+      valid = sorter.validTarget(wrapper.getEl(), sources, index);
+      if (valid) target = wrapper;
     }
 
     const result = target && target.append(content, { at: insertAt })[0];
@@ -100,9 +105,11 @@ export default class BlockView extends View<Block> {
     em.refreshCanvas();
     const sorter = config.getSorter();
     sorter.__currentBlock = model;
-    sorter.setDragHelper(this.el, e);
-    sorter.setDropContent(this.model.get('content'));
-    sorter.startSort([this.el]);
+    const content = this.model.get('content');
+    let dropModel = this.getTempDropModel(content);
+    const el = dropModel.view?.el;
+    const sources = el ? [{ element: el, dragSource: { content } }] : [];
+    sorter.startSort(sources);
     on(document, 'mouseup', this.endDrag);
   }
 
@@ -124,9 +131,29 @@ export default class BlockView extends View<Block> {
    */
   endDrag() {
     off(document, 'mouseup', this.endDrag);
-    const sorter = this.config.getSorter();
+    const sorter = this.config.getSorter?.();
+    if (sorter) {
+      sorter.endDrag();
+    }
+  }
 
-    sorter.cancelDrag();
+  /**
+   * Generates a temporary model of the content being dragged for use with the sorter.
+   * @returns The temporary model representing the dragged content.
+   */
+  private getTempDropModel(content?: any) {
+    const comps = this.em.Components.getComponents();
+    const opts = {
+      avoidChildren: 1,
+      avoidStore: 1,
+      avoidUpdateStyle: 1,
+    };
+    const tempModel = comps.add(content, { ...opts, temporary: true });
+    let dropModel = comps.remove(tempModel, { ...opts, temporary: true } as any);
+    // @ts-ignore
+    dropModel = dropModel instanceof Array ? dropModel[0] : dropModel;
+    dropModel.view?.$el.data('model', dropModel);
+    return dropModel;
   }
 
   render() {
