@@ -93,21 +93,25 @@ export default class Sorter<T, NodeType extends SortableTreeNode<T>> {
     this.em.trigger('sorter:drag:start', sources[0], sourcesWithModel[0]);
   }
 
-  validTarget(targetEl: HTMLElement | undefined, sources: { element?: HTMLElement; dragSource?: DragSource<T> }[], index: number): boolean {
+  validTarget(
+    targetEl: HTMLElement | undefined,
+    sources: { element?: HTMLElement; dragSource?: DragSource<T> }[],
+    index: number,
+  ): boolean {
     if (!targetEl) return false;
     const targetModel = $(targetEl).data('model');
     if (!targetModel) return false;
 
-    const targetNode = new this.treeClass(targetModel)
+    const targetNode = new this.treeClass(targetModel);
     const { sourceNodes } = this.getSourceNodes(sources);
     const canMove = sourceNodes.some((node) => targetNode.canMove(node, index));
     return canMove;
   }
 
-  private getSourceNodes(sources: { element?: HTMLElement; dragSource?: DragSource<T>; }[]) {
+  private getSourceNodes(sources: { element?: HTMLElement; dragSource?: DragSource<T> }[]) {
     const validSources = sources.filter((source) => !!source.dragSource || this.findValidSourceElement(source.element));
 
-    const sourcesWithModel: { model: T; content?: any; }[] = validSources.map((source) => {
+    const sourcesWithModel: { model: T; content?: any }[] = validSources.map((source) => {
       return {
         model: $(source.element)?.data('model'),
         content: source.dragSource,

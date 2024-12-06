@@ -61,7 +61,10 @@ export default class BlockView extends View<Block> {
     const el = dropModel.view?.el;
     const sources = el ? [{ element: el, dragSource: { content } }] : [];
     const selected = em.getSelected();
-    let target, valid, insertAt, index = 0;
+    let target,
+      valid,
+      insertAt,
+      index = 0;
 
     // If there is a selected component, try first to append
     // the block inside, otherwise, try to place it as a next sibling
