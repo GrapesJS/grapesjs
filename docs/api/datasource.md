@@ -46,14 +46,14 @@ If the `records` property is not an instance of `DataRecords`, it will be conver
 
 ### Parameters
 
-*   `props` **DataSourceProps** Properties to initialize the data source.
+*   `props` **DataSourceProps\<DRProps>** Properties to initialize the data source.
 *   `opts` **DataSourceOptions** Options to initialize the data source.
 
 ## records
 
 Retrieves the collection of records associated with this data source.
 
-Returns **DataRecords** The collection of data records.
+Returns **DataRecords\<DRProps>** The collection of data records.
 
 ## em
 
@@ -67,7 +67,7 @@ Adds a new record to the data source.
 
 ### Parameters
 
-*   `record` **DataRecordProps** The properties of the record to add.
+*   `record` **DRProps** The properties of the record to add.
 *   `opts` **AddOptions?** Options to apply when adding the record.
 
 Returns **DataRecord** The added data record.
@@ -80,14 +80,14 @@ Retrieves a record from the data source by its ID.
 
 *   `id` **([string][6] | [number][7])** The ID of the record to retrieve.
 
-Returns **(DataRecord | [undefined][8])** The data record, or `undefined` if no record is found with the given ID.
+Returns **(DataRecord\<DRProps> | [undefined][8])** The data record, or `undefined` if no record is found with the given ID.
 
 ## getRecords
 
 Retrieves all records from the data source.
 Each record is processed with the `getRecord` method to apply any read transformers.
 
-Returns **[Array][9]<(DataRecord | [undefined][8])>** An array of data records.
+Returns **[Array][9]<(DataRecord\<DRProps> | [undefined][8])>** An array of data records.
 
 ## removeRecord
 
@@ -98,7 +98,7 @@ Removes a record from the data source by its ID.
 *   `id` **([string][6] | [number][7])** The ID of the record to remove.
 *   `opts` **RemoveOptions?** Options to apply when removing the record.
 
-Returns **(DataRecord | [undefined][8])** The removed data record, or `undefined` if no record is found with the given ID.
+Returns **(DataRecord\<DRProps> | [undefined][8])** The removed data record, or `undefined` if no record is found with the given ID.
 
 ## setRecords
 
@@ -106,7 +106,7 @@ Replaces the existing records in the data source with a new set of records.
 
 ### Parameters
 
-*   `records` **[Array][9]\<DataRecordProps>** An array of data record properties to set.
+*   `records` **[Array][9]\<DRProps>** An array of data record properties to set.
 
 Returns **[Array][9]\<DataRecord>** An array of the added data records.
 
