@@ -60,7 +60,7 @@ export default class CssRulesView extends View {
 
     // I have to render keyframes of the same name together
     // Unfortunately at the moment I didn't find the way of appending them
-    // if not staticly, via appendData
+    // if not statically, via appendData
     if (model.get('atRuleType') === 'keyframes') {
       const atRule = model.getAtRule();
       let atRuleEl = this.atRules[atRule];

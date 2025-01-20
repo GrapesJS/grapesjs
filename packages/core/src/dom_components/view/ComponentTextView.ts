@@ -160,7 +160,7 @@ export default class ComponentTextView<TComp extends ComponentText = ComponentTe
     const contentOpt: ObjectAny = { fromDisable: 1, ...opts };
     model.set('content', '', contentOpt);
 
-    // If there is a custom RTE the content is just added staticly
+    // If there is a custom RTE the content is just added statically
     // inside 'content'
     if (rte?.customRte && !rte.customRte.parseContent) {
       comps.length &&

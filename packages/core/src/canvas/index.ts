@@ -574,7 +574,7 @@ export default class CanvasModule extends Module<CanvasConfig> {
    * const selected = editor.getSelected();
    * // Scroll smoothly (this behavior can be polyfilled)
    * canvas.scrollTo(selected, { behavior: 'smooth' });
-   * // Force the scroll, even if the element is alredy visible
+   * // Force the scroll, even if the element is already visible
    * canvas.scrollTo(selected, { force: true });
    */
   scrollTo(el: any, opts = {}) {

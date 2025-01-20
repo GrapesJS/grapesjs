@@ -127,7 +127,7 @@ export enum CanvasEvents {
   frameLoad = 'canvas:frame:load',
 
   /**
-   * @event `canvas:frame:load:head` Frame head loaded in canvas. The event is triggered right after iframe's finished to load the head elemenets (eg. scripts)
+   * @event `canvas:frame:load:head` Frame head loaded in canvas. The event is triggered right after iframe's finished to load the head elements (eg. scripts)
    * @example
    * editor.on('canvas:frame:load:head', ({ window }) => {
    *  console.log('Frame head loaded', window);
