@@ -104,14 +104,8 @@ $colorsAll: (one, var(--gjs-primary-color)), (two, var(--gjs-secondary-color)), 
 }
 
 .#{$app-prefix}test {
-  &::btn {
+  &btn {
     color: '#fff';
-  }
-
-  &input {
-  }
-
-  &header {
   }
 }
 .opac50 {
