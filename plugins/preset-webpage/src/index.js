@@ -12,6 +12,7 @@ import pluginNavbar from './components/navbar';
 import pluginForms from './components/forms';
 import pluginAviary from './components/aviary';
 import pluginFilestack from './components/filestack';
+import pluginFontIcon from './components/font-icon';
 
 export default ezygrapes.plugins.add('gjs-preset-webpage', (editor, opts = {}) => {
 
@@ -70,6 +71,11 @@ export default ezygrapes.plugins.add('gjs-preset-webpage', (editor, opts = {}) =
     // By setting this option to `false` will avoid loading the plugin
     filestackOpts: 0,
 
+    // `grapesjs-plugin-font-icon` plugin options, disabled by default
+    // Font icon library should be included manually
+    // By setting this option to `false` will avoid loading the plugin
+    fontIconOpts: {},
+
     ...opts,
   };
 
@@ -80,7 +86,8 @@ export default ezygrapes.plugins.add('gjs-preset-webpage', (editor, opts = {}) =
     formsOpts,
     exportOpts,
     aviaryOpts,
-    filestackOpts
+    filestackOpts,
+    fontIconOpts
   } = config;
 
   // Load plugins
@@ -91,6 +98,7 @@ export default ezygrapes.plugins.add('gjs-preset-webpage', (editor, opts = {}) =
   exportOpts && pluginExport(editor, exportOpts);
   aviaryOpts && pluginAviary(editor, aviaryOpts);
   filestackOpts && pluginFilestack(editor, filestackOpts);
+  fontIconOpts && pluginFontIcon(editor, fontIconOpts);
 
   // Load components
   components(editor, config);

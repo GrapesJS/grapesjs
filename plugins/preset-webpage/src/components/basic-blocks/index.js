@@ -7,7 +7,8 @@ export default ezygrapes.plugins.add('gjs-blocks-basic', (editor, opts = {}) => 
       'column1',
       'column2',
       'column3',
-      'column3-7',
+      'column4',
+      'column4-8',
       'text',
       'link',
       'image',
@@ -15,11 +16,7 @@ export default ezygrapes.plugins.add('gjs-blocks-basic', (editor, opts = {}) => 
       'embed',
       'map'
     ],
-    flexGrid: 0,
-    stylePrefix: 'gjs-',
-    addBasicStyle: true,
     category: 'basic',
-    rowHeight: 75,
     ...opts,
   };
 
