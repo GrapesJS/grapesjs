@@ -459,19 +459,7 @@ export default class CanvasView extends ModuleView<Canvas> {
       const frame = this.frame?.el;
       const winEl = el?.ownerDocument.defaultView;
       const frEl = winEl ? (winEl.frameElement as HTMLElement) : frame;
-      const frmOff = this.offset(frEl || frame);
-      const canvasScroll = this.config.scrollableCanvas
-        ? {
-            scrollTop: this.el.scrollTop,
-            scrollLeft: this.el.scrollLeft,
-          }
-        : { scrollTop: 0, scrollLeft: 0 };
-
-      this.frmOff = {
-        ...frmOff,
-        top: frmOff.top + canvasScroll.scrollTop,
-        left: frmOff.left + canvasScroll.scrollLeft,
-      };
+      this.frmOff = this.offset(frEl || frame);
     }
 
     return this.frmOff;
@@ -573,6 +561,23 @@ export default class CanvasView extends ModuleView<Canvas> {
       width: co.width,
       height: co.height,
     };
+  }
+
+  /**
+   * Returns the scroll position of the canvas.
+   *
+   * If the canvas is scrollable, returns the current `scrollTop` and `scrollLeft` values.
+   * Otherwise, returns an object with `scrollTop` and `scrollLeft` both set to 0.
+   *
+   * @returns An object containing the vertical and horizontal scroll positions.
+   */
+  getCanvasScroll(): { scrollTop: number; scrollLeft: number } {
+    return this.config.scrollableCanvas
+      ? {
+          scrollTop: this.el.scrollTop,
+          scrollLeft: this.el.scrollLeft,
+        }
+      : { scrollTop: 0, scrollLeft: 0 };
   }
 
   /**
