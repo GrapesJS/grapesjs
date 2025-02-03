@@ -553,10 +553,16 @@ export default class CanvasView extends ModuleView<Canvas> {
     const fo = this.getFrameOffset();
     const co = this.getCanvasOffset();
     const { noScroll } = opts;
+    const canvasScroll = this.config.scrollableCanvas
+      ? {
+          scrollTop: this.el.scrollTop,
+          scrollLeft: this.el.scrollLeft,
+        }
+      : { scrollTop: 0, scrollLeft: 0 };
 
     return {
-      top: fo.top + (noScroll ? 0 : bEl.scrollTop) * zoom - co.top,
-      left: fo.left + (noScroll ? 0 : bEl.scrollLeft) * zoom - co.left,
+      top: fo.top + canvasScroll.scrollTop + (noScroll ? 0 : bEl.scrollTop) * zoom - co.top,
+      left: fo.left + canvasScroll.scrollTop + (noScroll ? 0 : bEl.scrollLeft) * zoom - co.left,
       width: co.width,
       height: co.height,
     };
@@ -672,6 +678,9 @@ export default class CanvasView extends ModuleView<Canvas> {
     this.spotsEl = el.querySelector('[data-spots]')!;
     this.cvStyle = el.querySelector('[data-canvas-style]')!;
     this.el.className = getUiClass(em, this.className);
+    if (config.scrollableCanvas === true) {
+      $el.css('overflow', 'auto');
+    }
     this.ready = true;
     this._renderFrames();
 

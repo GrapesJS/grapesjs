@@ -89,6 +89,19 @@ export interface CanvasConfig {
    * Experimental: enable infinite canvas.
    */
   infiniteCanvas?: boolean;
+
+  /**
+   * Enables the scrollable canvas feature.
+   *
+   * When this feature flag is set to `true`, the canvas element
+   * will have its `overflow` style set to `auto`, allowing users to scroll
+   * the canvas content if it exceeds the visible area.  This is useful for
+   * handling large diagrams or zoomed-in views where parts of the content
+   * are initially hidden.  If `false`, the canvas will use default overflow (typically hidden).
+   *
+   * @default false
+   */
+  scrollableCanvas?: boolean;
 }
 
 const config: () => CanvasConfig = () => ({
