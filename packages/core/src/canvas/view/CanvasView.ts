@@ -459,8 +459,21 @@ export default class CanvasView extends ModuleView<Canvas> {
       const frame = this.frame?.el;
       const winEl = el?.ownerDocument.defaultView;
       const frEl = winEl ? (winEl.frameElement as HTMLElement) : frame;
-      this.frmOff = this.offset(frEl || frame);
+      const frmOff = this.offset(frEl || frame);
+      const canvasScroll = this.config.scrollableCanvas
+        ? {
+            scrollTop: this.el.scrollTop,
+            scrollLeft: this.el.scrollLeft,
+          }
+        : { scrollTop: 0, scrollLeft: 0 };
+
+      this.frmOff = {
+        ...frmOff,
+        top: frmOff.top + canvasScroll.scrollTop,
+        left: frmOff.left + canvasScroll.scrollLeft,
+      };
     }
+
     return this.frmOff;
   }
 
@@ -553,16 +566,10 @@ export default class CanvasView extends ModuleView<Canvas> {
     const fo = this.getFrameOffset();
     const co = this.getCanvasOffset();
     const { noScroll } = opts;
-    const canvasScroll = this.config.scrollableCanvas
-      ? {
-          scrollTop: this.el.scrollTop,
-          scrollLeft: this.el.scrollLeft,
-        }
-      : { scrollTop: 0, scrollLeft: 0 };
 
     return {
-      top: fo.top + canvasScroll.scrollTop + (noScroll ? 0 : bEl.scrollTop) * zoom - co.top,
-      left: fo.left + canvasScroll.scrollTop + (noScroll ? 0 : bEl.scrollLeft) * zoom - co.left,
+      top: fo.top + (noScroll ? 0 : bEl.scrollTop) * zoom - co.top,
+      left: fo.left + (noScroll ? 0 : bEl.scrollLeft) * zoom - co.left,
       width: co.width,
       height: co.height,
     };
