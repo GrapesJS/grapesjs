@@ -689,9 +689,9 @@ export default class CanvasView extends ModuleView<Canvas> {
     this.toolsGlobEl = el.querySelector(`.${ppfx}tools-gl`)!;
     this.spotsEl = el.querySelector('[data-spots]')!;
     this.cvStyle = el.querySelector('[data-canvas-style]')!;
-    this.el.className = getUiClass(em, this.className);
+    el.className = getUiClass(em, this.className);
     if (config.scrollableCanvas === true) {
-      $el.css('overflow', 'auto');
+      el.style.overflow = 'auto';
     }
     this.ready = true;
     this._renderFrames();
