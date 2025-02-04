@@ -99,18 +99,15 @@ $colorsAll: (one, var(--gjs-primary-color)), (two, var(--gjs-secondary-color)), 
   border: none;
   color: inherit;
 }
+
 .#{$app-prefix}no-app {
   height: 10px;
 }
 
-.#{$app-prefix}test {
-  &btn {
-    color: '#fff';
-  }
-}
 .opac50 {
   @include opacity(0.5);
 }
+
 .#{$app-prefix}checker-bg,
 .checker-bg {
   background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAIAAADZF8uwAAAAGUlEQVQYV2M4gwH+YwCGIasIUwhT25BVBADtzYNYrHvv4gAAAABJRU5ErkJggg==');

@@ -875,7 +875,9 @@ export default class EditorModel extends Model {
     this.storables.forEach((m) => {
       result = { ...result, ...m.store(1) };
     });
-    return JSON.parse(JSON.stringify(result));
+    const project = JSON.parse(JSON.stringify(result));
+    this.trigger(EditorEvents.projectGet, { project });
+    return project;
   }
 
   loadData(project: ProjectData = {}, opts: EditorLoadOptions = {}): ProjectData {

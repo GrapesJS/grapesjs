@@ -6,9 +6,10 @@ import { CSS_BG_OBJ, CSS_BG_STR } from './ParserCss';
 
 describe('ParserHtml', () => {
   let obj: ReturnType<typeof ParserHtml>;
+  let em: Editor;
 
   beforeEach(() => {
-    const em = new Editor({});
+    em = new Editor({});
     const dom = new DomComponents(em);
     obj = ParserHtml(em, {
       textTags: ['br', 'b', 'i', 'u'],
@@ -16,6 +17,19 @@ describe('ParserHtml', () => {
       returnArray: true,
     });
     obj.compTypes = dom.componentTypes;
+  });
+
+  afterEach(() => {
+    em.destroy();
+  });
+
+  test('Extend parser input', () => {
+    const str = '<div></div>';
+    const result = { tagName: 'div' };
+    em.on(em.Parser.events.htmlBefore, (opts) => {
+      opts.input += str;
+    });
+    expect(obj.parse(str).html).toEqual([result, result]);
   });
 
   test('Simple div node', () => {

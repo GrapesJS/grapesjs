@@ -439,7 +439,6 @@ export default {
           const { keyHeight, keyWidth, currentUnit, keepAutoHeight, keepAutoWidth } = config;
           toggleBodyClass('add', ev, opts);
           modelToStyle = em.Styles.getModelToStyle(model);
-          canvas.toggleFramesEvents(false);
           const computedStyle = getComputedStyle(el);
           const modelStyle = modelToStyle.getStyle();
 
@@ -477,7 +476,6 @@ export default {
           onEnd(ev, opts);
           toggleBodyClass('remove', ev, opts);
           editor.trigger('component:resize', { ...resizeEventOpts, type: 'end' });
-          canvas.toggleFramesEvents(true);
           showOffsets = true;
           self.activeResizer = false;
         },

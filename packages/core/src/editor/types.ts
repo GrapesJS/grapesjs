@@ -36,6 +36,13 @@ export enum EditorEvents {
   projectLoad = 'project:load',
 
   /**
+   * @event `project:get` Event triggered on request of the project data. This can be used to extend the project with custom data.
+   * @example
+   * editor.on('project:get', ({ project }) => { project.myCustomKey = 'value' });
+   */
+  projectGet = 'project:get',
+
+  /**
    * @event `log` Log message triggered.
    * @example
    * editor.on('log', (msg, opts) => { ... });

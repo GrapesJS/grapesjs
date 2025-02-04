@@ -702,6 +702,7 @@ export default class CanvasModule extends Module<CanvasConfig> {
   }
 
   toggleFramesEvents(on: boolean) {
+    // Seems like this causing a bug for iframes in Chrome: https://issues.chromium.org/issues/41336877
     const { style } = this.getFramesEl();
     style.pointerEvents = on ? '' : 'none';
   }

@@ -383,18 +383,13 @@ export default class CommandsModule extends Module<CommandsConfig & { pStylePref
   runCommand(command?: CommandObject, options: CommandOptions = {}) {
     let result;
 
-    if (command && command.run) {
+    if (command?.run) {
       const { em, config } = this;
       const id = command.id as string;
       const editor = em.Editor;
 
       if (!this.isActive(id) || options.force || !config.strict) {
-        // @ts-ignore
-        result = editor && command.callRun(editor, options);
-
-        if (id && command.stop && !command.noStop && !options.abort) {
-          this.active[id] = result;
-        }
+        result = editor && (command as any).callRun(editor, options);
       }
     }
 
@@ -411,15 +406,13 @@ export default class CommandsModule extends Module<CommandsConfig & { pStylePref
   stopCommand(command?: CommandObject, options: CommandOptions = {}) {
     let result;
 
-    if (command && command.run) {
+    if (command?.run) {
       const { em, config } = this;
       const id = command.id as string;
       const editor = em.Editor;
 
       if (this.isActive(id) || options.force || !config.strict) {
-        if (id) delete this.active[id];
-        // @ts-ignore
-        result = command.callStop(editor, options);
+        result = (command as any).callStop(editor, options);
       }
     }
 

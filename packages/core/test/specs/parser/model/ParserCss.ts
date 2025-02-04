@@ -18,16 +18,25 @@ export const CSS_BG_OBJ = {
 
 describe('ParserCss', () => {
   let obj: ReturnType<typeof ParserCss>;
-  let config;
-  let customParser: any;
-  let em = {
-    getCustomParserCss: () => customParser,
-    trigger: () => {},
-  } as unknown as EditorModel;
+  let em: EditorModel;
 
   beforeEach(() => {
-    config = {};
-    obj = ParserCss(em, config);
+    em = new EditorModel({});
+    obj = ParserCss(em, {});
+  });
+
+  afterEach(() => {
+    em.destroy();
+  });
+
+  test('Extend parser input', () => {
+    const str = ' .test1 { color:red; }';
+    const result = {
+      selectors: ['test1'],
+      style: { color: 'red' },
+    };
+    em.on(em.Parser.events.cssBefore, (opts) => (opts.input += str));
+    expect(obj.parse(str)).toEqual([result, result]);
   });
 
   describe('parseSelector', () => {

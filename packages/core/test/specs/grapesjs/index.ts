@@ -241,18 +241,25 @@ describe('GrapesJS', () => {
       const id = 'test-command';
       const editor = grapesjs.init(config);
       const result: Record<string, any> = {};
-      editor.on(`run:${id}`, () => (result.run = 1));
-      editor.on(`run:${id}:before`, () => (result.runBefore = 1));
-      editor.on(`stop:${id}`, () => (result.stop = 1));
-      editor.on(`stop:${id}:before`, () => (result.stopBefore = 1));
-      editor.on(`abort:${id}`, () => (result.abort = 1));
+      const events = editor.Commands.events;
+      editor.on(`${events.run}:${id}`, () => {
+        expect(editor.Commands.isActive(id)).toBe(true);
+        result.run = 1;
+      });
+      editor.on(`${events.runBeforeCommand}${id}`, () => (result.runBefore = 1));
+      editor.on(`${events.stop}:${id}`, () => {
+        expect(editor.Commands.isActive(id)).toBe(false);
+        result.stop = 1;
+      });
+      editor.on(`${events.stopBeforeCommand}${id}`, () => (result.stopBefore = 1));
+      editor.on(`${events.abort}${id}`, () => (result.abort = 1));
       editor.Commands.add(id, {
         run() {},
         stop() {},
       });
       editor.runCommand(id);
       editor.stopCommand(id);
-      editor.on(`run:${id}:before`, (opts) => (opts.abort = 1));
+      editor.on(`${events.runBeforeCommand}${id}`, ({ options }) => (options.abort = 1));
       editor.runCommand(id);
       expect(result).toEqual({
         run: 1,

@@ -35,6 +35,7 @@ export default class CommandAbstract<O extends ObjectAny = any> extends Model {
   plhClass: string;
   freezClass: string;
   canvas: CanvasModule;
+  noStop?: boolean;
 
   constructor(o: any) {
     super(0);
@@ -111,22 +112,26 @@ export default class CommandAbstract<O extends ObjectAny = any> extends Model {
   callRun(editor: Editor, options: any = {}) {
     const { id } = this;
     editor.trigger(`${CommandsEvents.runBeforeCommand}${id}`, { options });
-    editor.trigger(`${CommandsEvents._runCommand}${id}:before`, options);
 
     if (options.abort) {
       editor.trigger(`${CommandsEvents.abort}${id}`, { options });
-      editor.trigger(`${CommandsEvents._abort}${id}`, options);
       return;
     }
 
     const sender = options.sender || editor;
     const result = this.run(editor, sender, options);
     const data = { id, result, options };
+    const dataCall = { ...data, type: 'run' };
+
+    if (!this.noStop) {
+      editor.Commands.active[id] = result;
+    }
+
     editor.trigger(`${CommandsEvents.runCommand}${id}`, data);
+    editor.trigger(`${CommandsEvents.callCommand}${id}`, dataCall);
     editor.trigger(CommandsEvents.run, data);
-    // deprecated
-    editor.trigger(`${CommandsEvents._runCommand}${id}`, result, options);
-    editor.trigger(CommandsEvents._run, id, result, options);
+    editor.trigger(CommandsEvents.call, dataCall);
+
     return result;
   }
 
@@ -140,15 +145,14 @@ export default class CommandAbstract<O extends ObjectAny = any> extends Model {
     const { id } = this;
     const sender = options.sender || editor;
     editor.trigger(`${CommandsEvents.stopBeforeCommand}${id}`, { options });
-    editor.trigger(`${CommandsEvents._stopCommand}${id}:before`, options);
     const result = this.stop(editor, sender, options);
     const data = { id, result, options };
+    const dataCall = { ...data, type: 'stop' };
+    delete editor.Commands.active[id];
     editor.trigger(`${CommandsEvents.stopCommand}${id}`, data);
+    editor.trigger(`${CommandsEvents.callCommand}${id}`, dataCall);
     editor.trigger(CommandsEvents.stop, data);
-
-    // deprecated
-    editor.trigger(`${CommandsEvents._stopCommand}${id}`, result, options);
-    editor.trigger(CommandsEvents._stop, id, result, options);
+    editor.trigger(CommandsEvents.call, dataCall);
     return result;
   }
 

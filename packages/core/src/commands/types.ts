@@ -8,7 +8,6 @@ export enum CommandsEvents {
    * });
    */
   run = 'command:run',
-  _run = 'run',
 
   /**
    * @event `command:run:COMMAND-ID` Triggered on run of a specific command.
@@ -16,7 +15,6 @@ export enum CommandsEvents {
    * editor.on('command:run:my-command', ({ result, options }) => { ... });
    */
   runCommand = 'command:run:',
-  _runCommand = 'run:',
 
   /**
    * @event `command:run:before:COMMAND-ID` Triggered before the command is called.
@@ -38,7 +36,6 @@ export enum CommandsEvents {
    * });
    */
   abort = 'command:abort:',
-  _abort = 'abort:',
 
   /**
    * @event `command:stop` Triggered on stop of any command.
@@ -48,7 +45,6 @@ export enum CommandsEvents {
    * });
    */
   stop = 'command:stop',
-  _stop = 'stop',
 
   /**
    * @event `command:stop:COMMAND-ID` Triggered on stop of a specific command.
@@ -56,7 +52,6 @@ export enum CommandsEvents {
    * editor.on('command:run:my-command', ({ result, options }) => { ... });
    */
   stopCommand = 'command:stop:',
-  _stopCommand = 'stop:',
 
   /**
    * @event `command:stop:before:COMMAND-ID` Triggered before the command is called to stop.
@@ -64,6 +59,22 @@ export enum CommandsEvents {
    * editor.on('command:stop:before:my-command', ({ options }) => { ... });
    */
   stopBeforeCommand = 'command:stop:before:',
+
+  /**
+   * @event `command:call` Triggered on run or stop of a command.
+   * @example
+   * editor.on('command:call', ({ id, result, options, type }) => {
+   *  console.log('Command id', id, 'command result', result, 'call type', type);
+   * });
+   */
+  call = 'command:call',
+
+  /**
+   * @event `command:call:COMMAND-ID` Triggered on run or stop of a specific command.
+   * @example
+   * editor.on('command:call:my-command', ({ result, options, type }) => { ... });
+   */
+  callCommand = 'command:call:',
 }
 /**{END_EVENTS}*/
 

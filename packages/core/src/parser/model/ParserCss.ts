@@ -8,15 +8,19 @@ import { ParserEvents } from '../types';
 const ParserCss = (em?: EditorModel, config: ParserConfig = {}) => ({
   /**
    * Parse CSS string to a desired model object
-   * @param  {String} input CSS string
+   * @param  {String} str CSS string
    * @return {Array<Object>}
    */
-  parse(input: string, opts: { throwOnError?: boolean } = {}) {
+  parse(str: string, opts: { throwOnError?: boolean } = {}) {
     let output: CssRuleJSON[] = [];
     const { parserCss } = config;
     const editor = em?.Editor;
     let nodes: CssRuleJSON[] | ParsedCssRule[] = [];
     let error: unknown;
+    const Parser = em?.Parser;
+    const inputOptions = { input: str };
+    Parser?.__emitEvent(ParserEvents.cssBefore, inputOptions);
+    const { input } = inputOptions;
 
     try {
       nodes = parserCss ? parserCss(input, editor!) : BrowserCssParser(input);
@@ -26,7 +30,7 @@ const ParserCss = (em?: EditorModel, config: ParserConfig = {}) => ({
     }
 
     nodes.forEach((node) => (output = output.concat(this.checkNode(node))));
-    em?.Parser?.__emitEvent(ParserEvents.css, { input, output, nodes, error });
+    Parser?.__emitEvent(ParserEvents.css, { input, output, nodes, error });
 
     return output;
   },
