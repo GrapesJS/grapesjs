@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>love you anyway</title>
+    
+    <!-- GrapeJS (Drag & Drop Editor) -->
+    <link rel="stylesheet" href="https://unpkg.com/grapesjs/dist/css/grapes.min.css">
+    <script src="https://unpkg.com/grapesjs"></script>
+
+    <style>
+        body {
+            font-family: sans-serif;
+            text-transform: lowercase;
+            margin: 0;
+            padding: 0;
+            background-color: #fff;
+            color: #000;
+            scroll-behavior: smooth;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            text-align: center;
+            padding: 0 20px;
+        }
+        .nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 40px;
+            border-bottom: 1px solid #ddd;
+            width: 100%;
+            background: white;
+            flex-wrap: nowrap;
+        }
+        .nav-left {
+            font-family: cursive;
+            font-size: 22px;
+            flex: 1;
+            text-align: left;
+            white-space: nowrap;
+        }
+        .nav-center {
+            display: flex;
+            gap: 30px;
+            flex-wrap: nowrap;
+            justify-content: center;
+            flex: 2;
+        }
+        .nav a {
+            text-decoration: none;
+            color: #000;
+            padding: 8px 15px;
+            border-bottom: 2px solid transparent;
+            transition: border-bottom 0.3s ease-in-out;
+            font-size: 12px;
+            white-space: nowrap;
+        }
+        .nav a:hover, .nav a.active {
+            border-bottom: 2px solid #000;
+        }
+        .footer {
+            background-color: #fff;
+            color: #000;
+            text-align: center;
+            padding: 40px 20px;
+            margin-top: 60px;
+            border-top: 1px solid #ddd;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div id="editor" style="display: none;"></div> <!-- Hidden Drag & Drop Editor -->
+
+    <div class="container" id="editable-content">
+        <div class="nav">
+            <div class="nav-left">love you anyway</div>
+            <div class="nav-center">
+                <a href="#all">all</a>
+                <a href="#music">music</a>
+                <a href="#apparel">apparel</a>
+                <a href="#accessories">accessories</a>
+                <a href="#sale">sale</a>
+                <a href="#contact">contact</a>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>© 2025 Love You Anyway. All Rights Reserved.</p>
+        </div>
+    </div>
+
+    <script>
+        // Detect if the user is an admin
+        const isAdmin = localStorage.getItem('isAdmin') === 'true'; // Change this to check for admin status
+
+        if (isAdmin) {
+            document.getElementById("editor").style.display = "block";
+
+            const editor = grapesjs.init({
+                container: "#editor",
+                fromElement: true,
+                height: "100vh",
+                width: "100%",
+                storageManager: false,
+                panels: { defaults: [] }, // Hide unnecessary panels
+                canvas: {
+                    styles: [
+                        "body { font-family: sans-serif; background: white; }",
+                        ".container { max-width: 1200px; margin: auto; }"
+                    ],
+                }
+            });
+
+            editor.addComponents(document.getElementById("editable-content").innerHTML);
+
+            document.getElementById("editable-content").style.display = "none";
+
+            // Save Button
+            editor.Panels.addButton('options', {
+                id: 'save',
+                className: 'btn-save',
+                label: 'Save',
+                command(editor) {
+                    localStorage.setItem('savedHTML', editor.getHtml());
+                    alert('Layout saved!');
+                }
+            });
+        } else {
+            // Load saved design for public users
+            const savedHTML = localStorage.getItem('savedHTML');
+            if (savedHTML) {
+                document.getElementById("editable-content").innerHTML = savedHTML;
+            }
+        }
+    </script>
+</body>
+</html>
