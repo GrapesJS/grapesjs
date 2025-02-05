@@ -430,7 +430,8 @@ export default class CanvasModule extends Module<CanvasConfig> {
     left = elRight > canvasRect.width ? left - (elRight - canvasRect.width) : left;
 
     // Check when the target top edge reaches the top of the viewable canvas
-    if (canvasOffset.top < targetHeight) {
+    const canvasScrollTop = canvasView.getCanvasScroll().scrollTop;
+    if (canvasOffset.top < targetHeight + canvasScrollTop) {
       const fullHeight = elRect.height + targetHeight;
       const elIsShort = fullHeight < frameOffset.height;
 

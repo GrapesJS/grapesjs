@@ -75,14 +75,16 @@ export default {
    * @private
    * */
   toggleSelectComponent(enable: boolean) {
-    const { em } = this;
+    const { em, canvas } = this;
+    const canvasEl = canvas.getCanvasView().el;
     const listenToEl = em.getConfig().listenToEl!;
     const { parentNode } = em.getContainer()!;
     const method = enable ? 'on' : 'off';
     const methods = { on, off };
     const eventCmpUpdate = ComponentsEvents.update;
     !listenToEl.length && parentNode && listenToEl.push(parentNode as HTMLElement);
-    const trigger = (win: Window, body: HTMLBodyElement) => {
+    const trigger = (win: Window, body: HTMLBodyElement, canvasEl: HTMLElement) => {
+      methods[method](canvasEl, 'scroll', this.onFrameScroll, true);
       methods[method](body, 'mouseover', this.onHover);
       methods[method](body, 'mouseleave', this.onOut);
       methods[method](body, 'click', this.onClick);
@@ -101,7 +103,7 @@ export default {
     em.Canvas.getFrames().forEach((frame) => {
       const { view } = frame;
       const win = view?.getWindow();
-      win && trigger(win, view?.getBody()!);
+      win && trigger(win, view?.getBody()!, canvasEl);
     });
   },
 

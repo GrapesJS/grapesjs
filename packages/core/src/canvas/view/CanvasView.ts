@@ -358,11 +358,12 @@ export default class CanvasView extends ModuleView<Canvas> {
   }
 
   getRectToScreen(boxRect: Partial<BoxRect>): BoxRect {
+    const canvasScroll = this.getCanvasScroll();
     const zoom = this.module.getZoomDecimal();
     const coords = this.module.getCoords();
     const vwDelta = this.getViewportDelta();
-    const x = (boxRect.x ?? 0) * zoom + coords.x + vwDelta.x || 0;
-    const y = (boxRect.y ?? 0) * zoom + coords.y + vwDelta.y || 0;
+    const x = (boxRect.x ?? 0) * zoom - canvasScroll.scrollLeft + coords.x + vwDelta.x || 0;
+    const y = (boxRect.y ?? 0) * zoom - canvasScroll.scrollTop + coords.y + vwDelta.y || 0;
 
     return {
       x,
