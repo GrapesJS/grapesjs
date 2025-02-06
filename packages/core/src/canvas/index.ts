@@ -426,18 +426,21 @@ export default class CanvasModule extends Module<CanvasConfig> {
     const { event } = opts;
 
     const defaultLeftOffset = elementRect.width - targetWidth;
-    const targetTopDefault = -targetHeight;
+    const defaultTopOffset = -targetHeight;
 
     let left = !isUndefined(opts.left) ? opts.left : defaultLeftOffset;
-    left = elementRect.left < -left ? -elementRect.left : left;
-    const elementRightExceedsCanvas = elementRight - canvasScrollLeft > canvasRect.width;
-    if (elementRightExceedsCanvas) {
-      const overflowAmount = elementRight - canvasScrollLeft - canvasRect.width;
-      left = left - overflowAmount;
-    }
+    const canvasLiftLimit = Math.max(-elementRect.left + canvasScrollLeft, 0);
+    left = Math.max(left, canvasLiftLimit);
+
+    const elementRightLimit = elementRight - targetWidth;
+    left = Math.min(left, elementRightLimit);
+
+    const canvasRightLimit = canvasRect.width + canvasScrollLeft - targetWidth - elementRect.left;
+    left = Math.min(left, canvasRightLimit);
 
     const targetReachesCanvasTop = canvasOffset.top < targetHeight + canvasScrollTop;
-    let top = targetTopDefault;
+    let top = defaultTopOffset;
+
     if (targetReachesCanvasTop) {
       const fullHeight = elementRect.height + targetHeight;
       const elementIsShorterThanFrame = fullHeight < frameOffset.height;

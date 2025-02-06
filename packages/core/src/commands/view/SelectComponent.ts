@@ -85,6 +85,7 @@ export default {
     !listenToEl.length && parentNode && listenToEl.push(parentNode as HTMLElement);
     const trigger = (win: Window, body: HTMLBodyElement, canvasEl: HTMLElement) => {
       methods[method](canvasEl, 'scroll', this.onFrameScroll, true);
+      methods[method](canvasEl, 'scroll', this.onContainerChange, true);
       methods[method](body, 'mouseover', this.onHover);
       methods[method](body, 'mouseleave', this.onOut);
       methods[method](body, 'click', this.onClick);
