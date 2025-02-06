@@ -414,33 +414,40 @@ export default class CanvasModule extends Module<CanvasConfig> {
    * @private
    */
   getTargetToElementFixed(el: HTMLElement, targetEl: HTMLElement, opts: any = {}) {
-    const elRect = opts.pos || this.getElementPos(el, { noScroll: true });
-    const canvasOffset = opts.canvasOff || this.canvasRectOffset(el, elRect);
+    const elementRect = opts.pos || this.getElementPos(el, { noScroll: true });
+    const canvasOffset = opts.canvasOff || this.canvasRectOffset(el, elementRect);
     const targetHeight = targetEl.offsetHeight || 0;
     const targetWidth = targetEl.offsetWidth || 0;
-    const elRight = elRect.left + elRect.width;
+    const elementRight = elementRect.left + elementRect.width;
     const canvasView = this.getCanvasView();
+    const { scrollTop: canvasScrollTop, scrollLeft: canvasScrollLeft } = canvasView.getCanvasScroll();
     const canvasRect = canvasView.getPosition();
     const frameOffset = canvasView.getFrameOffset(el);
     const { event } = opts;
 
-    let top = -targetHeight;
-    let left = !isUndefined(opts.left) ? opts.left : elRect.width - targetWidth;
-    left = elRect.left < -left ? -elRect.left : left;
-    left = elRight > canvasRect.width ? left - (elRight - canvasRect.width) : left;
+    const defaultLeftOffset = elementRect.width - targetWidth;
+    const targetTopDefault = -targetHeight;
 
-    // Check when the target top edge reaches the top of the viewable canvas
-    const canvasScrollTop = canvasView.getCanvasScroll().scrollTop;
-    if (canvasOffset.top < targetHeight + canvasScrollTop) {
-      const fullHeight = elRect.height + targetHeight;
-      const elIsShort = fullHeight < frameOffset.height;
+    let left = !isUndefined(opts.left) ? opts.left : defaultLeftOffset;
+    left = elementRect.left < -left ? -elementRect.left : left;
+    const elementRightExceedsCanvas = elementRight - canvasScrollLeft > canvasRect.width;
+    if (elementRightExceedsCanvas) {
+      const overflowAmount = elementRight - canvasScrollLeft - canvasRect.width;
+      left = left - overflowAmount;
+    }
+
+    const targetReachesCanvasTop = canvasOffset.top < targetHeight + canvasScrollTop;
+    let top = targetTopDefault;
+    if (targetReachesCanvasTop) {
+      const fullHeight = elementRect.height + targetHeight;
+      const elementIsShorterThanFrame = fullHeight < frameOffset.height;
 
       // Scroll with the window if the top edge is reached and the
       // element is bigger than the canvas
-      if (elIsShort) {
+      if (elementIsShorterThanFrame) {
         top = top + fullHeight;
       } else {
-        top = -canvasOffset.top < elRect.height ? -canvasOffset.top : elRect.height;
+        top = -canvasOffset.top < elementRect.height ? -canvasOffset.top : elementRect.height;
       }
     }
 
@@ -449,7 +456,7 @@ export default class CanvasModule extends Module<CanvasConfig> {
       left,
       canvasOffsetTop: canvasOffset.top,
       canvasOffsetLeft: canvasOffset.left,
-      elRect,
+      elementRect,
       canvasOffset,
       canvasRect,
       targetWidth,
