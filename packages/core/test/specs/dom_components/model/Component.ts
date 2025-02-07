@@ -748,7 +748,7 @@ describe('Components', () => {
     `;
     const added = dcomp.addComponent(block) as Component;
     const addComps = added.components();
-    // Let's check if everthing is working as expected
+    // Let's check if everything is working as expected
     // 2 test components + 1 wrapper + 1 head + 1 docEl
     expect(Object.keys(dcomp.componentsById).length).toBe(5);
     expect(added.getId()).toBe(id);
