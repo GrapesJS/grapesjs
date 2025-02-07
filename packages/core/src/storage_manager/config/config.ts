@@ -41,7 +41,7 @@ export interface StorageManagerConfig {
   /**
    * In case the `remote` storage is selected, and this options is enabled, the project
    * will be stored on the `local` storage in case the remote one fails.
-   * The local data are cleared on every sucessful remote save. When the remote storage
+   * The local data are cleared on every successful remote save. When the remote storage
    * fails (eg. network issue) and the editor is reloaded, a dialog with the possibility to
    * recovery previous data will be shown.
    * @default false
