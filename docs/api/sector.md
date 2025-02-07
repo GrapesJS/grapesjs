@@ -11,7 +11,7 @@
 *   `id` **[String][1]** Sector id, eg. `typography`
 *   `name` **[String][1]** Sector name, eg. `Typography`
 *   `open` **[Boolean][2]?** Indicates the open state.
-*   `properties` **[Array][3]<[Object][4]>?** Indicate an array of Property defintions.
+*   `properties` **[Array][3]<[Object][4]>?** Indicate an array of Property definitions.
 
 ### getId
 
