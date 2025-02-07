@@ -12,7 +12,7 @@ export class LogicalOperator extends Operator {
   }
 
   evaluate(statements: boolean[]): boolean {
-    if (!statements.length) throw new Error('Expected one or more statments, got none');
+    if (!statements.length) throw new Error('Expected one or more statements, got none');
 
     switch (this.operator) {
       case LogicalOperation.and:
