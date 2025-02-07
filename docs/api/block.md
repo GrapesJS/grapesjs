@@ -5,7 +5,7 @@
 ### Properties
 
 *   `label` **[String][1]** Block label, eg. `My block`
-*   `content` **([String][1] | [Object][2])** The content of the block. Might be an HTML string or a [Component Defintion][3]
+*   `content` **([String][1] | [Object][2])** The content of the block. Might be an HTML string or a [Component Definition][3]
 *   `media` **[String][1]?** HTML string for the media/icon of the block, eg. `<svg ...`, `<img ...`, etc.
 *   `category` **[String][1]?** Block category, eg. `Basic blocks`
 *   `activate` **[Boolean][4]?** If true, triggers the `active` event on the dropped component.
