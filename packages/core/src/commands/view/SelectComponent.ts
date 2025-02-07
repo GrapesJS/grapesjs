@@ -40,6 +40,7 @@ export default {
       'onHover',
       'onOut',
       'onClick',
+      'onCanvasScroll',
       'onFrameScroll',
       'onFrameResize',
       'onFrameUpdated',
@@ -84,8 +85,7 @@ export default {
     const eventCmpUpdate = ComponentsEvents.update;
     !listenToEl.length && parentNode && listenToEl.push(parentNode as HTMLElement);
     const trigger = (win: Window, body: HTMLBodyElement, canvasEl: HTMLElement) => {
-      methods[method](canvasEl, 'scroll', this.onFrameScroll, true);
-      methods[method](canvasEl, 'scroll', this.onContainerChange, true);
+      methods[method](canvasEl, 'scroll', this.onCanvasScroll, true);
       methods[method](body, 'mouseover', this.onHover);
       methods[method](body, 'mouseleave', this.onOut);
       methods[method](body, 'click', this.onClick);
@@ -590,6 +590,15 @@ export default {
    */
   getBadge(opts: any = {}) {
     return this.canvas.getBadgeEl(opts.view);
+  },
+
+  /**
+   * On canvas scroll callback
+   * @private
+   */
+  onCanvasScroll(e: any) {
+    this.onFrameScroll(e);
+    this.onContainerChange();
   },
 
   /**

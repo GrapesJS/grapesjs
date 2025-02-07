@@ -414,35 +414,35 @@ export default class CanvasModule extends Module<CanvasConfig> {
    * @private
    */
   getTargetToElementFixed(el: HTMLElement, targetEl: HTMLElement, opts: any = {}) {
-    const elementRect = opts.pos || this.getElementPos(el, { noScroll: true });
-    const canvasOffset = opts.canvasOff || this.canvasRectOffset(el, elementRect);
+    const elRect = opts.pos || this.getElementPos(el, { noScroll: true });
+    const canvasOffset = opts.canvasOff || this.canvasRectOffset(el, elRect);
     const targetHeight = targetEl.offsetHeight || 0;
     const targetWidth = targetEl.offsetWidth || 0;
-    const elementRight = elementRect.left + elementRect.width;
+    const elementRight = elRect.left + elRect.width;
     const canvasView = this.getCanvasView();
     const { scrollTop: canvasScrollTop, scrollLeft: canvasScrollLeft } = canvasView.getCanvasScroll();
     const canvasRect = canvasView.getPosition();
     const frameOffset = canvasView.getFrameOffset(el);
     const { event } = opts;
 
-    const defaultLeftOffset = elementRect.width - targetWidth;
+    const defaultLeftOffset = elRect.width - targetWidth;
     const defaultTopOffset = -targetHeight;
 
     let left = !isUndefined(opts.left) ? opts.left : defaultLeftOffset;
-    const canvasLiftLimit = Math.max(-elementRect.left + canvasScrollLeft, 0);
+    const canvasLiftLimit = Math.max(-elRect.left + canvasScrollLeft, 0);
     left = Math.max(left, canvasLiftLimit);
 
     const elementRightLimit = elementRight - targetWidth;
     left = Math.min(left, elementRightLimit);
 
-    const canvasRightLimit = canvasRect.width + canvasScrollLeft - targetWidth - elementRect.left;
+    const canvasRightLimit = canvasRect.width + canvasScrollLeft - targetWidth - elRect.left;
     left = Math.min(left, canvasRightLimit);
 
     const targetReachesCanvasTop = canvasOffset.top < targetHeight + canvasScrollTop;
     let top = defaultTopOffset;
 
     if (targetReachesCanvasTop) {
-      const fullHeight = elementRect.height + targetHeight;
+      const fullHeight = elRect.height + targetHeight;
       const elementIsShorterThanFrame = fullHeight < frameOffset.height;
 
       // Scroll with the window if the top edge is reached and the
@@ -450,7 +450,7 @@ export default class CanvasModule extends Module<CanvasConfig> {
       if (elementIsShorterThanFrame) {
         top = top + fullHeight;
       } else {
-        top = -canvasOffset.top < elementRect.height ? -canvasOffset.top : elementRect.height;
+        top = -canvasOffset.top < elRect.height ? -canvasOffset.top : elRect.height;
       }
     }
 
@@ -459,7 +459,7 @@ export default class CanvasModule extends Module<CanvasConfig> {
       left,
       canvasOffsetTop: canvasOffset.top,
       canvasOffsetLeft: canvasOffset.left,
-      elementRect,
+      elRect,
       canvasOffset,
       canvasRect,
       targetWidth,
