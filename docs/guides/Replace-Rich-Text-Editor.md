@@ -90,7 +90,7 @@ editor.setCustomRte({
 
 ### Content
 
-Each third-party library could handle the state of the content differently and what is actually rendered as a DOM in the preview might not rapresent the final HTML output. So, by default, GrapesJS takes the `innerHTML` as the final output directly from the DOM element but is highly recommended to specify the method responsable to return the final state as HTML string (each third-party library might handle it differently).
+Each third-party library could handle the state of the content differently and what is actually rendered as a DOM in the preview might not rapresent the final HTML output. So, by default, GrapesJS takes the `innerHTML` as the final output directly from the DOM element but is highly recommended to specify the method responsible to return the final state as HTML string (each third-party library might handle it differently).
 
 ```js
 editor.setCustomRte({
