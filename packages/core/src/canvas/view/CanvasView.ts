@@ -47,6 +47,7 @@ export interface FitViewportOptions {
   gap?: number | { x: number; y: number };
   ignoreHeight?: boolean;
   el?: HTMLElement;
+  zoom?: number;
 }
 
 export default class CanvasView extends ModuleView<Canvas> {
@@ -303,7 +304,7 @@ export default class CanvasView extends ModuleView<Canvas> {
 
     const zoomRatio = noHeight ? widthRatio : Math.min(widthRatio, heightRatio);
     const zoom = zoomRatio * 100;
-    module.setZoom(zoom);
+    module.setZoom(opts.zoom ?? zoom);
 
     // check for the frame witdh is necessary as we're centering the frame via CSS
     const coordX = -boxRect.x + (frame.width >= canvasWidth ? canvasWidth / 2 - boxWidth / 2 : -gapX);
