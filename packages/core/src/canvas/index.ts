@@ -44,10 +44,12 @@ import { CanvasEvents, CanvasRefreshOptions, ToWorldOption } from './types';
 import CanvasView, { FitViewportOptions } from './view/CanvasView';
 import FrameView from './view/FrameView';
 import { DragSource } from '../utils/sorter/types';
+import AutoScroller from '../utils/AutoScroller';
 
 export type CanvasEvent = `${CanvasEvents}`;
 
 export default class CanvasModule extends Module<CanvasConfig> {
+  autoScroller: AutoScroller;
   /**
    * Get configuration object
    * @name getConfig
@@ -83,6 +85,8 @@ export default class CanvasModule extends Module<CanvasConfig> {
     this.model = this.canvas;
     this.startAutoscroll = this.startAutoscroll.bind(this);
     this.stopAutoscroll = this.stopAutoscroll.bind(this);
+    this.autoScroller = new AutoScroller();
+
     return this;
   }
 
@@ -606,6 +610,13 @@ export default class CanvasModule extends Module<CanvasConfig> {
   startAutoscroll(frame?: Frame) {
     const fr = (frame && frame.view) || this.em.getCurrentFrame();
     fr && fr.startAutoscroll();
+
+    if (this.config.scrollableCanvas) {
+      const el = this.getCanvasView().el;
+      this.autoScroller.start(el, el, {
+        zoom: this.em.getZoomDecimal()
+      });
+    }
   }
 
   /**
@@ -615,6 +626,10 @@ export default class CanvasModule extends Module<CanvasConfig> {
   stopAutoscroll(frame?: Frame) {
     const fr = (frame && frame.view) || this.em.getCurrentFrame();
     fr && fr.stopAutoscroll();
+
+    if (this.config.scrollableCanvas) {
+      this.autoScroller.stop();
+    }
   }
 
   /**

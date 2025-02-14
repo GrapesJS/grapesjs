@@ -11,7 +11,6 @@ import {
   appendVNodes,
   createCustomEvent,
   createEl,
-  getPointerEvent,
   motionsEv,
   off,
   on,
@@ -21,6 +20,7 @@ import Canvas from '../model/Canvas';
 import Frame from '../model/Frame';
 import FrameWrapView from './FrameWrapView';
 import CanvasEvents from '../types';
+import AutoScroller from '../../utils/AutoScroller';
 
 export default class FrameView extends ModuleView<Frame, HTMLIFrameElement> {
   /** @ts-ignore */
@@ -39,6 +39,7 @@ export default class FrameView extends ModuleView<Frame, HTMLIFrameElement> {
 
   lastClientY?: number;
   lastMaxHeight = 0;
+  private autoScroller: AutoScroller;
   private jsContainer?: HTMLElement;
   private tools: { [key: string]: HTMLElement } = {};
   private wrapper?: ComponentWrapperView;
@@ -47,7 +48,7 @@ export default class FrameView extends ModuleView<Frame, HTMLIFrameElement> {
 
   constructor(model: Frame, view?: FrameWrapView) {
     super({ model });
-    bindAll(this, 'updateClientY', 'stopAutoscroll', 'autoscroll', '_emitUpdate');
+    bindAll(this, 'startAutoscroll', 'stopAutoscroll', '_emitUpdate');
     const { el } = this;
     //@ts-ignore
     this.module._config = {
@@ -63,6 +64,16 @@ export default class FrameView extends ModuleView<Frame, HTMLIFrameElement> {
     this.listenTo(cvModel, 'change:styles', this.renderStyles);
     model.view = this;
     setViewEl(el, this);
+
+    this.autoScroller = new AutoScroller(this.config.autoscrollLimit, {
+      onScroll: () => {
+        const toolsEl = this.getGlobalToolsEl();
+        toolsEl.style.opacity = '0';
+        this.showGlobalTools();
+
+        this.em.Canvas.spots.refreshDbn();
+      },
+    });
   }
 
   getBoxRect(): BoxRect {
@@ -222,72 +233,19 @@ export default class FrameView extends ModuleView<Frame, HTMLIFrameElement> {
   }
 
   startAutoscroll() {
-    this.lastMaxHeight = this.getWrapper().offsetHeight - this.el.offsetHeight;
-
-    // By detaching those from the stack avoid browsers lags
-    // Noticeable with "fast" drag of blocks
-    setTimeout(() => {
-      this._toggleAutoscrollFx(true);
-      requestAnimationFrame(this.autoscroll);
-    }, 0);
+    this.autoScroller.start(this.el, this.getWindow(), {
+      lastMaxHeight:
+        this.getWrapper().offsetHeight - this.el.offsetHeight,
+      zoom: this.em.getZoomDecimal()
+    });
   }
 
-  autoscroll() {
-    if (this.dragging) {
-      const { lastClientY } = this;
-      const canvas = this.em.Canvas;
-      const win = this.getWindow();
-      const actualTop = win.pageYOffset;
-      const clientY = lastClientY || 0;
-      const limitTop = canvas.getConfig().autoscrollLimit!;
-      const limitBottom = this.getRect().height - limitTop;
-      let nextTop = actualTop;
-
-      if (clientY < limitTop) {
-        nextTop -= limitTop - clientY;
-      }
-
-      if (clientY > limitBottom) {
-        nextTop += clientY - limitBottom;
-      }
-
-      if (
-        !isUndefined(lastClientY) && // Fixes #3134
-        nextTop !== actualTop &&
-        nextTop > 0 &&
-        nextTop < this.lastMaxHeight
-      ) {
-        const toolsEl = this.getGlobalToolsEl();
-        toolsEl.style.opacity = '0';
-        this.showGlobalTools();
-        win.scrollTo(0, nextTop);
-        canvas.spots.refreshDbn();
-      }
-
-      requestAnimationFrame(this.autoscroll);
-    }
-  }
-
-  updateClientY(ev: Event) {
-    ev.preventDefault();
-    this.lastClientY = getPointerEvent(ev).clientY * this.em.getZoomDecimal();
+  stopAutoscroll() {
+    this.autoScroller.stop();
   }
 
   showGlobalTools() {
     this.getGlobalToolsEl().style.opacity = '';
-  }
-
-  stopAutoscroll() {
-    this.dragging && this._toggleAutoscrollFx(false);
-  }
-
-  _toggleAutoscrollFx(enable: boolean) {
-    this.dragging = enable;
-    const win = this.getWindow();
-    const method = enable ? 'on' : 'off';
-    const mt = { on, off };
-    mt[method](win, 'mousemove dragover', this.updateClientY);
-    mt[method](win, 'mouseup', this.stopAutoscroll);
   }
 
   render() {
