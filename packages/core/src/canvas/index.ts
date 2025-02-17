@@ -614,7 +614,7 @@ export default class CanvasModule extends Module<CanvasConfig> {
     if (this.config.scrollableCanvas) {
       const el = this.getCanvasView().el;
       this.autoScroller.start(el, el, {
-        zoom: this.em.getZoomDecimal()
+        zoom: this.em.getZoomDecimal(),
       });
     }
   }

@@ -6,15 +6,7 @@ import ComponentWrapperView from '../../dom_components/view/ComponentWrapperView
 import ComponentView from '../../dom_components/view/ComponentView';
 import { type as typeHead } from '../../dom_components/model/ComponentHead';
 import Droppable from '../../utils/Droppable';
-import {
-  append,
-  appendVNodes,
-  createCustomEvent,
-  createEl,
-  motionsEv,
-  off,
-  on,
-} from '../../utils/dom';
+import { append, appendVNodes, createCustomEvent, createEl, motionsEv, off, on } from '../../utils/dom';
 import { hasDnd, setViewEl } from '../../utils/mixins';
 import Canvas from '../model/Canvas';
 import Frame from '../model/Frame';
@@ -234,9 +226,8 @@ export default class FrameView extends ModuleView<Frame, HTMLIFrameElement> {
 
   startAutoscroll() {
     this.autoScroller.start(this.el, this.getWindow(), {
-      lastMaxHeight:
-        this.getWrapper().offsetHeight - this.el.offsetHeight,
-      zoom: this.em.getZoomDecimal()
+      lastMaxHeight: this.getWrapper().offsetHeight - this.el.offsetHeight,
+      zoom: this.em.getZoomDecimal(),
     });
   }
 
