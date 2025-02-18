@@ -10,17 +10,24 @@ export default class AutoScroller {
   private onScroll?: () => void;
   private autoscrollLimit: number;
   private zoom: number = 1;
+  /**
+   * When an element is inside an iframe, its `getBoundingClientRect()` values
+   * are relative to the iframe's document, not the main window's.
+   */
+  private rectIsInScrollIframe: boolean = false;
 
   constructor(
     autoscrollLimit: number = 50,
     opts?: {
       lastMaxHeight?: number;
       onScroll?: () => void;
+      rectIsInScrollIframe?: boolean;
     },
   ) {
     this.autoscrollLimit = autoscrollLimit;
     this.lastMaxHeight = opts?.lastMaxHeight ?? 0;
     this.onScroll = opts?.onScroll;
+    this.rectIsInScrollIframe = !!opts?.rectIsInScrollIframe;
     bindAll(this, 'start', 'autoscroll', 'updateClientY', 'stop');
   }
 
@@ -43,8 +50,8 @@ export default class AutoScroller {
     if (this.dragging && scrollEl) {
       const clientY = this.lastClientY ?? 0;
       const limitTop = this.autoscrollLimit;
-      const eventElRect = this.getEventElRect();
-      const limitBottom = eventElRect.height - limitTop;
+      const eventElHeight = this.getEventElHeight();
+      const limitBottom = eventElHeight - limitTop;
       let nextTop = 0;
 
       if (clientY < limitTop) nextTop += clientY - limitTop;
@@ -60,20 +67,20 @@ export default class AutoScroller {
     }
   }
 
-  private getEventElRect() {
+  private getEventElHeight() {
     const eventEl = this.eventEl;
-    if (!eventEl) return { top: 0, left: 0, width: 0, height: 0 };
+    if (!eventEl) return 0;
 
     const elRect = eventEl.getBoundingClientRect();
-    return elRect;
+    return elRect.height;
   }
 
   private updateClientY(ev: Event) {
     const scrollEl = this.scrollEl;
     ev.preventDefault();
 
-    const scrollTop = scrollEl instanceof HTMLElement ? scrollEl.scrollTop : 0;
-    this.lastClientY = (getPointerEvent(ev).clientY - scrollTop) * this.zoom;
+    const scrollTop = !this.rectIsInScrollIframe ? this.getElScrollTop(scrollEl) : 0;
+    this.lastClientY = getPointerEvent(ev).clientY * this.zoom - scrollTop;
   }
 
   private getElScrollTop(scrollEl: HTMLElement | Window | undefined) {
@@ -82,12 +89,12 @@ export default class AutoScroller {
 
   private toggleAutoscrollFx(enable: boolean) {
     this.dragging = enable;
-    const scrollEl = this.scrollEl;
-    if (!scrollEl) return;
+    const eventEl = this.eventEl;
+    if (!eventEl) return;
     const method = enable ? 'on' : 'off';
     const mt = { on, off };
-    mt[method](scrollEl, 'mousemove dragover', this.updateClientY);
-    mt[method](scrollEl, 'mouseup', this.stop);
+    mt[method](eventEl, 'mousemove dragover', this.updateClientY);
+    mt[method](eventEl, 'mouseup', this.stop);
   }
 
   stop() {

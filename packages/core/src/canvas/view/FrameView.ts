@@ -58,6 +58,7 @@ export default class FrameView extends ModuleView<Frame, HTMLIFrameElement> {
     setViewEl(el, this);
 
     this.autoScroller = new AutoScroller(this.config.autoscrollLimit, {
+      rectIsInScrollIframe: true,
       onScroll: () => {
         const toolsEl = this.getGlobalToolsEl();
         toolsEl.style.opacity = '0';
