@@ -107,4 +107,87 @@ describe('Editor', () => {
     expect(umStack.length).toBe(3);
     expect(keys(all).length).toBe(DEFAULT_CMPS);
   });
+
+  test('One component can be selected at a time without shift', () => {
+    const all = editor.Components.allById();
+    const em = editor.em;
+    em.getConfig().multipleSelection = true;
+    const wrapper = editor.getWrapper()!;
+    const added = wrapper.append(`
+      <div>Component 1</div>
+      <div>Component 2</div>
+    `);
+    em.setSelected(added[0]);
+    em.setSelected(added[1]);
+    expect(editor.getSelectedAll().length).toBe(1);
+  });
+
+  test('Shift key should allow selecting multiple components', () => {
+    const all = editor.Components.allById();
+    const em = editor.em;
+    em.getConfig().multipleSelection = true;
+    const wrapper = editor.getWrapper()!;
+    const added = wrapper.append(`
+      <div>Component 1</div>
+      <div>Component 2</div>
+    `);
+
+    const callSelectedOptions = {
+      event: {
+        shiftKey: true,
+      },
+    };
+
+    em.setSelected(added[0], callSelectedOptions);
+    em.setSelected(added[1], callSelectedOptions);
+    expect(editor.getSelectedAll().length).toBe(2);
+  });
+
+  test('Shift key selecting a component that is being edited should should be ignored', () => {
+    const all = editor.Components.allById();
+    const em = editor.em;
+    em.getConfig().multipleSelection = true;
+    const wrapper = editor.getWrapper()!;
+    const added = wrapper.append(`
+      <div>Component 1</div>
+      <div>Component 2</div>
+    `);
+
+    const callSelectedOptions = {
+      event: {
+        shiftKey: true,
+      },
+    };
+
+    const firstComponent = all[keys(all)[0]];
+    firstComponent.em.setEditing(true);
+    em.setSelected(added[0], callSelectedOptions);
+    expect(editor.getSelectedAll().length).toBe(0);
+  });
+
+  test.skip('Shift key selecting a component that is being edited should not clear any text selections', () => {
+    const all = editor.Components.allById();
+    const em = editor.em;
+    em.getConfig().multipleSelection = true;
+    const wrapper = editor.getWrapper()!;
+    const added = wrapper.append(`
+      <div>Component 1</div>
+      <div>Component 2</div>
+    `);
+
+    const callSelectedOptions = {
+      event: {
+        shiftKey: true,
+      },
+    };
+
+    const firstComponent = all[keys(all)[0]];
+    firstComponent.em.setEditing(true);
+    // TODO: highlight the text of the first component
+
+    em.setSelected(added[0], callSelectedOptions);
+    // TODO: check if the text of the first component is still highlighted
+    expect(editor.getSelectedAll().length).toBe(0);
+
+  });
 });

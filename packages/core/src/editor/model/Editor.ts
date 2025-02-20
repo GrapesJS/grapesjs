@@ -532,10 +532,14 @@ export default class EditorModel extends Model {
         }
       }
 
-      // Hanlde multiple selection
+      // Handle multiple selection
       if (ctrlKey && mltSel) {
         return this.toggleSelected(model);
       } else if (shiftKey && mltSel) {
+        if (this.isEditing()) {
+          // Fixes #6345 where a shift click while editing text should not assume a selection of a component
+          return;
+        }
         this.clearSelection(this.Canvas.getWindow());
         const coll = model.collection;
         const index = model.index();
