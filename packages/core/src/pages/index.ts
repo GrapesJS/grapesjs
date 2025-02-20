@@ -160,6 +160,37 @@ export default class PageManager extends ItemManagerModule<PageManagerConfig, Pa
   }
 
   /**
+   * Move a page to a specific index in the pages collection.
+   * If the index is out of bounds, an error will be logged and the page will not be moved.
+   *
+   * @param {string} pageId - The ID of the page to move.
+   * @param {number} index - The target index where the page should be moved.
+   * @returns {Page | undefined} - The moved page, or `undefined` if the page does not exist or the index is out of bounds.
+   * @example
+   * // Move a page to index 2
+   * const movedPage = pageManager.move('page-id', 2);
+   * if (movedPage) {
+   *   console.log('Page moved successfully:', movedPage);
+   * } else {
+   *   console.log('Page could not be moved.');
+   * }
+   */
+  move(pageId: string, index: number): Page | undefined {
+    const page = this.get(pageId);
+
+    if (!page) return;
+
+    if (index < 0 || index >= this.pages.length) {
+      this.em.logError('Index out of bounds');
+    }
+
+    this.remove(page, { temporary: true });
+    this.pages.add(page, { at: index });
+
+    return page;
+  }
+
+  /**
    * Get page by id
    * @param {String} id Page id
    * @returns {[Page]}

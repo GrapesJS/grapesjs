@@ -24,7 +24,7 @@ export type UndoOptions = { fromUndo?: boolean };
 
 export type WithHTMLParserOptions = { parserOptions?: HTMLParserOptions };
 
-export type RemoveOptions = Backbone.Silenceable & UndoOptions & { dangerously?: boolean };
+export type RemoveOptions = Backbone.Silenceable & UndoOptions & { dangerously?: boolean; temporary?: boolean };
 
 export type EventHandler = Backbone.EventHandler;
 

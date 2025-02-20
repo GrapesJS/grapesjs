@@ -20,7 +20,7 @@ export default class Pages extends Collection<Page> {
 
   onRemove(removed?: Page, _p?: this, opts: RemoveOptions = {}) {
     // Avoid removing frames if triggered from undo #6142
-    if (opts.fromUndo) return;
+    if (opts.fromUndo || opts.temporary) return;
     removed?.onRemove();
   }
 }
