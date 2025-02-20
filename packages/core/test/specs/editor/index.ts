@@ -188,6 +188,5 @@ describe('Editor', () => {
     em.setSelected(added[0], callSelectedOptions);
     // TODO: check if the text of the first component is still highlighted
     expect(editor.getSelectedAll().length).toBe(0);
-
   });
 });
