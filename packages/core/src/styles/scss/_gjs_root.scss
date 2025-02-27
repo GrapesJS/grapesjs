@@ -1,0 +1,37 @@
+@use 'gjs_variables';
+
+:root {
+  --gjs-main-color: #{gjs_variables.$mainColor};
+  --gjs-primary-color: #{gjs_variables.$primaryColor};
+  --gjs-secondary-color: #{gjs_variables.$secondaryColor};
+  --gjs-tertiary-color: #{gjs_variables.$tertiaryColor};
+  --gjs-quaternary-color: #{gjs_variables.$quaternaryColor};
+  --gjs-font-color: #{gjs_variables.$fontColor};
+  --gjs-font-color-active: #{gjs_variables.$fontColorActive};
+  --gjs-main-dark-color: #{gjs_variables.$mainDkColor};
+  --gjs-secondary-dark-color: #{gjs_variables.$mainDklColor};
+  --gjs-main-light-color: #{gjs_variables.$mainLhColor};
+  --gjs-secondary-light-color: #{gjs_variables.$mainLhlColor};
+  --gjs-soft-light-color: #{gjs_variables.$softLhColor};
+  --gjs-color-blue: #{gjs_variables.$colorBlue};
+  --gjs-color-red: #{gjs_variables.$colorRed};
+  --gjs-color-yellow: #{gjs_variables.$colorYell};
+  --gjs-color-green: #{gjs_variables.$colorGreen};
+  --gjs-left-width: #{gjs_variables.$leftWidth};
+  --gjs-color-highlight: #{gjs_variables.$colorHighlight};
+  --gjs-color-warn: #{gjs_variables.$colorWarn};
+  --gjs-handle-margin: #{gjs_variables.$hndlMargin};
+  --gjs-light-border: #{gjs_variables.$lightBorder};
+  --gjs-arrow-color: #{gjs_variables.$arrowColor};
+  --gjs-dark-text-shadow: #{gjs_variables.$darkTextShadow};
+  --gjs-color-input-padding: #{gjs_variables.$colorpSize};
+  --gjs-input-padding: #{gjs_variables.$inputPadding}; // Has to be a single value
+  --gjs-padding-elem-classmanager: #{gjs_variables.$paddElClm};
+  --gjs-upload-padding: #{gjs_variables.$uploadPadding};
+  --gjs-animation-duration: #{gjs_variables.$animSpeed};
+  --gjs-main-font: #{gjs_variables.$mainFont};
+  --gjs-font-size: #{gjs_variables.$fontSize};
+  --gjs-placeholder-background-color: #{gjs_variables.$placeholderColor};
+  --gjs-canvas-top: #{gjs_variables.$canvasTop};
+  --gjs-flex-item-gap: 5px;
+}

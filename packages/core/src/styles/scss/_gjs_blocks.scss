@@ -1,32 +1,36 @@
-.#{$app-prefix}blocks-c {
+@use 'gjs_main_mixins';
+@use 'gjs_variables';
+@use 'gjs_category_general';
+
+.#{gjs_variables.$app-prefix}blocks-c {
   display: flex;
   flex-wrap: wrap;
   justify-content: flex-start;
 }
 
-.#{$app-prefix}block-categories {
+.#{gjs_variables.$app-prefix}block-categories {
   display: flex;
   flex-direction: column;
 }
 
-.#{$app-prefix}block-category {
+.#{gjs_variables.$app-prefix}block-category {
   width: 100%;
 
-  &.#{$app-prefix}open {
-    @extend .#{$app-prefix}category-open;
+  &.#{gjs_variables.$app-prefix}open {
+    @extend .#{gjs_variables.$app-prefix}category-open;
   }
 
-  .#{$app-prefix}title {
-    @extend .#{$app-prefix}category-title;
+  .#{gjs_variables.$app-prefix}title {
+    @extend .#{gjs_variables.$app-prefix}category-title;
   }
 
-  .#{$app-prefix}caret-icon {
+  .#{gjs_variables.$app-prefix}caret-icon {
     margin-right: 5px;
   }
 }
 
-.#{$app-prefix}block {
-  @include user-select(none);
+.#{gjs_variables.$app-prefix}block {
+  @include gjs_main_mixins.user-select(none);
 
   width: 45%;
   min-width: 45px;
@@ -61,22 +65,22 @@
   }
 }
 
-.#{$app-prefix}block-svg {
+.#{gjs_variables.$app-prefix}block-svg {
   width: 54px;
   fill: currentColor;
 }
 
-.#{$app-prefix}block-svg-path {
+.#{gjs_variables.$app-prefix}block-svg-path {
   fill: currentColor;
 }
 
-.#{$app-prefix}block.fa {
+.#{gjs_variables.$app-prefix}block.fa {
   font-size: 2em;
   line-height: 2em;
   padding: 11px;
 }
 
-.#{$app-prefix}block-label {
+.#{gjs_variables.$app-prefix}block-label {
   line-height: normal;
   font-size: 0.65rem;
   font-weight: normal;
@@ -86,7 +90,7 @@
   pointer-events: none;
 }
 
-.#{$app-prefix}block.#{$app-prefix}bdrag {
+.#{gjs_variables.$app-prefix}block.#{gjs_variables.$app-prefix}bdrag {
   width: auto;
   padding: 0;
 }

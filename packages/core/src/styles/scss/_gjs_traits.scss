@@ -1,4 +1,7 @@
-.#{$app-prefix} {
+@use 'gjs_variables';
+@use 'gjs_category_general';
+
+.#{gjs_variables.$app-prefix} {
   &traits-label {
     border-bottom: 1px solid var(--gjs-main-dark-color);
     font-weight: lighter;
@@ -34,26 +37,26 @@
   &trait-category {
     width: 100%;
 
-    &.#{$app-prefix}open {
-      @extend .#{$app-prefix}category-open;
+    &.#{gjs_variables.$app-prefix}open {
+      @extend .#{gjs_variables.$app-prefix}category-open;
     }
 
-    .#{$app-prefix}title {
-      @extend .#{$app-prefix}category-title;
+    .#{gjs_variables.$app-prefix}title {
+      @extend .#{gjs_variables.$app-prefix}category-title;
     }
 
-    .#{$app-prefix}caret-icon {
+    .#{gjs_variables.$app-prefix}caret-icon {
       margin-right: 5px;
     }
   }
 }
 
-.#{$trt-prefix}header {
+.#{gjs_variables.$trt-prefix}header {
   font-weight: lighter;
   padding: 10px;
 }
 
-.#{$trt-prefix}trait {
+.#{gjs_variables.$trt-prefix}trait {
   display: flex;
   justify-content: flex-start;
   padding: 5px 10px;
@@ -66,7 +69,7 @@
     font-size: var(--gjs-font-size);
   }
 
-  .#{$app-prefix}label {
+  .#{gjs_variables.$app-prefix}label {
     text-align: left;
     text-overflow: ellipsis;
     overflow: hidden;

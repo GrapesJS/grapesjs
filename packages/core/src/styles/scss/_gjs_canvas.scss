@@ -1,7 +1,11 @@
+@use 'gjs_main_mixins';
+@use 'gjs_variables';
+@use 'gjs_category_general';
+
 $frameAnimation: 0.35s ease !default;
 $guide_pad: 5px !default;
 
-.#{$prefix} {
+.#{gjs_variables.$prefix} {
   &guide-info {
     position: absolute;
 
@@ -29,7 +33,7 @@ $guide_pad: 5px !default;
     &__y {
       padding: 0 $guide_pad;
 
-      .#{$prefix}guide-info {
+      .#{gjs_variables.$prefix}guide-info {
         &__content {
           justify-content: center;
         }
@@ -59,7 +63,7 @@ $guide_pad: 5px !default;
     &__x {
       padding: $guide_pad 0;
 
-      .#{$prefix}guide-info {
+      .#{gjs_variables.$prefix}guide-info {
         &__content {
           align-items: center;
         }
@@ -170,7 +174,7 @@ $guide_pad: 5px !default;
   }
 }
 
-.#{$app-prefix} {
+.#{gjs_variables.$app-prefix} {
   &padding-v,
   &fixedpadding-v {
     &-top {
@@ -192,7 +196,7 @@ $guide_pad: 5px !default;
   }
 }
 
-.#{$cv-prefix}canvas {
+.#{gjs_variables.$cv-prefix}canvas {
   box-sizing: border-box;
   width: calc(100% - var(--gjs-left-width));
   height: calc(100% - var(--gjs-canvas-top));
@@ -207,15 +211,15 @@ $guide_pad: 5px !default;
     background-color: rgba(0, 0, 0, 0.15);
   }
 
-  &.#{$cui-cls} {
+  &.#{gjs_variables.$cui-cls} {
     width: 100%;
     height: 100%;
     top: 0;
   }
 
-  &#{gjs-is(grab)},
-  &#{gjs-is(grabbing)} {
-    .#{$cv-prefix}canvas__frames {
+  &#{gjs_main_mixins.gjs-is(grab)},
+  &#{gjs_main_mixins.gjs-is(grabbing)} {
+    .#{gjs_variables.$cv-prefix}canvas__frames {
       pointer-events: none; // Need this in multi-frame mode
     }
   }
@@ -234,7 +238,7 @@ $guide_pad: 5px !default;
     z-index: 1;
   }
 
-  .#{$app-prefix}ghost {
+  .#{gjs_variables.$app-prefix}ghost {
     display: none;
     pointer-events: none;
     background-color: #5b5b5b;
@@ -242,11 +246,11 @@ $guide_pad: 5px !default;
     position: absolute;
     z-index: 10;
 
-    @include opacity(0.55);
+    @include gjs_main_mixins.opacity(0.55);
   }
 
-  .#{$app-prefix}highlighter,
-  .#{$app-prefix}highlighter-sel {
+  .#{gjs_variables.$app-prefix}highlighter,
+  .#{gjs_variables.$app-prefix}highlighter-sel {
     position: absolute;
     outline: 1px solid var(--gjs-color-blue);
     outline-offset: -1px;
@@ -255,17 +259,17 @@ $guide_pad: 5px !default;
     height: 100%;
   }
 
-  .#{$app-prefix}highlighter-warning {
+  .#{gjs_variables.$app-prefix}highlighter-warning {
     outline: 3px solid var(--gjs-color-yellow);
   }
 
-  .#{$app-prefix}highlighter-sel {
+  .#{gjs_variables.$app-prefix}highlighter-sel {
     outline: 2px solid var(--gjs-color-blue);
     outline-offset: -2px;
   }
 
-  ##{$app-prefix}tools,
-  .#{$app-prefix}tools {
+  ##{gjs_variables.$app-prefix}tools,
+  .#{gjs_variables.$app-prefix}tools {
     width: 100%;
     height: 100%;
     position: absolute;
@@ -275,7 +279,7 @@ $guide_pad: 5px !default;
     z-index: 1;
   }
   /* Always place the tools above the highlighter */
-  ##{$app-prefix}tools {
+  ##{gjs_variables.$app-prefix}tools {
     z-index: 2;
   }
 
@@ -289,11 +293,11 @@ $guide_pad: 5px !default;
   // }
 }
 
-.#{$cv-prefix}canvas * {
+.#{gjs_variables.$cv-prefix}canvas * {
   box-sizing: border-box;
 }
 
-.#{$app-prefix}frame {
+.#{gjs_variables.$app-prefix}frame {
   outline: medium none;
   height: 100%;
   width: 100%;
@@ -310,7 +314,7 @@ $guide_pad: 5px !default;
   right: 0;
 }
 
-.#{$app-prefix}toolbar {
+.#{gjs_variables.$app-prefix}toolbar {
   position: absolute;
   background-color: var(--gjs-color-blue);
   white-space: nowrap;
@@ -320,7 +324,7 @@ $guide_pad: 5px !default;
   left: 0;
 }
 
-.#{$app-prefix}toolbar-item {
+.#{gjs_variables.$app-prefix}toolbar-item {
   width: 26px;
   padding: 5px;
   cursor: pointer;
@@ -332,8 +336,8 @@ $guide_pad: 5px !default;
   }
 }
 
-.#{$app-prefix}resizer-c {
-  @extend .#{$app-prefix}no-pointer-events;
+.#{gjs_variables.$app-prefix}resizer-c {
+  @extend .#{gjs_variables.$app-prefix}no-pointer-events;
 
   position: absolute;
   left: 0;
@@ -343,29 +347,29 @@ $guide_pad: 5px !default;
   z-index: 9;
 }
 
-.#{$app-prefix}margin-v-el,
-.#{$app-prefix}padding-v-el,
-.#{$app-prefix}fixedmargin-v-el,
-.#{$app-prefix}fixedpadding-v-el {
-  @extend .#{$app-prefix}no-pointer-events;
+.#{gjs_variables.$app-prefix}margin-v-el,
+.#{gjs_variables.$app-prefix}padding-v-el,
+.#{gjs_variables.$app-prefix}fixedmargin-v-el,
+.#{gjs_variables.$app-prefix}fixedpadding-v-el {
+  @extend .#{gjs_variables.$app-prefix}no-pointer-events;
 
-  @include opacity(0.1);
+  @include gjs_main_mixins.opacity(0.1);
 
   position: absolute;
   background-color: yellow;
 }
 
-.#{$app-prefix}fixedmargin-v-el,
-.#{$app-prefix}fixedpadding-v-el {
-  @include opacity(0.2);
+.#{gjs_variables.$app-prefix}fixedmargin-v-el,
+.#{gjs_variables.$app-prefix}fixedpadding-v-el {
+  @include gjs_main_mixins.opacity(0.2);
 }
 
-.#{$app-prefix}padding-v-el,
-.#{$app-prefix}fixedpadding-v-el {
+.#{gjs_variables.$app-prefix}padding-v-el,
+.#{gjs_variables.$app-prefix}fixedpadding-v-el {
   background-color: navy;
 }
 
-.#{$app-prefix}resizer-h {
+.#{gjs_variables.$app-prefix}resizer-h {
   pointer-events: all;
   position: absolute;
   border: 3px solid var(--gjs-color-blue);
@@ -375,19 +379,19 @@ $guide_pad: 5px !default;
   margin: var(--gjs-handle-margin);
 }
 
-.#{$app-prefix}resizer-h-tl {
+.#{gjs_variables.$app-prefix}resizer-h-tl {
   top: 0;
   left: 0;
   cursor: nwse-resize;
 }
 
-.#{$app-prefix}resizer-h-tr {
+.#{gjs_variables.$app-prefix}resizer-h-tr {
   top: 0;
   right: 0;
   cursor: nesw-resize;
 }
 
-.#{$app-prefix}resizer-h-tc {
+.#{gjs_variables.$app-prefix}resizer-h-tc {
   top: 0;
   margin: var(--gjs-handle-margin) auto;
   left: 0;
@@ -395,7 +399,7 @@ $guide_pad: 5px !default;
   cursor: ns-resize;
 }
 
-.#{$app-prefix}resizer-h-cl {
+.#{gjs_variables.$app-prefix}resizer-h-cl {
   left: 0;
   margin: auto var(--gjs-handle-margin);
   top: 0;
@@ -403,7 +407,7 @@ $guide_pad: 5px !default;
   cursor: ew-resize;
 }
 
-.#{$app-prefix}resizer-h-cr {
+.#{gjs_variables.$app-prefix}resizer-h-cr {
   margin: auto var(--gjs-handle-margin);
   top: 0;
   bottom: 0;
@@ -411,13 +415,13 @@ $guide_pad: 5px !default;
   cursor: ew-resize;
 }
 
-.#{$app-prefix}resizer-h-bl {
+.#{gjs_variables.$app-prefix}resizer-h-bl {
   bottom: 0;
   left: 0;
   cursor: nesw-resize;
 }
 
-.#{$app-prefix}resizer-h-bc {
+.#{gjs_variables.$app-prefix}resizer-h-bc {
   bottom: 0;
   margin: var(--gjs-handle-margin) auto;
   left: 0;
@@ -425,14 +429,14 @@ $guide_pad: 5px !default;
   cursor: ns-resize;
 }
 
-.#{$app-prefix}resizer-h-br {
+.#{gjs_variables.$app-prefix}resizer-h-br {
   bottom: 0;
   right: 0;
   cursor: nwse-resize;
 }
 
-.#{$pn-prefix}panel {
-  .#{$app-prefix}resizer-h {
+.#{gjs_variables.$pn-prefix}panel {
+  .#{gjs_variables.$app-prefix}resizer-h {
     background-color: rgba(0, 0, 0, 0.2);
     border: none;
     opacity: 0;
@@ -443,63 +447,63 @@ $guide_pad: 5px !default;
     }
   }
 
-  .#{$app-prefix}resizer-h-tc,
-  .#{$app-prefix}resizer-h-bc {
+  .#{gjs_variables.$app-prefix}resizer-h-tc,
+  .#{gjs_variables.$app-prefix}resizer-h-bc {
     margin: 0 auto;
     width: 100%;
   }
 
-  .#{$app-prefix}resizer-h-cr,
-  .#{$app-prefix}resizer-h-cl {
+  .#{gjs_variables.$app-prefix}resizer-h-cr,
+  .#{gjs_variables.$app-prefix}resizer-h-cl {
     margin: auto 0;
     height: 100%;
   }
 }
 
-.#{$app-prefix}resizing .#{$app-prefix}highlighter,
-.#{$app-prefix}resizing .#{$app-prefix}badge {
+.#{gjs_variables.$app-prefix}resizing .#{gjs_variables.$app-prefix}highlighter,
+.#{gjs_variables.$app-prefix}resizing .#{gjs_variables.$app-prefix}badge {
   display: none !important;
 }
 
-.#{$app-prefix}resizing-tl * {
+.#{gjs_variables.$app-prefix}resizing-tl * {
   cursor: nwse-resize !important;
 }
 
-.#{$app-prefix}resizing-tr * {
+.#{gjs_variables.$app-prefix}resizing-tr * {
   cursor: nesw-resize !important;
 }
 
-.#{$app-prefix}resizing-tc * {
+.#{gjs_variables.$app-prefix}resizing-tc * {
   cursor: ns-resize !important;
 }
 
-.#{$app-prefix}resizing-cl * {
+.#{gjs_variables.$app-prefix}resizing-cl * {
   cursor: ew-resize !important;
 }
 
-.#{$app-prefix}resizing-cr * {
+.#{gjs_variables.$app-prefix}resizing-cr * {
   cursor: ew-resize !important;
 }
 
-.#{$app-prefix}resizing-bl * {
+.#{gjs_variables.$app-prefix}resizing-bl * {
   cursor: nesw-resize !important;
 }
 
-.#{$app-prefix}resizing-bc * {
+.#{gjs_variables.$app-prefix}resizing-bc * {
   cursor: ns-resize !important;
 }
 
-.#{$app-prefix}resizing-br * {
+.#{gjs_variables.$app-prefix}resizing-br * {
   cursor: nwse-resize !important;
 }
 
-.btn-cl {
-  @include opacity(0.3);
+// .btn-cl {
+//   @include gjs_main_mixins.opacity(0.3);
 
-  font-size: 25px;
-  cursor: pointer;
+//   font-size: 25px;
+//   cursor: pointer;
 
-  &:hover {
-    @include opacity(0.7);
-  }
-}
+//   &:hover {
+//     @include gjs_main_mixins.opacity(0.7);
+//   }
+// }

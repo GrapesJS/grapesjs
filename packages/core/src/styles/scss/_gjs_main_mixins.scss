@@ -1,0 +1,42 @@
+@use 'gjs_variables';
+
+$gjs-is-prefix: '.#{gjs_variables.$app-prefix}is__';
+
+@function gjs-is($name) {
+  @return '#{$gjs-is-prefix}#{$name}';
+}
+
+@function darken-color($color, $percentage) {
+  @return color-mix(in srgb, $color, black $percentage);
+}
+
+@function lighten-color($color, $percentage) {
+  @return color-mix(in srgb, $color, white $percentage);
+}
+
+@mixin user-select($v) {
+  -moz-user-select: $v;
+  -khtml-user-select: $v;
+  -webkit-user-select: $v;
+  -ms-user-select: $v;
+  -o-user-select: $v;
+  user-select: $v;
+}
+
+@mixin opacity($v) {
+  opacity: $v;
+  filter: alpha(opacity=$v * 100);
+}
+
+@mixin appearance($v) {
+  -webkit-appearance: $v;
+  -moz-appearance: $v;
+  appearance: $v;
+}
+
+@mixin transform($v) {
+  -ms-transform: $v;
+  -webkit-transform: $v;
+  -moz-transform: $v;
+  transform: $v;
+}

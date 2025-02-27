@@ -1,0 +1,84 @@
+@use 'gjs_variables';
+@use 'gjs_category_general';
+
+.no-dots,
+.ui-resizable-handle {
+  border: none !important;
+  margin: 0 !important;
+  outline: none !important;
+}
+
+.#{gjs_variables.$com-prefix}dashed * {
+  outline: 1px dashed #888;
+  outline-offset: -2px;
+  box-sizing: border-box;
+}
+
+.#{gjs_variables.$com-prefix}no-select,
+.#{gjs_variables.$com-prefix}no-select img {
+  @extend .no-select;
+}
+
+.#{gjs_variables.$com-prefix}badge,
+.#{gjs_variables.$app-prefix}badge {
+  pointer-events: none;
+  background-color: var(--gjs-color-blue);
+  color: #fff;
+  padding: 2px 5px;
+  position: absolute;
+  z-index: 1;
+  font-size: 12px;
+  outline: none;
+  display: none;
+}
+.#{gjs_variables.$app-prefix}badge-warning {
+  background-color: var(--gjs-color-yellow);
+}
+.#{gjs_variables.$app-prefix}placeholder,
+.#{gjs_variables.$com-prefix}placeholder,
+.#{gjs_variables.$nv-prefix}placeholder {
+  position: absolute;
+  z-index: 10;
+  pointer-events: none;
+  display: none;
+}
+
+.#{gjs_variables.$app-prefix}placeholder,
+.#{gjs_variables.$nv-prefix}placeholder {
+  border-style: solid !important;
+  outline: none;
+  box-sizing: border-box;
+  transition:
+    top var(--gjs-animation-duration),
+    left var(--gjs-animation-duration),
+    width var(--gjs-animation-duration),
+    height var(--gjs-animation-duration);
+}
+
+.#{gjs_variables.$app-prefix}placeholder.horizontal,
+.#{gjs_variables.$com-prefix}placeholder.horizontal,
+.#{gjs_variables.$nv-prefix}placeholder.horizontal {
+  border-color: transparent var(--gjs-placeholder-background-color);
+  border-width: 3px 5px;
+  margin: -3px 0 0;
+}
+
+.#{gjs_variables.$app-prefix}placeholder.vertical,
+.#{gjs_variables.$com-prefix}placeholder.vertical,
+.#{gjs_variables.$nv-prefix}placeholder.vertical {
+  border-color: var(--gjs-placeholder-background-color) transparent;
+  border-width: 5px 3px;
+  margin: 0 0 0 -3px;
+}
+
+.#{gjs_variables.$app-prefix}placeholder-int,
+.#{gjs_variables.$com-prefix}placeholder-int,
+.#{gjs_variables.$nv-prefix}placeholder-int {
+  background-color: var(--gjs-placeholder-background-color);
+  box-shadow: 0 0 3px rgba(0, 0, 0, 0.2);
+  height: 100%;
+  width: 100%;
+  pointer-events: none;
+  padding: 1.5px;
+  outline: none;
+}

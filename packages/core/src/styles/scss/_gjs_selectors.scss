@@ -1,13 +1,17 @@
-.#{$clm-prefix}field {
-  @extend .#{$sm-prefix}field;
+@use 'gjs_main_mixins';
+@use 'gjs_variables';
+@use 'gjs_style_manager';
+
+.#{gjs_variables.$clm-prefix}field {
+  @extend .#{gjs_variables.$sm-prefix}field;
 }
 
-.#{$clm-prefix}select {
-  @extend .#{$sm-prefix}field, .#{$sm-prefix}select;
+.#{gjs_variables.$clm-prefix}select {
+  @extend .#{gjs_variables.$sm-prefix}field, .#{gjs_variables.$sm-prefix}select;
 }
 
-##{$clm-prefix}add-tag,
-.#{$clm-prefix}tags-btn {
+##{gjs_variables.$clm-prefix}add-tag,
+.#{gjs_variables.$clm-prefix}tags-btn {
   background-color: rgba(255, 255, 255, 0.15);
   border-radius: 2px;
   padding: 3px;
@@ -19,7 +23,7 @@
   cursor: pointer;
 }
 
-.#{$clm-prefix} {
+.#{gjs_variables.$clm-prefix} {
   &tags-btn svg {
     fill: currentColor;
     display: block;
@@ -65,7 +69,7 @@
 
   &sel-id {
     font-size: 0.9em;
-    @include opacity(0.5);
+    @include gjs_main_mixins.opacity(0.5);
   }
 
   &label-sel {
@@ -74,21 +78,21 @@
   }
 }
 
-.#{$clm-prefix}tags {
+.#{gjs_variables.$clm-prefix}tags {
   font-size: var(--gjs-font-size);
   padding: 10px 5px;
 
-  ##{$clm-prefix}sel {
+  ##{gjs_variables.$clm-prefix}sel {
     padding: 7px 0;
     float: left;
   }
 
-  ##{$clm-prefix}sel {
+  ##{gjs_variables.$clm-prefix}sel {
     font-style: italic;
     margin-left: 5px;
   }
 
-  ##{$clm-prefix}tags-field {
+  ##{gjs_variables.$clm-prefix}tags-field {
     clear: both;
     padding: 5px;
     margin-bottom: 5px;
@@ -96,23 +100,23 @@
     flex-wrap: wrap;
   }
 
-  ##{$clm-prefix}tags-c {
+  ##{gjs_variables.$clm-prefix}tags-c {
     display: flex;
     flex-wrap: wrap;
     vertical-align: top;
     overflow: hidden;
   }
 
-  ##{$clm-prefix}new {
-    @extend .#{$app-prefix}invis-invis;
+  ##{gjs_variables.$clm-prefix}new {
+    @extend .#{gjs_variables.$app-prefix}invis-invis;
 
     color: var(--gjs-font-color);
     padding: var(--gjs-padding-elem-classmanager);
     display: none;
   }
 
-  ##{$clm-prefix}close {
-    @include opacity(0.85);
+  ##{gjs_variables.$clm-prefix}close {
+    @include gjs_main_mixins.opacity(0.85);
     font-size: 20px;
     line-height: 0;
     cursor: pointer;
@@ -120,18 +124,18 @@
     @extend .no-select;
 
     &:hover {
-      @include opacity(1);
+      @include gjs_main_mixins.opacity(1);
     }
   }
 
-  ##{$clm-prefix}checkbox {
+  ##{gjs_variables.$clm-prefix}checkbox {
     color: rgba(255, 255, 255, 0.9);
     vertical-align: middle;
     cursor: pointer;
     font-size: 9px;
   }
 
-  ##{$clm-prefix}tag-label {
+  ##{gjs_variables.$clm-prefix}tag-label {
     flex-grow: 1;
     text-overflow: ellipsis;
     overflow: hidden;

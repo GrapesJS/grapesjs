@@ -1,4 +1,8 @@
-.#{$sm-prefix} {
+@use 'gjs_main_mixins';
+@use 'gjs_variables';
+@use 'gjs_category_general';
+
+.#{gjs_variables.$sm-prefix} {
   &clear {
     cursor: pointer;
     width: 14px;
@@ -19,7 +23,7 @@
     text-align: left;
 
     &-title {
-      @extend .#{$app-prefix}category-title;
+      @extend .#{gjs_variables.$app-prefix}category-title;
       display: flex;
       align-items: center;
     }
@@ -35,10 +39,10 @@
       margin-left: 5px;
     }
 
-    &.#{$sm-prefix}open {
-      @extend .#{$app-prefix}category-open;
+    &.#{gjs_variables.$sm-prefix}open {
+      @extend .#{gjs_variables.$app-prefix}category-open;
 
-      .#{$sm-prefix}sector-caret {
+      .#{gjs_variables.$sm-prefix}sector-caret {
         transform: none;
       }
     }
@@ -62,7 +66,7 @@
   }
 }
 
-.#{$sm-prefix}close-btn {
+.#{gjs_variables.$sm-prefix}close-btn {
   display: block;
   font-size: 23px;
   position: absolute;
@@ -70,23 +74,23 @@
   right: 5px;
   top: 0;
 
-  @include opacity(0.7);
+  @include gjs_main_mixins.opacity(0.7);
 
   &:hover {
-    @include opacity(0.9);
+    @include gjs_main_mixins.opacity(0.9);
   }
 }
 
 /* ------------------Field-------------------- */
 
-.#{$sm-prefix}field {
+.#{gjs_variables.$sm-prefix}field {
   width: 100%;
   position: relative;
 
   input,
   select {
     background-color: transparent;
-    color: $mainLhlColor;
+    color: gjs_variables.$mainLhlColor;
     border: none;
     width: 100%;
   }
@@ -99,7 +103,7 @@
     position: relative;
     z-index: 1;
 
-    @include appearance(none);
+    @include gjs_main_mixins.appearance(none);
 
     &::-ms-expand {
       display: none;
@@ -116,7 +120,7 @@
     outline: none;
   }
 
-  .#{$sm-prefix}unit {
+  .#{gjs_variables.$sm-prefix}unit {
     position: absolute;
     right: 10px;
     top: 3px;
@@ -125,9 +129,9 @@
     cursor: pointer;
   }
 
-  .#{$clm-prefix}sel-arrow,
-  .#{$sm-prefix}int-arrows,
-  .#{$sm-prefix}sel-arrow {
+  .#{gjs_variables.$clm-prefix}sel-arrow,
+  .#{gjs_variables.$sm-prefix}int-arrows,
+  .#{gjs_variables.$sm-prefix}sel-arrow {
     height: 100%;
     width: 9px;
     position: absolute;
@@ -136,14 +140,14 @@
     cursor: ns-resize;
   }
 
-  .#{$sm-prefix}sel-arrow {
+  .#{gjs_variables.$sm-prefix}sel-arrow {
     cursor: pointer;
   }
 
-  .#{$clm-prefix}d-s-arrow,
-  .#{$sm-prefix}d-arrow,
-  .#{$sm-prefix}d-s-arrow,
-  .#{$sm-prefix}u-arrow {
+  .#{gjs_variables.$clm-prefix}d-s-arrow,
+  .#{gjs_variables.$sm-prefix}d-arrow,
+  .#{gjs_variables.$sm-prefix}d-s-arrow,
+  .#{gjs_variables.$sm-prefix}u-arrow {
     position: absolute;
     height: 0;
     width: 0;
@@ -152,28 +156,28 @@
     cursor: pointer;
   }
 
-  .#{$sm-prefix}u-arrow {
+  .#{gjs_variables.$sm-prefix}u-arrow {
     border-bottom: 4px solid var(--gjs-secondary-light-color);
     top: 4px;
   }
 
-  .#{$clm-prefix}d-s-arrow,
-  .#{$sm-prefix}d-arrow,
-  .#{$sm-prefix}d-s-arrow {
+  .#{gjs_variables.$clm-prefix}d-s-arrow,
+  .#{gjs_variables.$sm-prefix}d-arrow,
+  .#{gjs_variables.$sm-prefix}d-s-arrow {
     border-top: 4px solid var(--gjs-secondary-light-color);
     bottom: 4px;
   }
 
-  .#{$clm-prefix}d-s-arrow,
-  .#{$sm-prefix}d-s-arrow {
+  .#{gjs_variables.$clm-prefix}d-s-arrow,
+  .#{gjs_variables.$sm-prefix}d-s-arrow {
     bottom: 7px;
   }
 
-  &.#{$sm-prefix}color,
-  &.#{$sm-prefix}input,
-  &.#{$sm-prefix}integer,
-  &.#{$sm-prefix}list,
-  &.#{$sm-prefix}select {
+  &.#{gjs_variables.$sm-prefix}color,
+  &.#{gjs_variables.$sm-prefix}input,
+  &.#{gjs_variables.$sm-prefix}integer,
+  &.#{gjs_variables.$sm-prefix}list,
+  &.#{gjs_variables.$sm-prefix}select {
     background-color: var(--gjs-main-dark-color);
     border: 1px solid rgba(0, 0, 0, 0.1);
     box-shadow: 1px 1px 0 var(--gjs-main-light-color);
@@ -183,28 +187,28 @@
     padding: 0 5px;
   }
 
-  &.#{$sm-prefix}composite {
+  &.#{gjs_variables.$sm-prefix}composite {
     border-radius: 2px;
   }
 
-  &.#{$sm-prefix}select {
+  &.#{gjs_variables.$sm-prefix}select {
     padding: 0;
   }
 
-  &.#{$sm-prefix}select select {
+  &.#{gjs_variables.$sm-prefix}select select {
     height: 20px;
   }
 
-  &.#{$sm-prefix}select option {
+  &.#{gjs_variables.$sm-prefix}select option {
     padding: 3px 0;
   }
 
-  &.#{$sm-prefix}composite {
+  &.#{gjs_variables.$sm-prefix}composite {
     background-color: var(--gjs-secondary-dark-color);
     border: 1px solid rgba(0, 0, 0, 0.25);
   }
 
-  &.#{$sm-prefix}list {
+  &.#{gjs_variables.$sm-prefix}list {
     width: auto;
     padding: 0;
     overflow: hidden;
@@ -220,11 +224,11 @@
       display: block;
     }
 
-    .#{$sm-prefix}radio:checked + label {
+    .#{gjs_variables.$sm-prefix}radio:checked + label {
       background-color: rgba(255, 255, 255, 0.2);
     }
 
-    .#{$sm-prefix}icon {
+    .#{gjs_variables.$sm-prefix}icon {
       background-repeat: no-repeat;
       background-position: center;
       text-shadow: none;
@@ -233,7 +237,7 @@
     }
   }
 
-  &.#{$sm-prefix}integer select {
+  &.#{gjs_variables.$sm-prefix}integer select {
     width: auto;
     padding: 0;
   }
@@ -241,7 +245,7 @@
 
 /* ------------------END Field-------------------- */
 
-.#{$sm-prefix}list .#{$sm-prefix}el {
+.#{gjs_variables.$sm-prefix}list .#{gjs_variables.$sm-prefix}el {
   float: left;
   border-left: 1px solid var(--gjs-main-dark-color);
 
@@ -256,15 +260,15 @@
 
 /* ------------------Property-------------------- */
 
-.#{$sm-prefix} {
+.#{gjs_variables.$sm-prefix} {
   &slider {
-    .#{$app-prefix}field-integer {
+    .#{gjs_variables.$app-prefix}field-integer {
       flex: 1 1 65px;
     }
   }
 }
 
-.#{$sm-prefix}property {
+.#{gjs_variables.$sm-prefix}property {
   box-sizing: border-box;
   float: left;
   width: 50%;
@@ -272,21 +276,21 @@
   padding: 0 5px;
 
   &--full,
-  &.#{$sm-prefix}composite,
-  &.#{$sm-prefix}file,
-  &.#{$sm-prefix}list,
-  &.#{$sm-prefix}stack,
-  &.#{$sm-prefix}slider,
-  &.#{$sm-prefix}color {
+  &.#{gjs_variables.$sm-prefix}composite,
+  &.#{gjs_variables.$sm-prefix}file,
+  &.#{gjs_variables.$sm-prefix}list,
+  &.#{gjs_variables.$sm-prefix}stack,
+  &.#{gjs_variables.$sm-prefix}slider,
+  &.#{gjs_variables.$sm-prefix}color {
     width: 100%;
   }
 
-  .#{$sm-prefix}btn {
-    background-color: lighten-color(var(--gjs-main-dark-color), 13%);
+  .#{gjs_variables.$sm-prefix}btn {
+    background-color: gjs_main_mixins.lighten-color(var(--gjs-main-dark-color), 13%);
     border-radius: 2px;
     box-shadow:
-      1px 1px 0 lighten-color(var(--gjs-main-dark-color), 2%),
-      1px 1px 0 lighten-color(var(--gjs-main-dark-color), 17%) inset;
+      1px 1px 0 gjs_main_mixins.lighten-color(var(--gjs-main-dark-color), 2%),
+      1px 1px 0 gjs_main_mixins.lighten-color(var(--gjs-main-dark-color), 17%) inset;
     padding: 5px;
     position: relative;
     text-align: center;
@@ -298,16 +302,16 @@
     text-shadow: -1px -1px 0 var(--gjs-main-dark-color);
     border: none;
 
-    @include opacity(0.85);
+    @include gjs_main_mixins.opacity(0.85);
   }
 
-  .#{$sm-prefix}btn-c {
+  .#{gjs_variables.$sm-prefix}btn-c {
     box-sizing: border-box;
     float: left;
     width: 100%;
   }
 
-  &__text-shadow .#{$sm-prefix}layer-preview-cnt::after {
+  &__text-shadow .#{gjs_variables.$sm-prefix}layer-preview-cnt::after {
     color: #000;
     content: 'T';
     font-weight: 900;
@@ -316,13 +320,13 @@
   }
 }
 
-.#{$sm-prefix}preview-file {
+.#{gjs_variables.$sm-prefix}preview-file {
   background-color: var(--gjs-light-border);
   border-radius: 2px;
   margin-top: 5px;
   position: relative;
   overflow: hidden;
-  border: 1px solid darken-color(var(--gjs-light-border), 1%);
+  border: 1px solid gjs_main_mixins.darken-color(var(--gjs-light-border), 1%);
   padding: 3px 20px;
 
   &-cnt {
@@ -333,7 +337,7 @@
   }
 
   &-close {
-    @extend .#{$sm-prefix}close-btn;
+    @extend .#{gjs_variables.$sm-prefix}close-btn;
 
     top: -5px;
     width: 14px;
@@ -343,36 +347,36 @@
 
 // Layers
 
-.#{$sm-prefix}layers {
+.#{gjs_variables.$sm-prefix}layers {
   margin-top: 5px;
   padding: 1px 3px;
   min-height: 30px;
 }
 
-.#{$sm-prefix}layer {
+.#{gjs_variables.$sm-prefix}layer {
   background-color: rgba(255, 255, 255, 0.055);
   border-radius: 2px;
   margin: 2px 0;
   padding: 7px;
   position: relative;
 
-  &.#{$sm-prefix}active {
+  &.#{gjs_variables.$sm-prefix}active {
     background-color: rgba(255, 255, 255, 0.12);
   }
 
-  .#{$sm-prefix}label-wrp {
+  .#{gjs_variables.$sm-prefix}label-wrp {
     display: flex;
     align-items: center;
   }
 
-  ##{$sm-prefix}move {
+  ##{gjs_variables.$sm-prefix}move {
     height: 14px;
     width: 14px;
     min-width: 14px;
     cursor: grab;
   }
 
-  ##{$sm-prefix}label {
+  ##{gjs_variables.$sm-prefix}label {
     flex-grow: 1;
     overflow: hidden;
     white-space: nowrap;
@@ -398,29 +402,29 @@
     }
   }
 
-  ##{$sm-prefix}close-layer {
+  ##{gjs_variables.$sm-prefix}close-layer {
     display: block;
     cursor: pointer;
     height: 14px;
     width: 14px;
     min-width: 14px;
 
-    @include opacity(0.5);
+    @include gjs_main_mixins.opacity(0.5);
 
     &:hover {
-      @include opacity(0.8);
+      @include gjs_main_mixins.opacity(0.8);
     }
   }
 }
 
 /* ------------------END Property-------------------- */
 
-.#{$sm-prefix}stack .#{$sm-prefix}properties {
+.#{gjs_variables.$sm-prefix}stack .#{gjs_variables.$sm-prefix}properties {
   padding: 5px 0 0;
 }
 
-.#{$sm-prefix}stack ##{$sm-prefix}add {
-  @extend .#{$app-prefix}color-main;
+.#{gjs_variables.$sm-prefix}stack ##{gjs_variables.$sm-prefix}add {
+  @extend .#{gjs_variables.$app-prefix}color-main;
 
   background: none;
   border: none;
@@ -435,12 +439,12 @@
   height: 18px;
 
   &:hover {
-    @include opacity(1);
+    @include gjs_main_mixins.opacity(1);
   }
 }
 
-.#{$sm-prefix}colorp-c {
-  @extend .#{$app-prefix}bg-main;
+.#{gjs_variables.$sm-prefix}colorp-c {
+  @extend .#{gjs_variables.$app-prefix}bg-main;
 
   height: 100%;
   width: 20px;
@@ -451,14 +455,14 @@
   border-radius: 2px;
   padding: 2px;
 
-  .#{$app-prefix}checker-bg {
+  .#{gjs_variables.$app-prefix}checker-bg {
     height: 100%;
     width: 100%;
     border-radius: 1px;
   }
 }
 
-.#{$sm-prefix}color-picker {
+.#{gjs_variables.$sm-prefix}color-picker {
   background-color: var(--gjs-font-color);
   cursor: pointer;
   height: 16px;
@@ -468,7 +472,7 @@
   border-radius: 1px;
 }
 
-.#{$sm-prefix}btn-upload ##{$sm-prefix}upload {
+.#{gjs_variables.$sm-prefix}btn-upload ##{gjs_variables.$sm-prefix}upload {
   left: 0;
   top: 0;
   position: absolute;
@@ -477,12 +481,12 @@
   cursor: pointer;
 }
 
-.#{$sm-prefix}btn-upload ##{$sm-prefix}label {
+.#{gjs_variables.$sm-prefix}btn-upload ##{gjs_variables.$sm-prefix}label {
   padding: 2px 0;
 }
 
-.#{$sm-prefix}layer > ##{$sm-prefix}move {
-  @include opacity(0.7);
+.#{gjs_variables.$sm-prefix}layer > ##{gjs_variables.$sm-prefix}move {
+  @include gjs_main_mixins.opacity(0.7);
 
   cursor: move;
   font-size: 12px;
@@ -490,6 +494,6 @@
   margin: 0 5px 0 0;
 
   &:hover {
-    @include opacity(0.9);
+    @include gjs_main_mixins.opacity(0.9);
   }
 }

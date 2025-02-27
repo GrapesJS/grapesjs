@@ -1,10 +1,11 @@
-$gjs-is-prefix: '.#{$app-prefix}is__';
+@use 'gjs_main_mixins';
+@use 'gjs_variables';
 
 @function gjs-is($name) {
-  @return '#{$gjs-is-prefix}#{$name}';
+  @return '#{gjs_main_mixins.$gjs-is-prefix}#{$name}';
 }
 
-#{$gjs-is-prefix} {
+#{gjs_main_mixins.$gjs-is-prefix} {
   &grab,
   &grab * {
     cursor: grab !important;
@@ -12,7 +13,7 @@ $gjs-is-prefix: '.#{$app-prefix}is__';
 
   &grabbing,
   &grabbing * {
-    @include user-select(none);
+    @include gjs_main_mixins.user-select(none);
     cursor: grabbing !important;
   }
 }
