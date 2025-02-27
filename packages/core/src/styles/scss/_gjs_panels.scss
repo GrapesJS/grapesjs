@@ -1,4 +1,4 @@
-@use "gjs_variables";
+@use 'gjs_variables';
 
 .#{gjs_variables.$pn-prefix} {
   &panel {
