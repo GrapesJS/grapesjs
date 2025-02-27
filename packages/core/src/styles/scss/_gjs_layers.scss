@@ -51,6 +51,7 @@ $layerIconSize: 15px !default;
       &-off {
         display: flex;
         width: 13px;
+        height: 13px;
       }
 
       &-off {
@@ -69,6 +70,7 @@ $layerIconSize: 15px !default;
 
     &-caret {
       width: 15px;
+      height: 15px;
       cursor: pointer;
       box-sizing: content-box;
       transform: rotate(90deg);
