@@ -1,6 +1,6 @@
 import CanvasModule from '..';
 import { ModuleModel } from '../../abstract';
-import { Coordinates, CoordinatesTypes, DEFAULT_COORDS } from '../../common';
+import { Coordinates, CoordinatesTypes, DEFAULT_COORDS, ObjectAny } from '../../common';
 import { evUpdate as evDeviceUpdate } from '../../device_manager';
 import Page from '../../pages/model/Page';
 import PagesEvents from '../../pages/types';
@@ -68,11 +68,11 @@ export default class Canvas extends ModuleModel<CanvasModule> {
     }
   }
 
-  onZoomChange() {
+  onZoomChange(m: any, v: any, options: ObjectAny) {
     const { em, module } = this;
     const zoom = this.get('zoom');
     zoom < 1 && this.set('zoom', 1);
-    em.trigger(module.events.zoom);
+    em.trigger(module.events.zoom, { options });
   }
 
   onCoordsChange() {

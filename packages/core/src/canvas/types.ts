@@ -1,3 +1,5 @@
+import { SetOptions } from '../common';
+
 export interface ToScreenOption {
   toScreen?: boolean;
 }
@@ -16,6 +18,10 @@ export interface CanvasRefreshOptions {
    */
   spots?: boolean;
   all?: boolean;
+}
+
+export interface SetZoomOptions extends SetOptions {
+  from?: string;
 }
 
 /**{START_EVENTS}*/

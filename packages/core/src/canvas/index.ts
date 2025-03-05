@@ -40,7 +40,7 @@ import Canvas from './model/Canvas';
 import CanvasSpot, { CanvasSpotBuiltInTypes, CanvasSpotProps } from './model/CanvasSpot';
 import CanvasSpots from './model/CanvasSpots';
 import Frame from './model/Frame';
-import { CanvasEvents, CanvasRefreshOptions, ToWorldOption } from './types';
+import { CanvasEvents, CanvasRefreshOptions, SetZoomOptions, ToWorldOption } from './types';
 import CanvasView, { FitViewportOptions } from './view/CanvasView';
 import FrameView from './view/FrameView';
 import { DragSource } from '../utils/sorter/types';
@@ -639,8 +639,8 @@ export default class CanvasModule extends Module<CanvasConfig> {
    * @example
    * canvas.setZoom(50); // set zoom to 50%
    */
-  setZoom(value: number | string) {
-    this.canvas.set('zoom', typeof value === 'string' ? parseFloat(value) : value);
+  setZoom(value: number | string, opts: SetZoomOptions = {}) {
+    this.canvas.set('zoom', typeof value === 'string' ? parseFloat(value) : value, opts);
     return this;
   }
 

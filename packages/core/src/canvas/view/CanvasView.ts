@@ -1,4 +1,4 @@
-import { bindAll, isNumber } from 'underscore';
+import { bindAll, isFunction, isNumber } from 'underscore';
 import { ModuleView } from '../../abstract';
 import { BoxRect, Coordinates, CoordinatesTypes, ElementRect } from '../../common';
 import Component from '../../dom_components/model/Component';
@@ -47,7 +47,7 @@ export interface FitViewportOptions {
   gap?: number | { x: number; y: number };
   ignoreHeight?: boolean;
   el?: HTMLElement;
-  zoom?: number;
+  zoom?: number | ((zoom: number) => number);
 }
 
 export default class CanvasView extends ModuleView<Canvas> {
@@ -306,15 +306,17 @@ export default class CanvasView extends ModuleView<Canvas> {
 
     const zoomRatio = noHeight ? widthRatio : Math.min(widthRatio, heightRatio);
     const zoom = zoomRatio * 100;
-    module.setZoom(opts.zoom ?? zoom);
+    const newZoom = (isFunction(opts.zoom) ? opts.zoom(zoom) : opts.zoom) ?? zoom;
+    module.setZoom(newZoom, { from: 'fitViewport' });
 
-    // check for the frame witdh is necessary as we're centering the frame via CSS
+    // check for the frame width is necessary as we're centering the frame via CSS
     const coordX = -boxRect.x + (frame.width >= canvasWidth ? canvasWidth / 2 - boxWidth / 2 : -gapX);
     const coordY = -boxRect.y + canvasHeight / 2 - boxHeight / 2;
+    const zoomDecimal = module.getZoomDecimal();
 
     const coords = {
-      x: (coordX + gapX) * zoomRatio,
-      y: (coordY + gapY) * zoomRatio,
+      x: (coordX + gapX) * zoomDecimal,
+      y: (coordY + gapY) * zoomDecimal,
     };
 
     if (noHeight) {
@@ -322,7 +324,7 @@ export default class CanvasView extends ModuleView<Canvas> {
       const canvasWorldHeight = canvasHeight * zoomMltp;
       const canvasHeightDiff = canvasWorldHeight - canvasHeight;
       const yDelta = canvasHeightDiff / 2;
-      coords.y = (-boxRect.y + gapY) * zoomMltp - yDelta / zoomMltp;
+      coords.y = (-boxRect.y + gapY) * zoomDecimal - yDelta / zoomMltp;
     }
 
     module.setCoords(coords.x, coords.y);
