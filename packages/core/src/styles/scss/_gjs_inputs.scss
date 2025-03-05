@@ -1,5 +1,6 @@
 @use 'gjs_main_mixins';
-@use 'gjs_variables';
+@use 'gjs_vars';
+@use 'gjs_category_general';
 
 /********* Input style **********/
 
@@ -19,7 +20,7 @@
   height: 3px;
 }
 
-.#{gjs_variables.$app-prefix} {
+.#{gjs_vars.$app-prefix} {
   &label {
     line-height: 18px;
   }
@@ -93,17 +94,17 @@
   }
 }
 
-.#{gjs_variables.$app-prefix}select option,
-.#{gjs_variables.$app-prefix}field-select option,
-.#{gjs_variables.$clm-prefix}select option,
-.#{gjs_variables.$sm-prefix}select option,
-.#{gjs_variables.$app-prefix}fields option,
-.#{gjs_variables.$sm-prefix}unit option {
+.#{gjs_vars.$app-prefix}select option,
+.#{gjs_vars.$app-prefix}field-select option,
+.#{gjs_vars.$clm-prefix}select option,
+.#{gjs_vars.$sm-prefix}select option,
+.#{gjs_vars.$app-prefix}fields option,
+.#{gjs_vars.$sm-prefix}unit option {
   background-color: var(--gjs-main-color);
   color: var(--gjs-font-color);
 }
 
-.#{gjs_variables.$app-prefix}field {
+.#{gjs_vars.$app-prefix}field {
   background-color: var(--gjs-main-dark-color);
   border: none;
   box-shadow: none;
@@ -116,7 +117,7 @@
     resize: vertical;
   }
 
-  .#{gjs_variables.$app-prefix}sel-arrow {
+  .#{gjs_vars.$app-prefix}sel-arrow {
     height: 100%;
     width: 9px;
     position: absolute;
@@ -125,7 +126,7 @@
     z-index: 0;
   }
 
-  .#{gjs_variables.$app-prefix}d-s-arrow {
+  .#{gjs_vars.$app-prefix}d-s-arrow {
     bottom: 0;
     top: 0;
     margin: auto;
@@ -157,14 +158,14 @@
   }
 }
 
-.#{gjs_variables.$app-prefix}field-color {
+.#{gjs_vars.$app-prefix}field-color {
   input {
     padding-right: var(--gjs-color-input-padding);
     box-sizing: border-box;
   }
 }
 
-.#{gjs_variables.$app-prefix}field-colorp {
+.#{gjs_vars.$app-prefix}field-colorp {
   border-left: 1px solid var(--gjs-main-dark-color);
   box-sizing: border-box;
   height: 100%;
@@ -175,22 +176,22 @@
   width: var(--gjs-color-input-padding);
   z-index: 10;
 
-  .#{gjs_variables.$app-prefix}checker-bg {
+  .#{gjs_vars.$app-prefix}checker-bg {
     height: 100%;
     width: 100%;
     border-radius: 1px;
   }
 }
 
-.#{gjs_variables.$app-prefix}field-colorp-c {
-  @extend .#{gjs_variables.$app-prefix}checker-bg;
+.#{gjs_vars.$app-prefix}field-colorp-c {
+  @extend .#{gjs_vars.$app-prefix}checker-bg;
 
   height: 100%;
   position: relative;
   width: 100%;
 }
 
-.#{gjs_variables.$app-prefix}field-color-picker {
+.#{gjs_vars.$app-prefix}field-color-picker {
   background-color: var(--gjs-font-color);
   cursor: pointer;
   height: 100%;
@@ -202,7 +203,7 @@
 }
 
 /* ??? */
-.#{gjs_variables.$app-prefix}field-checkbox {
+.#{gjs_vars.$app-prefix}field-checkbox {
   padding: 0;
   width: 17px;
   height: 17px;
@@ -213,14 +214,14 @@
     display: none;
   }
 
-  input:checked + .#{gjs_variables.$app-prefix}chk-icon {
+  input:checked + .#{gjs_vars.$app-prefix}chk-icon {
     border-color: rgba(255, 255, 255, 0.5);
     border-width: 0 2px 2px 0;
     border-style: solid;
   }
 }
 
-.#{gjs_variables.$app-prefix}radio-item {
+.#{gjs_vars.$app-prefix}radio-item {
   flex: 1 1 auto;
   text-align: center;
   border-left: 1px solid var(--gjs-dark-text-shadow);
@@ -237,7 +238,7 @@
     display: none;
   }
 
-  input:checked + .#{gjs_variables.$app-prefix}radio-item-label {
+  input:checked + .#{gjs_vars.$app-prefix}radio-item-label {
     background-color: rgba(255, 255, 255, 0.2);
   }
 
@@ -246,13 +247,13 @@
   }
 }
 
-.#{gjs_variables.$app-prefix}radio-item-label {
+.#{gjs_vars.$app-prefix}radio-item-label {
   cursor: pointer;
   display: block;
   padding: var(--gjs-input-padding);
 }
 
-.#{gjs_variables.$app-prefix}field-units {
+.#{gjs_vars.$app-prefix}field-units {
   position: absolute;
   margin: auto;
   right: 10px;
@@ -260,7 +261,7 @@
   top: 0;
 }
 
-.#{gjs_variables.$app-prefix}field-unit {
+.#{gjs_vars.$app-prefix}field-unit {
   position: absolute;
   right: 10px;
   top: 3px;
@@ -269,12 +270,12 @@
   cursor: pointer;
 }
 
-.#{gjs_variables.$app-prefix}input-unit {
+.#{gjs_vars.$app-prefix}input-unit {
   text-align: center;
 }
 
-.#{gjs_variables.$app-prefix}field-arrow-u,
-.#{gjs_variables.$app-prefix}field-arrow-d {
+.#{gjs_vars.$app-prefix}field-arrow-u,
+.#{gjs_vars.$app-prefix}field-arrow-d {
   position: absolute;
   height: 0;
   width: 0;
@@ -285,17 +286,17 @@
   cursor: pointer;
 }
 
-.#{gjs_variables.$app-prefix}field-arrow-u {
+.#{gjs_vars.$app-prefix}field-arrow-u {
   border-bottom: 4px solid var(--gjs-arrow-color);
   border-top: none;
   top: 4px;
 }
 
-.#{gjs_variables.$app-prefix}field-select {
+.#{gjs_vars.$app-prefix}field-select {
   padding: 0;
 }
 
-.#{gjs_variables.$app-prefix}field-range {
+.#{gjs_vars.$app-prefix}field-range {
   background-color: transparent;
   border: none;
   box-shadow: none;
@@ -339,7 +340,7 @@
   }
 }
 
-.#{gjs_variables.$app-prefix}btn {
+.#{gjs_vars.$app-prefix}btn {
   &-prim {
     color: inherit;
     background-color: var(--gjs-main-light-color);
@@ -359,7 +360,7 @@
   }
 }
 
-.#{gjs_variables.$app-prefix}chk-icon {
+.#{gjs_vars.$app-prefix}chk-icon {
   @include gjs_main_mixins.transform(rotate(45deg));
 
   box-sizing: border-box;
@@ -369,7 +370,7 @@
   width: 6px;
 }
 
-.#{gjs_variables.$app-prefix}add-trasp {
+.#{gjs_vars.$app-prefix}add-trasp {
   background: none;
   border: none;
   color: var(--gjs-font-color);

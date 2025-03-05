@@ -1,7 +1,7 @@
-@use 'gjs_variables';
+@use 'gjs_vars';
 @use 'gjs_category_general';
 
-.#{gjs_variables.$mdl-prefix} {
+.#{gjs_vars.$mdl-prefix} {
   &container {
     font-family: var(--gjs-main-font);
     overflow-y: auto;
@@ -17,7 +17,7 @@
 
   &dialog {
     text-shadow: -1px -1px 0 rgba(0, 0, 0, 0.05);
-    animation: #{gjs_variables.$app-prefix}slide-down 0.215s;
+    animation: #{gjs_vars.$app-prefix}slide-down 0.215s;
     margin: auto;
     max-width: 850px;
     width: 90%;
@@ -39,8 +39,8 @@
     top: 5px;
   }
 
-  &active .#{gjs_variables.$mdl-prefix}dialog {
-    animation: #{gjs_variables.$mdl-prefix}slide-down 0.216s;
+  &active .#{gjs_vars.$mdl-prefix}dialog {
+    animation: #{gjs_vars.$mdl-prefix}slide-down 0.216s;
   }
 
   &header,
@@ -56,7 +56,7 @@
   }
 }
 
-.#{gjs_variables.$app-prefix}export-dl::after {
+.#{gjs_vars.$app-prefix}export-dl::after {
   content: '';
   clear: both;
   display: block;

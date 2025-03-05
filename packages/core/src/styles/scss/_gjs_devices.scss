@@ -1,21 +1,21 @@
-@use 'gjs_variables';
+@use 'gjs_vars';
 
-.#{gjs_variables.$app-prefix}devices-c {
+.#{gjs_vars.$app-prefix}devices-c {
   display: flex;
   align-items: center;
   padding: 2px 3px 3px 3px;
 
-  .#{gjs_variables.$app-prefix}device-label {
+  .#{gjs_vars.$app-prefix}device-label {
     flex-grow: 2;
     text-align: left;
     margin-right: 10px;
   }
 
-  .#{gjs_variables.$app-prefix}select {
+  .#{gjs_vars.$app-prefix}select {
     flex-grow: 20;
   }
 
-  .#{gjs_variables.$app-prefix}add-trasp {
+  .#{gjs_vars.$app-prefix}add-trasp {
     flex-grow: 1;
     margin-left: 5px;
   }

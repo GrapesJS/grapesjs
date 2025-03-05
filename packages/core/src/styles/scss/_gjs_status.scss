@@ -1,5 +1,5 @@
 @use 'gjs_main_mixins';
-@use 'gjs_variables';
+@use 'gjs_vars';
 
 @function gjs-is($name) {
   @return '#{gjs_main_mixins.$gjs-is-prefix}#{$name}';

@@ -1,13 +1,13 @@
-@use 'gjs_variables';
+@use 'gjs_vars';
 @use 'spectrum.scss';
 
-.#{gjs_variables.$app-prefix}editor-sp {
+.#{gjs_vars.$app-prefix}editor-sp {
   border: 1px solid var(--gjs-main-dark-color);
   box-shadow: 0 0 7px var(--gjs-main-dark-color);
   border-radius: 3px;
 }
 
-.#{gjs_variables.$app-prefix}editor-sp {
+.#{gjs_vars.$app-prefix}editor-sp {
   .sp-hue,
   .sp-slider {
     cursor: row-resize;

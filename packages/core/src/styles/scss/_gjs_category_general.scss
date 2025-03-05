@@ -1,13 +1,13 @@
-@use 'gjs_variables';
+@use 'gjs_vars';
 @use 'gjs_main_mixins';
 
-.#{gjs_variables.$app-prefix}bg {
+.#{gjs_vars.$app-prefix}bg {
   &-main {
     background-color: var(--gjs-main-color);
   }
 }
 
-.#{gjs_variables.$app-prefix}color {
+.#{gjs_vars.$app-prefix}color {
   &-main {
     color: var(--gjs-font-color);
     fill: var(--gjs-font-color);
@@ -29,14 +29,14 @@
   }
 }
 
-.#{gjs_variables.$app-prefix}invis-invis,
-.#{gjs_variables.$app-prefix}no-app {
+.#{gjs_vars.$app-prefix}invis-invis,
+.#{gjs_vars.$app-prefix}no-app {
   background-color: transparent;
   border: none;
   color: inherit;
 }
 
-.#{gjs_variables.$app-prefix}no-app {
+.#{gjs_vars.$app-prefix}no-app {
   height: 10px;
 }
 
@@ -44,16 +44,16 @@
   @include gjs_main_mixins.opacity(0.5);
 }
 
-.#{gjs_variables.$app-prefix}checker-bg,
+.#{gjs_vars.$app-prefix}checker-bg,
 .checker-bg {
   background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAIAAADZF8uwAAAAGUlEQVQYV2M4gwH+YwCGIasIUwhT25BVBADtzYNYrHvv4gAAAABJRU5ErkJggg==');
 }
 
-.#{gjs_variables.$app-prefix}no-user-select {
+.#{gjs_vars.$app-prefix}no-user-select {
   @include gjs_main_mixins.user-select(none);
 }
 
-.#{gjs_variables.$app-prefix}no-pointer-events {
+.#{gjs_vars.$app-prefix}no-pointer-events {
   pointer-events: none;
 }
 
@@ -65,11 +65,11 @@
   clear: both;
 }
 
-.#{gjs_variables.$app-prefix}category-open {
+.#{gjs_vars.$app-prefix}category-open {
   border-bottom: 1px solid rgba(0, 0, 0, 0.25);
 }
 
-.#{gjs_variables.$app-prefix}category-title {
+.#{gjs_vars.$app-prefix}category-title {
   @extend .no-select;
 
   font-weight: lighter;

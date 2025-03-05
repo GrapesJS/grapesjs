@@ -1,11 +1,11 @@
 @use 'gjs_main_mixins';
-@use 'gjs_variables';
+@use 'gjs_vars';
 @use 'gjs_category_general';
 
 $frameAnimation: 0.35s ease !default;
 $guide_pad: 5px !default;
 
-.#{gjs_variables.$prefix} {
+.#{gjs_vars.$prefix} {
   &guide-info {
     position: absolute;
 
@@ -33,7 +33,7 @@ $guide_pad: 5px !default;
     &__y {
       padding: 0 $guide_pad;
 
-      .#{gjs_variables.$prefix}guide-info {
+      .#{gjs_vars.$prefix}guide-info {
         &__content {
           justify-content: center;
         }
@@ -63,7 +63,7 @@ $guide_pad: 5px !default;
     &__x {
       padding: $guide_pad 0;
 
-      .#{gjs_variables.$prefix}guide-info {
+      .#{gjs_vars.$prefix}guide-info {
         &__content {
           align-items: center;
         }
@@ -174,7 +174,7 @@ $guide_pad: 5px !default;
   }
 }
 
-.#{gjs_variables.$app-prefix} {
+.#{gjs_vars.$app-prefix} {
   &padding-v,
   &fixedpadding-v {
     &-top {
@@ -196,7 +196,7 @@ $guide_pad: 5px !default;
   }
 }
 
-.#{gjs_variables.$cv-prefix}canvas {
+.#{gjs_vars.$cv-prefix}canvas {
   box-sizing: border-box;
   width: calc(100% - var(--gjs-left-width));
   height: calc(100% - var(--gjs-canvas-top));
@@ -211,7 +211,7 @@ $guide_pad: 5px !default;
     background-color: rgba(0, 0, 0, 0.15);
   }
 
-  &.#{gjs_variables.$cui-cls} {
+  &.#{gjs_vars.$cui-cls} {
     width: 100%;
     height: 100%;
     top: 0;
@@ -219,7 +219,7 @@ $guide_pad: 5px !default;
 
   &#{gjs_main_mixins.gjs-is(grab)},
   &#{gjs_main_mixins.gjs-is(grabbing)} {
-    .#{gjs_variables.$cv-prefix}canvas__frames {
+    .#{gjs_vars.$cv-prefix}canvas__frames {
       pointer-events: none; // Need this in multi-frame mode
     }
   }
@@ -238,7 +238,7 @@ $guide_pad: 5px !default;
     z-index: 1;
   }
 
-  .#{gjs_variables.$app-prefix}ghost {
+  .#{gjs_vars.$app-prefix}ghost {
     display: none;
     pointer-events: none;
     background-color: #5b5b5b;
@@ -249,8 +249,8 @@ $guide_pad: 5px !default;
     @include gjs_main_mixins.opacity(0.55);
   }
 
-  .#{gjs_variables.$app-prefix}highlighter,
-  .#{gjs_variables.$app-prefix}highlighter-sel {
+  .#{gjs_vars.$app-prefix}highlighter,
+  .#{gjs_vars.$app-prefix}highlighter-sel {
     position: absolute;
     outline: 1px solid var(--gjs-color-blue);
     outline-offset: -1px;
@@ -259,17 +259,17 @@ $guide_pad: 5px !default;
     height: 100%;
   }
 
-  .#{gjs_variables.$app-prefix}highlighter-warning {
+  .#{gjs_vars.$app-prefix}highlighter-warning {
     outline: 3px solid var(--gjs-color-yellow);
   }
 
-  .#{gjs_variables.$app-prefix}highlighter-sel {
+  .#{gjs_vars.$app-prefix}highlighter-sel {
     outline: 2px solid var(--gjs-color-blue);
     outline-offset: -2px;
   }
 
-  ##{gjs_variables.$app-prefix}tools,
-  .#{gjs_variables.$app-prefix}tools {
+  ##{gjs_vars.$app-prefix}tools,
+  .#{gjs_vars.$app-prefix}tools {
     width: 100%;
     height: 100%;
     position: absolute;
@@ -279,7 +279,7 @@ $guide_pad: 5px !default;
     z-index: 1;
   }
   /* Always place the tools above the highlighter */
-  ##{gjs_variables.$app-prefix}tools {
+  ##{gjs_vars.$app-prefix}tools {
     z-index: 2;
   }
 
@@ -293,11 +293,11 @@ $guide_pad: 5px !default;
   // }
 }
 
-.#{gjs_variables.$cv-prefix}canvas * {
+.#{gjs_vars.$cv-prefix}canvas * {
   box-sizing: border-box;
 }
 
-.#{gjs_variables.$app-prefix}frame {
+.#{gjs_vars.$app-prefix}frame {
   outline: medium none;
   height: 100%;
   width: 100%;
@@ -314,7 +314,7 @@ $guide_pad: 5px !default;
   right: 0;
 }
 
-.#{gjs_variables.$app-prefix}toolbar {
+.#{gjs_vars.$app-prefix}toolbar {
   position: absolute;
   background-color: var(--gjs-color-blue);
   white-space: nowrap;
@@ -324,7 +324,7 @@ $guide_pad: 5px !default;
   left: 0;
 }
 
-.#{gjs_variables.$app-prefix}toolbar-item {
+.#{gjs_vars.$app-prefix}toolbar-item {
   width: 26px;
   padding: 5px;
   cursor: pointer;
@@ -336,8 +336,8 @@ $guide_pad: 5px !default;
   }
 }
 
-.#{gjs_variables.$app-prefix}resizer-c {
-  @extend .#{gjs_variables.$app-prefix}no-pointer-events;
+.#{gjs_vars.$app-prefix}resizer-c {
+  @extend .#{gjs_vars.$app-prefix}no-pointer-events;
 
   position: absolute;
   left: 0;
@@ -347,11 +347,11 @@ $guide_pad: 5px !default;
   z-index: 9;
 }
 
-.#{gjs_variables.$app-prefix}margin-v-el,
-.#{gjs_variables.$app-prefix}padding-v-el,
-.#{gjs_variables.$app-prefix}fixedmargin-v-el,
-.#{gjs_variables.$app-prefix}fixedpadding-v-el {
-  @extend .#{gjs_variables.$app-prefix}no-pointer-events;
+.#{gjs_vars.$app-prefix}margin-v-el,
+.#{gjs_vars.$app-prefix}padding-v-el,
+.#{gjs_vars.$app-prefix}fixedmargin-v-el,
+.#{gjs_vars.$app-prefix}fixedpadding-v-el {
+  @extend .#{gjs_vars.$app-prefix}no-pointer-events;
 
   @include gjs_main_mixins.opacity(0.1);
 
@@ -359,17 +359,17 @@ $guide_pad: 5px !default;
   background-color: yellow;
 }
 
-.#{gjs_variables.$app-prefix}fixedmargin-v-el,
-.#{gjs_variables.$app-prefix}fixedpadding-v-el {
+.#{gjs_vars.$app-prefix}fixedmargin-v-el,
+.#{gjs_vars.$app-prefix}fixedpadding-v-el {
   @include gjs_main_mixins.opacity(0.2);
 }
 
-.#{gjs_variables.$app-prefix}padding-v-el,
-.#{gjs_variables.$app-prefix}fixedpadding-v-el {
+.#{gjs_vars.$app-prefix}padding-v-el,
+.#{gjs_vars.$app-prefix}fixedpadding-v-el {
   background-color: navy;
 }
 
-.#{gjs_variables.$app-prefix}resizer-h {
+.#{gjs_vars.$app-prefix}resizer-h {
   pointer-events: all;
   position: absolute;
   border: 3px solid var(--gjs-color-blue);
@@ -379,19 +379,19 @@ $guide_pad: 5px !default;
   margin: var(--gjs-handle-margin);
 }
 
-.#{gjs_variables.$app-prefix}resizer-h-tl {
+.#{gjs_vars.$app-prefix}resizer-h-tl {
   top: 0;
   left: 0;
   cursor: nwse-resize;
 }
 
-.#{gjs_variables.$app-prefix}resizer-h-tr {
+.#{gjs_vars.$app-prefix}resizer-h-tr {
   top: 0;
   right: 0;
   cursor: nesw-resize;
 }
 
-.#{gjs_variables.$app-prefix}resizer-h-tc {
+.#{gjs_vars.$app-prefix}resizer-h-tc {
   top: 0;
   margin: var(--gjs-handle-margin) auto;
   left: 0;
@@ -399,7 +399,7 @@ $guide_pad: 5px !default;
   cursor: ns-resize;
 }
 
-.#{gjs_variables.$app-prefix}resizer-h-cl {
+.#{gjs_vars.$app-prefix}resizer-h-cl {
   left: 0;
   margin: auto var(--gjs-handle-margin);
   top: 0;
@@ -407,7 +407,7 @@ $guide_pad: 5px !default;
   cursor: ew-resize;
 }
 
-.#{gjs_variables.$app-prefix}resizer-h-cr {
+.#{gjs_vars.$app-prefix}resizer-h-cr {
   margin: auto var(--gjs-handle-margin);
   top: 0;
   bottom: 0;
@@ -415,13 +415,13 @@ $guide_pad: 5px !default;
   cursor: ew-resize;
 }
 
-.#{gjs_variables.$app-prefix}resizer-h-bl {
+.#{gjs_vars.$app-prefix}resizer-h-bl {
   bottom: 0;
   left: 0;
   cursor: nesw-resize;
 }
 
-.#{gjs_variables.$app-prefix}resizer-h-bc {
+.#{gjs_vars.$app-prefix}resizer-h-bc {
   bottom: 0;
   margin: var(--gjs-handle-margin) auto;
   left: 0;
@@ -429,14 +429,14 @@ $guide_pad: 5px !default;
   cursor: ns-resize;
 }
 
-.#{gjs_variables.$app-prefix}resizer-h-br {
+.#{gjs_vars.$app-prefix}resizer-h-br {
   bottom: 0;
   right: 0;
   cursor: nwse-resize;
 }
 
-.#{gjs_variables.$pn-prefix}panel {
-  .#{gjs_variables.$app-prefix}resizer-h {
+.#{gjs_vars.$pn-prefix}panel {
+  .#{gjs_vars.$app-prefix}resizer-h {
     background-color: rgba(0, 0, 0, 0.2);
     border: none;
     opacity: 0;
@@ -447,53 +447,53 @@ $guide_pad: 5px !default;
     }
   }
 
-  .#{gjs_variables.$app-prefix}resizer-h-tc,
-  .#{gjs_variables.$app-prefix}resizer-h-bc {
+  .#{gjs_vars.$app-prefix}resizer-h-tc,
+  .#{gjs_vars.$app-prefix}resizer-h-bc {
     margin: 0 auto;
     width: 100%;
   }
 
-  .#{gjs_variables.$app-prefix}resizer-h-cr,
-  .#{gjs_variables.$app-prefix}resizer-h-cl {
+  .#{gjs_vars.$app-prefix}resizer-h-cr,
+  .#{gjs_vars.$app-prefix}resizer-h-cl {
     margin: auto 0;
     height: 100%;
   }
 }
 
-.#{gjs_variables.$app-prefix}resizing .#{gjs_variables.$app-prefix}highlighter,
-.#{gjs_variables.$app-prefix}resizing .#{gjs_variables.$app-prefix}badge {
+.#{gjs_vars.$app-prefix}resizing .#{gjs_vars.$app-prefix}highlighter,
+.#{gjs_vars.$app-prefix}resizing .#{gjs_vars.$app-prefix}badge {
   display: none !important;
 }
 
-.#{gjs_variables.$app-prefix}resizing-tl * {
+.#{gjs_vars.$app-prefix}resizing-tl * {
   cursor: nwse-resize !important;
 }
 
-.#{gjs_variables.$app-prefix}resizing-tr * {
+.#{gjs_vars.$app-prefix}resizing-tr * {
   cursor: nesw-resize !important;
 }
 
-.#{gjs_variables.$app-prefix}resizing-tc * {
+.#{gjs_vars.$app-prefix}resizing-tc * {
   cursor: ns-resize !important;
 }
 
-.#{gjs_variables.$app-prefix}resizing-cl * {
+.#{gjs_vars.$app-prefix}resizing-cl * {
   cursor: ew-resize !important;
 }
 
-.#{gjs_variables.$app-prefix}resizing-cr * {
+.#{gjs_vars.$app-prefix}resizing-cr * {
   cursor: ew-resize !important;
 }
 
-.#{gjs_variables.$app-prefix}resizing-bl * {
+.#{gjs_vars.$app-prefix}resizing-bl * {
   cursor: nesw-resize !important;
 }
 
-.#{gjs_variables.$app-prefix}resizing-bc * {
+.#{gjs_vars.$app-prefix}resizing-bc * {
   cursor: ns-resize !important;
 }
 
-.#{gjs_variables.$app-prefix}resizing-br * {
+.#{gjs_vars.$app-prefix}resizing-br * {
   cursor: nwse-resize !important;
 }
 

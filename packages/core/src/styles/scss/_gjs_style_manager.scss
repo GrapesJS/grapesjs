@@ -1,8 +1,8 @@
 @use 'gjs_main_mixins';
-@use 'gjs_variables';
+@use 'gjs_vars';
 @use 'gjs_category_general';
 
-.#{gjs_variables.$sm-prefix} {
+.#{gjs_vars.$sm-prefix} {
   &clear {
     cursor: pointer;
     width: 14px;
@@ -23,7 +23,7 @@
     text-align: left;
 
     &-title {
-      @extend .#{gjs_variables.$app-prefix}category-title;
+      @extend .#{gjs_vars.$app-prefix}category-title;
       display: flex;
       align-items: center;
     }
@@ -39,10 +39,10 @@
       margin-left: 5px;
     }
 
-    &.#{gjs_variables.$sm-prefix}open {
-      @extend .#{gjs_variables.$app-prefix}category-open;
+    &.#{gjs_vars.$sm-prefix}open {
+      @extend .#{gjs_vars.$app-prefix}category-open;
 
-      .#{gjs_variables.$sm-prefix}sector-caret {
+      .#{gjs_vars.$sm-prefix}sector-caret {
         transform: none;
       }
     }
@@ -66,7 +66,7 @@
   }
 }
 
-.#{gjs_variables.$sm-prefix}close-btn {
+.#{gjs_vars.$sm-prefix}close-btn {
   display: block;
   font-size: 23px;
   position: absolute;
@@ -83,14 +83,14 @@
 
 /* ------------------Field-------------------- */
 
-.#{gjs_variables.$sm-prefix}field {
+.#{gjs_vars.$sm-prefix}field {
   width: 100%;
   position: relative;
 
   input,
   select {
     background-color: transparent;
-    color: gjs_variables.$mainLhlColor;
+    color: gjs_vars.$mainLhlColor;
     border: none;
     width: 100%;
   }
@@ -120,7 +120,7 @@
     outline: none;
   }
 
-  .#{gjs_variables.$sm-prefix}unit {
+  .#{gjs_vars.$sm-prefix}unit {
     position: absolute;
     right: 10px;
     top: 3px;
@@ -129,9 +129,9 @@
     cursor: pointer;
   }
 
-  .#{gjs_variables.$clm-prefix}sel-arrow,
-  .#{gjs_variables.$sm-prefix}int-arrows,
-  .#{gjs_variables.$sm-prefix}sel-arrow {
+  .#{gjs_vars.$clm-prefix}sel-arrow,
+  .#{gjs_vars.$sm-prefix}int-arrows,
+  .#{gjs_vars.$sm-prefix}sel-arrow {
     height: 100%;
     width: 9px;
     position: absolute;
@@ -140,14 +140,14 @@
     cursor: ns-resize;
   }
 
-  .#{gjs_variables.$sm-prefix}sel-arrow {
+  .#{gjs_vars.$sm-prefix}sel-arrow {
     cursor: pointer;
   }
 
-  .#{gjs_variables.$clm-prefix}d-s-arrow,
-  .#{gjs_variables.$sm-prefix}d-arrow,
-  .#{gjs_variables.$sm-prefix}d-s-arrow,
-  .#{gjs_variables.$sm-prefix}u-arrow {
+  .#{gjs_vars.$clm-prefix}d-s-arrow,
+  .#{gjs_vars.$sm-prefix}d-arrow,
+  .#{gjs_vars.$sm-prefix}d-s-arrow,
+  .#{gjs_vars.$sm-prefix}u-arrow {
     position: absolute;
     height: 0;
     width: 0;
@@ -156,28 +156,28 @@
     cursor: pointer;
   }
 
-  .#{gjs_variables.$sm-prefix}u-arrow {
+  .#{gjs_vars.$sm-prefix}u-arrow {
     border-bottom: 4px solid var(--gjs-secondary-light-color);
     top: 4px;
   }
 
-  .#{gjs_variables.$clm-prefix}d-s-arrow,
-  .#{gjs_variables.$sm-prefix}d-arrow,
-  .#{gjs_variables.$sm-prefix}d-s-arrow {
+  .#{gjs_vars.$clm-prefix}d-s-arrow,
+  .#{gjs_vars.$sm-prefix}d-arrow,
+  .#{gjs_vars.$sm-prefix}d-s-arrow {
     border-top: 4px solid var(--gjs-secondary-light-color);
     bottom: 4px;
   }
 
-  .#{gjs_variables.$clm-prefix}d-s-arrow,
-  .#{gjs_variables.$sm-prefix}d-s-arrow {
+  .#{gjs_vars.$clm-prefix}d-s-arrow,
+  .#{gjs_vars.$sm-prefix}d-s-arrow {
     bottom: 7px;
   }
 
-  &.#{gjs_variables.$sm-prefix}color,
-  &.#{gjs_variables.$sm-prefix}input,
-  &.#{gjs_variables.$sm-prefix}integer,
-  &.#{gjs_variables.$sm-prefix}list,
-  &.#{gjs_variables.$sm-prefix}select {
+  &.#{gjs_vars.$sm-prefix}color,
+  &.#{gjs_vars.$sm-prefix}input,
+  &.#{gjs_vars.$sm-prefix}integer,
+  &.#{gjs_vars.$sm-prefix}list,
+  &.#{gjs_vars.$sm-prefix}select {
     background-color: var(--gjs-main-dark-color);
     border: 1px solid rgba(0, 0, 0, 0.1);
     box-shadow: 1px 1px 0 var(--gjs-main-light-color);
@@ -187,28 +187,28 @@
     padding: 0 5px;
   }
 
-  &.#{gjs_variables.$sm-prefix}composite {
+  &.#{gjs_vars.$sm-prefix}composite {
     border-radius: 2px;
   }
 
-  &.#{gjs_variables.$sm-prefix}select {
+  &.#{gjs_vars.$sm-prefix}select {
     padding: 0;
   }
 
-  &.#{gjs_variables.$sm-prefix}select select {
+  &.#{gjs_vars.$sm-prefix}select select {
     height: 20px;
   }
 
-  &.#{gjs_variables.$sm-prefix}select option {
+  &.#{gjs_vars.$sm-prefix}select option {
     padding: 3px 0;
   }
 
-  &.#{gjs_variables.$sm-prefix}composite {
+  &.#{gjs_vars.$sm-prefix}composite {
     background-color: var(--gjs-secondary-dark-color);
     border: 1px solid rgba(0, 0, 0, 0.25);
   }
 
-  &.#{gjs_variables.$sm-prefix}list {
+  &.#{gjs_vars.$sm-prefix}list {
     width: auto;
     padding: 0;
     overflow: hidden;
@@ -224,11 +224,11 @@
       display: block;
     }
 
-    .#{gjs_variables.$sm-prefix}radio:checked + label {
+    .#{gjs_vars.$sm-prefix}radio:checked + label {
       background-color: rgba(255, 255, 255, 0.2);
     }
 
-    .#{gjs_variables.$sm-prefix}icon {
+    .#{gjs_vars.$sm-prefix}icon {
       background-repeat: no-repeat;
       background-position: center;
       text-shadow: none;
@@ -237,7 +237,7 @@
     }
   }
 
-  &.#{gjs_variables.$sm-prefix}integer select {
+  &.#{gjs_vars.$sm-prefix}integer select {
     width: auto;
     padding: 0;
   }
@@ -245,7 +245,7 @@
 
 /* ------------------END Field-------------------- */
 
-.#{gjs_variables.$sm-prefix}list .#{gjs_variables.$sm-prefix}el {
+.#{gjs_vars.$sm-prefix}list .#{gjs_vars.$sm-prefix}el {
   float: left;
   border-left: 1px solid var(--gjs-main-dark-color);
 
@@ -260,15 +260,15 @@
 
 /* ------------------Property-------------------- */
 
-.#{gjs_variables.$sm-prefix} {
+.#{gjs_vars.$sm-prefix} {
   &slider {
-    .#{gjs_variables.$app-prefix}field-integer {
+    .#{gjs_vars.$app-prefix}field-integer {
       flex: 1 1 65px;
     }
   }
 }
 
-.#{gjs_variables.$sm-prefix}property {
+.#{gjs_vars.$sm-prefix}property {
   box-sizing: border-box;
   float: left;
   width: 50%;
@@ -276,16 +276,16 @@
   padding: 0 5px;
 
   &--full,
-  &.#{gjs_variables.$sm-prefix}composite,
-  &.#{gjs_variables.$sm-prefix}file,
-  &.#{gjs_variables.$sm-prefix}list,
-  &.#{gjs_variables.$sm-prefix}stack,
-  &.#{gjs_variables.$sm-prefix}slider,
-  &.#{gjs_variables.$sm-prefix}color {
+  &.#{gjs_vars.$sm-prefix}composite,
+  &.#{gjs_vars.$sm-prefix}file,
+  &.#{gjs_vars.$sm-prefix}list,
+  &.#{gjs_vars.$sm-prefix}stack,
+  &.#{gjs_vars.$sm-prefix}slider,
+  &.#{gjs_vars.$sm-prefix}color {
     width: 100%;
   }
 
-  .#{gjs_variables.$sm-prefix}btn {
+  .#{gjs_vars.$sm-prefix}btn {
     background-color: gjs_main_mixins.lighten-color(var(--gjs-main-dark-color), 13%);
     border-radius: 2px;
     box-shadow:
@@ -305,13 +305,13 @@
     @include gjs_main_mixins.opacity(0.85);
   }
 
-  .#{gjs_variables.$sm-prefix}btn-c {
+  .#{gjs_vars.$sm-prefix}btn-c {
     box-sizing: border-box;
     float: left;
     width: 100%;
   }
 
-  &__text-shadow .#{gjs_variables.$sm-prefix}layer-preview-cnt::after {
+  &__text-shadow .#{gjs_vars.$sm-prefix}layer-preview-cnt::after {
     color: #000;
     content: 'T';
     font-weight: 900;
@@ -320,7 +320,7 @@
   }
 }
 
-.#{gjs_variables.$sm-prefix}preview-file {
+.#{gjs_vars.$sm-prefix}preview-file {
   background-color: var(--gjs-light-border);
   border-radius: 2px;
   margin-top: 5px;
@@ -337,7 +337,7 @@
   }
 
   &-close {
-    @extend .#{gjs_variables.$sm-prefix}close-btn;
+    @extend .#{gjs_vars.$sm-prefix}close-btn;
 
     top: -5px;
     width: 14px;
@@ -347,36 +347,36 @@
 
 // Layers
 
-.#{gjs_variables.$sm-prefix}layers {
+.#{gjs_vars.$sm-prefix}layers {
   margin-top: 5px;
   padding: 1px 3px;
   min-height: 30px;
 }
 
-.#{gjs_variables.$sm-prefix}layer {
+.#{gjs_vars.$sm-prefix}layer {
   background-color: rgba(255, 255, 255, 0.055);
   border-radius: 2px;
   margin: 2px 0;
   padding: 7px;
   position: relative;
 
-  &.#{gjs_variables.$sm-prefix}active {
+  &.#{gjs_vars.$sm-prefix}active {
     background-color: rgba(255, 255, 255, 0.12);
   }
 
-  .#{gjs_variables.$sm-prefix}label-wrp {
+  .#{gjs_vars.$sm-prefix}label-wrp {
     display: flex;
     align-items: center;
   }
 
-  ##{gjs_variables.$sm-prefix}move {
+  ##{gjs_vars.$sm-prefix}move {
     height: 14px;
     width: 14px;
     min-width: 14px;
     cursor: grab;
   }
 
-  ##{gjs_variables.$sm-prefix}label {
+  ##{gjs_vars.$sm-prefix}label {
     flex-grow: 1;
     overflow: hidden;
     white-space: nowrap;
@@ -402,7 +402,7 @@
     }
   }
 
-  ##{gjs_variables.$sm-prefix}close-layer {
+  ##{gjs_vars.$sm-prefix}close-layer {
     display: block;
     cursor: pointer;
     height: 14px;
@@ -419,12 +419,12 @@
 
 /* ------------------END Property-------------------- */
 
-.#{gjs_variables.$sm-prefix}stack .#{gjs_variables.$sm-prefix}properties {
+.#{gjs_vars.$sm-prefix}stack .#{gjs_vars.$sm-prefix}properties {
   padding: 5px 0 0;
 }
 
-.#{gjs_variables.$sm-prefix}stack ##{gjs_variables.$sm-prefix}add {
-  @extend .#{gjs_variables.$app-prefix}color-main;
+.#{gjs_vars.$sm-prefix}stack ##{gjs_vars.$sm-prefix}add {
+  @extend .#{gjs_vars.$app-prefix}color-main;
 
   background: none;
   border: none;
@@ -443,8 +443,8 @@
   }
 }
 
-.#{gjs_variables.$sm-prefix}colorp-c {
-  @extend .#{gjs_variables.$app-prefix}bg-main;
+.#{gjs_vars.$sm-prefix}colorp-c {
+  @extend .#{gjs_vars.$app-prefix}bg-main;
 
   height: 100%;
   width: 20px;
@@ -455,14 +455,14 @@
   border-radius: 2px;
   padding: 2px;
 
-  .#{gjs_variables.$app-prefix}checker-bg {
+  .#{gjs_vars.$app-prefix}checker-bg {
     height: 100%;
     width: 100%;
     border-radius: 1px;
   }
 }
 
-.#{gjs_variables.$sm-prefix}color-picker {
+.#{gjs_vars.$sm-prefix}color-picker {
   background-color: var(--gjs-font-color);
   cursor: pointer;
   height: 16px;
@@ -472,7 +472,7 @@
   border-radius: 1px;
 }
 
-.#{gjs_variables.$sm-prefix}btn-upload ##{gjs_variables.$sm-prefix}upload {
+.#{gjs_vars.$sm-prefix}btn-upload ##{gjs_vars.$sm-prefix}upload {
   left: 0;
   top: 0;
   position: absolute;
@@ -481,11 +481,11 @@
   cursor: pointer;
 }
 
-.#{gjs_variables.$sm-prefix}btn-upload ##{gjs_variables.$sm-prefix}label {
+.#{gjs_vars.$sm-prefix}btn-upload ##{gjs_vars.$sm-prefix}label {
   padding: 2px 0;
 }
 
-.#{gjs_variables.$sm-prefix}layer > ##{gjs_variables.$sm-prefix}move {
+.#{gjs_vars.$sm-prefix}layer > ##{gjs_vars.$sm-prefix}move {
   @include gjs_main_mixins.opacity(0.7);
 
   cursor: move;

@@ -3,28 +3,28 @@
 @use 'codemirror/lib/codemirror';
 @use 'codemirror/theme/hopscotch';
 
-@use 'gjs_variables.scss';
+@use 'gjs_vars.scss';
 @use 'gjs_main_mixins';
-
-@use 'gjs_assets';
-@use 'gjs_blocks';
-@use 'gjs_canvas';
-@use 'gjs_category_general';
-@use 'gjs_code_manager';
-@use 'gjs_commands';
-@use 'gjs_devices';
-@use 'gjs_file_uploader';
-@use 'gjs_inputs';
-@use 'gjs_layers';
-@use 'gjs_modal';
-@use 'gjs_panels';
-@use 'gjs_root';
-@use 'gjs_rte';
-@use 'gjs_selectors';
-@use 'gjs_spectrum';
 @use 'gjs_status';
-@use 'gjs_style_manager';
+
+@use 'gjs_root';
 @use 'gjs_traits';
+@use 'gjs_canvas';
+@use 'gjs_commands';
+@use 'gjs_panels';
+@use 'gjs_inputs';
+@use 'gjs_devices';
+@use 'gjs_style_manager';
+@use 'gjs_category_general';
+@use 'gjs_blocks';
+@use 'gjs_layers';
+@use 'gjs_selectors';
+@use 'gjs_modal';
+@use 'gjs_assets';
+@use 'gjs_file_uploader';
+@use 'gjs_code_manager';
+@use 'gjs_rte';
+@use 'gjs_spectrum';
 
 // spectrum.scss is now called from _gjs_spectrum.scss
 //@use 'spectrum.scss';
@@ -32,7 +32,7 @@
 $colorsAll: (one, var(--gjs-primary-color)), (two, var(--gjs-secondary-color)), (three, var(--gjs-tertiary-color)),
   (four, var(--gjs-quaternary-color)), (danger, var(--gjs-color-red));
 
-.#{gjs_variables.$prefix} {
+.#{gjs_vars.$prefix} {
   @each $cnum, $ccol in $colorsAll {
     &#{$cnum} {
       &-bg {
@@ -50,14 +50,14 @@ $colorsAll: (one, var(--gjs-primary-color)), (two, var(--gjs-secondary-color)), 
   }
 }
 
-.#{gjs_variables.$app-prefix}bdrag {
+.#{gjs_vars.$app-prefix}bdrag {
   pointer-events: none !important;
   position: absolute !important;
   z-index: 10 !important;
   width: auto;
 }
 
-.#{gjs_variables.$app-prefix}drag-helper {
+.#{gjs_vars.$app-prefix}drag-helper {
   background-color: var(--gjs-color-blue) !important;
   pointer-events: none !important;
   position: absolute !important;
@@ -70,21 +70,21 @@ $colorsAll: (one, var(--gjs-primary-color)), (two, var(--gjs-secondary-color)), 
   outline: none !important;
 }
 
-.#{gjs_variables.$app-prefix}grabbing,
-.#{gjs_variables.$app-prefix}grabbing * {
-  @extend .#{gjs_variables.$app-prefix}no-user-select;
+.#{gjs_vars.$app-prefix}grabbing,
+.#{gjs_vars.$app-prefix}grabbing * {
+  @extend .#{gjs_vars.$app-prefix}no-user-select;
 
   cursor: grabbing !important;
   cursor: -webkit-grabbing !important;
 }
 
-.#{gjs_variables.$app-prefix}grabbing {
+.#{gjs_vars.$app-prefix}grabbing {
   overflow: hidden;
 }
 
-.#{gjs_variables.$app-prefix}off-prv {
-  @extend .#{gjs_variables.$app-prefix}color-main;
-  @extend .#{gjs_variables.$app-prefix}bg-main;
+.#{gjs_vars.$app-prefix}off-prv {
+  @extend .#{gjs_vars.$app-prefix}color-main;
+  @extend .#{gjs_vars.$app-prefix}bg-main;
   position: relative;
   z-index: 10;
   padding: 5px;
@@ -92,15 +92,15 @@ $colorsAll: (one, var(--gjs-primary-color)), (two, var(--gjs-secondary-color)), 
 }
 
 // Custom scrollbars for Chrome
-.#{gjs_variables.$app-prefix}editor-cont ::-webkit-scrollbar-track {
+.#{gjs_vars.$app-prefix}editor-cont ::-webkit-scrollbar-track {
   background: var(--gjs-secondary-dark-color);
 }
 
-.#{gjs_variables.$app-prefix}editor-cont ::-webkit-scrollbar-thumb {
+.#{gjs_vars.$app-prefix}editor-cont ::-webkit-scrollbar-thumb {
   background-color: rgba(255, 255, 255, 0.2);
 }
 
-.#{gjs_variables.$app-prefix}editor-cont ::-webkit-scrollbar {
+.#{gjs_vars.$app-prefix}editor-cont ::-webkit-scrollbar {
   width: 8px;
 }
 
@@ -111,7 +111,7 @@ $colorsAll: (one, var(--gjs-primary-color)), (two, var(--gjs-secondary-color)), 
 //   initial-value: #{$inputPadding};
 // }
 
-.#{gjs_variables.$app-prefix} {
+.#{gjs_vars.$app-prefix} {
   &no-touch-actions {
     touch-action: none;
   }
@@ -130,17 +130,17 @@ $colorsAll: (one, var(--gjs-primary-color)), (two, var(--gjs-secondary-color)), 
   }
 }
 
-.#{gjs_variables.$app-prefix}freezed,
-.#{gjs_variables.$nv-prefix}freezed {
+.#{gjs_vars.$app-prefix}freezed,
+.#{gjs_vars.$nv-prefix}freezed {
   @include gjs_main_mixins.opacity(0.5);
   pointer-events: none;
 }
 
-.#{gjs_variables.$app-prefix}hidden {
+.#{gjs_vars.$app-prefix}hidden {
   display: none;
 }
 
-@keyframes #{gjs_variables.$app-prefix}slide-down {
+@keyframes #{gjs_vars.$app-prefix}slide-down {
   0% {
     transform: translate(0, -3rem);
     opacity: 0;
@@ -151,7 +151,7 @@ $colorsAll: (one, var(--gjs-primary-color)), (two, var(--gjs-secondary-color)), 
   }
 }
 
-@keyframes #{gjs_variables.$app-prefix}slide-up {
+@keyframes #{gjs_vars.$app-prefix}slide-up {
   0% {
     transform: translate(0, 0);
     opacity: 1;

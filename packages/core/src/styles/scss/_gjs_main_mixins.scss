@@ -1,6 +1,6 @@
-@use 'gjs_variables';
+@use 'gjs_vars';
 
-$gjs-is-prefix: '.#{gjs_variables.$app-prefix}is__';
+$gjs-is-prefix: '.#{gjs_vars.$app-prefix}is__';
 
 @function gjs-is($name) {
   @return '#{$gjs-is-prefix}#{$name}';

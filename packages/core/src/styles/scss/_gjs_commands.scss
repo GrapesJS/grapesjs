@@ -1,4 +1,4 @@
-@use 'gjs_variables';
+@use 'gjs_vars';
 @use 'gjs_category_general';
 
 .no-dots,
@@ -8,19 +8,19 @@
   outline: none !important;
 }
 
-.#{gjs_variables.$com-prefix}dashed * {
+.#{gjs_vars.$com-prefix}dashed * {
   outline: 1px dashed #888;
   outline-offset: -2px;
   box-sizing: border-box;
 }
 
-.#{gjs_variables.$com-prefix}no-select,
-.#{gjs_variables.$com-prefix}no-select img {
+.#{gjs_vars.$com-prefix}no-select,
+.#{gjs_vars.$com-prefix}no-select img {
   @extend .no-select;
 }
 
-.#{gjs_variables.$com-prefix}badge,
-.#{gjs_variables.$app-prefix}badge {
+.#{gjs_vars.$com-prefix}badge,
+.#{gjs_vars.$app-prefix}badge {
   pointer-events: none;
   background-color: var(--gjs-color-blue);
   color: #fff;
@@ -31,20 +31,20 @@
   outline: none;
   display: none;
 }
-.#{gjs_variables.$app-prefix}badge-warning {
+.#{gjs_vars.$app-prefix}badge-warning {
   background-color: var(--gjs-color-yellow);
 }
-.#{gjs_variables.$app-prefix}placeholder,
-.#{gjs_variables.$com-prefix}placeholder,
-.#{gjs_variables.$nv-prefix}placeholder {
+.#{gjs_vars.$app-prefix}placeholder,
+.#{gjs_vars.$com-prefix}placeholder,
+.#{gjs_vars.$nv-prefix}placeholder {
   position: absolute;
   z-index: 10;
   pointer-events: none;
   display: none;
 }
 
-.#{gjs_variables.$app-prefix}placeholder,
-.#{gjs_variables.$nv-prefix}placeholder {
+.#{gjs_vars.$app-prefix}placeholder,
+.#{gjs_vars.$nv-prefix}placeholder {
   border-style: solid !important;
   outline: none;
   box-sizing: border-box;
@@ -55,25 +55,25 @@
     height var(--gjs-animation-duration);
 }
 
-.#{gjs_variables.$app-prefix}placeholder.horizontal,
-.#{gjs_variables.$com-prefix}placeholder.horizontal,
-.#{gjs_variables.$nv-prefix}placeholder.horizontal {
+.#{gjs_vars.$app-prefix}placeholder.horizontal,
+.#{gjs_vars.$com-prefix}placeholder.horizontal,
+.#{gjs_vars.$nv-prefix}placeholder.horizontal {
   border-color: transparent var(--gjs-placeholder-background-color);
   border-width: 3px 5px;
   margin: -3px 0 0;
 }
 
-.#{gjs_variables.$app-prefix}placeholder.vertical,
-.#{gjs_variables.$com-prefix}placeholder.vertical,
-.#{gjs_variables.$nv-prefix}placeholder.vertical {
+.#{gjs_vars.$app-prefix}placeholder.vertical,
+.#{gjs_vars.$com-prefix}placeholder.vertical,
+.#{gjs_vars.$nv-prefix}placeholder.vertical {
   border-color: var(--gjs-placeholder-background-color) transparent;
   border-width: 5px 3px;
   margin: 0 0 0 -3px;
 }
 
-.#{gjs_variables.$app-prefix}placeholder-int,
-.#{gjs_variables.$com-prefix}placeholder-int,
-.#{gjs_variables.$nv-prefix}placeholder-int {
+.#{gjs_vars.$app-prefix}placeholder-int,
+.#{gjs_vars.$com-prefix}placeholder-int,
+.#{gjs_vars.$nv-prefix}placeholder-int {
   background-color: var(--gjs-placeholder-background-color);
   box-shadow: 0 0 3px rgba(0, 0, 0, 0.2);
   height: 100%;

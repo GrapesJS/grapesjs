@@ -1,6 +1,6 @@
-@use 'gjs_variables';
+@use 'gjs_vars';
 
-.#{gjs_variables.$cm-prefix}editor-c {
+.#{gjs_vars.$cm-prefix}editor-c {
   float: left;
   box-sizing: border-box;
   width: 50%;
@@ -9,23 +9,23 @@
     height: 450px;
   }
 }
-.#{gjs_variables.$cm-prefix}editor {
+.#{gjs_vars.$cm-prefix}editor {
   font-size: 12px;
 
-  &##{gjs_variables.$cm-prefix}htmlmixed {
+  &##{gjs_vars.$cm-prefix}htmlmixed {
     padding-right: 10px;
     border-right: 1px solid var(--gjs-main-dark-color);
-    ##{gjs_variables.$cm-prefix}title {
+    ##{gjs_vars.$cm-prefix}title {
       color: #a97d44;
     }
   }
-  &##{gjs_variables.$cm-prefix}css {
+  &##{gjs_vars.$cm-prefix}css {
     padding-left: 10px;
-    ##{gjs_variables.$cm-prefix}title {
+    ##{gjs_vars.$cm-prefix}title {
       color: #ddca7e;
     }
   }
-  ##{gjs_variables.$cm-prefix}title {
+  ##{gjs_vars.$cm-prefix}title {
     background-color: var(--gjs-main-dark-color);
     font-size: 12px;
     padding: 5px 10px 3px;

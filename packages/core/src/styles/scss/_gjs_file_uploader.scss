@@ -1,8 +1,7 @@
 @use 'gjs_main_mixins';
+@use 'gjs_vars';
 
-@use 'gjs_variables';
-
-.#{gjs_variables.$am-prefix}file-uploader {
+.#{gjs_vars.$am-prefix}file-uploader {
   width: 55%;
   float: left;
 
@@ -14,16 +13,16 @@
     text-align: center;
     margin-bottom: 15px;
 
-    &.#{gjs_variables.$am-prefix}hover {
+    &.#{gjs_vars.$am-prefix}hover {
       border: 2px solid var(--gjs-color-green);
       color: lighten-color(var(--gjs-color-green), 5%);
     }
 
-    &.#{gjs_variables.$am-prefix}disabled {
+    &.#{gjs_vars.$am-prefix}disabled {
       border-color: red;
     }
 
-    ##{gjs_variables.$am-prefix}uploadFile {
+    ##{gjs_vars.$am-prefix}uploadFile {
       @include gjs_main_mixins.opacity(0);
       padding: var(--gjs-upload-padding);
       width: 100%;
@@ -31,7 +30,7 @@
     }
   }
 
-  ##{gjs_variables.$am-prefix}title {
+  ##{gjs_vars.$am-prefix}title {
     position: absolute;
     padding: var(--gjs-upload-padding);
     width: 100%;

@@ -1,10 +1,10 @@
 @use 'gjs_main_mixins';
-@use 'gjs_variables';
+@use 'gjs_vars';
 @use 'gjs_category_general';
 
 $layerIconSize: 15px !default;
 
-.#{gjs_variables.$nv-prefix} {
+.#{gjs_vars.$nv-prefix} {
   &selected-parent {
     border: 1px solid var(--gjs-color-yellow);
   }
@@ -62,11 +62,11 @@ $layerIconSize: 15px !default;
         display: none;
       }
 
-      &.#{gjs_variables.$nv-prefix}layer-off {
-        .#{gjs_variables.$nv-prefix}layer-vis-on {
+      &.#{gjs_vars.$nv-prefix}layer-off {
+        .#{gjs_vars.$nv-prefix}layer-vis-on {
           display: none;
         }
-        .#{gjs_variables.$nv-prefix}layer-vis-off {
+        .#{gjs_vars.$nv-prefix}layer-vis-off {
           display: flex;
         }
       }
@@ -91,7 +91,7 @@ $layerIconSize: 15px !default;
     }
 
     &-title {
-      @extend .#{gjs_variables.$app-prefix}category-title;
+      @extend .#{gjs_vars.$app-prefix}category-title;
 
       padding: 0;
       display: flex;
@@ -130,22 +130,22 @@ $layerIconSize: 15px !default;
       white-space: nowrap;
       max-width: 170px;
       height: auto;
-      @extend .#{gjs_variables.$app-prefix}no-user-select;
+      @extend .#{gjs_vars.$app-prefix}no-user-select;
 
       &--no-edit {
         text-overflow: ellipsis;
       }
     }
 
-    > .#{gjs_variables.$nv-prefix}layer-children {
+    > .#{gjs_vars.$nv-prefix}layer-children {
       display: none;
     }
 
-    &.open > .#{gjs_variables.$nv-prefix}layer-children {
+    &.open > .#{gjs_vars.$nv-prefix}layer-children {
       display: block;
     }
 
-    &-no-chld > .#{gjs_variables.$nv-prefix}layer-title-inn > .#{gjs_variables.$nv-prefix}layer-caret {
+    &-no-chld > .#{gjs_vars.$nv-prefix}layer-title-inn > .#{gjs_vars.$nv-prefix}layer-caret {
       visibility: hidden;
     }
 
@@ -157,29 +157,29 @@ $layerIconSize: 15px !default;
       cursor: move;
     }
 
-    &.#{gjs_variables.$nv-prefix}hovered .#{gjs_variables.$nv-prefix}layer-item {
+    &.#{gjs_vars.$nv-prefix}hovered .#{gjs_vars.$nv-prefix}layer-item {
       background-color: var(--gjs-soft-light-color);
     }
 
-    &.#{gjs_variables.$nv-prefix}selected .#{gjs_variables.$nv-prefix}layer-item {
+    &.#{gjs_vars.$nv-prefix}selected .#{gjs_vars.$nv-prefix}layer-item {
       background-color: var(--gjs-main-light-color);
     }
   }
 }
 
-.#{gjs_variables.$app-prefix}layers {
+.#{gjs_vars.$app-prefix}layers {
   position: relative;
   height: 100%;
 
-  ##{gjs_variables.$nv-prefix}placeholder {
+  ##{gjs_vars.$nv-prefix}placeholder {
     width: 100%;
     position: absolute;
 
-    ##{gjs_variables.$nv-prefix}plh-int {
+    ##{gjs_vars.$nv-prefix}plh-int {
       height: 100%;
       padding: 1px;
 
-      &.#{gjs_variables.$nv-prefix}insert {
+      &.#{gjs_vars.$nv-prefix}insert {
         background-color: var(--gjs-color-green);
       }
     }

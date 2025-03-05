@@ -1,17 +1,17 @@
 @use 'gjs_main_mixins';
-@use 'gjs_variables';
+@use 'gjs_vars';
 @use 'gjs_style_manager';
 
-.#{gjs_variables.$clm-prefix}field {
-  @extend .#{gjs_variables.$sm-prefix}field;
+.#{gjs_vars.$clm-prefix}field {
+  @extend .#{gjs_vars.$sm-prefix}field;
 }
 
-.#{gjs_variables.$clm-prefix}select {
-  @extend .#{gjs_variables.$sm-prefix}field, .#{gjs_variables.$sm-prefix}select;
+.#{gjs_vars.$clm-prefix}select {
+  @extend .#{gjs_vars.$sm-prefix}field, .#{gjs_vars.$sm-prefix}select;
 }
 
-##{gjs_variables.$clm-prefix}add-tag,
-.#{gjs_variables.$clm-prefix}tags-btn {
+##{gjs_vars.$clm-prefix}add-tag,
+.#{gjs_vars.$clm-prefix}tags-btn {
   background-color: rgba(255, 255, 255, 0.15);
   border-radius: 2px;
   padding: 3px;
@@ -23,7 +23,7 @@
   cursor: pointer;
 }
 
-.#{gjs_variables.$clm-prefix} {
+.#{gjs_vars.$clm-prefix} {
   &tags-btn svg {
     fill: currentColor;
     display: block;
@@ -78,21 +78,21 @@
   }
 }
 
-.#{gjs_variables.$clm-prefix}tags {
+.#{gjs_vars.$clm-prefix}tags {
   font-size: var(--gjs-font-size);
   padding: 10px 5px;
 
-  ##{gjs_variables.$clm-prefix}sel {
+  ##{gjs_vars.$clm-prefix}sel {
     padding: 7px 0;
     float: left;
   }
 
-  ##{gjs_variables.$clm-prefix}sel {
+  ##{gjs_vars.$clm-prefix}sel {
     font-style: italic;
     margin-left: 5px;
   }
 
-  ##{gjs_variables.$clm-prefix}tags-field {
+  ##{gjs_vars.$clm-prefix}tags-field {
     clear: both;
     padding: 5px;
     margin-bottom: 5px;
@@ -100,22 +100,22 @@
     flex-wrap: wrap;
   }
 
-  ##{gjs_variables.$clm-prefix}tags-c {
+  ##{gjs_vars.$clm-prefix}tags-c {
     display: flex;
     flex-wrap: wrap;
     vertical-align: top;
     overflow: hidden;
   }
 
-  ##{gjs_variables.$clm-prefix}new {
-    @extend .#{gjs_variables.$app-prefix}invis-invis;
+  ##{gjs_vars.$clm-prefix}new {
+    @extend .#{gjs_vars.$app-prefix}invis-invis;
 
     color: var(--gjs-font-color);
     padding: var(--gjs-padding-elem-classmanager);
     display: none;
   }
 
-  ##{gjs_variables.$clm-prefix}close {
+  ##{gjs_vars.$clm-prefix}close {
     @include gjs_main_mixins.opacity(0.85);
     font-size: 20px;
     line-height: 0;
@@ -128,14 +128,14 @@
     }
   }
 
-  ##{gjs_variables.$clm-prefix}checkbox {
+  ##{gjs_vars.$clm-prefix}checkbox {
     color: rgba(255, 255, 255, 0.9);
     vertical-align: middle;
     cursor: pointer;
     font-size: 9px;
   }
 
-  ##{gjs_variables.$clm-prefix}tag-label {
+  ##{gjs_vars.$clm-prefix}tag-label {
     flex-grow: 1;
     text-overflow: ellipsis;
     overflow: hidden;

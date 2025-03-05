@@ -1,7 +1,7 @@
-@use 'gjs_variables';
+@use 'gjs_vars';
 @use 'gjs_category_general';
 
-.#{gjs_variables.$app-prefix} {
+.#{gjs_vars.$app-prefix} {
   &traits-label {
     border-bottom: 1px solid var(--gjs-main-dark-color);
     font-weight: lighter;
@@ -37,26 +37,26 @@
   &trait-category {
     width: 100%;
 
-    &.#{gjs_variables.$app-prefix}open {
-      @extend .#{gjs_variables.$app-prefix}category-open;
+    &.#{gjs_vars.$app-prefix}open {
+      @extend .#{gjs_vars.$app-prefix}category-open;
     }
 
-    .#{gjs_variables.$app-prefix}title {
-      @extend .#{gjs_variables.$app-prefix}category-title;
+    .#{gjs_vars.$app-prefix}title {
+      @extend .#{gjs_vars.$app-prefix}category-title;
     }
 
-    .#{gjs_variables.$app-prefix}caret-icon {
+    .#{gjs_vars.$app-prefix}caret-icon {
       margin-right: 5px;
     }
   }
 }
 
-.#{gjs_variables.$trt-prefix}header {
+.#{gjs_vars.$trt-prefix}header {
   font-weight: lighter;
   padding: 10px;
 }
 
-.#{gjs_variables.$trt-prefix}trait {
+.#{gjs_vars.$trt-prefix}trait {
   display: flex;
   justify-content: flex-start;
   padding: 5px 10px;
@@ -69,7 +69,7 @@
     font-size: var(--gjs-font-size);
   }
 
-  .#{gjs_variables.$app-prefix}label {
+  .#{gjs_vars.$app-prefix}label {
     text-align: left;
     text-overflow: ellipsis;
     overflow: hidden;

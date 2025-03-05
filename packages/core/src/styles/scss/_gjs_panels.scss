@@ -1,6 +1,6 @@
-@use 'gjs_variables';
+@use 'gjs_vars';
 
-.#{gjs_variables.$pn-prefix} {
+.#{gjs_vars.$pn-prefix} {
   &panel {
     display: inline-block;
     position: absolute;
@@ -65,7 +65,7 @@
     position: relative;
     cursor: pointer;
 
-    &.#{gjs_variables.$pn-prefix}active {
+    &.#{gjs_vars.$pn-prefix}active {
       background-color: rgba(0, 0, 0, 0.15);
       box-shadow: 0 0 3px rgba(0, 0, 0, 0.25) inset;
     }
