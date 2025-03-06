@@ -15,7 +15,7 @@
 
     &.#{gjs_vars.$am-prefix}hover {
       border: 2px solid var(--gjs-color-green);
-      color: lighten-color(var(--gjs-color-green), 5%);
+      color: gjs_main_mixins.lighten-color(var(--gjs-color-green), 5%);
     }
 
     &.#{gjs_vars.$am-prefix}disabled {

@@ -455,6 +455,8 @@
   border-radius: 2px;
   padding: 2px;
 
+  // adding reference to .gjs-field-colorp-c to match rendered CSS before removing the use of @imports
+  .#{gjs_vars.$app-prefix}field-colorp-c,
   .#{gjs_vars.$app-prefix}checker-bg {
     height: 100%;
     width: 100%;
