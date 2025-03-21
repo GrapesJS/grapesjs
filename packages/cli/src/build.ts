@@ -52,9 +52,14 @@ export const buildLocale = async (opts: BuildOptions = {}) => {
   const babelOpts = { ...babelConfig(buildWebpackArgs(opts) as any) };
   fs.readdirSync(localDst).forEach((file) => {
     const filePath = `${localDst}/${file}`;
+    const esModuleFileName = filePath.replace(/\.[^.]+$/, '.mjs');
+    fs.copyFileSync(filePath, esModuleFileName);
     const compiled = transformFileSync(filePath, babelOpts).code;
     fs.writeFileSync(filePath, compiled);
   });
+
+  // Remove the index.mjs as it is useless
+  fs.unlinkSync(`${localDst}/index.mjs`);
 
   printRow('Locale files building completed successfully!');
 };
