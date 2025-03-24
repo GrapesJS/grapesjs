@@ -43,7 +43,7 @@
     "css-loader": "7.1.2",
     "dotenv": "16.4.5",
     "eslint": "8.57.0",
-    "eslint-config-prettier": "9.1.0",
+    "eslint-config-prettier": "10.1.1",
     "eslint-config-standard-with-typescript": "43.0.1",
     "eslint-plugin-import": "2.29.1",
     "eslint-plugin-jest": "28.8.3",
