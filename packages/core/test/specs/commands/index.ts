@@ -1,6 +1,6 @@
-import Commands from '../../../src/commands';
 import EditorModel from '../../../src/editor/model/Editor';
-import { Command, CommandFunction } from '../../../src/commands/view/CommandAbstract';
+import type Commands from '../../../src/commands';
+import type { Command, CommandFunction, CommandOptions } from '../../../src/commands/view/CommandAbstract';
 
 describe('Commands', () => {
   describe('Main', () => {
@@ -93,6 +93,36 @@ describe('Commands', () => {
       expect(result).toBe(commResultRun);
       expect(obj.isActive(commName)).toBe(false);
       expect(Object.keys(obj.getActive()).length).toBe(0);
+    });
+
+    test('Run command and check if none, custom, and default options are passed', () => {
+      const customOptions = { customValue: 'customValue' };
+      const defaultOptions = { defaultValue: 'defaultValue' };
+
+      // Create a function that returns the options
+      const runFn = (_editor: any, _sender: any, options: any) => options;
+
+      // Add the command
+      obj.add(commName, { run: runFn });
+
+      // Run the command without custom options
+      let result = obj.run(commName);
+      expect(result).toEqual({});
+
+      // Run the command with custom options
+      result = obj.run(commName, customOptions);
+      expect(result).toEqual(customOptions);
+
+      // Set default options for the command
+      obj.config.defaultOptions = {
+        [commName]: {
+          run: (options: CommandOptions) => ({ ...options, ...defaultOptions }),
+        },
+      };
+
+      // Run the command with default options
+      result = obj.run(commName, customOptions);
+      expect(result).toEqual({ ...customOptions, ...defaultOptions });
     });
   });
 });

@@ -13,7 +13,7 @@ type Guide = {
   active?: boolean;
 };
 
-interface DraggerOptions {
+export interface DraggerOptions {
   /**
    * Element on which the drag will be executed. By default, the document will be used
    */

@@ -389,6 +389,8 @@ export default class CommandsModule extends Module<CommandsConfig & { pStylePref
       const editor = em.Editor;
 
       if (!this.isActive(id) || options.force || !config.strict) {
+        const defaultOptionsRunFn = config.defaultOptions?.[id]?.run;
+        isFunction(defaultOptionsRunFn) && (options = defaultOptionsRunFn(options));
         result = editor && (command as any).callRun(editor, options);
       }
     }
@@ -412,6 +414,8 @@ export default class CommandsModule extends Module<CommandsConfig & { pStylePref
       const editor = em.Editor;
 
       if (this.isActive(id) || options.force || !config.strict) {
+        const defaultOptionsStopFn = config.defaultOptions?.[id]?.stop;
+        isFunction(defaultOptionsStopFn) && (options = defaultOptionsStopFn(options));
         result = (command as any).callStop(editor, options);
       }
     }
