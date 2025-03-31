@@ -11,6 +11,10 @@ This guide is referring to GrapesJS v0.16.34 or higher.<br><br>
 To get a better understanding of the content in this guide, we recommend reading [Components](Components.html) and [Traits] first
 :::
 
+::: tip
+Prefer a modern UI that's production-ready? [Get started with the Grapes Studio SDK!](https://app.grapesjs.com/docs-sdk/configuration/components/overview?utm_source=grapesjs-docs&utm_medium=tip)
+:::
+
 [[toc]]
 
 ## Basic scripts

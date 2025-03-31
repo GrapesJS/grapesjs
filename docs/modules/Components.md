@@ -10,6 +10,10 @@ The Component is a base element of the template. It might be something simple an
 This guide is referring to GrapesJS v0.15.8 or higher
 :::
 
+::: tip
+Skip the boilerplate—use a refined component editor out of the box. [Checkout the Grapes Studio SDK!](https://app.grapesjs.com/docs-sdk/configuration/components/overview?utm_source=grapesjs-docs&utm_medium=tip)
+:::
+
 [[toc]]
 
 ## How Components work?

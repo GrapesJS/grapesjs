@@ -2,6 +2,13 @@
 
 [[toc]]
 
+::: tip
+
+Supercharge your web builder with the [Grapes Studio SDK](https://app.grapesjs.com/docs-sdk/overview/getting-started) — a customizable GrapesJS experience, complete with a polished UI that’s ready to embed.
+
+:::
+
+
 ## What is GrapesJS?
 
 At first glance one might think this is just another page/HTML builder, but it's something more. GrapesJS is a multi-purpose, Web Builder Framework, which means it allows you to easily create a drag & drop enabled builder of "things". By "things" we mean anything with HTML-like structure, which entails much more than web pages. We use HTML-like structure basically everywhere: Newsletters (eg. [MJML](https://mjml.io/)), Native Mobile Applications (eg. [React Native](https://github.com/facebook/react-native)), Native Desktop Applications (eg. [Vuido](https://vuido.mimec.org)), PDFs (eg. [React PDF](https://github.com/diegomura/react-pdf)), etc. So, for everything you can imagine as a set of elements like `<tag some="attribute">... other nested elements ...</tag>` you can create easily a GrapesJS builder around it and then use it independently in your applications.

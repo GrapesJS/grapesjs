@@ -10,6 +10,12 @@ meta:
 
 This is a step-by-step guide for anyone who wants to create their own builder with GrapesJS. This is not a comprehensive guide, just a concise overview of the most common modules. Follow along to create a page builder from scratch. Skip to the end of this page to see the [final result](#final-result).
 
+::: tip
+
+Looking for a customizable version of GrapesJS with an embeddable, production-ready UI? [Explore the Grapes Studio SDK!](https://app.grapesjs.com/docs-sdk/overview/getting-started) 
+
+:::
+
 ## Import the library
 
 Before you start using GrapesJS, you'll have to import it. Let's import the latest version:

@@ -10,6 +10,10 @@ The Storage Manager is a built-in module that allows the persistence of your pro
 This guide requires GrapesJS v0.19.\* or higher
 :::
 
+::: tip
+Need more powerful and customizable storage options? [The Grapes Studio SDK has you covered.](https://app.grapesjs.com/docs-sdk/configuration/projects?utm_source=grapesjs-docs&utm_medium=tip#storage)
+:::
+
 [[toc]]
 
 ## Configuration

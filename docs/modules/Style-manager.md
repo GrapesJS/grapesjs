@@ -16,6 +16,10 @@ To get a better understanding of the content in this guide, we recommend reading
 This guide is referring to GrapesJS v0.18.1 or higher
 :::
 
+::: tip
+Looking for a UI that is easy and ready to customize? [Checkout the Grapes Studio SDK!](https://app.grapesjs.com/docs-sdk/configuration/components/overview?utm_source=grapesjs-docs&utm_medium=tip) 
+:::
+
 [[toc]]
 
 ## Configuration

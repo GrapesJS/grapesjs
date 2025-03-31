@@ -16,6 +16,10 @@ To get a better understanding of the content in this guide, we recommend reading
 This guide is referring to GrapesJS v0.17.27 or higher
 :::
 
+::: tip
+Need a sleek block UI that’s easy to extend and customize? [Explore the Grapes Studio SDK!](https://app.grapesjs.com/docs-sdk/configuration/blocks?utm_source=grapesjs-docs&utm_medium=tip)
+:::
+
 [[toc]]
 
 ## Configuration
