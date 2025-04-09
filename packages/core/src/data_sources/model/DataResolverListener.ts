@@ -9,8 +9,6 @@ import {
   DataConditionOutputChangedEvent,
   DataConditionType,
 } from './conditional_variables/DataCondition';
-import { DataCollectionVariableType } from './data_collection/constants';
-import DataCollectionVariable from './data_collection/DataCollectionVariable';
 
 export interface DataResolverListenerProps {
   em: EditorModel;
@@ -52,9 +50,6 @@ export default class DataResolverListener {
     const type = resolver.attributes.type;
 
     switch (type) {
-      case DataCollectionVariableType:
-        listeners = this.listenToDataCollectionVariable(resolver as DataCollectionVariable);
-        break;
       case DataVariableType:
         listeners = this.listenToDataVariable(resolver as DataVariable);
         break;
@@ -79,11 +74,19 @@ export default class DataResolverListener {
 
   private listenToDataVariable(dataVariable: DataVariable): ListenerWithCallback[] {
     const { em } = this;
-    const { path } = dataVariable.attributes;
+    const dataListeners: ListenerWithCallback[] = [];
+    dataListeners.push(
+      this.createListener(dataVariable, 'change', () => {
+        this.listenToResolver();
+        this.onChange();
+      }),
+    );
+
+    const path = dataVariable.getResolverPath();
+    if (!path) return dataListeners;
+
     const normPath = stringToPath(path || '').join('.');
     const [ds, dr] = em.DataSources.fromPath(path!);
-
-    const dataListeners: ListenerWithCallback[] = [];
 
     if (ds) {
       dataListeners.push(this.createListener(ds.records, 'add remove reset'));
@@ -94,20 +97,11 @@ export default class DataResolverListener {
     }
 
     dataListeners.push(
-      this.createListener(dataVariable, 'change:path', () => {
-        this.listenToResolver();
-        this.onChange();
-      }),
-      this.createListener(dataVariable, 'change:defaultValue'),
       this.createListener(em.DataSources.all, 'add remove reset'),
       this.createListener(em, `${DataSourcesEvents.path}:${normPath}`),
     );
 
     return dataListeners;
-  }
-
-  private listenToDataCollectionVariable(dataVariable: DataCollectionVariable): ListenerWithCallback[] {
-    return [this.createListener(dataVariable, 'change:value')];
   }
 
   private removeListeners() {

@@ -2,33 +2,44 @@
 
 exports[`Collection component Nested collections are correctly serialized 1`] = `
 {
-  "collectionDef": {
-    "collectionConfig": {
-      "collectionId": "parent_collection",
-      "dataSource": {
-        "path": "my_data_source_id",
-        "type": "data-variable",
-      },
+  "components": [
+    {
+      "components": [
+        {
+          "components": [
+            {
+              "components": [
+                {
+                  "name": {
+                    "collectionId": "nested_collection",
+                    "path": "user",
+                    "type": "data-variable",
+                    "variableType": "currentItem",
+                  },
+                  "type": "default",
+                },
+              ],
+              "type": "data-collection-item",
+            },
+          ],
+          "dataResolver": {
+            "collectionId": "nested_collection",
+            "dataSource": {
+              "path": "nested_data_source_id",
+              "type": "data-variable",
+            },
+          },
+          "type": "data-collection",
+        },
+      ],
+      "type": "data-collection-item",
     },
-    "componentDef": {
-      "collectionDef": {
-        "collectionConfig": {
-          "collectionId": "nested_collection",
-          "dataSource": {
-            "path": "nested_data_source_id",
-            "type": "data-variable",
-          },
-        },
-        "componentDef": {
-          "name": {
-            "path": "user",
-            "type": "data-collection-variable",
-            "variableType": "currentItem",
-          },
-          "type": "default",
-        },
-      },
-      "type": "data-collection",
+  ],
+  "dataResolver": {
+    "collectionId": "parent_collection",
+    "dataSource": {
+      "path": "my_data_source_id",
+      "type": "data-variable",
     },
   },
   "type": "data-collection",

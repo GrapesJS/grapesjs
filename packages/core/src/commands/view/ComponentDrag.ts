@@ -71,6 +71,7 @@ export default {
       guidesTarget: this.guidesTarget,
       guidesStatic: this.guidesStatic,
       guidesMatched: this.getGuidesMatched(guidesActive),
+      opts: this.opts,
     };
   },
 
@@ -654,6 +655,11 @@ export interface ComponentDragEventProps {
    * The guides that are being matched.
    */
   guidesMatched: ComponentDragGuideMatched[];
+
+  /**
+   * The options used for the drag event.
+   */
+  opts: ComponentDragOpts;
 }
 
 /**

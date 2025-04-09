@@ -83,6 +83,12 @@ export interface DraggerOptions {
   snapOffset?: number;
 
   /**
+   * Snapping value for the x-y axis. If you pass a value of 0, the snapping will be disabled for that axis.
+   * @example { snapGuides: { x: 10, y: 5 } }
+   */
+  snapGuides?: { x?: number; y?: number };
+
+  /**
    * Document on which listen to pointer events.
    */
   doc?: Document;
@@ -122,6 +128,7 @@ export default class Dragger {
    */
   constructor(opts: DraggerOptions = {}) {
     this.opts = {
+      snapGuides: { x: 5, y: 5 },
       snapOffset: 5,
       scale: 1,
     };
@@ -252,7 +259,7 @@ export default class Dragger {
    * Check if the delta hits some guide
    */
   snapGuides(delta: DraggerPosition) {
-    const newDelta = delta;
+    const newDelta = { ...delta };
     let { trgX, trgY } = this;
 
     this.guidesTarget.forEach((trg) => {
@@ -263,13 +270,13 @@ export default class Dragger {
       this.guidesStatic.forEach((stat) => {
         if ((trg.y && stat.x) || (trg.x && stat.y)) return;
         const isY = trg.y && stat.y;
-        const axs = isY ? 'y' : 'x';
-        const trgPoint = trg[axs];
-        const statPoint = stat[axs];
-        const deltaPoint = delta[axs];
+        const axis = isY ? 'y' : 'x';
+        const trgPoint = trg[axis];
+        const statPoint = stat[axis];
+        const deltaPoint = delta[axis];
         const trgGuide = isY ? trgY : trgX;
 
-        if (this.isPointIn(trgPoint, statPoint)) {
+        if (this.isPointIn(trgPoint, statPoint, { axis })) {
           if (isUndefined(trgGuide)) {
             const trgValue = deltaPoint - (trgPoint - statPoint);
             this.setGuideLock(trg, trgValue);
@@ -281,18 +288,18 @@ export default class Dragger {
     trgX = this.trgX;
     trgY = this.trgY;
 
-    xyArr.forEach((co) => {
-      const axis = co.toUpperCase();
+    xyArr.forEach((axis) => {
+      const axisName = axis.toUpperCase();
       // @ts-ignore
-      let trg = this[`trg${axis}`];
+      let trg = this[`trg${axisName}`];
 
-      if (trg && !this.isPointIn(delta[co], trg.lock)) {
+      if (trg && !this.isPointIn(delta[axis], trg.lock, { axis })) {
         this.setGuideLock(trg, null);
         trg = null;
       }
 
       if (trg && !isUndefined(trg.lock)) {
-        newDelta[co] = trg.lock;
+        newDelta[axis] = trg.lock;
       }
     });
 
@@ -303,9 +310,17 @@ export default class Dragger {
     };
   }
 
-  isPointIn(src: number, trg: number, { offset }: { offset?: number } = {}) {
-    const ofst = offset || this.opts.snapOffset || 0;
-    return (src >= trg && src <= trg + ofst) || (src <= trg && src >= trg - ofst);
+  isPointIn(src: number, trg: number, { offset, axis }: { offset?: number; axis?: PositionXY } = {}) {
+    const { snapGuides = {}, snapOffset = 0 } = this.opts;
+    const axisOffset = axis === 'x' ? snapGuides.x : axis === 'y' ? snapGuides.y : undefined;
+
+    // If snapGuides.x or snapGuides.y is explicitly 0, disable snapping for that axis
+    const effectiveOffset = axisOffset === 0 ? 0 : (offset ?? axisOffset ?? snapOffset);
+
+    // If effectiveOffset is 0, snapping is disabled for this axis
+    if (effectiveOffset === 0) return false;
+
+    return (src >= trg && src <= trg + effectiveOffset) || (src <= trg && src >= trg - effectiveOffset);
   }
 
   setGuideLock(guide: Guide, value: any) {

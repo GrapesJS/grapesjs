@@ -17,6 +17,7 @@ import {
   isDataResolverProps,
 } from '../../data_sources/utils';
 import { DataResolver } from '../../data_sources/types';
+import { keyCollectionsStateMap } from '../../data_sources/model/data_collection/constants';
 
 export type StyleProps = Record<string, string | string[] | DataVariableProps | DataConditionProps>;
 
@@ -112,7 +113,10 @@ export default class StyleableModel<T extends ObjectHash = any> extends Model<T>
 
       const styleValue = newStyle[key];
       if (isDataResolverProps(styleValue)) {
-        const dataResolver = getDataResolverInstance(styleValue, { em: this.em! });
+        const dataResolver = getDataResolverInstance(styleValue, {
+          em: this.em!,
+          collectionsStateMap: this.get(keyCollectionsStateMap) ?? {},
+        });
 
         if (dataResolver) {
           newStyle[key] = dataResolver;
@@ -187,7 +191,10 @@ export default class StyleableModel<T extends ObjectHash = any> extends Model<T>
       }
 
       if (isDataResolverProps(styleValue)) {
-        resultStyle[key] = getDataResolverInstanceValue(styleValue, { em: this.em! });
+        resultStyle[key] = getDataResolverInstanceValue(styleValue, {
+          em: this.em!,
+          collectionsStateMap: this.get(keyCollectionsStateMap) ?? {},
+        });
       }
 
       if (isDataResolver(styleValue)) {

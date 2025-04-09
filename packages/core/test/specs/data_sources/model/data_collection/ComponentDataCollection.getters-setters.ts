@@ -1,10 +1,13 @@
-import { Component, DataRecord, DataSource, DataSourceManager, Editor } from '../../../../../src';
+import { Component, DataSource, DataSourceManager } from '../../../../../src';
 import { DataVariableType } from '../../../../../src/data_sources/model/DataVariable';
 import {
+  DataCollectionItemType,
   DataCollectionType,
-  DataCollectionVariableType,
 } from '../../../../../src/data_sources/model/data_collection/constants';
-import { DataCollectionStateVariableType } from '../../../../../src/data_sources/model/data_collection/types';
+import {
+  ComponentDataCollectionProps,
+  DataCollectionStateType,
+} from '../../../../../src/data_sources/model/data_collection/types';
 import EditorModel from '../../../../../src/editor/model/Editor';
 import { setupTestEditor } from '../../../../common';
 import ComponentDataCollection from '../../../../../src/data_sources/model/data_collection/ComponentDataCollection';
@@ -14,8 +17,6 @@ describe('Collection component getters and setters', () => {
   let dsm: DataSourceManager;
   let dataSource: DataSource;
   let wrapper: Component;
-  let firstRecord: DataRecord;
-  let secondRecord: DataRecord;
 
   beforeEach(() => {
     ({ em, dsm } = setupTestEditor());
@@ -28,8 +29,6 @@ describe('Collection component getters and setters', () => {
         { id: 'user3', user: 'user3', firstName: 'Name3', age: '16' },
       ],
     });
-    firstRecord = dataSource.getRecord('user1')!;
-    secondRecord = dataSource.getRecord('user2')!;
   });
 
   afterEach(() => {
@@ -40,10 +39,11 @@ describe('Collection component getters and setters', () => {
     let cmp: ComponentDataCollection;
 
     beforeEach(() => {
-      cmp = wrapper.components({
+      const cmpDef = {
         type: DataCollectionType,
-        collectionDef: {
-          componentDef: {
+        components: {
+          type: DataCollectionItemType,
+          components: {
             type: 'default',
             components: [
               {
@@ -51,8 +51,8 @@ describe('Collection component getters and setters', () => {
                 tagName: 'div',
                 attributes: {
                   dataUser: {
-                    type: DataCollectionVariableType,
-                    variableType: DataCollectionStateVariableType.currentItem,
+                    type: DataVariableType,
+                    variableType: DataCollectionStateType.currentItem,
                     collectionId: 'my_collection',
                     path: 'user',
                   },
@@ -60,17 +60,19 @@ describe('Collection component getters and setters', () => {
               },
             ],
           },
-          collectionConfig: {
-            collectionId: 'my_collection',
-            startIndex: 1,
-            endIndex: 2,
-            dataSource: {
-              type: DataVariableType,
-              path: 'my_data_source_id',
-            },
+        },
+        dataResolver: {
+          collectionId: 'my_collection',
+          startIndex: 1,
+          endIndex: 2,
+          dataSource: {
+            type: DataVariableType,
+            path: 'my_data_source_id',
           },
         },
-      })[0] as ComponentDataCollection;
+      } as ComponentDataCollectionProps;
+
+      cmp = wrapper.components(cmpDef)[0] as unknown as ComponentDataCollection;
     });
 
     test('getItemsCount should return the correct number of items', () => {
@@ -85,14 +87,14 @@ describe('Collection component getters and setters', () => {
       expect(cmp.getConfigEndIndex()).toBe(2);
     });
 
-    test('getComponentDef should return the correct component definition', () => {
-      const componentDef = cmp.getComponentDef();
+    test('components should return the correct component definition', () => {
+      const firstChildJSON = JSON.parse(JSON.stringify(cmp.getCollectionItemComponents().at(0)));
 
-      expect(componentDef.type).toBe('default');
-      expect(componentDef.components).toHaveLength(1);
-      expect(componentDef?.components?.[0].attributes?.['dataUser']).toEqual({
-        type: DataCollectionVariableType,
-        variableType: DataCollectionStateVariableType.currentItem,
+      expect(firstChildJSON['type']).toBe('default');
+      expect(firstChildJSON.components).toHaveLength(1);
+      expect(firstChildJSON.components?.[0].attributes?.['dataUser']).toEqual({
+        type: DataVariableType,
+        variableType: DataCollectionStateType.currentItem,
         collectionId: 'my_collection',
         path: 'user',
       });
@@ -138,10 +140,11 @@ describe('Collection component getters and setters', () => {
     let cmp: ComponentDataCollection;
 
     beforeEach(() => {
-      cmp = wrapper.components({
+      const cmpDef = {
         type: DataCollectionType,
-        collectionDef: {
-          componentDef: {
+        components: {
+          type: DataCollectionItemType,
+          components: {
             type: 'default',
             components: [
               {
@@ -149,8 +152,8 @@ describe('Collection component getters and setters', () => {
                 tagName: 'div',
                 attributes: {
                   dataUser: {
-                    type: DataCollectionVariableType,
-                    variableType: DataCollectionStateVariableType.currentItem,
+                    type: DataVariableType,
+                    variableType: DataCollectionStateType.currentItem,
                     collectionId: 'my_collection',
                     path: 'user',
                   },
@@ -158,30 +161,32 @@ describe('Collection component getters and setters', () => {
               },
             ],
           },
-          collectionConfig: {
-            collectionId: 'my_collection',
-            startIndex: 1,
-            endIndex: 2,
-            dataSource: {
-              type: DataVariableType,
-              path: 'my_data_source_id',
-            },
+        },
+        dataResolver: {
+          collectionId: 'my_collection',
+          startIndex: 1,
+          endIndex: 2,
+          dataSource: {
+            type: DataVariableType,
+            path: 'my_data_source_id',
           },
         },
-      })[0] as ComponentDataCollection;
+      } as ComponentDataCollectionProps;
+
+      cmp = wrapper.components(cmpDef)[0] as unknown as ComponentDataCollection;
     });
 
-    test('setComponentDef should update the component definition and reflect in children', () => {
-      const newComponentDef = {
-        type: 'newType',
+    test('components should update the component definition and reflect in children', () => {
+      const newItemCmpDef = {
+        type: 'text',
         components: [
           {
             type: 'default',
             tagName: 'span',
             attributes: {
               'data-name': {
-                type: DataCollectionVariableType,
-                variableType: DataCollectionStateVariableType.currentItem,
+                type: DataVariableType,
+                variableType: DataCollectionStateType.currentItem,
                 collectionId: 'my_collection',
                 path: 'firstName',
               },
@@ -189,34 +194,40 @@ describe('Collection component getters and setters', () => {
           },
         ],
       };
-      cmp.setComponentDef(newComponentDef);
+      cmp.setCollectionItemComponents(newItemCmpDef);
 
+      expect(cmp.getItemsCount()).toBe(2);
       const children = cmp.components();
-      expect(children).toHaveLength(2);
-      expect(children.at(0).get('type')).toBe('newType');
-      expect(children.at(0).components().at(0).get('tagName')).toBe('span');
-      expect(children.at(0).components().at(0).getAttributes()['data-name']).toBe('Name2');
+      const firstItemCmp = children.at(0).components().at(0);
+      expect(firstItemCmp.get('type')).toBe('text');
+      expect(firstItemCmp.components().at(0).get('tagName')).toBe('span');
+      expect(firstItemCmp.components().at(0).getAttributes()['data-name']).toBe('Name2');
     });
 
     test('setStartIndex should update the start index and reflect in children', () => {
       cmp.setStartIndex(0);
       expect(cmp.getConfigStartIndex()).toBe(0);
 
+      expect(cmp.getItemsCount()).toBe(3);
       const children = cmp.components();
-      expect(children).toHaveLength(3);
-      expect(children.at(0).components().at(0).getAttributes()['dataUser']).toBe('user1');
-      expect(children.at(1).components().at(0).getAttributes()['dataUser']).toBe('user2');
-      expect(children.at(2).components().at(0).getAttributes()['dataUser']).toBe('user3');
+      const firstItemCmp = children.at(0).components().at(0);
+      expect(firstItemCmp.components().at(0).getAttributes()['dataUser']).toBe('user1');
+      const secondItemCmp = children.at(1).components().at(0);
+      expect(secondItemCmp.components().at(0).getAttributes()['dataUser']).toBe('user2');
+      const thirdItemCmp = children.at(2).components().at(0);
+      expect(thirdItemCmp.components().at(0).getAttributes()['dataUser']).toBe('user3');
     });
 
     test('setEndIndex should update the end index and reflect in children', () => {
       cmp.setEndIndex(3);
       expect(cmp.getConfigEndIndex()).toBe(3);
 
+      expect(cmp.getItemsCount()).toBe(2);
       const children = cmp.components();
-      expect(children).toHaveLength(2);
-      expect(children.at(0).components().at(0).getAttributes()['dataUser']).toBe('user2');
-      expect(children.at(1).components().at(0).getAttributes()['dataUser']).toBe('user3');
+      const firstItemCmp = children.at(0).components().at(0);
+      expect(firstItemCmp.components().at(0).getAttributes()['dataUser']).toBe('user2');
+      const secondItemCmp = children.at(1).components().at(0);
+      expect(secondItemCmp.components().at(0).getAttributes()['dataUser']).toBe('user3');
     });
 
     test('setDataSource should update the data source and reflect in children', () => {
@@ -233,24 +244,25 @@ describe('Collection component getters and setters', () => {
         path: 'new_data_source_id',
       });
 
+      expect(cmp.getItemsCount()).toBe(1);
       const children = cmp.components();
-      expect(children).toHaveLength(1);
-      expect(children.at(0).components().at(0).getAttributes()['dataUser']).toBe('user5');
+      const firstItemCmp = children.at(0).components().at(0);
+      expect(firstItemCmp.components().at(0).getAttributes()['dataUser']).toBe('user5');
     });
 
     test('setStartIndex with zero should include the first record', () => {
       cmp.setStartIndex(0);
 
+      expect(cmp.getItemsCount()).toBe(3);
       const children = cmp.components();
-      expect(children).toHaveLength(3);
-      expect(children.at(0).components().at(0).getAttributes()['dataUser']).toBe('user1');
+      const firstItemCmp = children.at(0).components().at(0);
+      expect(firstItemCmp.components().at(0).getAttributes()['dataUser']).toBe('user1');
     });
 
     test('setEndIndex with zero should result in no children', () => {
       cmp.setEndIndex(0);
 
-      const children = cmp.components();
-      expect(children).toHaveLength(0);
+      expect(cmp.getItemsCount()).toBe(0);
     });
 
     test('setDataSource with an empty data source should result in no children', () => {
@@ -264,8 +276,7 @@ describe('Collection component getters and setters', () => {
         path: 'empty_data_source_id',
       });
 
-      const children = cmp.components();
-      expect(children).toHaveLength(0);
+      expect(cmp.getItemsCount()).toBe(0);
     });
   });
 
@@ -273,10 +284,11 @@ describe('Collection component getters and setters', () => {
     let cmp: ComponentDataCollection;
 
     beforeEach(() => {
-      cmp = wrapper.components({
+      const cmpDef = {
         type: DataCollectionType,
-        collectionDef: {
-          componentDef: {
+        components: {
+          type: DataCollectionItemType,
+          components: {
             type: 'default',
             components: [
               {
@@ -284,8 +296,8 @@ describe('Collection component getters and setters', () => {
                 tagName: 'div',
                 attributes: {
                   dataUser: {
-                    type: DataCollectionVariableType,
-                    variableType: DataCollectionStateVariableType.currentItem,
+                    type: DataVariableType,
+                    variableType: DataCollectionStateType.currentItem,
                     collectionId: 'my_collection',
                     path: 'user',
                   },
@@ -293,17 +305,18 @@ describe('Collection component getters and setters', () => {
               },
             ],
           },
-          collectionConfig: {
-            collectionId: 'my_collection',
-            startIndex: 1,
-            endIndex: 2,
-            dataSource: {
-              type: DataVariableType,
-              path: 'my_data_source_id',
-            },
+        },
+        dataResolver: {
+          collectionId: 'my_collection',
+          startIndex: 1,
+          endIndex: 2,
+          dataSource: {
+            type: DataVariableType,
+            path: 'my_data_source_id',
           },
         },
-      })[0] as ComponentDataCollection;
+      } as ComponentDataCollectionProps;
+      cmp = wrapper.components(cmpDef)[0] as unknown as ComponentDataCollection;
     });
 
     test('HTML output should reflect changes in startIndex', () => {
@@ -319,6 +332,7 @@ describe('Collection component getters and setters', () => {
       cmp.setEndIndex(3);
 
       const html = cmp.toHTML();
+      expect(html).not.toContain('dataUser="user1"');
       expect(html).toContain('dataUser="user2"');
       expect(html).toContain('dataUser="user3"');
     });
@@ -337,14 +351,17 @@ describe('Collection component getters and setters', () => {
       });
 
       const html = cmp.toHTML();
+      expect(html).not.toContain('dataUser="user1"');
+      expect(html).not.toContain('dataUser="user2"');
+      expect(html).not.toContain('dataUser="user3"');
       expect(html).toContain('dataUser="user5"');
     });
 
     test('HTML output should be empty when endIndex is zero', () => {
       cmp.setEndIndex(0);
 
-      const html = cmp.toHTML();
-      expect(html).not.toContain('dataUser');
+      const dataOutputCmp = cmp.components().at(0);
+      expect(dataOutputCmp.getStyle().display).toBe('none');
     });
   });
 });

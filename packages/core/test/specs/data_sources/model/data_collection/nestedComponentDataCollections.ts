@@ -1,27 +1,46 @@
 import { Component, DataRecord, DataSource, DataSourceManager, Editor } from '../../../../../src';
 import { DataVariableType } from '../../../../../src/data_sources/model/DataVariable';
+import ComponentDataCollection from '../../../../../src/data_sources/model/data_collection/ComponentDataCollection';
 import {
+  DataCollectionItemType,
   DataCollectionType,
-  DataCollectionVariableType,
 } from '../../../../../src/data_sources/model/data_collection/constants';
-import { DataCollectionStateVariableType } from '../../../../../src/data_sources/model/data_collection/types';
+import {
+  ComponentDataCollectionProps,
+  DataCollectionStateType,
+} from '../../../../../src/data_sources/model/data_collection/types';
 import EditorModel from '../../../../../src/editor/model/Editor';
 import { setupTestEditor } from '../../../../common';
 
 describe('Collection component', () => {
   let em: EditorModel;
-  let editor: Editor;
   let dsm: DataSourceManager;
   let dataSource: DataSource;
   let nestedDataSource: DataSource;
   let wrapper: Component;
   let firstRecord: DataRecord;
-  let secondRecord: DataRecord;
   let firstNestedRecord: DataRecord;
-  let secondNestedRecord: DataRecord;
+  let cmpDef: ComponentDataCollectionProps | undefined;
+  let nestedCmpDef: ComponentDataCollectionProps | undefined;
+  let parentCmp: ComponentDataCollection;
+  let nestedCmp: ComponentDataCollection;
+
+  function getCmpDef(nestedCmpDef: ComponentDataCollectionProps): ComponentDataCollectionProps {
+    return {
+      type: DataCollectionType,
+      components: { type: DataCollectionItemType, components: nestedCmpDef },
+      dataResolver: {
+        collectionId: 'parent_collection',
+        dataSource: {
+          type: DataVariableType,
+          path: 'my_data_source_id',
+        },
+      },
+    };
+  }
 
   beforeEach(() => {
-    ({ em, editor, dsm } = setupTestEditor());
+    ({ em, dsm } = setupTestEditor());
     wrapper = em.getWrapper()!;
     dataSource = dsm.add({
       id: 'my_data_source_id',
@@ -41,96 +60,54 @@ describe('Collection component', () => {
     });
 
     firstRecord = dataSource.getRecord('user1')!;
-    secondRecord = dataSource.getRecord('user2')!;
     firstNestedRecord = nestedDataSource.getRecord('nested_user1')!;
-    secondNestedRecord = nestedDataSource.getRecord('nested_user2')!;
+
+    nestedCmpDef = {
+      type: DataCollectionType,
+      components: {
+        type: DataCollectionItemType,
+        components: {
+          type: 'default',
+          name: {
+            type: DataVariableType,
+            variableType: DataCollectionStateType.currentItem,
+            collectionId: 'nested_collection',
+            path: 'user',
+          },
+        },
+      },
+      dataResolver: {
+        collectionId: 'nested_collection',
+        dataSource: {
+          type: DataVariableType,
+          path: 'nested_data_source_id',
+        },
+      },
+    };
+
+    cmpDef = getCmpDef(nestedCmpDef);
+
+    parentCmp = wrapper.components(cmpDef)[0] as unknown as ComponentDataCollection;
+    nestedCmp = parentCmp.getCollectionItemComponents().at(0) as ComponentDataCollection;
   });
 
   afterEach(() => {
     em.destroy();
+    nestedCmpDef = undefined;
+    cmpDef = undefined;
   });
 
   test('Nested collections bind to correct data sources', () => {
-    const parentCollection = wrapper.components({
-      type: DataCollectionType,
-      collectionDef: {
-        componentDef: {
-          type: DataCollectionType,
-          collectionDef: {
-            componentDef: {
-              type: 'default',
-              name: {
-                type: DataCollectionVariableType,
-                variableType: DataCollectionStateVariableType.currentItem,
-                collectionId: 'nested_collection',
-                path: 'user',
-              },
-            },
-            collectionConfig: {
-              collectionId: 'nested_collection',
-              dataSource: {
-                type: DataVariableType,
-                path: 'nested_data_source_id',
-              },
-            },
-          },
-        },
-        collectionConfig: {
-          collectionId: 'parent_collection',
-          dataSource: {
-            type: DataVariableType,
-            path: 'my_data_source_id',
-          },
-        },
-      },
-    })[0];
-
-    const nestedCollection = parentCollection.components().at(0);
-    const nestedFirstChild = nestedCollection.components().at(0);
-    const nestedSecondChild = nestedCollection.components().at(1);
+    const nestedFirstChild = nestedCmp.components().at(0).components().at(0);
+    const nestedSecondChild = nestedCmp.components().at(1).components().at(0);
 
     expect(nestedFirstChild.get('name')).toBe('nested_user1');
     expect(nestedSecondChild.get('name')).toBe('nested_user2');
   });
 
   test('Updates in parent collection propagate to nested collections', () => {
-    const parentCollection = wrapper.components({
-      type: DataCollectionType,
-      collectionDef: {
-        componentDef: {
-          type: DataCollectionType,
-          collectionDef: {
-            componentDef: {
-              type: 'default',
-              name: {
-                type: DataCollectionVariableType,
-                variableType: DataCollectionStateVariableType.currentItem,
-                collectionId: 'nested_collection',
-                path: 'user',
-              },
-            },
-            collectionConfig: {
-              collectionId: 'nested_collection',
-              dataSource: {
-                type: DataVariableType,
-                path: 'nested_data_source_id',
-              },
-            },
-          },
-        },
-        collectionConfig: {
-          collectionId: 'parent_collection',
-          dataSource: {
-            type: DataVariableType,
-            path: 'my_data_source_id',
-          },
-        },
-      },
-    })[0];
-
-    const nestedCollection = parentCollection.components().at(0);
-    const nestedFirstChild = nestedCollection.components().at(0);
-    const nestedSecondChild = nestedCollection.components().at(1);
+    const nestedFirstChild = nestedCmp.components().at(0).components().at(0);
+    const nestedSecondChild = nestedCmp.components().at(1).components().at(0);
 
     firstNestedRecord.set('user', 'updated_user1');
     expect(nestedFirstChild.get('name')).toBe('updated_user1');
@@ -138,173 +115,83 @@ describe('Collection component', () => {
   });
 
   test('Nested collections are correctly serialized', () => {
-    const parentCollection = wrapper.components({
-      type: DataCollectionType,
-      collectionDef: {
-        componentDef: {
-          type: DataCollectionType,
-          collectionDef: {
-            componentDef: {
-              type: 'default',
-              name: {
-                type: DataCollectionVariableType,
-                variableType: DataCollectionStateVariableType.currentItem,
-                path: 'user',
-              },
-            },
-            collectionConfig: {
-              collectionId: 'nested_collection',
-              dataSource: {
-                type: DataVariableType,
-                path: 'nested_data_source_id',
-              },
-            },
-          },
-        },
-        collectionConfig: {
-          collectionId: 'parent_collection',
-          dataSource: {
-            type: DataVariableType,
-            path: 'my_data_source_id',
-          },
-        },
-      },
-    })[0];
-
-    const serialized = parentCollection.toJSON();
+    const serialized = parentCmp.toJSON();
     expect(serialized).toMatchSnapshot();
   });
 
   test('Nested collections respect startIndex and endIndex', () => {
-    const parentCollection = wrapper.components({
+    nestedCmpDef = {
       type: DataCollectionType,
-      collectionDef: {
-        componentDef: {
-          type: DataCollectionType,
-          collectionDef: {
-            componentDef: {
-              type: 'default',
-              name: {
-                type: DataCollectionVariableType,
-                variableType: DataCollectionStateVariableType.currentItem,
-                collectionId: 'nested_collection',
-                path: 'user',
-              },
-            },
-            collectionConfig: {
-              collectionId: 'nested_collection',
-              startIndex: 0,
-              endIndex: 1,
-              dataSource: {
-                type: DataVariableType,
-                path: 'nested_data_source_id',
-              },
-            },
-          },
-        },
-        collectionConfig: {
-          collectionId: 'parent_collection',
-          dataSource: {
+      components: {
+        type: DataCollectionItemType,
+        components: {
+          type: 'default',
+          name: {
             type: DataVariableType,
-            path: 'my_data_source_id',
+            variableType: DataCollectionStateType.currentItem,
+            collectionId: 'nested_collection',
+            path: 'user',
           },
         },
       },
-    })[0];
+      dataResolver: {
+        collectionId: 'nested_collection',
+        startIndex: 0,
+        endIndex: 1,
+        dataSource: {
+          type: DataVariableType,
+          path: 'nested_data_source_id',
+        },
+      },
+    };
 
-    const nestedCollection = parentCollection.components().at(0);
-    expect(nestedCollection.components().length).toBe(2);
+    const updatedParentCmp = wrapper.components(getCmpDef(nestedCmpDef))[0] as unknown as ComponentDataCollection;
+    const updatedNestedCmp = updatedParentCmp.getCollectionItemComponents().at(0) as ComponentDataCollection;
+    expect(updatedNestedCmp.getItemsCount()).toBe(2);
   });
 
   test('Nested collection gets and watches value from the parent collection', () => {
-    const parentCollection = wrapper.components({
+    nestedCmpDef = {
       type: DataCollectionType,
-      collectionDef: {
-        componentDef: {
-          type: DataCollectionType,
-          collectionDef: {
-            componentDef: {
-              type: 'default',
-              name: {
-                type: DataCollectionVariableType,
-                variableType: DataCollectionStateVariableType.currentItem,
-                collectionId: 'parent_collection',
-                path: 'user',
-              },
-            },
-            collectionConfig: {
-              collectionId: 'nested_collection',
-              dataSource: {
-                type: DataVariableType,
-                path: 'nested_data_source_id',
-              },
-            },
-          },
-        },
-        collectionConfig: {
-          collectionId: 'parent_collection',
-          dataSource: {
+      components: {
+        type: DataCollectionItemType,
+        components: {
+          type: 'default',
+          name: {
             type: DataVariableType,
-            path: 'my_data_source_id',
+            variableType: DataCollectionStateType.currentItem,
+            collectionId: 'parent_collection',
+            path: 'user',
           },
         },
       },
-    })[0];
+      dataResolver: {
+        collectionId: 'nested_collection',
+        startIndex: 0,
+        endIndex: 1,
+        dataSource: {
+          type: DataVariableType,
+          path: 'nested_data_source_id',
+        },
+      },
+    };
 
-    const nestedCollection = parentCollection.components().at(0);
-    const firstNestedChild = nestedCollection.components().at(0);
+    const updatedParentCmp = wrapper.components(getCmpDef(nestedCmpDef))[0] as unknown as ComponentDataCollection;
+    const updatedNestedCmp = updatedParentCmp.getCollectionItemComponents().at(0) as ComponentDataCollection;
+    const firstNestedChild = updatedNestedCmp.getCollectionItemComponents().at(0);
 
-    // Verify initial value
     expect(firstNestedChild.get('name')).toBe('user1');
-
-    // Update value in parent collection and verify nested collection updates
     firstRecord.set('user', 'updated_user1');
     expect(firstNestedChild.get('name')).toBe('updated_user1');
   });
 
   test('Nested collection switches to using its own collection variable', () => {
-    const parentCollection = wrapper.components({
-      type: DataCollectionType,
-      collectionDef: {
-        componentDef: {
-          type: DataCollectionType,
-          collectionDef: {
-            componentDef: {
-              type: 'default',
-              name: {
-                type: DataCollectionVariableType,
-                variableType: DataCollectionStateVariableType.currentItem,
-                path: 'user',
-                collectionId: 'parent_collection',
-              },
-            },
-            collectionConfig: {
-              collectionId: 'nested_collection',
-              dataSource: {
-                type: DataVariableType,
-                path: 'nested_data_source_id',
-              },
-            },
-          },
-        },
-        collectionConfig: {
-          collectionId: 'parent_collection',
-          dataSource: {
-            type: DataVariableType,
-            path: 'my_data_source_id',
-          },
-        },
-      },
-    })[0];
+    const firstChild = nestedCmp.components().at(0).components().at(0);
 
-    const nestedCollection = parentCollection.components().at(0);
-
-    const firstChild = nestedCollection.components().at(0);
-    // Replace the collection variable with one from the inner collection
     firstChild.set('name', {
       // @ts-ignore
-      type: DataCollectionVariableType,
-      variableType: DataCollectionStateVariableType.currentItem,
+      type: DataVariableType,
+      variableType: DataCollectionStateType.currentItem,
       path: 'user',
       collectionId: 'nested_collection',
     });
@@ -313,118 +200,78 @@ describe('Collection component', () => {
   });
 
   describe('Nested Collection Component with Parent and Nested Data Sources', () => {
-    let parentCollection: Component;
-    let nestedCollection: Component;
-
     beforeEach(() => {
-      // Initialize the parent and nested collections
-      parentCollection = wrapper.components({
+      nestedCmpDef = {
         type: DataCollectionType,
-        collectionDef: {
-          componentDef: {
-            type: DataCollectionType,
+        name: {
+          type: DataVariableType,
+          variableType: DataCollectionStateType.currentItem,
+          collectionId: 'parent_collection',
+          path: 'user',
+        },
+        components: {
+          type: DataCollectionItemType,
+          components: {
+            type: 'default',
             name: {
-              type: DataCollectionVariableType,
-              variableType: DataCollectionStateVariableType.currentItem,
-              collectionId: 'parent_collection',
-              path: 'user',
-            },
-            collectionDef: {
-              componentDef: {
-                type: 'default',
-                name: {
-                  type: DataCollectionVariableType,
-                  variableType: DataCollectionStateVariableType.currentItem,
-                  collectionId: 'nested_collection',
-                  path: 'user',
-                },
-              },
-              collectionConfig: {
-                collectionId: 'nested_collection',
-                dataSource: {
-                  type: DataVariableType,
-                  path: 'nested_data_source_id',
-                },
-              },
-            },
-          },
-          collectionConfig: {
-            collectionId: 'parent_collection',
-            dataSource: {
               type: DataVariableType,
-              path: 'my_data_source_id',
+              variableType: DataCollectionStateType.currentItem,
+              collectionId: 'nested_collection',
+              path: 'user',
             },
           },
         },
-      })[0];
+        dataResolver: {
+          collectionId: 'nested_collection',
+          dataSource: {
+            type: DataVariableType,
+            path: 'nested_data_source_id',
+          },
+        },
+      };
 
-      nestedCollection = parentCollection.components().at(0);
+      parentCmp = wrapper.components(getCmpDef(nestedCmpDef))[0] as unknown as ComponentDataCollection;
+      nestedCmp = parentCmp.getCollectionItemComponents().at(0) as ComponentDataCollection;
     });
 
     test('Removing a record from the parent data source updates the parent collection correctly', () => {
-      // Verify initial state
-      expect(parentCollection.components().length).toBe(2); // 2 parent records initially
-
-      // Remove a record from the parent data source
+      expect(parentCmp.getItemsCount()).toBe(2);
       dataSource.removeRecord('user1');
-
-      // Verify that the parent collection updates correctly
-      expect(parentCollection.components().length).toBe(1); // Only 1 parent record remains
-      expect(parentCollection.components().at(0).get('name')).toBe('user2'); // Verify updated name
-
-      // Verify that the nested collection is unaffected
-      expect(nestedCollection.components().length).toBe(3); // Nested records remain the same
-      expect(nestedCollection.components().at(0).get('name')).toBe('nested_user1'); // Verify nested name
+      expect(parentCmp.getItemsCount()).toBe(1);
+      expect(parentCmp.components().at(0).components().at(0).get('name')).toBe('user2');
+      expect(nestedCmp.getItemsCount()).toBe(3);
+      expect(nestedCmp.components().at(0).components().at(0).get('name')).toBe('nested_user1');
     });
 
     test('Adding a record to the parent data source updates the parent collection correctly', () => {
-      // Verify initial state
-      expect(parentCollection.components().length).toBe(2); // 2 parent records initially
-
-      // Add a new record to the parent data source
+      expect(parentCmp.getItemsCount()).toBe(2);
       dataSource.addRecord({ id: 'user3', user: 'user3', age: '16' });
-
-      // Verify that the parent collection updates correctly
-      expect(parentCollection.components().length).toBe(3); // 3 parent records now
-      expect(parentCollection.components().at(2).get('name')).toBe('user3'); // Verify new name
-
-      // Verify that the nested collection is unaffected
-      expect(nestedCollection.components().length).toBe(3); // Nested records remain the same
-      expect(nestedCollection.components().at(0).get('name')).toBe('nested_user1'); // Verify nested name
-      expect(parentCollection.components().at(2).components().at(0).get('name')).toBe('nested_user1'); // Verify nested name
+      expect(parentCmp.getItemsCount()).toBe(3);
+      expect(parentCmp.components().at(2).components().at(0).get('name')).toBe('user3');
+      expect(nestedCmp.getItemsCount()).toBe(3);
+      expect(nestedCmp.components().at(0).components().at(0).get('name')).toBe('nested_user1');
     });
 
     test('Removing a record from the nested data source updates the nested collection correctly', () => {
-      // Verify initial state
-      expect(nestedCollection.components().length).toBe(3); // 3 nested records initially
-
-      // Remove a record from the nested data source
+      expect(nestedCmp.getItemsCount()).toBe(3);
       nestedDataSource.removeRecord('nested_user1');
-
-      // Verify that the nested collection updates correctly
-      expect(nestedCollection.components().length).toBe(2); // Only 2 nested records remain
-      expect(nestedCollection.components().at(0).get('name')).toBe('nested_user2'); // Verify updated name
-      expect(nestedCollection.components().at(1).get('name')).toBe('nested_user3'); // Verify updated name
+      expect(nestedCmp.getItemsCount()).toBe(2);
+      expect(nestedCmp.components().at(0).components().at(0).get('name')).toBe('nested_user2');
+      expect(nestedCmp.components().at(1).components().at(0).get('name')).toBe('nested_user3');
     });
 
     test('Adding a record to the nested data source updates the nested collection correctly', () => {
-      // Verify initial state
-      expect(nestedCollection.components().length).toBe(3); // 3 nested records initially
-      expect(nestedCollection.components().at(0).get('name')).toBe('nested_user1'); // Verify initial name
-      expect(nestedCollection.components().at(1).get('name')).toBe('nested_user2'); // Verify initial name
-      expect(nestedCollection.components().at(2).get('name')).toBe('nested_user3'); // Verify initial name
+      expect(nestedCmp.getItemsCount()).toBe(3);
+      expect(nestedCmp.components().at(0).components().at(0).get('name')).toBe('nested_user1');
+      expect(nestedCmp.components().at(1).components().at(0).get('name')).toBe('nested_user2');
+      expect(nestedCmp.components().at(2).components().at(0).get('name')).toBe('nested_user3');
 
-      // Add a new record to the nested data source
       nestedDataSource.addRecord({ id: 'user4', user: 'nested_user4', age: '18' });
-
-      // Verify that the nested collection updates correctly
-      expect(nestedCollection.components().length).toBe(4); // 4 nested records now
-      expect(nestedCollection.components().at(3).get('name')).toBe('nested_user4'); // Verify new name
-
-      // Verify existing records are unaffected
-      expect(nestedCollection.components().at(0).get('name')).toBe('nested_user1'); // Verify existing name
-      expect(nestedCollection.components().at(1).get('name')).toBe('nested_user2'); // Verify existing name
-      expect(nestedCollection.components().at(2).get('name')).toBe('nested_user3'); // Verify existing name
+      expect(nestedCmp.getItemsCount()).toBe(4);
+      expect(nestedCmp.components().at(3).components().at(0).get('name')).toBe('nested_user4');
+      expect(nestedCmp.components().at(0).components().at(0).get('name')).toBe('nested_user1');
+      expect(nestedCmp.components().at(1).components().at(0).get('name')).toBe('nested_user2');
+      expect(nestedCmp.components().at(2).components().at(0).get('name')).toBe('nested_user3');
     });
   });
 });

@@ -1,9 +1,5 @@
 import { ObjectAny } from '../../common';
-import {
-  DataCollectionVariableType,
-  keyCollectionsStateMap,
-  keyIsCollectionItem,
-} from '../../data_sources/model/data_collection/constants';
+import { keyCollectionsStateMap, keyIsCollectionItem } from '../../data_sources/model/data_collection/constants';
 import { DataCollectionStateMap } from '../../data_sources/model/data_collection/types';
 import Component from './Component';
 import {
@@ -79,8 +75,8 @@ export class ComponentDataResolverWatchers {
   private updateSymbolOverride() {
     if (!this.component || !this.component.get(keyIsCollectionItem)) return;
 
-    const keys = this.propertyWatcher.getDynamicValuesOfType(DataCollectionVariableType);
-    const attributesKeys = this.attributeWatcher.getDynamicValuesOfType(DataCollectionVariableType);
+    const keys = this.propertyWatcher.getValuesResolvingFromCollections();
+    const attributesKeys = this.attributeWatcher.getValuesResolvingFromCollections();
 
     const combinedKeys = [keyCollectionsStateMap, 'locked', ...keys];
     const haveOverridenAttributes = Object.keys(attributesKeys).length;

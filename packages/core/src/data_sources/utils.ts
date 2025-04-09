@@ -1,9 +1,7 @@
 import EditorModel from '../editor/model/Editor';
 import { DataResolver, DataResolverProps } from './types';
-import { DataConditionDisplayType } from './model/conditional_variables/ComponentDataCondition';
 import { DataCollectionStateMap } from './model/data_collection/types';
-import DataCollectionVariable from './model/data_collection/DataCollectionVariable';
-import { DataCollectionVariableType } from './model/data_collection/constants';
+import { DataCollectionItemType } from './model/data_collection/constants';
 import { DataConditionType, DataCondition } from './model/conditional_variables/DataCondition';
 import DataVariable, { DataVariableProps, DataVariableType } from './model/DataVariable';
 import Component from '../dom_components/model/Component';
@@ -12,9 +10,7 @@ import { serialize } from '../utils/mixins';
 import { DataConditionIfFalseType, DataConditionIfTrueType } from './model/conditional_variables/constants';
 
 export function isDataResolverProps(value: any): value is DataResolverProps {
-  return (
-    typeof value === 'object' && [DataVariableType, DataConditionType, DataCollectionVariableType].includes(value?.type)
-  );
+  return typeof value === 'object' && [DataVariableType, DataConditionType].includes(value?.type);
 }
 
 export function isDataResolver(value: any): value is DataResolver {
@@ -30,12 +26,14 @@ export function isDataCondition(variable: any) {
 }
 
 export function resolveDynamicValue(variable: any, em: EditorModel) {
-  return isDataResolverProps(variable) ? getDataResolverInstanceValue(variable, { em }) : variable;
+  return isDataResolverProps(variable)
+    ? getDataResolverInstanceValue(variable, { em, collectionsStateMap: {} })
+    : variable;
 }
 
 export function getDataResolverInstance(
   resolverProps: DataResolverProps,
-  options: { em: EditorModel; collectionsStateMap?: DataCollectionStateMap },
+  options: { em: EditorModel; collectionsStateMap: DataCollectionStateMap },
 ) {
   const { type } = resolverProps;
   let resolver: DataResolver;
@@ -46,10 +44,6 @@ export function getDataResolverInstance(
       break;
     case DataConditionType: {
       resolver = new DataCondition(resolverProps, options);
-      break;
-    }
-    case DataCollectionVariableType: {
-      resolver = new DataCollectionVariable(resolverProps, options);
       break;
     }
     default:
@@ -64,7 +58,7 @@ export function getDataResolverInstanceValue(
   resolverProps: DataResolverProps,
   options: {
     em: EditorModel;
-    collectionsStateMap?: DataCollectionStateMap;
+    collectionsStateMap: DataCollectionStateMap;
   },
 ) {
   const resolver = getDataResolverInstance(resolverProps, options);
@@ -86,6 +80,6 @@ export const ensureComponentInstance = (
   return new Model(serialize(cmp ?? {}), opt);
 };
 
-export const isDataConditionDisplayType = (type: string | undefined): type is DataConditionDisplayType => {
-  return !!type && [DataConditionIfTrueType, DataConditionIfFalseType].includes(type);
+export const isComponentDataOutputType = (type: string | undefined) => {
+  return !!type && [DataCollectionItemType, DataConditionIfTrueType, DataConditionIfFalseType].includes(type);
 };

@@ -1,14 +1,17 @@
 import { Component, DataRecord, DataSource, DataSourceManager, Editor } from '../../../../../src';
 import { DataVariableType } from '../../../../../src/data_sources/model/DataVariable';
 import {
+  DataCollectionItemType,
   DataCollectionType,
-  DataCollectionVariableType,
 } from '../../../../../src/data_sources/model/data_collection/constants';
-import { DataCollectionStateVariableType } from '../../../../../src/data_sources/model/data_collection/types';
+import {
+  ComponentDataCollectionProps,
+  DataCollectionStateType,
+} from '../../../../../src/data_sources/model/data_collection/types';
 import EditorModel from '../../../../../src/editor/model/Editor';
 import { setupTestEditor } from '../../../../common';
-import { getSymbolMain } from '../../../../../src/dom_components/model/SymbolUtils';
 import { ProjectData } from '../../../../../src/storage_manager';
+import ComponentDataCollection from '../../../../../src/data_sources/model/data_collection/ComponentDataCollection';
 
 describe('Collection component', () => {
   let em: EditorModel;
@@ -40,82 +43,55 @@ describe('Collection component', () => {
   });
 
   test('Collection component should be undroppable', () => {
-    const cmp = wrapper.components({
+    const cmpDef = {
       type: DataCollectionType,
-      collectionDef: {
-        componentDef: {
+      components: {
+        type: DataCollectionItemType,
+        components: {
           type: 'default',
         },
-        collectionConfig: {
-          collectionId: 'my_collection',
-          dataSource: {
-            type: DataVariableType,
-            path: 'my_data_source_id',
-          },
+      },
+      dataResolver: {
+        collectionId: 'my_collection',
+        dataSource: {
+          type: DataVariableType,
+          path: 'my_data_source_id',
         },
       },
-    })[0];
+    } as ComponentDataCollectionProps;
+    const cmp = wrapper.components(cmpDef)[0];
 
     expect(cmp.get('droppable')).toBe(false);
   });
 
-  test('Collection items should be undraggable', () => {
-    const cmp = wrapper.components({
+  test('Collection items should be undraggable and unremovable', () => {
+    const cmpDef = {
       type: DataCollectionType,
-      collectionDef: {
-        componentDef: {
+      components: {
+        type: DataCollectionItemType,
+        components: {
           type: 'default',
         },
-        collectionConfig: {
-          collectionId: 'my_collection',
-          dataSource: {
-            type: DataVariableType,
-            path: 'my_data_source_id',
-          },
+      },
+      dataResolver: {
+        collectionId: 'my_collection',
+        dataSource: {
+          type: DataVariableType,
+          path: 'my_data_source_id',
         },
       },
-    })[0];
+    } as ComponentDataCollectionProps;
+    const cmp = wrapper.components(cmpDef)[0];
 
     cmp.components().forEach((child) => {
       expect(child.get('draggable')).toBe(false);
-    });
-  });
-
-  test('Collection items should be symbols', () => {
-    const cmp = wrapper.components({
-      type: DataCollectionType,
-      collectionDef: {
-        componentDef: {
-          type: 'default',
-          components: [
-            {
-              type: 'default',
-            },
-          ],
-        },
-        collectionConfig: {
-          collectionId: 'my_collection',
-          dataSource: {
-            type: DataVariableType,
-            path: 'my_data_source_id',
-          },
-        },
-      },
-    })[0];
-
-    expect(cmp.components()).toHaveLength(3);
-    cmp.components().forEach((child) => expect(child.get('type')).toBe('default'));
-    const children = cmp.components();
-    const firstChild = children.at(0);
-
-    children.slice(1).forEach((component) => {
-      expect(getSymbolMain(component)).toBe(firstChild);
+      expect(child.get('removable')).toBe(false);
     });
   });
 
   describe('Collection variables', () => {
     describe('Properties', () => {
-      let cmp: Component;
+      let cmp: ComponentDataCollection;
       let firstChild!: Component;
       let firstGrandchild!: Component;
       let secondChild!: Component;
@@ -131,63 +107,67 @@ describe('Collection component', () => {
 
       const checkRecordsWithInnerCmp = () => {
         dataSource.getRecords().forEach((record, i) => {
-          const innerCmp = cmp.components().at(i).components().at(1);
+          const innerCmp = cmp.components().at(i).components().at(0).components().at(1);
           checkHtmlModelAndView({ cmp: innerCmp, innerHTML: record.get('firstName') });
         });
       };
 
       beforeEach(() => {
-        cmp = wrapper.components({
+        const cmpDef = {
           type: DataCollectionType,
-          collectionDef: {
-            componentDef: {
+          components: {
+            type: DataCollectionItemType,
+            components: {
               type: 'default',
               components: [
                 {
                   type: 'default',
                   name: {
-                    type: DataCollectionVariableType,
-                    variableType: DataCollectionStateVariableType.currentItem,
+                    type: DataVariableType,
+                    variableType: DataCollectionStateType.currentItem,
                     collectionId: 'my_collection',
                     path: 'user',
                   },
                 },
                 {
                   tagName: 'span',
-                  type: DataCollectionVariableType,
-                  variableType: 'currentItem',
-                  collectionId: 'my_collection',
-                  path: 'firstName',
+                  type: DataVariableType,
+                  dataResolver: {
+                    variableType: 'currentItem',
+                    collectionId: 'my_collection',
+                    path: 'firstName',
+                  },
                 },
               ],
               name: {
-                type: DataCollectionVariableType,
-                variableType: DataCollectionStateVariableType.currentItem,
+                type: DataVariableType,
+                variableType: DataCollectionStateType.currentItem,
                 collectionId: 'my_collection',
                 path: 'user',
               },
               custom_property: {
-                type: DataCollectionVariableType,
-                variableType: DataCollectionStateVariableType.currentItem,
+                type: DataVariableType,
+                variableType: DataCollectionStateType.currentItem,
                 collectionId: 'my_collection',
                 path: 'user',
               },
             },
-            collectionConfig: {
-              collectionId: 'my_collection',
-              dataSource: {
-                type: DataVariableType,
-                path: 'my_data_source_id',
-              },
+          },
+          dataResolver: {
+            collectionId: 'my_collection',
+            dataSource: {
+              type: DataVariableType,
+              path: 'my_data_source_id',
             },
           },
-        })[0];
+        } as ComponentDataCollectionProps;
+        cmp = wrapper.components(cmpDef)[0] as unknown as ComponentDataCollection;
 
-        firstChild = cmp.components().at(0);
+        firstChild = cmp.components().at(0).components().at(0);
         firstGrandchild = firstChild.components().at(0);
-        secondChild = cmp.components().at(1);
+        secondChild = cmp.components().at(1).components().at(0);
         secondGrandchild = secondChild.components().at(0);
-        thirdChild = cmp.components().at(2);
+        thirdChild = cmp.components().at(2).components().at(0);
       });
 
       test('Evaluating to static value', () => {
@@ -222,8 +202,8 @@ describe('Collection component', () => {
 
         expect(cmp.components().length).toBe(2);
 
-        const updatedFirstChild = cmp.components().at(0);
-        const updatedSecondChild = cmp.components().at(1);
+        const updatedFirstChild = cmp.components().at(0).components().at(0);
+        const updatedSecondChild = cmp.components().at(1).components().at(0);
 
         expect(updatedFirstChild.get('name')).toBe('user2');
         expect(updatedSecondChild.get('name')).toBe('user3');
@@ -240,17 +220,13 @@ describe('Collection component', () => {
       test('Adding a record updates the collection component correctly', () => {
         dataSource.addRecord({ id: 'user4', user: 'user4', firstName: 'Name4', age: '20' });
 
-        expect(cmp.components().length).toBe(4);
+        expect(cmp.getItemsCount()).toBe(4);
 
-        const newChild = cmp.components().at(3);
+        const newChild = cmp.components().at(3).components().at(0);
         expect(newChild.get('name')).toBe('user4');
 
         const newGrandchild = newChild.components().at(0);
         expect(newGrandchild.get('name')).toBe('user4');
-
-        const firstChild = cmp.components().at(0);
-        const secondChild = cmp.components().at(1);
-        const thirdChild = cmp.components().at(2);
 
         expect(firstChild.get('name')).toBe('user1');
         expect(secondChild.get('name')).toBe('user2');
@@ -280,8 +256,8 @@ describe('Collection component', () => {
       test('Updating the value to a different collection variable', async () => {
         firstChild.set('name', {
           // @ts-ignore
-          type: DataCollectionVariableType,
-          variableType: DataCollectionStateVariableType.currentItem,
+          type: DataVariableType,
+          variableType: DataCollectionStateType.currentItem,
           collectionId: 'my_collection',
           path: 'age',
         });
@@ -299,8 +275,8 @@ describe('Collection component', () => {
 
         firstGrandchild.set('name', {
           // @ts-ignore
-          type: DataCollectionVariableType,
-          variableType: DataCollectionStateVariableType.currentItem,
+          type: DataVariableType,
+          variableType: DataCollectionStateType.currentItem,
           collectionId: 'my_collection',
           path: 'age',
         });
@@ -353,18 +329,19 @@ describe('Collection component', () => {
       let thirdChild!: Component;
 
       beforeEach(() => {
-        cmp = wrapper.components({
+        const cmpDef = {
           type: DataCollectionType,
-          collectionDef: {
-            componentDef: {
+          components: {
+            type: DataCollectionItemType,
+            components: {
               type: 'default',
               components: [
                 {
                   type: 'default',
                   attributes: {
                     name: {
-                      type: DataCollectionVariableType,
-                      variableType: DataCollectionStateVariableType.currentItem,
+                      type: DataVariableType,
+                      variableType: DataCollectionStateType.currentItem,
                       collectionId: 'my_collection',
                       path: 'user',
                     },
@@ -373,28 +350,29 @@ describe('Collection component', () => {
               ],
               attributes: {
                 name: {
-                  type: DataCollectionVariableType,
-                  variableType: DataCollectionStateVariableType.currentItem,
+                  type: DataVariableType,
+                  variableType: DataCollectionStateType.currentItem,
                   collectionId: 'my_collection',
                   path: 'user',
                 },
               },
             },
-            collectionConfig: {
-              collectionId: 'my_collection',
-              dataSource: {
-                type: DataVariableType,
-                path: 'my_data_source_id',
-              },
+          },
+          dataResolver: {
+            collectionId: 'my_collection',
+            dataSource: {
+              type: DataVariableType,
+              path: 'my_data_source_id',
             },
           },
-        })[0];
+        } as ComponentDataCollectionProps;
+        cmp = wrapper.components(cmpDef)[0];
 
-        firstChild = cmp.components().at(0);
+        firstChild = cmp.components().at(0).components().at(0);
         firstGrandchild = firstChild.components().at(0);
-        secondChild = cmp.components().at(1);
+        secondChild = cmp.components().at(1).components().at(0);
         secondGrandchild = secondChild.components().at(0);
-        thirdChild = cmp.components().at(2);
+        thirdChild = cmp.components().at(2).components().at(0);
       });
 
       test('Evaluating to static value', () => {
@@ -446,8 +424,8 @@ describe('Collection component', () => {
         firstChild.setAttributes({
           name: {
             // @ts-ignore
-            type: DataCollectionVariableType,
-            variableType: DataCollectionStateVariableType.currentItem,
+            type: DataVariableType,
+            variableType: DataCollectionStateType.currentItem,
             collectionId: 'my_collection',
             path: 'age',
           },
@@ -471,8 +449,8 @@ describe('Collection component', () => {
         firstGrandchild.setAttributes({
           name: {
             // @ts-ignore
-            type: DataCollectionVariableType,
-            variableType: DataCollectionStateVariableType.currentItem,
+            type: DataVariableType,
+            variableType: DataCollectionStateType.currentItem,
             collectionId: 'my_collection',
             path: 'age',
           },
@@ -532,17 +510,18 @@ describe('Collection component', () => {
     });
 
     test('Traits', () => {
-      const cmp = wrapper.components({
+      const cmpDef = {
         type: DataCollectionType,
-        collectionDef: {
-          componentDef: {
+        components: {
+          type: DataCollectionItemType,
+          components: {
             type: 'default',
             traits: [
               {
                 name: 'attribute_trait',
                 value: {
-                  type: DataCollectionVariableType,
-                  variableType: DataCollectionStateVariableType.currentItem,
+                  type: DataVariableType,
+                  variableType: DataCollectionStateType.currentItem,
                   collectionId: 'my_collection',
                   path: 'user',
                 },
@@ -551,27 +530,28 @@ describe('Collection component', () => {
                 name: 'property_trait',
                 changeProp: true,
                 value: {
-                  type: DataCollectionVariableType,
-                  variableType: DataCollectionStateVariableType.currentItem,
+                  type: DataVariableType,
+                  variableType: DataCollectionStateType.currentItem,
                   collectionId: 'my_collection',
                   path: 'user',
                 },
               },
             ],
           },
-          collectionConfig: {
-            collectionId: 'my_collection',
-            dataSource: {
-              type: DataVariableType,
-              path: 'my_data_source_id',
-            },
+        },
+        dataResolver: {
+          collectionId: 'my_collection',
+          dataSource: {
+            type: DataVariableType,
+            path: 'my_data_source_id',
           },
         },
-      })[0];
+      } as ComponentDataCollectionProps;
+      const cmp = wrapper.components(cmpDef)[0] as unknown as ComponentDataCollection;
 
-      expect(cmp.components()).toHaveLength(3);
-      const firstChild = cmp.components().at(0);
-      const secondChild = cmp.components().at(1);
+      expect(cmp.getItemsCount()).toBe(3);
+      const firstChild = cmp.components().at(0).components().at(0);
+      const secondChild = cmp.components().at(1).components().at(0);
 
       expect(firstChild.getAttributes()['attribute_trait']).toBe('user1');
       expect(firstChild.getEl()?.getAttribute('attribute_trait')).toBe('user1');
@@ -593,27 +573,27 @@ describe('Collection component', () => {
   });
 
   describe('Serialization', () => {
-    let cmp: Component;
+    let cmp: ComponentDataCollection;
 
     beforeEach(() => {
-      const cmpDefinition = {
+      const childCmpDef = {
         type: 'default',
         name: {
-          type: DataCollectionVariableType,
-          variableType: DataCollectionStateVariableType.currentItem,
+          type: DataVariableType,
+          variableType: DataCollectionStateType.currentItem,
           collectionId: 'my_collection',
           path: 'user',
         },
         custom_prop: {
-          type: DataCollectionVariableType,
-          variableType: DataCollectionStateVariableType.currentIndex,
+          type: DataVariableType,
+          variableType: DataCollectionStateType.currentIndex,
           collectionId: 'my_collection',
           path: 'user',
         },
         attributes: {
           name: {
-            type: DataCollectionVariableType,
-            variableType: DataCollectionStateVariableType.currentItem,
+            type: DataVariableType,
+            variableType: DataCollectionStateType.currentItem,
             collectionId: 'my_collection',
             path: 'user',
           },
@@ -622,8 +602,8 @@ describe('Collection component', () => {
           {
             name: 'attribute_trait',
             value: {
-              type: DataCollectionVariableType,
-              variableType: DataCollectionStateVariableType.currentItem,
+              type: DataVariableType,
+              variableType: DataCollectionStateType.currentItem,
               collectionId: 'my_collection',
               path: 'user',
             },
@@ -632,8 +612,8 @@ describe('Collection component', () => {
             name: 'property_trait',
             changeProp: true,
             value: {
-              type: DataCollectionVariableType,
-              variableType: DataCollectionStateVariableType.currentItem,
+              type: DataVariableType,
+              variableType: DataCollectionStateType.currentItem,
               collectionId: 'my_collection',
               path: 'user',
             },
@@ -641,42 +621,42 @@ describe('Collection component', () => {
         ],
       };
 
-      const collectionComponentDefinition = {
+      const collectionCmpDef = {
         type: DataCollectionType,
-        collectionDef: {
-          componentDef: {
-            ...cmpDefinition,
-            components: [cmpDefinition, cmpDefinition],
+        components: [
+          {
+            ...childCmpDef,
+            components: [childCmpDef, childCmpDef],
           },
-          collectionConfig: {
-            collectionId: 'my_collection',
-            startIndex: 0,
-            endIndex: 1,
-            dataSource: {
-              type: DataVariableType,
-              path: 'my_data_source_id',
-            },
+        ],
+        dataResolver: {
+          collectionId: 'my_collection',
+          startIndex: 0,
+          endIndex: 1,
+          dataSource: {
+            type: DataVariableType,
+            path: 'my_data_source_id',
           },
         },
-      };
+      } as ComponentDataCollectionProps;
 
-      cmp = wrapper.components(collectionComponentDefinition)[0];
+      cmp = wrapper.components(collectionCmpDef)[0] as unknown as ComponentDataCollection;
     });
 
     test('Serializion with Collection Variables to JSON', () => {
       expect(cmp.toJSON()).toMatchSnapshot(`Collection with no grandchildren`);
 
-      const firstChild = cmp.components().at(0);
+      const firstItemCmp = cmp.getCollectionItemComponents().at(0);
       const newChildDefinition = {
         type: 'default',
         name: {
-          type: DataCollectionVariableType,
-          variableType: DataCollectionStateVariableType.currentIndex,
+          type: DataVariableType,
+          variableType: DataCollectionStateType.currentIndex,
           collectionId: 'my_collection',
           path: 'user',
         },
       };
-      firstChild.components().at(0).components(newChildDefinition);
+      firstItemCmp.components(newChildDefinition);
       expect(cmp.toJSON()).toMatchSnapshot(`Collection with grandchildren`);
     });
 
@@ -684,25 +664,149 @@ describe('Collection component', () => {
       const projectData = editor.getProjectData();
       const page = projectData.pages[0];
       const frame = page.frames[0];
-      const component = frame.component.components[0];
+      const component = frame.component.components[0] as ComponentDataCollection;
 
       expect(component).toMatchSnapshot(`Collection with no grandchildren`);
 
-      const firstChild = cmp.components().at(0);
+      const firstItemCmp = cmp.getCollectionItemComponents().at(0);
       const newChildDefinition = {
         type: 'default',
         name: {
-          type: DataCollectionVariableType,
-          variableType: DataCollectionStateVariableType.currentIndex,
+          type: DataVariableType,
+          variableType: DataCollectionStateType.currentIndex,
           collectionId: 'my_collection',
           path: 'user',
         },
       };
-      firstChild.components().at(0).components(newChildDefinition);
+      firstItemCmp.components(newChildDefinition);
       expect(cmp.toJSON()).toMatchSnapshot(`Collection with grandchildren`);
     });
 
     test('Loading', () => {
+      const cmpDef = {
+        type: DataCollectionType,
+        components: [
+          {
+            type: DataCollectionItemType,
+            components: {
+              attributes: {
+                attribute_trait: {
+                  path: 'user',
+                  type: DataVariableType,
+                  variableType: DataCollectionStateType.currentItem,
+                },
+                name: {
+                  path: 'user',
+                  type: DataVariableType,
+                  collectionId: 'my_collection',
+                  variableType: DataCollectionStateType.currentItem,
+                },
+              },
+              components: [
+                {
+                  attributes: {
+                    attribute_trait: {
+                      path: 'user',
+                      type: DataVariableType,
+                      collectionId: 'my_collection',
+                      variableType: DataCollectionStateType.currentItem,
+                    },
+                    name: {
+                      path: 'user',
+                      type: DataVariableType,
+                      collectionId: 'my_collection',
+                      variableType: DataCollectionStateType.currentItem,
+                    },
+                  },
+                  name: {
+                    path: 'user',
+                    type: DataVariableType,
+                    collectionId: 'my_collection',
+                    variableType: DataCollectionStateType.currentItem,
+                  },
+                  custom_prop: {
+                    path: 'user',
+                    type: DataVariableType,
+                    collectionId: 'my_collection',
+                    variableType: 'currentIndex',
+                  },
+                  property_trait: {
+                    path: 'user',
+                    type: DataVariableType,
+                    collectionId: 'my_collection',
+                    variableType: DataCollectionStateType.currentItem,
+                  },
+                  type: 'default',
+                },
+                {
+                  attributes: {
+                    attribute_trait: {
+                      path: 'user',
+                      type: DataVariableType,
+                      collectionId: 'my_collection',
+                      variableType: DataCollectionStateType.currentItem,
+                    },
+                    name: {
+                      path: 'user',
+                      type: DataVariableType,
+                      collectionId: 'my_collection',
+                      variableType: DataCollectionStateType.currentItem,
+                    },
+                  },
+                  name: {
+                    path: 'user',
+                    type: DataVariableType,
+                    collectionId: 'my_collection',
+                    variableType: DataCollectionStateType.currentItem,
+                  },
+                  custom_prop: {
+                    path: 'user',
+                    type: DataVariableType,
+                    collectionId: 'my_collection',
+                    variableType: 'currentIndex',
+                  },
+                  property_trait: {
+                    path: 'user',
+                    type: DataVariableType,
+                    collectionId: 'my_collection',
+                    variableType: DataCollectionStateType.currentItem,
+                  },
+                  type: 'default',
+                },
+              ],
+              name: {
+                path: 'user',
+                type: DataVariableType,
+                collectionId: 'my_collection',
+                variableType: DataCollectionStateType.currentItem,
+              },
+              custom_prop: {
+                path: 'user',
+                type: DataVariableType,
+                collectionId: 'my_collection',
+                variableType: 'currentIndex',
+              },
+              property_trait: {
+                path: 'user',
+                type: DataVariableType,
+                collectionId: 'my_collection',
+                variableType: DataCollectionStateType.currentItem,
+              },
+              type: 'default',
+            },
+          },
+        ],
+        dataResolver: {
+          collectionId: 'my_collection',
+          dataSource: {
+            path: 'my_data_source_id',
+            type: DataVariableType,
+          },
+          endIndex: 1,
+          startIndex: 0,
+        },
+      } as ComponentDataCollectionProps;
+
       const componentProjectData: ProjectData = {
         assets: [],
         pages: [
@@ -710,128 +814,7 @@ describe('Collection component', () => {
             frames: [
               {
                 component: {
-                  components: [
-                    {
-                      collectionDef: {
-                        componentDef: {
-                          attributes: {
-                            attribute_trait: {
-                              path: 'user',
-                              type: DataCollectionVariableType,
-                              variableType: DataCollectionStateVariableType.currentItem,
-                            },
-                            name: {
-                              path: 'user',
-                              type: DataCollectionVariableType,
-                              collectionId: 'my_collection',
-                              variableType: DataCollectionStateVariableType.currentItem,
-                            },
-                          },
-                          components: [
-                            {
-                              attributes: {
-                                attribute_trait: {
-                                  path: 'user',
-                                  type: DataCollectionVariableType,
-                                  collectionId: 'my_collection',
-                                  variableType: DataCollectionStateVariableType.currentItem,
-                                },
-                                name: {
-                                  path: 'user',
-                                  type: DataCollectionVariableType,
-                                  collectionId: 'my_collection',
-                                  variableType: DataCollectionStateVariableType.currentItem,
-                                },
-                              },
-                              name: {
-                                path: 'user',
-                                type: DataCollectionVariableType,
-                                collectionId: 'my_collection',
-                                variableType: DataCollectionStateVariableType.currentItem,
-                              },
-                              custom_prop: {
-                                path: 'user',
-                                type: DataCollectionVariableType,
-                                collectionId: 'my_collection',
-                                variableType: 'currentIndex',
-                              },
-                              property_trait: {
-                                path: 'user',
-                                type: DataCollectionVariableType,
-                                collectionId: 'my_collection',
-                                variableType: DataCollectionStateVariableType.currentItem,
-                              },
-                              type: 'default',
-                            },
-                            {
-                              attributes: {
-                                attribute_trait: {
-                                  path: 'user',
-                                  type: DataCollectionVariableType,
-                                  collectionId: 'my_collection',
-                                  variableType: DataCollectionStateVariableType.currentItem,
-                                },
-                                name: {
-                                  path: 'user',
-                                  type: DataCollectionVariableType,
-                                  collectionId: 'my_collection',
-                                  variableType: DataCollectionStateVariableType.currentItem,
-                                },
-                              },
-                              name: {
-                                path: 'user',
-                                type: DataCollectionVariableType,
-                                collectionId: 'my_collection',
-                                variableType: DataCollectionStateVariableType.currentItem,
-                              },
-                              custom_prop: {
-                                path: 'user',
-                                type: DataCollectionVariableType,
-                                collectionId: 'my_collection',
-                                variableType: 'currentIndex',
-                              },
-                              property_trait: {
-                                path: 'user',
-                                type: DataCollectionVariableType,
-                                collectionId: 'my_collection',
-                                variableType: DataCollectionStateVariableType.currentItem,
-                              },
-                              type: 'default',
-                            },
-                          ],
-                          name: {
-                            path: 'user',
-                            type: DataCollectionVariableType,
-                            collectionId: 'my_collection',
-                            variableType: DataCollectionStateVariableType.currentItem,
-                          },
-                          custom_prop: {
-                            path: 'user',
-                            type: DataCollectionVariableType,
-                            collectionId: 'my_collection',
-                            variableType: 'currentIndex',
-                          },
-                          property_trait: {
-                            path: 'user',
-                            type: DataCollectionVariableType,
-                            collectionId: 'my_collection',
-                            variableType: DataCollectionStateVariableType.currentItem,
-                          },
-                          type: 'default',
-                        },
-                        collectionConfig: {
-                          collectionId: 'my_collection',
-                          dataSource: {
-                            path: 'my_data_source_id',
-                            type: DataVariableType,
-                          },
-                          endIndex: 1,
-                          startIndex: 0,
-                        },
-                      },
-                      type: DataCollectionType,
-                    },
-                  ],
+                  components: [cmpDef],
                   docEl: {
                     tagName: 'html',
                   },
@@ -863,10 +846,10 @@ describe('Collection component', () => {
       editor.loadProjectData(componentProjectData);
 
       const components = editor.getComponents();
-      const component = components.models[0];
-      const firstChild = component.components().at(0);
+      const component = components.models[0] as ComponentDataCollection;
+      const firstChild = component.components().at(0).components().at(0);
       const firstGrandchild = firstChild.components().at(0);
-      const secondChild = component.components().at(1);
+      const secondChild = component.components().at(1).components().at(0);
       const secondGrandchild = secondChild.components().at(0);
 
       expect(firstChild.get('name')).toBe('user1');
@@ -894,33 +877,35 @@ describe('Collection component', () => {
 
   describe('Configuration options', () => {
     test('Collection with start and end indexes', () => {
-      const cmp = wrapper.components({
+      const cmpDef = {
         type: DataCollectionType,
-        collectionDef: {
-          componentDef: {
+        components: {
+          type: DataCollectionItemType,
+          components: {
             type: 'default',
             name: {
-              type: DataCollectionVariableType,
-              variableType: DataCollectionStateVariableType.currentItem,
+              type: DataVariableType,
+              variableType: DataCollectionStateType.currentItem,
               collectionId: 'my_collection',
               path: 'user',
             },
           },
-          collectionConfig: {
-            startIndex: 1,
-            endIndex: 2,
-            collectionId: 'my_collection',
-            dataSource: {
-              type: DataVariableType,
-              path: 'my_data_source_id',
-            },
+        },
+        dataResolver: {
+          startIndex: 1,
+          endIndex: 2,
+          collectionId: 'my_collection',
+          dataSource: {
+            type: DataVariableType,
+            path: 'my_data_source_id',
           },
         },
-      })[0];
+      } as ComponentDataCollectionProps;
+      const cmp = wrapper.components(cmpDef)[0] as unknown as ComponentDataCollection;
 
       expect(cmp.components()).toHaveLength(2);
-      const firstChild = cmp.components().at(0);
-      const secondChild = cmp.components().at(1);
+      const firstChild = cmp.components().at(0).components().at(0);
+      const secondChild = cmp.components().at(1).components().at(0);
 
       expect(firstChild.get('name')).toBe('user2');
       expect(secondChild.get('name')).toBe('user3');
@@ -929,32 +914,33 @@ describe('Collection component', () => {
 
   describe('Diffirent Collection variable types', () => {
     const stateVariableTests = [
-      { variableType: DataCollectionStateVariableType.currentIndex, expectedValues: [0, 1, 2] },
-      { variableType: DataCollectionStateVariableType.startIndex, expectedValues: [0, 0, 0] },
-      { variableType: DataCollectionStateVariableType.endIndex, expectedValues: [2, 2, 2] },
+      { variableType: DataCollectionStateType.currentIndex, expectedValues: [0, 1, 2] },
+      { variableType: DataCollectionStateType.startIndex, expectedValues: [0, 0, 0] },
+      { variableType: DataCollectionStateType.endIndex, expectedValues: [2, 2, 2] },
       {
-        variableType: DataCollectionStateVariableType.collectionId,
+        variableType: DataCollectionStateType.collectionId,
         expectedValues: ['my_collection', 'my_collection', 'my_collection'],
       },
-      { variableType: DataCollectionStateVariableType.totalItems, expectedValues: [3, 3, 3] },
-      { variableType: DataCollectionStateVariableType.remainingItems, expectedValues: [2, 1, 0] },
+      { variableType: DataCollectionStateType.totalItems, expectedValues: [3, 3, 3] },
+      { variableType: DataCollectionStateType.remainingItems, expectedValues: [2, 1, 0] },
     ];
 
     stateVariableTests.forEach(({ variableType, expectedValues }) => {
       test(`Variable type: ${variableType}`, () => {
-        const cmp = wrapper.components({
+        const cmpDef = {
           type: DataCollectionType,
-          collectionDef: {
-            componentDef: {
+          components: {
+            type: DataCollectionItemType,
+            components: {
               type: 'default',
               name: {
-                type: DataCollectionVariableType,
+                type: DataVariableType,
                 variableType: variableType,
                 collectionId: 'my_collection',
               },
               attributes: {
                 custom_attribute: {
-                  type: DataCollectionVariableType,
+                  type: DataVariableType,
                   variableType: variableType,
                   collectionId: 'my_collection',
                 },
@@ -963,7 +949,7 @@ describe('Collection component', () => {
                 {
                   name: 'attribute_trait',
                   value: {
-                    type: DataCollectionVariableType,
+                    type: DataVariableType,
                     variableType: variableType,
                     collectionId: 'my_collection',
                   },
@@ -972,31 +958,33 @@ describe('Collection component', () => {
                   name: 'property_trait',
                   changeProp: true,
                   value: {
-                    type: DataCollectionVariableType,
+                    type: DataVariableType,
                     variableType: variableType,
                     collectionId: 'my_collection',
                   },
                 },
               ],
             },
-            collectionConfig: {
-              collectionId: 'my_collection',
-              dataSource: {
-                type: DataVariableType,
-                path: 'my_data_source_id',
-              },
+          },
+          dataResolver: {
+            collectionId: 'my_collection',
+            dataSource: {
+              type: DataVariableType,
+              path: 'my_data_source_id',
             },
           },
-        })[0];
+        } as ComponentDataCollectionProps;
+        const cmp = wrapper.components(cmpDef)[0] as unknown as ComponentDataCollection;
+
+        expect(cmp.getItemsCount()).toBe(3);
 
         const children = cmp.components();
-        expect(children).toHaveLength(3);
-
         children.each((child, index) => {
-          expect(child.get('name')).toBe(expectedValues[index]);
-          expect(child.get('property_trait')).toBe(expectedValues[index]);
-          expect(child.getAttributes()['custom_attribute']).toBe(expectedValues[index]);
-          expect(child.getAttributes()['attribute_trait']).toBe(expectedValues[index]);
+          const content = child.components().at(0);
+          expect(content.get('name')).toBe(expectedValues[index]);
+          expect(content.get('property_trait')).toBe(expectedValues[index]);
+          expect(content.getAttributes()['custom_attribute']).toBe(expectedValues[index]);
+          expect(content.getAttributes()['attribute_trait']).toBe(expectedValues[index]);
         });
       });
     });

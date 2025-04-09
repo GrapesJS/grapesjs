@@ -1,17 +1,22 @@
 import { bindAll, isArray } from 'underscore';
 import { ObjectAny } from '../../../common';
-import Component from '../../../dom_components/model/Component';
-import { ComponentDefinition, ComponentOptions } from '../../../dom_components/model/types';
+import Component, { keySymbol } from '../../../dom_components/model/Component';
+import { ComponentAddType, ComponentDefinitionDefined, ComponentOptions } from '../../../dom_components/model/types';
 import EditorModel from '../../../editor/model/Editor';
-import { isObject, serialize, toLowerCase } from '../../../utils/mixins';
+import { isObject, toLowerCase } from '../../../utils/mixins';
 import DataResolverListener from '../DataResolverListener';
 import DataSource from '../DataSource';
 import DataVariable, { DataVariableProps, DataVariableType } from '../DataVariable';
-import { ensureComponentInstance, isDataVariable } from '../../utils';
-import { DataCollectionType, keyCollectionDefinition, keyCollectionsStateMap, keyIsCollectionItem } from './constants';
+import { isDataVariable } from '../../utils';
+import {
+  DataCollectionItemType,
+  DataCollectionType,
+  keyCollectionDefinition,
+  keyCollectionsStateMap,
+  keyIsCollectionItem,
+} from './constants';
 import {
   ComponentDataCollectionProps,
-  DataCollectionConfig,
   DataCollectionDataSource,
   DataCollectionProps,
   DataCollectionState,
@@ -21,28 +26,42 @@ import { getSymbolsToUpdate } from '../../../dom_components/model/SymbolUtils';
 import { StyleProps, UpdateStyleOptions } from '../../../domain_abstract/model/StyleableModel';
 import { updateFromWatcher } from '../../../dom_components/model/ComponentDataResolverWatchers';
 
+const AvoidStoreOptions = { avoidStore: true, partial: true };
 export default class ComponentDataCollection extends Component {
   dataSourceWatcher?: DataResolverListener;
 
+  get defaults(): ComponentDefinitionDefined {
+    return {
+      // @ts-ignore
+      ...super.defaults,
+      droppable: false,
+      type: DataCollectionType,
+      components: [
+        {
+          type: DataCollectionItemType,
+        },
+      ],
+    };
+  }
+
   constructor(props: ComponentDataCollectionProps, opt: ComponentOptions) {
-    const collectionDef = props[keyCollectionDefinition];
+    const dataResolver = props[keyCollectionDefinition];
 
     if (opt.forCloning) {
       return super(props as any, opt) as unknown as ComponentDataCollection;
     }
 
     const em = opt.em;
-    const newProps = { ...props, components: undefined, droppable: false } as any;
+    const newProps = { ...props, droppable: false } as any;
     const cmp: ComponentDataCollection = super(newProps, opt) as unknown as ComponentDataCollection;
-
-    if (!collectionDef) {
+    if (!dataResolver) {
       em.logError('missing collection definition');
       return cmp;
     }
 
-    this.rebuildChildrenFromCollection();
     bindAll(this, 'rebuildChildrenFromCollection');
     this.listenTo(this, `change:${keyCollectionDefinition}`, this.rebuildChildrenFromCollection);
+    this.rebuildChildrenFromCollection();
     this.listenToDataSource();
 
     return cmp;
@@ -59,27 +78,27 @@ export default class ComponentDataCollection extends Component {
   }
 
   getConfigStartIndex() {
-    return this.collectionConfig.startIndex;
+    return this.dataResolver.startIndex;
   }
 
   getConfigEndIndex() {
-    return this.collectionConfig.endIndex;
-  }
-
-  getComponentDef(): ComponentDefinition {
-    return this.getFirstChildJSON();
+    return this.dataResolver.endIndex;
   }
 
   getDataSource(): DataCollectionDataSource {
-    return this.collectionDef?.collectionConfig?.dataSource;
+    return this.dataResolver?.dataSource;
   }
 
   getCollectionId(): string {
-    return this.collectionDef?.collectionConfig?.collectionId;
+    return this.dataResolver?.collectionId;
   }
 
-  setComponentDef(componentDef: ComponentDefinition) {
-    this.set(keyCollectionDefinition, { ...this.collectionDef, componentDef });
+  getCollectionItemComponents() {
+    return this.firstChild.components();
+  }
+
+  setCollectionId(collectionId: string) {
+    this.updateCollectionConfig({ collectionId });
   }
 
   setStartIndex(startIndex: number): void {
@@ -95,49 +114,42 @@ export default class ComponentDataCollection extends Component {
     this.updateCollectionConfig({ endIndex });
   }
 
-  private updateCollectionConfig(updates: Partial<DataCollectionConfig>): void {
+  private updateCollectionConfig(updates: Partial<DataCollectionProps>): void {
     this.set(keyCollectionDefinition, {
-      ...this.collectionDef,
-      collectionConfig: {
-        ...this.collectionConfig,
-        ...updates,
-      },
+      ...this.dataResolver,
+      ...updates,
     });
   }
 
   setDataSource(dataSource: DataCollectionDataSource) {
     this.set(keyCollectionDefinition, {
-      ...this.collectionDef,
-      collectionConfig: { ...this.collectionConfig, dataSource },
+      ...this.dataResolver,
+      dataSource,
     });
   }
 
+  setCollectionItemComponents(content: ComponentAddType) {
+    this.firstChild.components(content);
+  }
+
+  private get firstChild() {
+    return this.components().at(0);
+  }
+
   private getDataSourceItems() {
-    return this.collectionDef?.collectionConfig ? getDataSourceItems(this.collectionConfig.dataSource, this.em) : [];
+    return getDataSourceItems(this.dataResolver.dataSource, this.em);
   }
 
   private getCollectionStateMap() {
     return (this.get(keyCollectionsStateMap) || {}) as DataCollectionStateMap;
   }
 
-  private get collectionDef() {
+  private get dataResolver() {
     return (this.get(keyCollectionDefinition) || {}) as DataCollectionProps;
   }
 
-  private get collectionConfig() {
-    return (this.collectionDef?.collectionConfig || {}) as DataCollectionConfig;
-  }
-
   private get collectionDataSource() {
-    return this.collectionConfig.dataSource;
-  }
-
-  private getFirstChildJSON() {
-    const firstChild = this.components().at(0);
-    const firstChildJSON = firstChild ? serialize(firstChild) : this.collectionDef.componentDef;
-    delete firstChildJSON?.draggable;
-    delete firstChildJSON?.removable;
-    return firstChildJSON;
+    return this.dataResolver.dataSource;
   }
 
   private listenToDataSource() {
@@ -146,7 +158,10 @@ export default class ComponentDataCollection extends Component {
     if (!path) return;
     this.dataSourceWatcher = new DataResolverListener({
       em,
-      resolver: new DataVariable({ type: DataVariableType, path }, { em }),
+      resolver: new DataVariable(
+        { type: DataVariableType, path },
+        { em, collectionsStateMap: this.get(keyCollectionsStateMap) },
+      ),
       onUpdate: this.rebuildChildrenFromCollection,
     });
   }
@@ -155,16 +170,18 @@ export default class ComponentDataCollection extends Component {
     this.components().reset(this.getCollectionItems(), updateFromWatcher as any);
   }
 
-  getCollectionItems() {
-    const { componentDef, collectionConfig } = this.collectionDef;
-    const result = validateCollectionConfig(collectionConfig, componentDef, this.em);
+  private getCollectionItems() {
+    const firstChild = this.ensureFirstChild();
+    // TODO: Move to component view
+    firstChild.addStyle({ display: 'none' }, AvoidStoreOptions);
+    const components: Component[] = [firstChild];
 
+    const result = validateCollectionDef(this.dataResolver, this.em);
     if (!result) {
-      return [];
+      return components;
     }
 
-    const components: Component[] = [];
-    const collectionId = collectionConfig.collectionId;
+    const collectionId = this.dataResolver.collectionId;
     const items = this.getDataSourceItems();
 
     const startIndex = this.getConfigStartIndex() ?? 0;
@@ -172,8 +189,14 @@ export default class ComponentDataCollection extends Component {
     const endIndex = Math.min(items.length - 1, configEndIndex);
     const totalItems = endIndex - startIndex + 1;
     const parentCollectionStateMap = this.getCollectionStateMap();
+    if (parentCollectionStateMap[collectionId]) {
+      this.em.logError(
+        `The collection ID "${collectionId}" already exists in the parent collection state. Overriding it is not allowed.`,
+      );
 
-    let symbolMain: Component;
+      return components;
+    }
+
     for (let index = startIndex; index <= endIndex; index++) {
       const item = items[index];
       const isFirstItem = index === startIndex;
@@ -187,36 +210,40 @@ export default class ComponentDataCollection extends Component {
         remainingItems: totalItems - (index + 1),
       };
 
-      if (parentCollectionStateMap[collectionId]) {
-        this.em.logError(
-          `The collection ID "${collectionId}" already exists in the parent collection state. Overriding it is not allowed.`,
-        );
-        return [];
-      }
-
       const collectionsStateMap: DataCollectionStateMap = {
         ...parentCollectionStateMap,
         [collectionId]: collectionState,
       };
 
       if (isFirstItem) {
-        symbolMain = ensureComponentInstance(
-          {
-            ...componentDef,
-            draggable: false,
-            removable: false,
-          },
-          this.opt,
-        );
+        setCollectionStateMapAndPropagate(firstChild, collectionsStateMap, collectionId);
+        // TODO: Move to component view
+        firstChild.addStyle({ display: '' }, AvoidStoreOptions);
+
+        continue;
       }
 
-      const instance = symbolMain!.clone({ symbol: true });
-      !isFirstItem && instance.set('locked', true);
-      setCollectionStateMapAndPropagate(collectionsStateMap, collectionId)(instance);
+      const instance = firstChild!.clone({ symbol: true });
+      instance.set('locked', true, AvoidStoreOptions);
+      setCollectionStateMapAndPropagate(instance, collectionsStateMap, collectionId);
       components.push(instance);
     }
 
     return components;
+  }
+
+  private ensureFirstChild() {
+    const dataConditionItemModel = this.em.Components.getType(DataCollectionItemType)!.model;
+
+    return (
+      this.firstChild ||
+      new dataConditionItemModel(
+        {
+          type: DataCollectionItemType,
+        },
+        this.opt,
+      )
+    );
   }
 
   static isComponent(el: HTMLElement) {
@@ -225,19 +252,33 @@ export default class ComponentDataCollection extends Component {
 
   toJSON(opts?: ObjectAny) {
     const json = super.toJSON.call(this, opts) as ComponentDataCollectionProps;
-    json[keyCollectionDefinition].componentDef = this.getFirstChildJSON();
-    delete json.components;
     delete json.droppable;
-    return json;
+    delete json[keySymbol];
+    delete json.attributes?.id;
+
+    const firstChild = this.firstChild as any;
+    return { ...json, components: [firstChild] };
   }
 }
 
-function setCollectionStateMapAndPropagate(collectionsStateMap: DataCollectionStateMap, collectionId: string) {
-  return (cmp: Component) => {
+function applyToComponentAndChildren(operation: (cmp: Component) => void, component: Component) {
+  operation(component);
+
+  component.components().forEach((child) => {
+    applyToComponentAndChildren(operation, child);
+  });
+}
+
+function setCollectionStateMapAndPropagate(
+  cmp: Component,
+  collectionsStateMap: DataCollectionStateMap,
+  collectionId: string,
+) {
+  applyToComponentAndChildren(() => {
     setCollectionStateMap(collectionsStateMap)(cmp);
 
     const addListener = (component: Component) => {
-      setCollectionStateMapAndPropagate(collectionsStateMap, collectionId)(component);
+      setCollectionStateMapAndPropagate(component, collectionsStateMap, collectionId);
     };
 
     const listenerKey = `_hasAddListener${collectionId ? `_${collectionId}` : ''}`;
@@ -265,12 +306,10 @@ function setCollectionStateMapAndPropagate(collectionsStateMap: DataCollectionSt
       cmp.listenTo(cmps, 'remove', removeListener);
     }
 
-    cmps?.toArray().forEach((component: Component) => {
-      setCollectionStateMapAndPropagate(collectionsStateMap, collectionId)(component);
-    });
+    cmps.forEach((cmp) => setCollectionStateMapAndPropagate(cmp, collectionsStateMap, collectionId));
 
     cmp.on(`change:${keyCollectionsStateMap}`, handleCollectionStateMapChange);
-  };
+  }, cmp);
 }
 
 function handleCollectionStateMapChange(this: Component) {
@@ -290,25 +329,19 @@ function logErrorIfMissing(property: any, propertyPath: string, em: EditorModel)
   return true;
 }
 
-function validateCollectionConfig(
-  collectionConfig: DataCollectionConfig,
-  componentDef: ComponentDefinition,
-  em: EditorModel,
-) {
+function validateCollectionDef(dataResolver: DataCollectionProps, em: EditorModel) {
   const validations = [
-    { property: collectionConfig, propertyPath: 'collectionConfig' },
-    { property: componentDef, propertyPath: 'componentDef' },
-    { property: collectionConfig?.collectionId, propertyPath: 'collectionConfig.collectionId' },
-    { property: collectionConfig?.dataSource, propertyPath: 'collectionConfig.dataSource' },
+    { property: dataResolver?.collectionId, propertyPath: 'dataResolver.collectionId' },
+    { property: dataResolver?.dataSource, propertyPath: 'dataResolver.dataSource' },
   ];
 
-  for (const { property, propertyPath } of validations) {
-    if (!logErrorIfMissing(property, propertyPath, em)) {
+  for (const { propertyPath } of validations) {
+    if (!logErrorIfMissing(dataResolver, propertyPath, em)) {
       return [];
     }
   }
 
-  const startIndex = collectionConfig?.startIndex;
+  const startIndex = dataResolver?.startIndex;
 
   if (startIndex !== undefined && (startIndex < 0 || !Number.isInteger(startIndex))) {
     em.logError(`Invalid startIndex: ${startIndex}. It must be a non-negative integer.`);
@@ -364,16 +397,18 @@ function getDataSourceItems(dataSource: DataCollectionDataSource, em: EditorMode
       break;
     }
     case isDataVariable(dataSource): {
-      const isDataSourceId = dataSource.path.split('.').length === 1;
+      const path = dataSource.path;
+      if (!path) break;
+      const isDataSourceId = path.split('.').length === 1;
       if (isDataSourceId) {
-        const id = dataSource.path;
-        items = listDataSourceVariables(id, em);
+        items = listDataSourceVariables(path, em);
       } else {
-        items = em.DataSources.getValue(dataSource.path, []);
+        items = em.DataSources.getValue(path, []);
       }
       break;
     }
     default:
+      break;
   }
 
   return items;

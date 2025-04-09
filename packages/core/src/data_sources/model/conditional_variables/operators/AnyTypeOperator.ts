@@ -1,6 +1,5 @@
 import DataVariable from '../../DataVariable';
 import { Operator } from './BaseOperator';
-import EditorModel from '../../../../editor/model/Editor';
 
 export enum AnyTypeOperation {
   equals = 'equals',

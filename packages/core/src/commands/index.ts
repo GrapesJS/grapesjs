@@ -176,7 +176,7 @@ export default class CommandsModule extends Module<CommandsConfig & { pStylePref
           });
         } else {
           if (nativeDrag) {
-            event.dataTransfer.setDragImage(target.view?.el, 0, 0);
+            event?.dataTransfer?.setDragImage(target.view?.el, 0, 0);
             //sel.set('status', 'freezed');
           }
 

@@ -1,5 +1,4 @@
 import { ObjectAny } from '../../common';
-import { DataCollectionVariableType } from '../../data_sources/model/data_collection/constants';
 import { DataCollectionStateMap } from '../../data_sources/model/data_collection/types';
 import DataResolverListener from '../../data_sources/model/DataResolverListener';
 import { getDataResolverInstance, getDataResolverInstanceValue, isDataResolverProps } from '../../data_sources/utils';
@@ -21,7 +20,7 @@ type UpdateFn = (component: Component | undefined, key: string, value: any) => v
 
 export class ComponentResolverWatcher {
   private em: EditorModel;
-  private collectionsStateMap?: DataCollectionStateMap;
+  private collectionsStateMap: DataCollectionStateMap = {};
   private resolverListeners: Record<string, DataResolverListener> = {};
 
   constructor(
@@ -30,7 +29,7 @@ export class ComponentResolverWatcher {
     options: ComponentResolverWatcherOptions,
   ) {
     this.em = options.em;
-    this.collectionsStateMap = options.collectionsStateMap;
+    this.collectionsStateMap = options.collectionsStateMap ?? {};
   }
 
   bindComponent(component: Component) {
@@ -40,14 +39,12 @@ export class ComponentResolverWatcher {
   updateCollectionStateMap(collectionsStateMap: DataCollectionStateMap) {
     this.collectionsStateMap = collectionsStateMap;
 
-    const collectionVariablesKeys = this.getDynamicValuesOfType(DataCollectionVariableType);
-    const collectionVariablesObject = collectionVariablesKeys.reduce(
-      (acc: { [key: string]: DataResolverProps | null }, key) => {
-        acc[key] = null;
-        return acc;
-      },
-      {},
-    );
+    const collectionVariablesKeys = this.getValuesResolvingFromCollections();
+    const collectionVariablesObject: { [key: string]: DataResolverProps | null } = {};
+    collectionVariablesKeys.forEach((key) => {
+      this.resolverListeners[key].resolver.updateCollectionsStateMap(collectionsStateMap);
+      collectionVariablesObject[key] = null;
+    });
     const newVariables = this.getSerializableValues(collectionVariablesObject);
     const evaluatedValues = this.addDynamicValues(newVariables);
 
@@ -164,10 +161,9 @@ export class ComponentResolverWatcher {
     return serializableValues;
   }
 
-  getDynamicValuesOfType(type: DataResolverProps['type']) {
+  getValuesResolvingFromCollections() {
     const keys = Object.keys(this.resolverListeners).filter((key: string) => {
-      // @ts-ignore
-      return this.resolverListeners[key].resolver.get('type') === type;
+      return this.resolverListeners[key].resolver.resolvesFromCollection();
     });
 
     return keys;

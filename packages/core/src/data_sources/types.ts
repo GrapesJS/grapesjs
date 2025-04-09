@@ -1,14 +1,12 @@
 import { Model, Collection, ObjectAny } from '../common';
-import DataCollectionVariable from './model/data_collection/DataCollectionVariable';
-import { DataCollectionVariableProps } from './model/data_collection/types';
 import DataRecord from './model/DataRecord';
 import DataRecords from './model/DataRecords';
 import DataVariable, { DataVariableProps } from './model/DataVariable';
 import { DataConditionProps, DataCondition } from './model/conditional_variables/DataCondition';
 
-export type DataResolver = DataVariable | DataCondition | DataCollectionVariable;
+export type DataResolver = DataVariable | DataCondition;
 
-export type DataResolverProps = DataVariableProps | DataConditionProps | DataCollectionVariableProps;
+export type DataResolverProps = DataVariableProps | DataConditionProps;
 
 export interface DataRecordProps extends ObjectAny {
   /**
