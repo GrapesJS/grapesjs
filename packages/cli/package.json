@@ -41,7 +41,7 @@
     "listr": "^0.14.3",
     "lodash.template": "^4.5.0",
     "rimraf": "^4.1.2",
-    "spdx-license-list": "^6.6.0",
+    "spdx-license-list": "^6.10.0",
     "terser-webpack-plugin": "^5.3.14",
     "webpack": "5.94.0",
     "webpack-cli": "5.1.4",

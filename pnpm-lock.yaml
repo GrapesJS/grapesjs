@@ -181,8 +181,8 @@ importers:
         specifier: ^4.1.2
         version: 4.4.1
       spdx-license-list:
-        specifier: ^6.6.0
-        version: 6.9.0
+        specifier: ^6.10.0
+        version: 6.10.0
       terser-webpack-plugin:
         specifier: ^5.3.14
         version: 5.3.14(webpack@5.94.0(webpack-cli@5.1.4))
@@ -7520,8 +7520,8 @@ packages:
   spdx-license-ids@3.0.20:
     resolution: {integrity: sha512-jg25NiDV/1fLtSgEgyvVyDunvaNHbuwF9lfNV17gSmPFAlYzdfNBlLtLzXTevwkPj7DhGbmN9VnmJIgLnhvaBw==}
 
-  spdx-license-list@6.9.0:
-    resolution: {integrity: sha512-L2jl5vc2j6jxWcNCvcVj/BW9A8yGIG02Dw+IUw0ZxDM70f7Ylf5Hq39appV1BI9yxyWQRpq2TQ1qaXvf+yjkqA==}
+  spdx-license-list@6.10.0:
+    resolution: {integrity: sha512-wF3RhDFoqdu14d1Prv6c8aNU0FSRuSFJpNjWeygIZcNZEwPxp7I5/Hwo8j6lSkBKWAIkSQrKefrC5N0lvOP0Gw==}
     engines: {node: '>=8'}
 
   spdy-transport@3.0.0:
@@ -17803,7 +17803,7 @@ snapshots:
 
   spdx-license-ids@3.0.20: {}
 
-  spdx-license-list@6.9.0: {}
+  spdx-license-list@6.10.0: {}
 
   spdy-transport@3.0.0(supports-color@6.1.0):
     dependencies:
