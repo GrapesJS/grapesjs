@@ -51,7 +51,7 @@
   "devDependencies": {
     "@types/webpack-node-externals": "^3.0.0",
     "copy-webpack-plugin": "^11.0.0",
-    "fork-ts-checker-webpack-plugin": "^8.0.0",
+    "fork-ts-checker-webpack-plugin": "^9.1.0",
     "webpack-node-externals": "^3.0.0"
   }
 }
