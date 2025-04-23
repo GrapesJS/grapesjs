@@ -169,7 +169,9 @@ export default class ComponentDataCollection extends Component {
 
   private getCollectionItems() {
     const firstChild = this.ensureFirstChild();
-    const initialDisplayValue = firstChild.getStyle()['display'] ?? '';
+    const displayStyle = firstChild.getStyle()['display'];
+    const isDisplayNoneOrMissing = !displayStyle || displayStyle === 'none';
+    const resolvedDisplay = isDisplayNoneOrMissing ? '' : displayStyle;
     // TODO: Move to component view
     firstChild.addStyle({ display: 'none' }, AvoidStoreOptions);
     const components: Component[] = [firstChild];
@@ -201,7 +203,7 @@ export default class ComponentDataCollection extends Component {
 
         setCollectionStateMapAndPropagate(firstChild, collectionsStateMap);
         // TODO: Move to component view
-        firstChild.addStyle({ display: initialDisplayValue }, AvoidStoreOptions);
+        firstChild.addStyle({ display: resolvedDisplay }, AvoidStoreOptions);
 
         continue;
       }
