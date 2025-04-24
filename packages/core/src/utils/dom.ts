@@ -247,3 +247,9 @@ export const off = <E extends Event = Event>(
     els.forEach((el) => el?.removeEventListener(ev, fn as EventListener, opts));
   });
 };
+
+export const processDataGjsAttributeHyphen = (str: string): string => {
+  const camelCased = str.replace(/-([a-zA-Z0-9])/g, (_, char) => char.toUpperCase());
+
+  return camelCased;
+};

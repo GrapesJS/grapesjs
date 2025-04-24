@@ -1,10 +1,10 @@
-import { each, isArray, isFunction, isUndefined } from 'underscore';
+import { each, isArray, isFunction, isUndefined, result as _result } from 'underscore';
 import { ObjectAny, ObjectStrings } from '../../common';
 import { ComponentDefinitionDefined, ComponentStackItem } from '../../dom_components/model/types';
 import EditorModel from '../../editor/model/Editor';
 import { HTMLParseResult, HTMLParserOptions, ParseNodeOptions, ParserConfig } from '../config/config';
 import BrowserParserHtml from './BrowserParserHtml';
-import { doctypeToString } from '../../utils/dom';
+import { doctypeToString, processDataGjsAttributeHyphen } from '../../utils/dom';
 import { isDef } from '../../utils/mixins';
 import { ParserEvents } from '../types';
 
@@ -129,9 +129,13 @@ const ParserHtml = (em?: EditorModel, config: ParserConfig & { returnArray?: boo
       const model = result || {};
       const attrs = node.attributes || [];
       const attrsLen = attrs.length;
+      const convertDataGjsAttributesHyphens = !!config?.optionsHtml?.convertDataGjsAttributesHyphens;
+      const defaults = convertDataGjsAttributesHyphens
+        ? _result((em?.Components.getType(model.type).model).prototype, 'defaults')
+        : {};
 
       for (let i = 0; i < attrsLen; i++) {
-        const nodeName = attrs[i].nodeName;
+        let nodeName = attrs[i].nodeName;
         let nodeValue: string | boolean = attrs[i].nodeValue!;
 
         if (nodeName == 'style') {
@@ -142,7 +146,13 @@ const ParserHtml = (em?: EditorModel, config: ParserConfig & { returnArray?: boo
           continue;
         } else if (nodeName.indexOf(this.modelAttrStart) === 0) {
           const propsResult = this.getPropAttribute(nodeName, nodeValue);
-          model[propsResult.name] = propsResult.value;
+          let resolvedName = propsResult.name;
+          if (convertDataGjsAttributesHyphens && !(resolvedName in defaults)) {
+            const transformed = processDataGjsAttributeHyphen(resolvedName);
+            resolvedName = transformed in defaults ? transformed : resolvedName;
+          }
+
+          model[resolvedName] = propsResult.value;
         } else {
           // @ts-ignore Check for attributes from props (eg. required, disabled)
           if (nodeValue === '' && node[nodeName] === true) {

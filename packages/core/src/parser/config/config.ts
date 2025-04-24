@@ -72,6 +72,17 @@ export interface HTMLParserOptions extends OptionAsDocument {
    * preParser: htmlString => DOMPurify.sanitize(htmlString)
    */
   preParser?: (input: string, opts: { editor: Editor }) => string;
+
+  /**
+   * Configures whether `data-gjs-*` attributes should be automatically converted from hyphenated to camelCase.
+   *
+   * When `true`:
+   * - Hyphenated `data-gjs-*` attributes (e.g., `data-gjs-my-component`) are transformed into camelCase (`data-gjs-myComponent`).
+   * - If `defaults` contains the camelCase version and not the original attribute, the camelCase will be used; otherwise, the original name is kept.
+   *
+   * @default false
+   */
+  convertDataGjsAttributesHyphens?: boolean;
 }
 
 export interface ParserConfig {
@@ -121,6 +132,7 @@ const config: () => ParserConfig = () => ({
     allowUnsafeAttr: false,
     allowUnsafeAttrValue: false,
     keepEmptyTextNodes: false,
+    convertDataGjsAttributesHyphens: false,
   },
 });
 

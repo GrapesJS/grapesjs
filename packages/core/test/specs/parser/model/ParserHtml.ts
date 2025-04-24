@@ -816,4 +816,165 @@ describe('ParserHtml', () => {
       });
     });
   });
+
+  describe('with convertDataGjsAttributesHyphens OFF (default)', () => {
+    beforeEach(() => {
+      em = new Editor({});
+      em.Components.addType('test-cmp', {
+        isComponent: (el) => el.tagName === 'a',
+        model: {
+          defaults: {
+            type: 'default',
+            testAttr: 'value',
+            otherAttr: 'value',
+          },
+        },
+      });
+
+      obj = ParserHtml(em, {
+        textTags: ['br', 'b', 'i', 'u'],
+        textTypes: ['text', 'textnode', 'comment'],
+        returnArray: true,
+        optionsHtml: { convertDataGjsAttributesHyphens: false },
+      });
+
+      obj.compTypes = em.Components.componentTypes;
+    });
+
+    test('keeps original attribute names', () => {
+      const str = '<a data-gjs-type="test-cmp" data-gjs-test-attr="value1" data-gjs-other-attr="value2"></a>';
+      const result = [
+        {
+          tagName: 'a',
+          type: 'test-cmp',
+          'test-attr': 'value1',
+          'other-attr': 'value2',
+        },
+      ];
+      expect(obj.parse(str).html).toEqual(result);
+    });
+
+    test('does not convert data-gjs-data-resolver', () => {
+      const str = '<div data-gjs-type="data-variable" data-gjs-data-resolver="test"></div>';
+      const result = [
+        {
+          type: 'data-variable',
+          tagName: 'div',
+          'data-resolver': 'test',
+        },
+      ];
+      expect(obj.parse(str).html).toEqual(result);
+    });
+  });
+
+  describe('with convertDataGjsAttributesHyphens ON', () => {
+    beforeEach(() => {
+      em = new Editor({});
+      em.Components.addType('test-cmp', {
+        isComponent: (el) => el.tagName === 'a',
+        model: {
+          defaults: {
+            testAttr: 'value',
+            otherAttr: 'value',
+            nullAttr: null,
+            undefinedAttr: undefined,
+            'hyphen-attr': 'value',
+            duplicatedAttr: 'value',
+            'duplicated-attr': 'value',
+          },
+        },
+      });
+
+      obj = ParserHtml(em, {
+        returnArray: true,
+        optionsHtml: { convertDataGjsAttributesHyphens: true },
+      });
+      obj.compTypes = em.Components.componentTypes;
+    });
+
+    test('converts hyphenated to camelCase', () => {
+      const str = '<a data-gjs-type="test-cmp" data-gjs-test-attr="value1" data-gjs-other-attr="value2"></a>';
+      const result = [
+        {
+          tagName: 'a',
+          type: 'test-cmp',
+          testAttr: 'value1',
+          otherAttr: 'value2',
+        },
+      ];
+
+      expect(obj.parse(str).html).toEqual(result);
+    });
+
+    test('handles null/undefined values', () => {
+      const str = '<a data-gjs-type="test-cmp" data-gjs-null-attr="value" data-gjs-undefined-attr="some value"></a>';
+      const result = [
+        {
+          tagName: 'a',
+          type: 'test-cmp',
+          nullAttr: 'value',
+          undefinedAttr: 'some value',
+        },
+      ];
+
+      expect(obj.parse(str).html).toEqual(result);
+    });
+
+    test('converts data-gjs-data-resolver to dataResolver', () => {
+      const str = `
+          <div 
+            data-gjs-type="data-variable" 
+            data-gjs-data-resolver='{"type":"data-variable","path":"some path","collectionId":"someCollectionId"}'
+          ></div>
+        `;
+      const result = [
+        {
+          tagName: 'div',
+          type: 'data-variable',
+          dataResolver: {
+            type: 'data-variable',
+            path: 'some path',
+            collectionId: 'someCollectionId',
+          },
+        },
+      ];
+      expect(obj.parse(str).html).toEqual(result);
+    });
+
+    test('handles defaults with original hyphenated', () => {
+      const str = '<a data-gjs-type="test-cmp" data-gjs-hyphen-attr="value1"></a>';
+      const result = [
+        {
+          tagName: 'a',
+          type: 'test-cmp',
+          'hyphen-attr': 'value1',
+        },
+      ];
+      expect(obj.parse(str).html).toEqual(result);
+    });
+
+    test('handles defaults not containing camelCase or hyphenated', () => {
+      const str = '<a data-gjs-type="test-cmp" data-gjs-new-attr="value1"></a>';
+      const result = [
+        {
+          tagName: 'a',
+          type: 'test-cmp',
+          'new-attr': 'value1',
+        },
+      ];
+      expect(obj.parse(str).html).toEqual(result);
+    });
+
+    test('handles defaults with hyphenated and camelCase', () => {
+      const str = '<a data-gjs-type="test-cmp" data-gjs-duplicated-attr="value1"></a>';
+      const result = [
+        {
+          tagName: 'a',
+          type: 'test-cmp',
+          'duplicated-attr': 'value1',
+        },
+      ];
+      expect(obj.parse(str).html).toEqual(result);
+    });
+  });
 });
