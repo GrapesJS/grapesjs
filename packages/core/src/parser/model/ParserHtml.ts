@@ -1,4 +1,4 @@
-import { each, isArray, isFunction, isUndefined, result as _result } from 'underscore';
+import { each, isArray, isFunction, isUndefined, result } from 'underscore';
 import { ObjectAny, ObjectStrings } from '../../common';
 import { ComponentDefinitionDefined, ComponentStackItem } from '../../dom_components/model/types';
 import EditorModel from '../../editor/model/Editor';
@@ -125,13 +125,13 @@ const ParserHtml = (em?: EditorModel, config: ParserConfig & { returnArray?: boo
       return result;
     },
 
-    parseNodeAttr(node: HTMLElement, result?: ComponentDefinitionDefined) {
-      const model = result || {};
+    parseNodeAttr(node: HTMLElement, modelResult?: ComponentDefinitionDefined) {
+      const model = modelResult || {};
       const attrs = node.attributes || [];
       const attrsLen = attrs.length;
       const convertDataGjsAttributesHyphens = !!config?.optionsHtml?.convertDataGjsAttributesHyphens;
       const defaults = convertDataGjsAttributesHyphens
-        ? _result((em?.Components.getType(model.type).model).prototype, 'defaults')
+        ? result((em?.Components.getType(model.type).model).prototype, 'defaults')
         : {};
 
       for (let i = 0; i < attrsLen; i++) {
