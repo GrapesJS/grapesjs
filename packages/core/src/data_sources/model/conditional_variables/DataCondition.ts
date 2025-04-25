@@ -1,13 +1,12 @@
 import { Model } from '../../../common';
 import EditorModel from '../../../editor/model/Editor';
-import DataVariable, { DataVariableProps } from '../DataVariable';
+import { isDataVariable, valueOrResolve } from '../../utils';
+import { DataCollectionStateMap } from '../data_collection/types';
 import DataResolverListener from '../DataResolverListener';
-import { valueOrResolve, isDataVariable } from '../../utils';
-import { DataConditionEvaluator, ConditionProps } from './DataConditionEvaluator';
+import DataVariable, { DataVariableProps } from '../DataVariable';
+import { ConditionProps, DataConditionEvaluator } from './DataConditionEvaluator';
 import { BooleanOperation } from './operators/BooleanOperator';
 import { StringOperation } from './operators/StringOperator';
-import { isUndefined } from 'underscore';
-import { DataCollectionStateMap } from '../data_collection/types';
 import { DataConditionSimpleOperation } from './types';
 
 export const DataConditionType = 'data-condition' as const;
@@ -59,10 +58,6 @@ export class DataCondition extends Model<DataConditionProps> {
   }
 
   constructor(props: DataConditionProps, opts: DataConditionOptions) {
-    if (isUndefined(props.condition)) {
-      opts.em.logError('No condition was provided to a conditional component.');
-    }
-
     super(props, opts);
     this.em = opts.em;
     this.collectionsStateMap = opts.collectionsStateMap ?? {};

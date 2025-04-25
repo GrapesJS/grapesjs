@@ -129,10 +129,10 @@ const ParserHtml = (em?: EditorModel, config: ParserConfig & { returnArray?: boo
       const model = modelResult || {};
       const attrs = node.attributes || [];
       const attrsLen = attrs.length;
-      const convertDataGjsAttributesHyphens = !!config?.optionsHtml?.convertDataGjsAttributesHyphens;
-      const defaults = convertDataGjsAttributesHyphens
-        ? result((em?.Components.getType(model.type).model).prototype, 'defaults')
-        : {};
+      const convertHyphens = !!config?.optionsHtml?.convertDataGjsAttributesHyphens;
+      const defaults =
+        (convertHyphens && !!model.type && result(em?.Components.getType(model.type)?.model.prototype, 'defaults')) ||
+        {};
 
       for (let i = 0; i < attrsLen; i++) {
         let nodeName = attrs[i].nodeName;
@@ -147,7 +147,7 @@ const ParserHtml = (em?: EditorModel, config: ParserConfig & { returnArray?: boo
         } else if (nodeName.indexOf(this.modelAttrStart) === 0) {
           const propsResult = this.getPropAttribute(nodeName, nodeValue);
           let resolvedName = propsResult.name;
-          if (convertDataGjsAttributesHyphens && !(resolvedName in defaults)) {
+          if (convertHyphens && !(resolvedName in defaults)) {
             const transformed = processDataGjsAttributeHyphen(resolvedName);
             resolvedName = transformed in defaults ? transformed : resolvedName;
           }

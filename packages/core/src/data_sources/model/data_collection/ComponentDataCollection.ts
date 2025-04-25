@@ -29,6 +29,7 @@ export default class ComponentDataCollection extends Component {
       // @ts-ignore
       ...super.defaults,
       droppable: false,
+      dataResolver: {},
       type: DataCollectionType,
       components: [
         {
@@ -39,8 +40,6 @@ export default class ComponentDataCollection extends Component {
   }
 
   constructor(props: ComponentDataCollectionProps, opt: ComponentOptions) {
-    const dataResolver = props[keyCollectionDefinition];
-
     if (opt.forCloning) {
       return super(props as any, opt) as unknown as ComponentDataCollection;
     }
@@ -48,11 +47,6 @@ export default class ComponentDataCollection extends Component {
     const em = opt.em;
     const newProps = { ...props, droppable: false } as any;
     const cmp: ComponentDataCollection = super(newProps, opt) as unknown as ComponentDataCollection;
-    if (!dataResolver) {
-      em.logError('missing collection definition');
-      return cmp;
-    }
-
     this.rebuildChildrenFromCollection = this.rebuildChildrenFromCollection.bind(this);
     this.listenToPropsChange();
     this.rebuildChildrenFromCollection();
