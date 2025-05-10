@@ -93,7 +93,7 @@ export default class ComponentVideo extends ComponentImage {
     em.get('ready') && em.trigger('component:toggled');
   }
 
-   /**
+  /**
    * Set attributes by src string
    */
   parseFromSrc() {
@@ -141,7 +141,7 @@ export default class ComponentVideo extends ComponentImage {
     this.set({ src });
   }
 
-/**
+  /**
    * Returns object of attributes for HTML
    * @return {Object}
    * @private
@@ -165,7 +165,7 @@ export default class ComponentVideo extends ComponentImage {
     return attr;
   }
 
-   // Listen provider change and switch traits, in TraitView listen traits change
+  // Listen provider change and switch traits, in TraitView listen traits change
 
   /**
    * Return the provider trait
