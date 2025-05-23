@@ -3,6 +3,7 @@ import ComponentWrapper from '../../../../src/dom_components/model/ComponentWrap
 import { DataVariableType } from '../../../../src/data_sources/model/DataVariable';
 import { setupTestEditor } from '../../../common';
 import EditorModel from '../../../../src/editor/model/Editor';
+import ComponentDataVariable from '../../../../src/data_sources/model/ComponentDataVariable';
 
 describe('ComponentDataVariable', () => {
   let em: EditorModel;
@@ -281,5 +282,23 @@ describe('ComponentDataVariable', () => {
     const updatedStyle = cmp.getStyle();
     expect(updatedStyle).toHaveProperty('color', 'blue');
     expect(cmp.getEl()?.innerHTML).toContain('Hello World UP');
+  });
+
+  test("fixes: ComponentDataVariable dataResolver type 'data-variable' issue", () => {
+    const dataSource = {
+      id: 'ds1',
+      records: [{ id: 'id1', name: 'Name1' }],
+    };
+    dsm.add(dataSource);
+
+    const dataResolver = { type: DataVariableType, defaultValue: 'default', path: 'ds1.id1.name' };
+    const cmp = cmpRoot.append({
+      type: DataVariableType,
+      dataResolver,
+    })[0] as ComponentDataVariable;
+
+    expect(cmp.getDataResolver()).toBe(dataResolver);
+    expect(cmp.getEl()?.innerHTML).toContain('Name1');
+    expect(cmp.getInnerHTML()).toContain('Name1');
   });
 });

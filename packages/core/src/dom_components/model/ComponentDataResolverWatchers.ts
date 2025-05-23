@@ -37,7 +37,7 @@ export class ComponentDataResolverWatchers {
   }
 
   addProps(props: ObjectAny, options: DynamicWatchersOptions = {}) {
-    const excludedFromEvaluation = ['components'];
+    const excludedFromEvaluation = ['components', 'dataResolver'];
 
     const evaluatedProps = Object.fromEntries(
       Object.entries(props).map(([key, value]) =>

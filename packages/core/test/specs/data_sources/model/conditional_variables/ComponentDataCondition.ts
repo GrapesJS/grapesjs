@@ -264,6 +264,24 @@ describe('ComponentDataCondition', () => {
     expect(ifFalseEl.style.display).toBe('');
     expect(ifFalseEl.textContent).toContain(ifFalseText);
   });
+
+  test("fixes: ComponentDatacondition dataResolver type 'data-variable' issue", () => {
+    const dataResolver = {
+      type: DataConditionType,
+      condition: {
+        left: 1,
+        operator: NumberOperation.greaterThan,
+        right: 0,
+      },
+    };
+    const cmp = cmpRoot.append({
+      type: DataConditionType,
+      dataResolver,
+      components: [ifTrueComponentDef, ifFalseComponentDef],
+    })[0] as ComponentDataCondition;
+
+    expect(cmp.getDataResolver()).toBe(dataResolver);
+  });
 });
 
 function changeDataSourceValue(dsm: DataSourceManager, newValue: string | number) {
