@@ -41,11 +41,11 @@ export abstract class ComponentWithDataResolver<T extends DataResolverProps> ext
     options: ComponentOptions & { collectionsStateMap: DataCollectionStateMap },
   ): DataResolver;
 
-  getDataResolver() {
+  getDataResolver(): T {
     return this.get('dataResolver');
   }
 
-  setDataResolver(props: any) {
+  setDataResolver(props: T) {
     return this.set('dataResolver', props);
   }
 
