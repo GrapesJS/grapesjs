@@ -301,4 +301,38 @@ describe('ComponentDataVariable', () => {
     expect(cmp.getEl()?.innerHTML).toContain('Name1');
     expect(cmp.getInnerHTML()).toContain('Name1');
   });
+
+  test('renders content as plain text or HTML based on asPlainText option', () => {
+    const htmlContent = '<p>Hello <strong>World</strong>!</p>';
+    const plainTextContent = '&lt;p&gt;Hello &lt;strong&gt;World&lt;/strong&gt;!&lt;/p&gt;';
+    const dataSource = {
+      id: 'dsHtmlTest',
+      records: [{ id: 'r1', content: htmlContent }],
+    };
+    dsm.add(dataSource);
+
+    // Scenario 1: asPlainText is true
+    const cmpPlainText = cmpRoot.append({
+      type: DataVariableType,
+      dataResolver: { path: 'dsHtmlTest.r1.content', asPlainText: true },
+    })[0] as ComponentDataVariable;
+    expect(cmpPlainText.getEl()?.innerHTML).toBe(plainTextContent);
+    expect(cmpPlainText.getEl()?.textContent).toBe(htmlContent);
+
+    // Scenario 2: asPlainText is false
+    const cmpHtml = cmpRoot.append({
+      type: DataVariableType,
+      dataResolver: { path: 'dsHtmlTest.r1.content', asPlainText: false },
+    })[0] as ComponentDataVariable;
+    expect(cmpHtml.getEl()?.innerHTML).toBe(htmlContent);
+    expect(cmpHtml.getEl()?.textContent).toBe('Hello World!');
+
+    // Scenario 3: asPlainText is omitted (should default to HTML rendering)
+    const cmpDefaultHtml = cmpRoot.append({
+      type: DataVariableType,
+      dataResolver: { path: 'dsHtmlTest.r1.content' },
+    })[0] as ComponentDataVariable;
+    expect(cmpDefaultHtml.getEl()?.innerHTML).toBe(htmlContent);
+    expect(cmpDefaultHtml.getEl()?.textContent).toBe('Hello World!');
+  });
 });

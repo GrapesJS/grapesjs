@@ -20,7 +20,16 @@ export default class ComponentDataVariableView extends ComponentView<ComponentDa
   }
 
   postRender() {
-    this.el.innerHTML = this.model.getDataValue();
+    const model = this.model;
+    const dataResolver = model.getDataResolver();
+    const asPlainText = !!dataResolver.asPlainText;
+
+    if (asPlainText) {
+      this.el.textContent = model.getDataValue();
+    } else {
+      this.el.innerHTML = model.getDataValue();
+    }
+
     super.postRender();
   }
 }

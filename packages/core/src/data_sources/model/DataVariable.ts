@@ -11,6 +11,7 @@ export interface DataVariableProps {
   defaultValue?: string;
   collectionId?: string;
   variableType?: DataCollectionStateType;
+  asPlainText?: boolean;
 }
 
 interface DataVariableOptions {
@@ -29,6 +30,7 @@ export default class DataVariable extends Model<DataVariableProps> {
       path: '',
       collectionId: undefined,
       variableType: undefined,
+      asPlainText: undefined,
     };
   }
 
