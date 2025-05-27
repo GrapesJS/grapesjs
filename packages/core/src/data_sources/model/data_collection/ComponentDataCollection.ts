@@ -65,7 +65,7 @@ export default class ComponentDataCollection extends Component {
 
     const startIndex = Math.max(0, this.getConfigStartIndex() ?? 0);
     const configEndIndex = this.getConfigEndIndex() ?? Number.MAX_VALUE;
-    const endIndex = Math.min(itemsCount, configEndIndex);
+    const endIndex = Math.min(itemsCount - 1, configEndIndex);
 
     const count = endIndex - startIndex + 1;
     return Math.max(0, count);
