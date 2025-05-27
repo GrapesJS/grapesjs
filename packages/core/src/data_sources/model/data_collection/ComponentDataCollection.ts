@@ -21,6 +21,8 @@ import { ModelDestroyOptions } from 'backbone';
 import Components from '../../../dom_components/model/Components';
 
 const AvoidStoreOptions = { avoidStore: true, partial: true };
+type DataVariableMap = Record<string, DataVariableProps>;
+
 export default class ComponentDataCollection extends Component {
   dataSourceWatcher?: DataResolverListener;
 
@@ -44,7 +46,6 @@ export default class ComponentDataCollection extends Component {
       return super(props as any, opt) as unknown as ComponentDataCollection;
     }
 
-    const em = opt.em;
     const newProps = { ...props, droppable: false } as any;
     const cmp: ComponentDataCollection = super(newProps, opt) as unknown as ComponentDataCollection;
     this.rebuildChildrenFromCollection = this.rebuildChildrenFromCollection.bind(this);
@@ -60,9 +61,11 @@ export default class ComponentDataCollection extends Component {
 
   getItemsCount() {
     const items = this.getDataSourceItems();
+    const itemsCount = getLength(items);
+
     const startIndex = Math.max(0, this.getConfigStartIndex() ?? 0);
     const configEndIndex = this.getConfigEndIndex() ?? Number.MAX_VALUE;
-    const endIndex = Math.min(items.length - 1, configEndIndex);
+    const endIndex = Math.min(itemsCount, configEndIndex);
 
     const count = endIndex - startIndex + 1;
     return Math.max(0, count);
@@ -132,7 +135,14 @@ export default class ComponentDataCollection extends Component {
   }
 
   private getDataSourceItems() {
-    return getDataSourceItems(this.dataResolver.dataSource, this.em);
+    const items = getDataSourceItems(this.dataResolver.dataSource, this.em);
+    if (isArray(items)) {
+      return items;
+    }
+
+    const clone = { ...items };
+    delete clone['__p'];
+    return clone;
   }
 
   private get dataResolver() {
@@ -190,7 +200,8 @@ export default class ComponentDataCollection extends Component {
 
     for (let index = startIndex; index <= endIndex; index++) {
       const isFirstItem = index === startIndex;
-      const collectionsStateMap = this.getCollectionsStateMapForItem(items, index);
+      const key = isArray(items) ? index : Object.keys(items)[index];
+      const collectionsStateMap = this.getCollectionsStateMapForItem(items, key);
 
       if (isFirstItem) {
         getSymbolInstances(firstChild)?.forEach((cmp) => detachSymbolInstance(cmp));
@@ -211,18 +222,20 @@ export default class ComponentDataCollection extends Component {
     return components;
   }
 
-  private getCollectionsStateMapForItem(items: DataVariableProps[], index: number) {
+  private getCollectionsStateMapForItem(items: DataVariableProps[] | DataVariableMap, key: number | string) {
     const { startIndex, endIndex, totalItems } = this.resolveCollectionConfig(items);
     const collectionId = this.collectionId;
-    const item = items[index];
+    let item: DataVariableProps = (items as any)[key];
     const parentCollectionStateMap = this.collectionsStateMap;
 
-    const offset = index - startIndex;
+    const numericKey = typeof key === 'string' ? Object.keys(items).indexOf(key) : key;
+    const offset = numericKey - startIndex;
     const remainingItems = totalItems - (1 + offset);
     const collectionState = {
       collectionId,
-      currentIndex: index,
+      currentIndex: numericKey,
       currentItem: item,
+      currentKey: key,
       startIndex,
       endIndex,
       totalItems,
@@ -244,12 +257,20 @@ export default class ComponentDataCollection extends Component {
     return !!parentCollectionStateMap[collectionId];
   }
 
-  private resolveCollectionConfig(items: DataVariableProps[]) {
+  private resolveCollectionConfig(items: DataVariableProps[] | DataVariableMap) {
+    const isArray = Array.isArray(items);
+    const actualItemCount = isArray ? items.length : Object.keys(items).length;
+
     const startIndex = this.getConfigStartIndex() ?? 0;
     const configEndIndex = this.getConfigEndIndex() ?? Number.MAX_VALUE;
-    const endIndex = Math.min(items.length - 1, configEndIndex);
-    const totalItems = endIndex - startIndex + 1;
-    return { startIndex, endIndex, totalItems };
+    const endIndex = Math.min(actualItemCount - 1, configEndIndex);
+
+    let totalItems = 0;
+    if (actualItemCount > 0) {
+      totalItems = Math.max(0, endIndex - startIndex + 1);
+    }
+
+    return { startIndex, endIndex, totalItems, isArray };
   }
 
   private ensureFirstChild() {
@@ -331,6 +352,10 @@ export default class ComponentDataCollection extends Component {
   }
 }
 
+function getLength(items: DataVariableProps[] | object) {
+  return isArray(items) ? items.length : Object.keys(items).length;
+}
+
 function setCollectionStateMapAndPropagate(cmp: Component, collectionsStateMap: DataCollectionStateMap) {
   cmp.setSymbolOverride(['locked', 'layerable']);
   cmp.syncComponentsCollectionState();
@@ -366,34 +391,28 @@ function validateCollectionDef(dataResolver: DataCollectionProps, em: EditorMode
   return true;
 }
 
-function getDataSourceItems(dataSource: DataCollectionDataSource, em: EditorModel) {
-  let items: DataVariableProps[] = [];
-
+function getDataSourceItems(
+  dataSource: DataCollectionDataSource,
+  em: EditorModel,
+): DataVariableProps[] | DataVariableMap {
   switch (true) {
-    case isArray(dataSource):
-      items = dataSource;
-      break;
     case isObject(dataSource) && dataSource instanceof DataSource: {
       const id = dataSource.get('id')!;
-      items = listDataSourceVariables(id, em);
-      break;
+      return listDataSourceVariables(id, em);
     }
     case isDataVariable(dataSource): {
       const path = dataSource.path;
-      if (!path) break;
+      if (!path) return [];
       const isDataSourceId = path.split('.').length === 1;
       if (isDataSourceId) {
-        items = listDataSourceVariables(path, em);
+        return listDataSourceVariables(path, em);
       } else {
-        items = em.DataSources.getValue(path, []);
+        return em.DataSources.getValue(path, []);
       }
-      break;
     }
     default:
-      break;
+      return [];
   }
-
-  return items;
 }
 
 function listDataSourceVariables(dataSource_id: string, em: EditorModel): DataVariableProps[] {

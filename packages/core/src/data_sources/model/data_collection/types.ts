@@ -8,6 +8,7 @@ export enum DataCollectionStateType {
   currentIndex = 'currentIndex',
   startIndex = 'startIndex',
   currentItem = 'currentItem',
+  currentKey = 'currentKey',
   endIndex = 'endIndex',
   collectionId = 'collectionId',
   totalItems = 'totalItems',
@@ -18,6 +19,7 @@ export interface DataCollectionState {
   [DataCollectionStateType.currentIndex]: number;
   [DataCollectionStateType.startIndex]: number;
   [DataCollectionStateType.currentItem]: DataVariableProps;
+  [DataCollectionStateType.currentKey]: string | number;
   [DataCollectionStateType.endIndex]: number;
   [DataCollectionStateType.collectionId]: string;
   [DataCollectionStateType.totalItems]: number;
