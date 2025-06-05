@@ -13,7 +13,7 @@ export default class CanvasNewComponentNode extends CanvasComponentNode {
     const { model: symbolModel, content, dragDef } = source._dragSource;
 
     const canMoveSymbol = !symbolModel || !this.isSourceSameSymbol(symbolModel);
-    const sourceContent: CanMoveSource = (isFunction(content) ? dragDef : content) || source.model;
+    const sourceContent: CanMoveSource = source.model;
 
     if (Array.isArray(sourceContent)) {
       return (
