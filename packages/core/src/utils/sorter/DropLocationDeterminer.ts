@@ -126,7 +126,9 @@ export class DropLocationDeterminer<T, NodeType extends SortableTreeNode<T>> ext
     const targetEl = this.getFirstElementWithAModel(mouseTargetEl);
     const hoveredModel = targetEl ? $(targetEl)?.data('model') : undefined;
     const hoveredNode = hoveredModel ? this.getOrCreateHoveredNode(hoveredModel) : undefined;
-    const hoveredIndex = this.getIndexInParent(hoveredNode!, hoveredNode!.nodeDimensions!, mouseX, mouseY);
+    const hoveredIndex = hoveredNode
+      ? this.getIndexInParent(hoveredNode!, hoveredNode!.nodeDimensions!, mouseX, mouseY)
+      : 0;
     const targetNode = hoveredNode ? this.getValidParent(hoveredNode, 0, mouseX, mouseY) : undefined;
 
     const targetChanged = !targetNode?.equals(lastTargetNode);
