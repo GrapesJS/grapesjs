@@ -229,6 +229,7 @@ export default class FrameView extends ModuleView<Frame, HTMLIFrameElement> {
     this.autoScroller.start(this.el, this.getWindow(), {
       lastMaxHeight: this.getWrapper().offsetHeight - this.el.offsetHeight,
       zoom: this.em.getZoomDecimal(),
+      ignoredElement: this.em.Canvas.getSpotsEl(),
     });
   }
 

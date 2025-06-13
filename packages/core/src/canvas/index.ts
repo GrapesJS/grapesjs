@@ -617,6 +617,7 @@ export default class CanvasModule extends Module<CanvasConfig> {
       const el = this.getCanvasView().el;
       this.autoScroller.start(el, el, {
         zoom: this.em.getZoomDecimal(),
+        ignoredElement: this.getSpotsEl(),
       });
     }
   }
