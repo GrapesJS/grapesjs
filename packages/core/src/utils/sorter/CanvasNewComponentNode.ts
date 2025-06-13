@@ -3,7 +3,6 @@ import CanvasComponentNode from './CanvasComponentNode';
 import { getSymbolMain, getSymbolTop, isSymbol, isSymbolMain } from '../../dom_components/model/SymbolUtils';
 import Component from '../../dom_components/model/Component';
 import { ContentElement, ContentType } from './types';
-import { isComponent } from '../mixins';
 
 type CanMoveSource = Component | ContentType;
 

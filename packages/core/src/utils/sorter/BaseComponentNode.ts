@@ -152,6 +152,10 @@ export abstract class BaseComponentNode extends SortableTreeNode<Component> {
     return this.model.em.Components.canMove(this.model, source.model, this.getRealIndex(index)).result;
   }
 
+  equals(node?: BaseComponentNode): node is BaseComponentNode {
+    return !!node?._model && this._model.getId() === node._model.getId();
+  }
+
   /**
    * Abstract method to get the view associated with this component.
    * Subclasses must implement this method.
