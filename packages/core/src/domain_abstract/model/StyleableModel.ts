@@ -70,7 +70,8 @@ export default class StyleableModel<T extends ObjectHash = any> extends Model<T,
    * @return {Object}
    */
   getStyle(prop?: string | ObjectAny, opts: { skipResolve?: boolean } = {}): StyleProps {
-    const style: ObjectAny = this.get('style') || {};
+    const style: ObjectAny = { ...(this.get('style') || {}) };
+    delete style.__p;
     if (!opts.skipResolve) {
       return prop && isString(prop) ? { ...style }[prop] : { ...style };
     }
@@ -104,7 +105,7 @@ export default class StyleableModel<T extends ObjectHash = any> extends Model<T,
 
     keys(newStyle).forEach((key) => {
       // Remove empty style properties
-      if (newStyle[key] === '' || key === '__p') {
+      if (newStyle[key] === '') {
         delete newStyle[key];
         return;
       }
