@@ -117,6 +117,7 @@ export class DropLocationDeterminer<T, NodeType extends SortableTreeNode<T>> ext
     this.adjustForScroll();
     const { targetNode: lastTargetNode } = this.lastMoveData;
     this.eventHandlers.onMouseMove?.(mouseEvent);
+    this.cacheContainerPosition();
     const { mouseXRelative: mouseX, mouseYRelative: mouseY } = this.getMousePositionRelativeToContainer(
       mouseEvent.clientX,
       mouseEvent.clientY,
@@ -279,17 +280,6 @@ export class DropLocationDeterminer<T, NodeType extends SortableTreeNode<T>> ext
     return newHoveredNode;
   }
 
-  /**
-   * Checks if the target node has changed and returns the last one if they are identical.
-   *
-   * @param targetNode - The newly calculated target node.
-   * @returns The new or reused target node.
-   */
-  private getOrReuseTargetNode(targetNode?: NodeType): NodeType | undefined {
-    const lastTargetNode = this.lastMoveData.targetNode;
-    return targetNode?.equals(lastTargetNode) ? lastTargetNode : targetNode;
-  }
-
   private getMouseTargetElement(mouseEvent: MouseEvent) {
     const customTarget = this.containerContext.customTarget;
     let mouseTarget = this.containerContext.document.elementFromPoint(
@@ -382,16 +372,22 @@ export class DropLocationDeterminer<T, NodeType extends SortableTreeNode<T>> ext
       targetNode: lastTargetNode,
       hoveredNode: lastHoveredNode,
       hoveredIndex: lastHoveredIndex,
+      mouseEvent: lastMouseEvent,
     } = this.lastMoveData;
 
     const sameHoveredNode = targetNode.equals(lastHoveredNode);
     targetNode.nodeDimensions = sameHoveredNode ? lastHoveredNode!.nodeDimensions! : this.getDim(targetNode.element!);
     const hoverIndex = this.getIndexInParent(targetNode, targetNode.nodeDimensions!, mouseX, mouseY);
     const sameHoveredIndex = hoverIndex === lastHoveredIndex;
-    const sameHoverPosition = sameHoveredNode && sameHoveredIndex;
+    const isWithinDropArea = targetNode.isWithinDropBounds(mouseX, mouseY);
+    const sameHoverPosition =
+      sameHoveredNode &&
+      sameHoveredIndex &&
+      isWithinDropArea === targetNode.isWithinDropBounds(lastMouseEvent?.clientX ?? 0, lastMouseEvent?.clientY ?? 0);
+
     if (sameHoverPosition && lastTargetNode) return lastTargetNode;
 
-    if (!targetNode.isWithinDropBounds(mouseX, mouseY)) {
+    if (!isWithinDropArea) {
       return this.handleParentTraversal(targetNode, mouseX, mouseY);
     }
 
@@ -532,7 +528,8 @@ export class DropLocationDeterminer<T, NodeType extends SortableTreeNode<T>> ext
    *
    * @private
    */
-  private cacheContainerPosition(container: HTMLElement): void {
+  private cacheContainerPosition(): void {
+    const container = this.containerContext.container;
     const containerOffset = offset(container);
     const containerOffsetTop = this.positionOptions.windowMargin ? Math.abs(containerOffset.top) : containerOffset.top;
     const containerOffsetLeft = this.positionOptions.windowMargin
