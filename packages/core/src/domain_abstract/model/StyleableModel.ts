@@ -91,7 +91,7 @@ export default class StyleableModel<T extends ObjectHash = any> extends Model<T,
       prop = this.parseStyle(prop);
     }
 
-    const propOrig = this.getStyle({ skipResolve: true });
+    const propOrig = this.getStyle('', { skipResolve: true });
 
     if (opts.partial || opts.avoidStore) {
       opts.avoidStore = true;
@@ -114,7 +114,13 @@ export default class StyleableModel<T extends ObjectHash = any> extends Model<T,
 
     this.set('style', newStyle, opts as any);
 
-    const diff = shallowDiff(propOrig, newStyle);
+    const changedKeys = Object.keys(shallowDiff(propOrig, propNew));
+    const diff: ObjectAny = changedKeys.reduce((acc, key) => {
+      return {
+        ...acc,
+        [key]: newStyle[key],
+      };
+    }, {});
     // Delete the property used for partial updates
     delete diff.__p;
 
