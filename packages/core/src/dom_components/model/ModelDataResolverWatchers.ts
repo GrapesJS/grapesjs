@@ -32,7 +32,7 @@ export class ModelDataResolverWatchers {
   }
 
   private onStyleUpdate(component: StyleableModel | undefined, key: string, value: any) {
-    component?.addStyle({ [key]: value }, { ...updateFromWatcher, noEvent: true, partial: true, avoidStore: true });
+    component?.addStyle({ [key]: value }, { ...updateFromWatcher, partial: true, avoidStore: true });
   }
 
   bindModel(model: StyleableModel) {
