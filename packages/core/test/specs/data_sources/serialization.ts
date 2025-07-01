@@ -412,5 +412,109 @@ describe('DataSource Serialization', () => {
         },
       });
     });
+
+    test('should resolve styles, props, and attributes if the entire datasource is added after load', () => {
+      const styleVar = {
+        type: DataVariableType,
+        defaultValue: 'black',
+        path: 'new-unified-data.styleRecord.color',
+      };
+      const propAttrVar = {
+        type: DataVariableType,
+        defaultValue: 'default-value',
+        path: 'new-unified-data.propRecord.value',
+      };
+
+      const componentProjectData: ProjectData = {
+        pages: [
+          {
+            frames: [
+              {
+                component: {
+                  components: [
+                    {
+                      attributes: { id: 'selectorid', 'data-test': propAttrVar },
+                      tagName: 'div',
+                      customProp: propAttrVar,
+                    },
+                  ],
+                },
+              },
+            ],
+          },
+        ],
+        styles: [{ selectors: ['#selectorid'], style: { color: styleVar } }],
+        dataSources: [], // Start with no datasources
+      };
+
+      editor.loadProjectData(componentProjectData);
+      const component = editor.getComponents().at(0); // Assert fallback to defaults before adding the data source
+
+      expect(component.getStyle()).toEqual({ color: 'black' });
+      expect(component.get('customProp')).toBe('default-value');
+      expect(component.getAttributes()['data-test']).toBe('default-value');
+
+      editor.DataSources.add({
+        id: 'new-unified-data',
+        records: [
+          { id: 'styleRecord', color: 'green' },
+          { id: 'propRecord', value: 'resolved-value' },
+        ],
+      });
+
+      expect(component.getStyle()).toEqual({ color: 'green' });
+      expect(component.get('customProp')).toBe('resolved-value');
+      expect(component.getAttributes()['data-test']).toBe('resolved-value');
+    });
+
+    test('should resolve styles, props, and attributes if a record is added to an existing datasource after load', () => {
+      const styleVar = {
+        type: DataVariableType,
+        defaultValue: 'black',
+        path: 'unified-source.newStyleRecord.color',
+      };
+      const propAttrVar = {
+        type: DataVariableType,
+        defaultValue: 'default-value',
+        path: 'unified-source.newPropRecord.value',
+      };
+
+      const componentProjectData: ProjectData = {
+        pages: [
+          {
+            frames: [
+              {
+                component: {
+                  components: [
+                    {
+                      attributes: { id: 'selectorid', 'data-test': propAttrVar },
+                      tagName: 'div',
+                      customProp: propAttrVar,
+                    },
+                  ],
+                },
+              },
+            ],
+          },
+        ],
+        styles: [{ selectors: ['#selectorid'], style: { color: styleVar } }],
+        dataSources: [{ id: 'unified-source', records: [] }], // Data source exists but is empty
+      };
+
+      editor.loadProjectData(componentProjectData);
+      const component = editor.getComponents().at(0); // Assert fallback to defaults because records are missing
+
+      expect(component.getStyle()).toEqual({ color: 'black' });
+      expect(component.get('customProp')).toBe('default-value');
+      expect(component.getAttributes()['data-test']).toBe('default-value');
+
+      const ds = editor.DataSources.get('unified-source');
+      ds?.addRecord({ id: 'newStyleRecord', color: 'purple' });
+      ds?.addRecord({ id: 'newPropRecord', value: 'resolved-record-value' });
+
+      expect(component.getStyle()).toEqual({ color: 'purple' });
+      expect(component.get('customProp')).toBe('resolved-record-value');
+      expect(component.getAttributes()['data-test']).toBe('resolved-record-value');
+    });
   });
 });
