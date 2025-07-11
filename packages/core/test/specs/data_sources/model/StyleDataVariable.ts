@@ -246,7 +246,7 @@ describe('StyleDataVariable', () => {
       })[0];
       expect(cmp.getStyle()).toEqual({ color: 'red' });
       const width = { type: DataVariableType, path: 'data1.rec1.width' };
-      cmp.setStyle({ width });
+      cmp.addStyle({ width });
 
       expect(cmp.getStyle({ skipResolve: true })).toEqual({ color, width });
     });
