@@ -331,6 +331,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
         cssc.addCollection(styles, { avoidUpdateStyle: true }, { group: `cmp:${type}` });
       }
 
+      this._moveInlineStyleToRule();
       this.__postAdd();
       this.init();
       isSymbol(this) && initSymbol(this);
@@ -847,8 +848,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
       const state = em.get('state');
       const cc = em.Css;
       const propOrig = this.getStyle({ ...opts, skipResolve: true });
-      const newStyle = { ...propOrig, ...prop };
-      this.rule = cc.setIdRule(this.getId(), newStyle, { state, ...opts });
+      this.rule = cc.setIdRule(this.getId(), prop, { state, ...opts });
       const diff = shallowDiff(propOrig, prop);
       this.set('style', '', { silent: true });
       keys(diff).forEach((pr) => this.trigger(`change:style:${pr}`));
@@ -2027,6 +2027,18 @@ export default class Component extends StyleableModel<ComponentProperties> {
   _getStyleSelector(opts?: { id?: string }) {
     const rule = this._getStyleRule(opts);
     return rule?.get('selectors')!.at(0);
+  }
+
+  private _moveInlineStyleToRule() {
+    const inlineStyle = this.get('style');
+    const hasInlineStyle =
+      (isString(inlineStyle) && inlineStyle.length > 0) ||
+      (isObject(inlineStyle) && Object.keys(inlineStyle).length > 0);
+
+    if (avoidInline(this.em) && hasInlineStyle) {
+      this.addStyle(inlineStyle);
+      this.set('style', '');
+    }
   }
 
   _idUpdated(m: any, v: any, opts: { idUpdate?: boolean } = {}) {
