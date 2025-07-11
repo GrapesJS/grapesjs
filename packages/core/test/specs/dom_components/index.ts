@@ -263,9 +263,10 @@ describe('DOM Components', () => {
       <style>
         #${id} { background-color: red }
       </style>`) as Component;
-      obj.getComponents().first().addStyle({ margin: '10px' });
       const rule = cc.getAll().at(0);
-      const css = `#${id}{background-color:red;margin:10px;color:red;padding:50px 100px;}`;
+      expect(rule.toCSS()).toEqual(`#${id}{background-color:red;color:red;padding:50px 100px;}`);
+      obj.getComponents().first().addStyle({ margin: '10px' });
+      const css = `#${id}{background-color:red;color:red;padding:50px 100px;margin:10px;}`;
       expect(rule.toCSS()).toEqual(css);
 
       setTimeout(() => {
@@ -438,10 +439,16 @@ describe('DOM Components', () => {
       expect(em.getHtml({ component })).toEqual(`<div id="${id}">Text</div>`);
       expect(Components.getComponents().length).toEqual(1);
       const firstComp = Components.getComponents().first();
+      const rule = Css.getIdRule(id);
+      expect(rule!.getStyle()).toEqual({
+        color: 'red',
+        'background-color': 'red',
+        padding: '50px 100px',
+      });
       firstComp.addStyle({ margin: '10px' });
       firstComp.addStyle('width', '100px');
       expect(Css.getAll().length).toEqual(1);
-      expect(Css.getIdRule(id)!.getStyle()).toEqual({
+      expect(rule!.getStyle()).toEqual({
         color: 'red',
         'background-color': 'red',
         padding: '50px 100px',
