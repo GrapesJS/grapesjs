@@ -230,6 +230,11 @@ export default class StyleableModel<T extends ObjectHash = any> extends Model<T,
     return this.selectorsToString ? this.selectorsToString(opts) : this.getSelectors().getFullString();
   }
 
+  onCollectionsStateMapUpdate(collectionsStateMap: DataCollectionStateMap) {
+    this.collectionsStateMap = collectionsStateMap;
+    this.dataResolverWatchers.onCollectionsStateMapUpdate();
+  }
+
   toJSON(opts?: ObjectAny) {
     const obj = super.toJSON(opts);
     const style = this.dataResolverWatchers.getStylesDefsOrValues(obj.style);
