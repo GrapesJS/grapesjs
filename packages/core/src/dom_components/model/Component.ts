@@ -364,13 +364,17 @@ export default class Component extends StyleableModel<ComponentProperties> {
     }
 
     this.dataResolverWatchers = this.dataResolverWatchers || options.dataResolverWatchers;
-    const evaluatedProps = this.dataResolverWatchers.addProps(attributes, options);
+    const { evaluatedProps, dynamicProps } = this.dataResolverWatchers.addProps(attributes, options);
+    if (Object.keys(dynamicProps).length > 0) {
+      super.set(dynamicProps, { unset: true, silent: true });
+    }
+
     return super.set(evaluatedProps, options);
   }
 
   onCollectionsStateMapUpdate(collectionsStateMap: DataCollectionStateMap) {
-    this.collectionsStateMap = collectionsStateMap;
-    this.dataResolverWatchers.onCollectionsStateMapUpdate();
+    super.onCollectionsStateMapUpdate(collectionsStateMap);
+    this._getStyleRule()?.onCollectionsStateMapUpdate(collectionsStateMap);
 
     const cmps = this.components();
     cmps.forEach((cmp) => cmp.onCollectionsStateMapUpdate(collectionsStateMap));
