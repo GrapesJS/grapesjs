@@ -301,8 +301,7 @@ export default class ComponentDataCollection extends Component {
   }
 
   onCollectionsStateMapUpdate(collectionsStateMap: DataCollectionStateMap) {
-    this.collectionsStateMap = collectionsStateMap;
-    this.dataResolverWatchers.onCollectionsStateMapUpdate();
+    super.onCollectionsStateMapUpdate(collectionsStateMap);
 
     const items = this.getDataSourceItems();
     const { startIndex } = this.resolveCollectionConfig(items);

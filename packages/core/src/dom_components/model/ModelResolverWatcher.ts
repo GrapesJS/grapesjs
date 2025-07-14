@@ -57,6 +57,9 @@ export class ModelResolverWatcher {
   onCollectionsStateMapUpdate() {
     const resolvesFromCollections = this.getValuesResolvingFromCollections();
     if (!resolvesFromCollections.length) return;
+    resolvesFromCollections.forEach((key) =>
+      this.resolverListeners[key].resolver.updateCollectionsStateMap(this.collectionsStateMap),
+    );
 
     const evaluatedValues = this.addDynamicValues(
       this.getSerializableValues(Object.fromEntries(resolvesFromCollections.map((key) => [key, null]))),
