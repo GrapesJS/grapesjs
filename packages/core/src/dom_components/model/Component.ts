@@ -372,6 +372,13 @@ export default class Component extends StyleableModel<ComponentProperties> {
     return super.set(evaluatedProps, options);
   }
 
+  previousAttributes() {
+    let obj = super.previousAttributes();
+    obj.attributes = this.dataResolverWatchers.getAttributesDefsOrValues(this.getAttributes());
+
+    return obj;
+  }
+
   onCollectionsStateMapUpdate(collectionsStateMap: DataCollectionStateMap) {
     super.onCollectionsStateMapUpdate(collectionsStateMap);
     this._getStyleRule()?.onCollectionsStateMapUpdate(collectionsStateMap);
