@@ -308,7 +308,7 @@ export default class CssRule extends StyleableModel<CssRuleProperties> {
   }
 
   toJSON(...args: any) {
-    const obj = Model.prototype.toJSON.apply(this, args);
+    const obj = super.toJSON(args);
 
     if (this.em?.getConfig().avoidDefaults) {
       const defaults = this.defaults();
@@ -326,7 +326,7 @@ export default class CssRule extends StyleableModel<CssRuleProperties> {
       if (isEmpty(obj.style)) delete obj.style;
     }
 
-    return { ...obj, style: this.dataResolverWatchers.getStylesDefsOrValues(obj.style) };
+    return obj;
   }
 
   /**

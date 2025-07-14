@@ -229,4 +229,11 @@ export default class StyleableModel<T extends ObjectHash = any> extends Model<T,
     // @ts-ignore
     return this.selectorsToString ? this.selectorsToString(opts) : this.getSelectors().getFullString();
   }
+
+  toJSON(opts?: ObjectAny) {
+    const obj = super.toJSON(opts);
+    const style = this.dataResolverWatchers.getStylesDefsOrValues(obj.style);
+
+    return { ...obj, style };
+  }
 }
