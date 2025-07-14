@@ -6,6 +6,7 @@ import {
   DynamicWatchersOptions,
 } from './ModelResolverWatcher';
 import { getSymbolsToUpdate } from './SymbolUtils';
+import { isDataResolverProps } from '../../data_sources/utils';
 
 export const updateFromWatcher = { fromDataSource: true, avoidStore: true };
 
@@ -64,7 +65,13 @@ export class ModelDataResolverWatchers {
       this.updateSymbolOverride();
     }
 
-    return evaluatedProps;
+    const dynamicProps = Object.fromEntries(
+      Object.entries(props).filter(([key, value]) => {
+        return isDataResolverProps(value);
+      }),
+    );
+
+    return { evaluatedProps, dynamicProps };
   }
 
   setStyles(styles: ObjectAny, options: DynamicWatchersOptions = {}) {
