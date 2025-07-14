@@ -235,6 +235,13 @@ export default class StyleableModel<T extends ObjectHash = any> extends Model<T,
     this.dataResolverWatchers.onCollectionsStateMapUpdate();
   }
 
+  previousAttributes(): Partial<T> {
+    let obj = super.previousAttributes();
+    const dynamicProps = this.dataResolverWatchers.getDynamicPropsDefs();
+
+    return { ...obj, ...dynamicProps };
+  }
+
   toJSON(opts?: ObjectAny) {
     const obj = super.toJSON(opts);
     const style = this.dataResolverWatchers.getStylesDefsOrValues(obj.style);
