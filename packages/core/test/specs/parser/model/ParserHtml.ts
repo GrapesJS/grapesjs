@@ -983,4 +983,43 @@ describe('ParserHtml', () => {
       expect(obj.parse(str).html).toEqual(result);
     });
   });
+
+  describe('with keepEmptyTextNodes ON', () => {
+    beforeEach(() => {
+      obj = ParserHtml(em, {
+        returnArray: true,
+        optionsHtml: { keepEmptyTextNodes: true },
+      });
+      obj.compTypes = em.Components.componentTypes;
+    });
+
+    test('Keep empty whitespaces', () => {
+      const str = `<div>
+        <p>TestText</p>
+      </div>`;
+      const result = [
+        {
+          tagName: 'div',
+          components: [
+            {
+              tagName: '',
+              type: 'textnode',
+              content: '\n        ',
+            },
+            {
+              tagName: 'p',
+              components: { type: 'textnode', content: 'TestText' },
+              type: 'text',
+            },
+            {
+              tagName: '',
+              type: 'textnode',
+              content: '\n      ',
+            },
+          ],
+        },
+      ];
+      expect(obj.parse(str).html).toEqual(result);
+    });
+  });
 });
