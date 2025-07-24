@@ -57,6 +57,12 @@ export default class ParserModule extends Module<ParserConfig & { name?: string 
    * @param  {String} [options.htmlType] [HTML mime type](https://developer.mozilla.org/en-US/docs/Web/API/DOMParser/parseFromString#Argument02) to parse
    * @param  {Boolean} [options.allowScripts=false] Allow `<script>` tags
    * @param  {Boolean} [options.allowUnsafeAttr=false] Allow unsafe HTML attributes (eg. `on*` inline event handlers)
+   * @param  {Boolean} [options.allowUnsafeAttrValue=false] Allow unsafe HTML attribute values (eg. `src="javascript:..."`)
+   * @param  {Boolean} [options.keepEmptyTextNodes=false] Keep whitespaces regardless of whether they are meaningful
+   * @param  {Boolean} [options.asDocument] Treat the HTML string as document
+   * @param  {Boolean|Function} [options.detectDocument] Indicate if or how to detect if the HTML string should be treated as document
+   * @param  {Function} [options.preParser] How to pre-process the HTML string before parsing
+   * @param  {Boolean} [options.convertDataGjsAttributesHyphens=false] Convert `data-gjs-*` attributes from hyphenated to camelCase (eg. `data-gjs-my-component` to `data-gjs-myComponent`)
    * @returns {Object} Object containing the result `{ html: ..., css: ... }`
    * @example
    * const resHtml = Parser.parseHtml(`<table><div>Hi</div></table>`, {
