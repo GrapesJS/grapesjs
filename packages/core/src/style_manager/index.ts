@@ -539,7 +539,7 @@ export default class StyleManager extends ItemManagerModule<
    * @return {Model}
    * @private
    */
-  getModelToStyle(model: any, options: { skipAdd?: boolean; useClasses?: boolean } = {}) {
+  getModelToStyle(model: any, options: { skipAdd?: boolean; useClasses?: boolean } = {}): StyleableModel {
     const { em } = this;
     const { skipAdd } = options;
 

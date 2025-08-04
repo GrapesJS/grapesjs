@@ -1,6 +1,9 @@
+import ComponentView from '../dom_components/view/ComponentView';
 import Asset from './model/Asset';
 
 export type AssetEvent = `${AssetsEvents}`;
+
+export type AssetAddInput = string | AssetProps | Asset;
 
 export interface AssetOpenOptions {
   select?: (asset: Asset, complete: boolean) => void;
@@ -8,6 +11,20 @@ export interface AssetOpenOptions {
   accept?: string;
   target?: any;
 }
+
+export interface AssetProps {
+  src: string;
+  [key: string]: unknown;
+}
+
+export interface UploadFileOptions {
+  componentView?: ComponentView;
+  file?: File;
+}
+
+export type UploadFileClb = (result: { data: (AssetProps | string)[] }) => void;
+
+export type UploadFileFn = (ev: DragEvent, clb?: UploadFileClb, opts?: UploadFileOptions) => Promise<void> | undefined;
 
 /**{START_EVENTS}*/
 export enum AssetsEvents {

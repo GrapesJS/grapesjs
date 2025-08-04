@@ -38,7 +38,7 @@ export default class Asset extends Model {
    * asset.getSrc(); // -> 'https://.../image.png'
    * */
   getSrc() {
-    return this.get('src');
+    return this.get('src') || '';
   }
 
   /**
@@ -51,7 +51,7 @@ export default class Asset extends Model {
    * asset.getFilename(); // -> 'image'
    * */
   getFilename() {
-    return this.get('src').split('/').pop().split('?').shift();
+    return this.getSrc().split('/').pop().split('?').shift();
   }
 
   /**

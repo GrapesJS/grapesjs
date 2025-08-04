@@ -1,3 +1,5 @@
+import { UploadFileFn } from '../types';
+
 export interface AssetManagerConfig {
   /**
    * Default assets.
@@ -83,7 +85,7 @@ export interface AssetManagerConfig {
    *  // ...send somewhere
    * }
    */
-  uploadFile?: (ev: DragEvent) => void;
+  uploadFile?: UploadFileFn;
   /**
    * In the absence of 'uploadFile' or 'upload' assets will be embedded as Base64.
    * @default true

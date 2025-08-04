@@ -60,6 +60,7 @@ import Component from '../dom_components/model/Component';
 import Components from '../dom_components/model/Components';
 import ComponentWrapper from '../dom_components/model/ComponentWrapper';
 import { AddComponentsOption, ComponentAdd, DragMode } from '../dom_components/model/types';
+import StyleableModel from '../domain_abstract/model/StyleableModel';
 import I18nModule from '../i18n';
 import KeymapsModule, { KeymapEvent } from '../keymaps';
 import ModalModule, { ModalEvent } from '../modal_dialog';
@@ -71,7 +72,7 @@ import { CustomParserCss } from '../parser/config/config';
 import RichTextEditorModule, { RichTextEditorEvent } from '../rich_text_editor';
 import { CustomRTE } from '../rich_text_editor/config/config';
 import SelectorManager, { SelectorEvent } from '../selector_manager';
-import StorageManager, { StorageEvent, StorageOptions, ProjectData } from '../storage_manager';
+import StorageManager, { ProjectData, StorageEvent, StorageOptions } from '../storage_manager';
 import StyleManager, { StyleManagerEvent } from '../style_manager';
 import TraitManager from '../trait_manager';
 import UndoManagerModule from '../undo_manager';
@@ -403,7 +404,7 @@ export default class Editor implements IBaseModule<EditorConfig> {
    * return the corresponding CSS Rule
    * @return {Model}
    */
-  getSelectedToStyle() {
+  getSelectedToStyle(): StyleableModel | undefined {
     let selected = this.em.getSelected();
 
     if (selected) {
@@ -566,11 +567,12 @@ export default class Editor implements IBaseModule<EditorConfig> {
   /**
    * Load data from the JSON project
    * @param {Object} data Project to load
+   * @param {Object} [options] Custom options that could be passed to the project load events.
    * @example
    * editor.loadProjectData({ pages: [...], styles: [...], ... })
    */
-  loadProjectData(data: ProjectData) {
-    return this.em.loadData(data);
+  loadProjectData(data: ProjectData, options: EditorLoadOptions & Record<string, unknown> = {}) {
+    return this.em.loadData(data, options);
   }
 
   storeData() {

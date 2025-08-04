@@ -12,7 +12,6 @@ export default class EditorView extends View<EditorModel> {
     model.once('change:ready', () => {
       Panels.active();
       Panels.disableButtons();
-      UndoManager.clear();
 
       if (model.getConfig().telemetry) {
         this.sendTelemetryData().catch(() => {
@@ -22,6 +21,8 @@ export default class EditorView extends View<EditorModel> {
 
       setTimeout(() => {
         model.trigger(EditorEvents.load, model.Editor);
+        model.loadTriggered = true;
+        UndoManager.clear();
         model.clearDirtyCount();
       });
     });

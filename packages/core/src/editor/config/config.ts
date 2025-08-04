@@ -205,12 +205,6 @@ export interface EditorConfig {
   tagVarEnd?: string;
 
   /**
-   * When false, removes empty text nodes when parsed, unless they contain a space.
-   * @default false
-   */
-  keepEmptyTextNodes?: boolean;
-
-  /**
    * Return JS of components inside HTML from 'editor.getHtml()'.
    * @default true
    */
@@ -461,7 +455,6 @@ const config: () => EditorConfig = () => ({
   mediaCondition: 'max-width',
   tagVarStart: '{[ ',
   tagVarEnd: ' ]}',
-  keepEmptyTextNodes: false,
   jsInHtml: true,
   nativeDnD: true,
   multipleSelection: true,

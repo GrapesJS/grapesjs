@@ -33,7 +33,7 @@ Newsletter Demo - http://grapesjs.com/demo-newsletter-editor.html<br/>
 - [Plugins](#plugins)
 - [Support](#support)
 - [Changelog](https://github.com/GrapesJS/grapesjs/releases)
-- [Contributing](https://github.com/GrapesJS/grapesjs/blob/master/CONTRIBUTING.md)
+- [Contributing](https://github.com/GrapesJS/grapesjs/blob/dev/CONTRIBUTING.md)
 - [License](#license)
 
 ## Features
@@ -87,7 +87,7 @@ For a more practical example I'd suggest looking up the code inside this demo: h
 
 ## Development
 
-Follow the [Contributing Guide](https://github.com/GrapesJS/grapesjs/blob/master/CONTRIBUTING.md).
+Follow the [Contributing Guide](https://github.com/GrapesJS/grapesjs/blob/dev/CONTRIBUTING.md).
 
 ## Documentation
 

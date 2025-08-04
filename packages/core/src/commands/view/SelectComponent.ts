@@ -1,13 +1,12 @@
 import { bindAll, debounce, isElement } from 'underscore';
+import { CanvasSpotBuiltInTypes } from '../../canvas/model/CanvasSpot';
 import Component from '../../dom_components/model/Component';
 import Toolbar from '../../dom_components/model/Toolbar';
+import { ComponentsEvents } from '../../dom_components/types';
 import ToolbarView from '../../dom_components/view/ToolbarView';
 import { isDoc, isTaggableNode, isVisible, off, on } from '../../utils/dom';
-import { getComponentModel, getComponentView, getUnitFromValue, hasWin, isObject } from '../../utils/mixins';
+import { getComponentModel, getComponentView, hasWin, isObject } from '../../utils/mixins';
 import { CommandObject } from './CommandAbstract';
-import { CanvasSpotBuiltInTypes } from '../../canvas/model/CanvasSpot';
-import { ResizerOptions } from '../../utils/Resizer';
-import { ComponentsEvents } from '../../dom_components/types';
 
 let showOffsets: boolean;
 /**
@@ -395,141 +394,41 @@ export default {
   initResize(elem: HTMLElement) {
     const { em, canvas } = this;
     const editor = em.Editor;
-    const model = !isElement(elem) && isTaggableNode(elem) ? elem : em.getSelected();
-    const resizable = model?.get('resizable');
+    const component = !isElement(elem) && isTaggableNode(elem) ? elem : em.getSelected();
+    const resizable = component?.get?.('resizable');
     const spotTypeResize = CanvasSpotBuiltInTypes.Resize;
     const hasCustomResize = canvas.hasCustomSpot(spotTypeResize);
     canvas.removeSpots({ type: spotTypeResize });
     const initEventOpts = {
-      component: model,
+      component,
       hasCustomResize,
       resizable,
     };
 
-    model && em.trigger(ComponentsEvents.resizeInit, initEventOpts);
+    component && em.trigger(ComponentsEvents.resizeInit, initEventOpts);
     const resizableResult = initEventOpts.resizable;
 
-    if (model && resizableResult) {
-      canvas.addSpot({ type: spotTypeResize, component: model });
-      const el = isElement(elem) ? elem : model.getEl();
-      const {
-        onStart = () => {},
-        onMove = () => {},
-        onEnd = () => {},
-        updateTarget = () => {},
-        ...resizableOpts
-      } = isObject(resizableResult) ? resizableResult : {};
+    if (component && resizableResult) {
+      canvas.addSpot({ type: spotTypeResize, component });
+      const el = isElement(elem) ? elem : component.getEl();
+      const resizableOpts = isObject(resizableResult) ? resizableResult : {};
 
       if (hasCustomResize || !el || this.activeResizer) return;
 
-      let modelToStyle: any;
-      const { config } = em;
-      const pfx = config.stylePrefix || '';
-      const resizeClass = `${pfx}resizing`;
-      const self = this;
-      const resizeEventOpts = {
-        component: model,
-        el,
-      };
-
-      const toggleBodyClass = (method: string, e: any, opts: any) => {
-        const docs = opts.docs;
-        docs &&
-          docs.forEach((doc: Document) => {
-            const body = doc.body;
-            const cls = body.className || '';
-            body.className = (method == 'add' ? `${cls} ${resizeClass}` : cls.replace(resizeClass, '')).trim();
-          });
-      };
-
-      const options: ResizerOptions = {
-        // Here the resizer is updated with the current element height and width
-        onStart(ev, opts) {
-          onStart(ev, opts);
-          const { el, config, resizer } = opts;
-          const { keyHeight, keyWidth, currentUnit, keepAutoHeight, keepAutoWidth } = config;
-          toggleBodyClass('add', ev, opts);
-          modelToStyle = em.Styles.getModelToStyle(model);
-          const computedStyle = getComputedStyle(el);
-          const modelStyle = modelToStyle.getStyle();
-
-          let currentWidth = modelStyle[keyWidth];
-          config.autoWidth = keepAutoWidth && currentWidth === 'auto';
-          if (isNaN(parseFloat(currentWidth))) {
-            currentWidth = computedStyle[keyWidth];
-          }
-
-          let currentHeight = modelStyle[keyHeight];
-          config.autoHeight = keepAutoHeight && currentHeight === 'auto';
-          if (isNaN(parseFloat(currentHeight))) {
-            currentHeight = computedStyle[keyHeight];
-          }
-
-          resizer.startDim!.w = parseFloat(currentWidth);
-          resizer.startDim!.h = parseFloat(currentHeight);
-          showOffsets = false;
-
-          if (currentUnit) {
-            config.unitHeight = getUnitFromValue(currentHeight);
-            config.unitWidth = getUnitFromValue(currentWidth);
-          }
-          self.activeResizer = true;
-          editor.trigger(ComponentsEvents.resize, { ...resizeEventOpts, type: 'start' });
-        },
-
-        // Update all positioned elements (eg. component toolbar)
-        onMove(ev) {
-          onMove(ev);
-          editor.trigger(ComponentsEvents.resize, { ...resizeEventOpts, type: 'move' });
-        },
-
-        onEnd(ev, opts) {
-          onEnd(ev, opts);
-          toggleBodyClass('remove', ev, opts);
-          editor.trigger(ComponentsEvents.resize, { ...resizeEventOpts, type: 'end' });
-          showOffsets = true;
-          self.activeResizer = false;
-        },
-
-        updateTarget(el, rect, options) {
-          updateTarget(el, rect, options);
-          if (!modelToStyle) {
-            return;
-          }
-
-          const { store, selectedHandler, config } = options;
-          const { keyHeight, keyWidth, autoHeight, autoWidth, unitWidth, unitHeight } = config;
-          const onlyHeight = ['tc', 'bc'].indexOf(selectedHandler!) >= 0;
-          const onlyWidth = ['cl', 'cr'].indexOf(selectedHandler!) >= 0;
-          const style: any = {};
-
-          if (!onlyHeight) {
-            const bodyw = canvas.getBody()?.offsetWidth || 0;
-            const width = rect.w < bodyw ? rect.w : bodyw;
-            style[keyWidth!] = autoWidth ? 'auto' : `${width}${unitWidth}`;
-          }
-
-          if (!onlyWidth) {
-            style[keyHeight!] = autoHeight ? 'auto' : `${rect.h}${unitHeight}`;
-          }
-
-          if (em.getDragMode(model)) {
-            style.top = `${rect.t}${unitHeight}`;
-            style.left = `${rect.l}${unitWidth}`;
-          }
-
-          const finalStyle = {
-            ...style,
-            // value for the partial update
-            __p: !store,
-          };
-          modelToStyle.addStyle(finalStyle, { avoidStore: !store });
-          em.Styles.__emitCmpStyleUpdate(finalStyle, { components: em.getSelected() });
-        },
+      this.resizer = editor.runCommand('resize', {
         ...resizableOpts,
-      };
-
-      this.resizer = editor.runCommand('resize', { el, options, force: 1 });
+        el,
+        component,
+        force: true,
+        afterStart: () => {
+          showOffsets = false;
+          this.activeResizer = true;
+        },
+        afterEnd: () => {
+          showOffsets = true;
+          this.activeResizer = false;
+        },
+      });
     } else {
       if (hasCustomResize) return;
 

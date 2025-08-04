@@ -4,6 +4,7 @@ import EditorModel from '../../editor/model/Editor';
 import fetch from '../../utils/fetch';
 import html from '../../utils/html';
 import { AssetManagerConfig } from '../config/config';
+import { UploadFileClb, UploadFileOptions } from '../types';
 
 type FileUploaderTemplateProps = {
   pfx: string;
@@ -53,7 +54,7 @@ export default class FileUploaderView extends View {
   constructor(opts: any = {}) {
     super(opts);
     this.options = opts;
-    const c = opts.config || {};
+    const c = (opts.config || {}) as AssetManagerConfig & { pStylePrefix?: string; disableUpload?: boolean };
     this.module = opts.module;
     this.config = c;
     // @ts-ignore
@@ -113,7 +114,7 @@ export default class FileUploaderView extends View {
    * @param  {string} text Response text
    * @private
    */
-  onUploadResponse(text: string, clb?: (json: any) => void) {
+  onUploadResponse(text: string, clb?: UploadFileClb) {
     const { module, config, target } = this;
     let json;
     try {
@@ -138,9 +139,9 @@ export default class FileUploaderView extends View {
    * @return {Promise}
    * @private
    * */
-  uploadFile(e: DragEvent, clb?: () => void) {
-    // @ts-ignore
-    const files = e.dataTransfer ? e.dataTransfer.files : e.target.files;
+  uploadFile(e: DragEvent, clb?: UploadFileClb, opts?: UploadFileOptions) {
+    opts; // Options are not used here but can be used by the custom uploadFile function
+    const files = e.dataTransfer ? e.dataTransfer.files : ((e.target as any)?.files as FileList);
     const { config } = this;
     const { beforeUpload } = config;
 
@@ -293,7 +294,7 @@ export default class FileUploaderView extends View {
     return this;
   }
 
-  static embedAsBase64(e: DragEvent, clb?: () => void) {
+  static embedAsBase64(e: DragEvent, clb?: UploadFileClb) {
     // List files dropped
     // @ts-ignore
     const files = e.dataTransfer ? e.dataTransfer.files : e.target.files;

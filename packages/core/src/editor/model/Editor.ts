@@ -71,11 +71,11 @@ const deps: (new (em: EditorModel) => IModule)[] = [
   DataSourceManager,
 ];
 const storableDeps: (new (em: EditorModel) => IModule & IStorableModule)[] = [
+  DataSourceManager, // Ensure DS are loaded before other modules
   AssetManager,
   CssComposer,
   PageManager,
   ComponentManager,
-  DataSourceManager,
 ];
 
 Extender({ $ });
@@ -115,6 +115,7 @@ export default class EditorModel extends Model {
   events = EditorEvents;
   __skip = false;
   defaultRunning = false;
+  loadTriggered = false;
   destroyed = false;
   _config: InitEditorConfig;
   _storageTimeout?: ReturnType<typeof setTimeout>;
@@ -460,7 +461,7 @@ export default class EditorModel extends Model {
    * */
   handleUpdates(model: any, val: any, opt: any = {}) {
     // Component has been added temporarily - do not update storage or record changes
-    if (this.__skip || opt.temporary || opt.noCount || opt.avoidStore || opt.partial || !this.get('ready')) {
+    if (this.__skip || !this.loadTriggered || opt.temporary || opt.noCount || opt.avoidStore || opt.partial) {
       return;
     }
 
@@ -906,14 +907,16 @@ export default class EditorModel extends Model {
     return project;
   }
 
-  loadData(project: ProjectData = {}, opts: EditorLoadOptions = {}): ProjectData {
+  loadData(project: ProjectData = {}, options: EditorLoadOptions = {}): ProjectData {
+    const evData = { project, options, initial: !!options.initial };
     let loaded = false;
     if (!isEmptyObj(project)) {
       this.storables.forEach((module) => module.clear());
       this.storables.forEach((module) => module.load(project));
       loaded = true;
     }
-    this.trigger(EditorEvents.projectLoad, { project, loaded, initial: !!opts.initial });
+    this.trigger(EditorEvents.projectLoad, { ...evData, loaded });
+    loaded && this.trigger(EditorEvents.projectLoaded, evData);
     return project;
   }
 

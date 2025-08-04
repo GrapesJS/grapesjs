@@ -36,6 +36,16 @@ export enum EditorEvents {
   projectLoad = 'project:load',
 
   /**
+   * @event `project:loaded` Similar to `project:load`, but triggers only if the project is loaded successfully.
+   * @example
+   * editor.on('project:loaded', ({ project, initial }) => { ... });
+   *
+   * // Loading an empty project, won't trigger this event.
+   * editor.loadProjectData({});
+   */
+  projectLoaded = 'project:loaded',
+
+  /**
    * @event `project:get` Event triggered on request of the project data. This can be used to extend the project with custom data.
    * @example
    * editor.on('project:get', ({ project }) => { project.myCustomKey = 'value' });

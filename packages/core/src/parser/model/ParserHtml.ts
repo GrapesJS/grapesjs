@@ -325,7 +325,6 @@ const ParserHtml = (em?: EditorModel, config: ParserConfig & { returnArray?: boo
       const conf = em?.get('Config') || {};
       const Parser = em?.Parser;
       const res: HTMLParseResult = { html: [] };
-      const cf = { ...config, ...opts };
       const preOptions = {
         ...config.optionsHtml,
         // @ts-ignore Support previous `configParser.htmlType` option
@@ -336,6 +335,7 @@ const ParserHtml = (em?: EditorModel, config: ParserConfig & { returnArray?: boo
         ...preOptions,
         asDocument: this.__checkAsDocument(str, preOptions),
       };
+      const cf = { ...config, ...options };
       const { preParser, asDocument } = options;
       const inputOptions = { input: isFunction(preParser) ? preParser(str, { editor: em?.getEditor()! }) : str };
       Parser?.__emitEvent(ParserEvents.htmlBefore, inputOptions);

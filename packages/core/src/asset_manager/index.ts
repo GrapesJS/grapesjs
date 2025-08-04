@@ -40,12 +40,9 @@ import { ProjectData } from '../storage_manager';
 import defConfig, { AssetManagerConfig } from './config/config';
 import Asset from './model/Asset';
 import Assets from './model/Assets';
-import AssetsEvents, { AssetOpenOptions } from './types';
+import AssetsEvents, { AssetAddInput, AssetOpenOptions, AssetProps } from './types';
 import AssetsView from './view/AssetsView';
 import FileUploaderView from './view/FileUploader';
-
-// TODO
-type AssetProps = Record<string, any>;
 
 const assetCmd = 'open-assets';
 
@@ -153,7 +150,7 @@ export default class AssetManager extends ItemManagerModule<AssetManagerConfig, 
    * });
    * assetManager.add([{ src: 'img2.jpg' }, { src: 'img2.png' }]);
    */
-  add(asset: string | AssetProps | (string | AssetProps)[], opts: AddOptions = {}) {
+  add(asset: AssetAddInput | AssetAddInput[], opts: AddOptions = {}) {
     // Put the model at the beginning
     if (typeof opts.at == 'undefined') {
       opts.at = 0;

@@ -115,6 +115,37 @@ export enum ComponentsEvents {
   resize = 'component:resize',
 
   /**
+   * @event `component:resize:start` Component resize started. This event is triggered when the component starts being resized in the canvas.
+   * @example
+   * editor.on('component:resize:start', ({ component, event, ... }) => {})
+   */
+  resizeStart = 'component:resize:start',
+
+  /**
+   * @event `component:resize:move` Component resize in progress. This event is triggered while the component is being resized in the canvas.
+   * @example
+   * editor.on('component:resize:move', ({ component, event, ... }) => {})
+   */
+  resizeMove = 'component:resize:move',
+
+  /**
+   * @event `component:resize:end` Component resize ended. This event is triggered when the component stops being resized in the canvas.
+   * @example
+   * editor.on('component:resize:end', ({ component, event, ... }) => {})
+   */
+  resizeEnd = 'component:resize:end',
+
+  /**
+   * @event `component:resize:update` Component resize style update. This event is triggered when the component is resized in the canvas and the size is updated.
+   * @example
+   * editor.on('component:resize:update', ({ component, style, updateStyle, ... }) => {
+   *  // If updateStyle is triggered during the event, the default style update will be skipped.
+   *  updateStyle({ ...style, width: '...' })
+   * })
+   */
+  resizeUpdate = 'component:resize:update',
+
+  /**
    * @event `component:resize:init` Component resize init. This event allows you to control the resizer options dinamically.
    * @example
    * editor.on('component:resize:init', (opts) => {
