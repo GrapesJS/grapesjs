@@ -1,4 +1,4 @@
-import { isEmpty, forEach, isString, isArray } from 'underscore';
+import { isEmpty, forEach, isString, isArray, isObject } from 'underscore';
 import { Model, ObjectAny } from '../../common';
 import StyleableModel, { StyleProps } from '../../domain_abstract/model/StyleableModel';
 import Selectors from '../../selector_manager/model/Selectors';
@@ -139,6 +139,8 @@ export default class CssRule extends StyleableModel<CssRuleProperties> {
     const opts = { ...this.opt };
     const attr = { ...this.attributes };
     attr.selectors = this.get('selectors')!.map((s) => s.clone() as Selector);
+    if (isObject(attr.style)) attr.style = this.dataResolverWatchers.getStylesDefsOrValues(attr.style);
+
     // @ts-ignore
     return new this.constructor(attr, opts);
   }
@@ -307,9 +309,9 @@ export default class CssRule extends StyleableModel<CssRuleProperties> {
     return result;
   }
 
-  toJSON(...args: any) {
-    const obj = super.toJSON(args);
-
+  toJSON(opts?: ObjectAny) {
+    const obj = super.toJSON(opts);
+    if (isObject(obj.style)) obj.style = this.dataResolverWatchers.getStylesDefsOrValues(obj.style);
     if (this.em?.getConfig().avoidDefaults) {
       const defaults = this.defaults();
 
