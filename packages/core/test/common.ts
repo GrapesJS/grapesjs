@@ -1,4 +1,3 @@
-import { DataSourceManager } from '../src';
 import CanvasEvents from '../src/canvas/types';
 import { ObjectAny } from '../src/common';
 import {
@@ -23,6 +22,7 @@ export function setupTestEditor(opts?: { withCanvas?: boolean; config?: Partial<
   });
   const em = editor.getModel();
   const dsm = em.DataSources;
+  const um = em.UndoManager;
   const { Pages, Components, Canvas } = em;
   Pages.onLoad();
   const cmpRoot = Components.getWrapper()!;
@@ -49,9 +49,10 @@ export function setupTestEditor(opts?: { withCanvas?: boolean; config?: Partial<
     });
     // Enable undo manager
     editor.Pages.postLoad();
+    editor.CssComposer.postLoad();
   }
 
-  return { editor, em, dsm, cmpRoot, fixtures: fixtures as HTMLElement };
+  return { editor, em, dsm, um, cmpRoot, fixtures: fixtures as HTMLElement };
 }
 
 export function fixJsDom(editor: Editor) {
