@@ -184,7 +184,7 @@ export default class LayerManager extends Module<LayerManagerConfig> {
    */
   setVisible(component: Component, value: boolean) {
     const prevDspKey = '__prev-display';
-    const style: any = component.getStyle(styleOpts);
+    const style: any = component.getStyle(styleOpts as any);
     const { display } = style;
 
     if (value) {
@@ -211,7 +211,7 @@ export default class LayerManager extends Module<LayerManagerConfig> {
    * @returns {Boolean}
    */
   isVisible(component: Component): boolean {
-    return !isStyleHidden(component.getStyle(styleOpts));
+    return !isStyleHidden(component.getStyle(styleOpts as any));
   }
 
   /**

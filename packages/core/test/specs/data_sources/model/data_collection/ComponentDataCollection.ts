@@ -256,7 +256,6 @@ describe('Collection component', () => {
 
       test('Updating the value to a different collection variable', async () => {
         firstChild.set('name', {
-          // @ts-ignore
           type: DataVariableType,
           variableType: DataCollectionStateType.currentItem,
           collectionId: 'my_collection',
@@ -275,7 +274,6 @@ describe('Collection component', () => {
         expect(secondChild.get('name')).toBe('new_value_14');
 
         firstGrandchild.set('name', {
-          // @ts-ignore
           type: DataVariableType,
           variableType: DataCollectionStateType.currentItem,
           collectionId: 'my_collection',
@@ -293,7 +291,6 @@ describe('Collection component', () => {
 
       test('Updating the value to a different dynamic variable', async () => {
         firstChild.set('name', {
-          // @ts-ignore
           type: DataVariableType,
           path: 'my_data_source_id.user2.user',
         });
@@ -306,8 +303,8 @@ describe('Collection component', () => {
         expect(secondChild.get('name')).toBe('new_value');
         expect(thirdChild.get('name')).toBe('new_value');
 
+        // @ts-ignore
         firstGrandchild.set('name', {
-          // @ts-ignore
           type: DataVariableType,
           path: 'my_data_source_id.user2.user',
         });

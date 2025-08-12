@@ -12,7 +12,11 @@ import {
   keys,
 } from 'underscore';
 import { shallowDiff, capitalize, isEmptyObj, isObject, toLowerCase } from '../../utils/mixins';
-import StyleableModel, { StyleProps, UpdateStyleOptions } from '../../domain_abstract/model/StyleableModel';
+import StyleableModel, {
+  GetStyleOpts,
+  StyleProps,
+  UpdateStyleOptions,
+} from '../../domain_abstract/model/StyleableModel';
 import { Model, ModelDestroyOptions } from 'backbone';
 import Components from './Components';
 import Selector from '../../selector_manager/model/Selector';
@@ -52,14 +56,13 @@ import {
   updateSymbolProps,
   getSymbolsToUpdate,
 } from './SymbolUtils';
-import { ModelDataResolverWatchers } from './ModelDataResolverWatchers';
-import { DynamicWatchersOptions } from './ModelResolverWatcher';
+import { DataWatchersOptions } from './ModelResolverWatcher';
 import { DataCollectionStateMap } from '../../data_sources/model/data_collection/types';
 import { checkAndGetSyncableCollectionItemId } from '../../data_sources/utils';
 
 export interface IComponent extends ExtractMethods<Component> {}
-export interface SetAttrOptions extends SetOptions, UpdateStyleOptions, DynamicWatchersOptions {}
-export interface ComponentSetOptions extends SetOptions, DynamicWatchersOptions {}
+export interface SetAttrOptions extends SetOptions, UpdateStyleOptions, DataWatchersOptions {}
+export interface ComponentSetOptions extends SetOptions, DataWatchersOptions {}
 
 const escapeRegExp = (str: string) => {
   return str.replace(/[|\\{}()[\]^$+*?.]/g, '\\$&');
@@ -73,6 +76,10 @@ export const keySymbol = '__symbol';
 export const keySymbolOvrd = '__symbol_ovrd';
 export const keyUpdate = ComponentsEvents.update;
 export const keyUpdateInside = ComponentsEvents.updateInside;
+
+type GetComponentStyleOpts = GetStyleOpts & {
+  inline?: boolean;
+};
 
 /**
  * The Component object represents a single node of our template structure, so when you update its properties the changes are
@@ -343,42 +350,6 @@ export default class Component extends StyleableModel<ComponentProperties> {
     }
   }
 
-  set<A extends string>(
-    keyOrAttributes: A | Partial<ComponentProperties>,
-    valueOrOptions?: ComponentProperties[A] | ComponentSetOptions,
-    optionsOrUndefined?: ComponentSetOptions,
-  ): this {
-    let attributes: Partial<ComponentProperties>;
-    let options: ComponentSetOptions & {
-      dataResolverWatchers?: ModelDataResolverWatchers;
-    } = { skipWatcherUpdates: false, fromDataSource: false };
-    if (typeof keyOrAttributes === 'object') {
-      attributes = keyOrAttributes;
-      options = valueOrOptions || (options as ComponentSetOptions);
-    } else if (typeof keyOrAttributes === 'string') {
-      attributes = { [keyOrAttributes as string]: valueOrOptions };
-      options = optionsOrUndefined || options;
-    } else {
-      attributes = {};
-      options = optionsOrUndefined || options;
-    }
-
-    this.dataResolverWatchers = this.dataResolverWatchers || options.dataResolverWatchers;
-    const { evaluatedProps, dynamicProps } = this.dataResolverWatchers.addProps(attributes, options);
-    if (Object.keys(dynamicProps).length > 0) {
-      super.set(dynamicProps, { unset: true, silent: true });
-    }
-
-    return super.set(evaluatedProps, options);
-  }
-
-  previousAttributes() {
-    let obj = super.previousAttributes();
-    obj.attributes = this.dataResolverWatchers.getAttributesDefsOrValues(this.getAttributes());
-
-    return obj;
-  }
-
   onCollectionsStateMapUpdate(collectionsStateMap: DataCollectionStateMap) {
     super.onCollectionsStateMapUpdate(collectionsStateMap);
     this._getStyleRule()?.onCollectionsStateMapUpdate(collectionsStateMap);
@@ -583,7 +554,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
    * @example
    * component.setSymbolOverride(['children', 'classes']);
    */
-  setSymbolOverride(value: boolean | string | string[], options: DynamicWatchersOptions = {}) {
+  setSymbolOverride(value: boolean | string | string[], options: DataWatchersOptions = {}) {
     this.set(
       {
         [keySymbolOvrd]: (isString(value) ? [value] : value) ?? 0,
@@ -806,7 +777,6 @@ export default class Component extends StyleableModel<ComponentProperties> {
    */
   removeAttributes(attrs: string | string[] = [], opts: SetOptions = {}) {
     const attrArr = Array.isArray(attrs) ? attrs : [attrs];
-    this.dataResolverWatchers.removeAttributes(attrArr);
 
     const compAttr = this.getAttributes();
     attrArr.map((i) => delete compAttr[i]);
@@ -817,21 +787,26 @@ export default class Component extends StyleableModel<ComponentProperties> {
    * Get the style of the component
    * @return {Object}
    */
-  getStyle(options: any = {}, optsAdd: any = {}) {
+  getStyle(opts?: GetComponentStyleOpts): StyleProps;
+  getStyle(prop: '' | undefined, opts?: GetComponentStyleOpts): StyleProps;
+  getStyle(
+    prop?: keyof StyleProps | '' | ObjectAny,
+    opts?: GetComponentStyleOpts,
+  ): StyleProps | StyleProps[keyof StyleProps] | undefined {
     const { em } = this;
-    const isOptionsString = isString(options);
-    const prop = isOptionsString ? options : '';
-    const opts = isOptionsString || options === '' ? optsAdd : options;
-    const skipResolve = !!opts?.skipResolve;
+    const isPropString = isString(prop);
+    const resolvedProp = isPropString ? prop : '';
+    const resolvedOpts = isPropString ? opts : prop;
+    const skipResolve = !!resolvedOpts?.skipResolve;
 
-    if (avoidInline(em) && !opts.inline) {
+    if (avoidInline(em) && !resolvedOpts?.inline) {
       const state = em.get('state');
       const cc = em.Css;
-      const rule = cc.getIdRule(this.getId(), { state, ...opts });
+      const rule = cc.getIdRule(this.getId(), { state, ...resolvedOpts });
       this.rule = rule;
 
       if (rule) {
-        return rule.getStyle(prop, { skipResolve });
+        return rule.getStyle(resolvedProp, { skipResolve });
       }
 
       // Return empty style if no rule have been found. We cannot return inline style with the next return
@@ -839,7 +814,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
       return {};
     }
 
-    return super.getStyle.call(this, prop, { skipResolve });
+    return super.getStyle.call(this, resolvedProp, { skipResolve });
   }
 
   /**
@@ -1408,9 +1383,8 @@ export default class Component extends StyleableModel<ComponentProperties> {
     const opts = { ...this.opt };
     const id = this.getId();
     const cssc = em?.Css;
-    attr.attributes = {
-      ...(attr.attributes ? this.dataResolverWatchers.getAttributesDefsOrValues(attr.attributes) : undefined),
-    };
+    if (!!attr.attributes) attr.attributes = this.dataResolverWatchers.getAttributesDefsOrValues(attr.attributes);
+    if (isObject(attr.style)) attr.style = this.dataResolverWatchers.getStylesDefsOrValues(attr.style);
     // @ts-ignore
     attr.components = [];
     // @ts-ignore
