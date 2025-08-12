@@ -1,11 +1,11 @@
+import { ObjectHash } from 'backbone';
 import { ObjectAny } from '../../common';
 import DataResolverListener from '../../data_sources/model/DataResolverListener';
 import { getDataResolverInstance, getDataResolverInstanceValue, isDataResolverProps } from '../../data_sources/utils';
 import StyleableModel from '../../domain_abstract/model/StyleableModel';
 import EditorModel from '../../editor/model/Editor';
-import Component from './Component';
 
-export interface DynamicWatchersOptions {
+export interface DataWatchersOptions {
   skipWatcherUpdates?: boolean;
   fromDataSource?: boolean;
 }
@@ -14,35 +14,35 @@ export interface ModelResolverWatcherOptions {
   em: EditorModel;
 }
 
-type NewType = StyleableModel | undefined;
-type UpdateFn = (component: NewType, key: string, value: any) => void;
+export type WatchableModel<T extends ObjectHash> = StyleableModel<T> | undefined;
+export type UpdateFn<T extends ObjectHash> = (component: WatchableModel<T>, key: string, value: any) => void;
 
-export class ModelResolverWatcher {
+export class ModelResolverWatcher<T extends ObjectHash> {
   private em: EditorModel;
   private resolverListeners: Record<string, DataResolverListener> = {};
 
   constructor(
-    private model: NewType,
-    private updateFn: UpdateFn,
+    private model: WatchableModel<T>,
+    private updateFn: UpdateFn<T>,
     options: ModelResolverWatcherOptions,
   ) {
     this.em = options.em;
   }
 
-  bindModel(model: StyleableModel) {
+  bindModel(model: WatchableModel<T>) {
     this.model = model;
   }
 
-  setDynamicValues(values: ObjectAny | undefined, options: DynamicWatchersOptions = {}) {
+  setDynamicValues(values: ObjectAny | undefined, options: DataWatchersOptions = {}) {
     const shouldSkipWatcherUpdates = options.skipWatcherUpdates || options.fromDataSource;
     if (!shouldSkipWatcherUpdates) {
       this.removeListeners();
     }
 
-    return this.addDynamicValues(values, options);
+    return this.addDataValues(values, options);
   }
 
-  addDynamicValues(values: ObjectAny | undefined, options: DynamicWatchersOptions = {}) {
+  addDataValues(values: ObjectAny | undefined, options: DataWatchersOptions = {}) {
     if (!values) return {};
     const evaluatedValues = this.evaluateValues(values);
 
@@ -61,8 +61,8 @@ export class ModelResolverWatcher {
       this.resolverListeners[key].resolver.updateCollectionsStateMap(this.collectionsStateMap),
     );
 
-    const evaluatedValues = this.addDynamicValues(
-      this.getSerializableValues(Object.fromEntries(resolvesFromCollections.map((key) => [key, null]))),
+    const evaluatedValues = this.addDataValues(
+      this.getSerializableValues(Object.fromEntries(resolvesFromCollections.map((key) => [key, '']))),
     );
 
     Object.entries(evaluatedValues).forEach(([key, value]) => this.updateFn(this.model, key, value));
@@ -133,9 +133,9 @@ export class ModelResolverWatcher {
     return propsKeys;
   }
 
-  getSerializableValues(values: ObjectAny | undefined) {
+  getSerializableValues(values: ObjectAny) {
     if (!values) return {};
-    const serializableValues = { ...values };
+    const serializableValues: ObjectAny = { ...values };
     const propsKeys = Object.keys(serializableValues);
 
     for (let index = 0; index < propsKeys.length; index++) {
