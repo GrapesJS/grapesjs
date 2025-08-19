@@ -27,7 +27,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/GrapesJS/grapesjs.git"
+    "url": "https://github.com/Loles25/exotic-grapesjs.git"
   },
   "dependencies": {
     "@types/backbone": "1.4.15",

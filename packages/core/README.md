@@ -1,15 +1,19 @@
-# [GrapesJS](http://grapesjs.com)
+# Exotic GrapesJS
 
-[![Build Status](https://github.com/GrapesJS/grapesjs/actions/workflows/quality.yml/badge.svg)](https://github.com/GrapesJS/grapesjs/actions)
+<p align="center"><img src="exotic-logo.png" alt="Exotic GrapesJS logo" width="120"/></p>
+
+[![Build Status](https://github.com/Loles25/exotic-grapesjs/actions/workflows/quality.yml/badge.svg)](https://github.com/Loles25/exotic-grapesjs/actions)
 [![Chat](https://img.shields.io/badge/chat-discord-7289da.svg)](https://discord.gg/QAbgGXq)
 [![CDNJS](https://img.shields.io/cdnjs/v/grapesjs.svg)](https://cdnjs.com/libraries/grapesjs)
 [![npm](https://img.shields.io/npm/v/grapesjs.svg)](https://www.npmjs.com/package/grapesjs)
 
 > If you looking to embed the [Studio](https://app.grapesjs.com/studio) editor in your application, we now offer the [Studio SDK](https://app.grapesjs.com/dashboard/sdk/licenses?ref=repo-readme), a ready-to-use visual builder that's easy to embed in external applications, with GrapesJS team support included.
 
-<p align="center"><img src="http://grapesjs.com/assets/images/grapesjs-front-page-m.jpg" alt="GrapesJS" width="500" align="center"/></p>
+<p align="center"><img src="http://grapesjs.com/assets/images/grapesjs-front-page-m.jpg" alt="Exotic GrapesJS screenshot" width="500" align="center"/></p>
 
-GrapesJS is a free and open source Web Builder Framework which helps building HTML templates, faster and easily, to be delivered in sites, newsletters or mobile apps. Mainly, GrapesJS was designed to be used inside a [CMS] to speed up the creation of dynamic templates. To better understand this concept check the image below
+Exotic GrapesJS is a fork of the open source [GrapesJS](http://grapesjs.com) Web Builder Framework. Throughout this repository, any mention of GrapesJS refers to the upstream project and can be substituted with Exotic GrapesJS.
+
+Exotic GrapesJS is a free and open source Web Builder Framework which helps building HTML templates, faster and easily, to be delivered in sites, newsletters or mobile apps. Mainly, Exotic GrapesJS was designed to be used inside a [CMS] to speed up the creation of dynamic templates. To better understand this concept check the image below
 
 <br/>
 <p align="center"><img src="http://grapesjs.com/assets/images/gjs-concept.png" alt="GrapesJS - Style Manager" height="400" align="center"/></p>
@@ -32,8 +36,8 @@ Newsletter Demo - http://grapesjs.com/demo-newsletter-editor.html<br/>
 - [Testing](#testing)
 - [Plugins](#plugins)
 - [Support](#support)
-- [Changelog](https://github.com/GrapesJS/grapesjs/releases)
-- [Contributing](https://github.com/GrapesJS/grapesjs/blob/dev/CONTRIBUTING.md)
+- [Changelog](https://github.com/Loles25/exotic-grapesjs/releases)
+- [Contributing](https://github.com/Loles25/exotic-grapesjs/blob/dev/CONTRIBUTING.md)
 - [License](#license)
 
 ## Features
@@ -62,7 +66,7 @@ Newsletter Demo - http://grapesjs.com/demo-newsletter-editor.html<br/>
 - NPM
   - `npm i grapesjs`
 - GIT
-  - `git clone https://github.com/GrapesJS/grapesjs.git`
+  - `git clone https://github.com/Loles25/exotic-grapesjs.git`
 
 For the development purpose you should follow instructions below.
 
@@ -87,7 +91,7 @@ For a more practical example I'd suggest looking up the code inside this demo: h
 
 ## Development
 
-Follow the [Contributing Guide](https://github.com/GrapesJS/grapesjs/blob/dev/CONTRIBUTING.md).
+Follow the [Contributing Guide](https://github.com/Loles25/exotic-grapesjs/blob/dev/CONTRIBUTING.md).
 
 ## Documentation
 

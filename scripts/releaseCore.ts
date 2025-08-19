@@ -24,7 +24,7 @@ async function prepareCoreRelease() {
     const newBranch = `release-v${newVersion}`;
     runCommand(`git checkout -b ${newBranch}`);
     runCommand('git add .');
-    runCommand(`git commit -m "Release GrapesJS core ${releaseTag}: v${newVersion}"`);
+    runCommand(`git commit -m "Release Exotic GrapesJS core ${releaseTag}: v${newVersion}"`);
 
     console.log(`Release prepared! Push the current "${newBranch}" branch and open a new PR targeting 'dev'`);
   } catch (error) {

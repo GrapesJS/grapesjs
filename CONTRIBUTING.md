@@ -1,6 +1,6 @@
-# Contribute to GrapesJS
+# Contribute to Exotic GrapesJS
 
-Thank you for your interest in contributing to GrapesJS! We welcome all types of contributions, including bug reports, feature suggestions, documentation improvements, and code contributions.
+Thank you for your interest in contributing to Exotic GrapesJS! This project is a fork of the original [GrapesJS](https://grapesjs.com) framework. Any reference to GrapesJS in this repository refers to the upstream project and can be replaced with Exotic GrapesJS. We welcome all types of contributions, including bug reports, feature suggestions, documentation improvements, and code contributions.
 
 ## Quick Start
 
@@ -27,8 +27,8 @@ Thank you for your interest in contributing to GrapesJS! We welcome all types of
 3. Clone the repository:
 
    ```bash
-   git clone https://github.com/GrapesJS/grapesjs.git
-   cd grapesjs
+   git clone https://github.com/Loles25/exotic-grapesjs.git
+   cd exotic-grapesjs
    ```
 
 4. Install dependencies:
@@ -100,7 +100,7 @@ If you're a first-time contributor, consider starting a discussion or opening an
 
 ## Questions?
 
-If you have any questions, please [open an issue](https://github.com/GrapesJS/grapesjs/issues) or start a [discussion](https://github.com/GrapesJS/grapesjs/discussions). Search existing issues and discussions first to avoid duplicates.
+If you have any questions, please [open an issue](https://github.com/Loles25/exotic-grapesjs/issues) or start a [discussion](https://github.com/Loles25/exotic-grapesjs/discussions). Search existing issues and discussions first to avoid duplicates.
 
 ## Thank You
 
