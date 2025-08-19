@@ -96,7 +96,7 @@ export class DropLocationDeterminer<T, NodeType extends SortableTreeNode<T>> ext
   /**
    * Triggers the `onMove` event.
    *
-   * This method is should be called when the user scrolls within the container, using the last recorded mouse event
+   * This method should be called when the user scrolls within the container, using the last recorded mouse event
    * to determine the new target.
    */
   recalculateTargetOnScroll(): void {
