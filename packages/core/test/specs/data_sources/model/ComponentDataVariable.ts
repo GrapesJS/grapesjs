@@ -247,7 +247,7 @@ describe('ComponentDataVariable', () => {
     expect(cmp.getInnerHTML()).toContain('NestedItemName1-UP');
   });
 
-  test('component initalizes and updates data on datarecord set object', () => {
+  test('component initializes and updates data on datarecord set object', () => {
     const dataSource = {
       id: 'setObject',
       records: [{ id: 'id1', content: 'Hello World', color: 'red' }],
