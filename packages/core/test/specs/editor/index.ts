@@ -113,10 +113,12 @@ describe('Editor', () => {
     const em = editor.em;
     em.getConfig().multipleSelection = true;
     const wrapper = editor.getWrapper()!;
+    editor.render();
     const added = wrapper.append(`
       <div>Component 1</div>
       <div>Component 2</div>
     `);
+    editor.render();
     em.setSelected(added[0]);
     em.setSelected(added[1]);
     expect(editor.getSelectedAll().length).toBe(1);
@@ -165,8 +167,7 @@ describe('Editor', () => {
     expect(editor.getSelectedAll().length).toBe(0);
   });
 
-  test.skip('Shift key selecting a component that is being edited should not clear any text selections', () => {
-    const all = editor.Components.allById();
+  test('Shift key selecting a component that is being edited should not clear any text selections', () => {
     const em = editor.em;
     em.getConfig().multipleSelection = true;
     const wrapper = editor.getWrapper()!;
@@ -181,12 +182,25 @@ describe('Editor', () => {
       },
     } as any;
 
-    const firstComponent = all[keys(all)[0]];
+    const firstComponent = added[0];
     firstComponent.em.setEditing(true);
-    // TODO: highlight the text of the first component
+
+    // highlight the text of the first component
+    const el = document.createElement('div');
+    el.textContent = firstComponent.components().at(0)?.get('content') as string;
+    document.body.appendChild(el);
+    const selection = window.getSelection();
+    const range = document.createRange();
+    range.selectNodeContents(el);
+    selection?.removeAllRanges();
+    selection?.addRange(range);
+    const selectedText = selection?.toString();
 
     em.setSelected(added[0], callSelectedOptions);
-    // TODO: check if the text of the first component is still highlighted
+
+    // check if the text of the first component is still highlighted
+    expect(window.getSelection()?.toString()).toBe(selectedText);
     expect(editor.getSelectedAll().length).toBe(0);
+    el.remove();
   });
 });
