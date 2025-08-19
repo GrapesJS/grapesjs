@@ -74,7 +74,7 @@ export class DropLocationDeterminer<T, NodeType extends SortableTreeNode<T>> ext
     this.eventHandlers = options.eventHandlers;
     bindAll(this, 'endDrag', 'cancelDrag', 'recalculateTargetOnScroll', 'startSort', 'onDragStart', 'onMove');
 
-    this.restLastMoveData();
+    this.resetLastMoveData();
     this.rateLimiter = new RateLimiter<MouseEvent>(this.moveThreshold);
   }
 
@@ -140,7 +140,7 @@ export class DropLocationDeterminer<T, NodeType extends SortableTreeNode<T>> ext
     if (!targetNode || !hoveredNode) {
       this.triggerLegacyOnMoveCallback(mouseEvent, 0);
       this.triggerMoveEvent(mouseX, mouseY);
-      this.restLastMoveData();
+      this.resetLastMoveData();
 
       return;
     }
@@ -189,12 +189,15 @@ export class DropLocationDeterminer<T, NodeType extends SortableTreeNode<T>> ext
     }
   }
 
-  private restLastMoveData() {
+  private resetLastMoveData() {
     this.lastMoveData = {
       targetNode: undefined,
+      hoveredNode: undefined,
       index: undefined,
+      hoveredIndex: undefined,
       placement: undefined,
       mouseEvent: undefined,
+      placeholderDimensions: undefined,
     };
   }
 
@@ -310,7 +313,7 @@ export class DropLocationDeterminer<T, NodeType extends SortableTreeNode<T>> ext
     this.triggerOnDragEndEvent();
     this.eventHandlers.onEnd?.();
     this.eventHandlers.legacyOnEnd?.();
-    this.restLastMoveData();
+    this.resetLastMoveData();
     this.rateLimiter.clearTimeout();
   }
 
