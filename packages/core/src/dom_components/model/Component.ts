@@ -301,13 +301,13 @@ export default class Component extends StyleableModel<ComponentProperties> {
     this.opt = opt;
     this.em = em!;
     this.config = opt.config || {};
-    const dynamicAttributes = this.dataResolverWatchers.getDynamicAttributesDefs();
-    this.setAttributes({
-      ...(result(this, 'defaults').attributes || {}),
-      ...(this.get('attributes') || {}),
-      ...dynamicAttributes,
-    });
     this.ccid = Component.createId(this, opt);
+    const defaultAttrs = {
+      ...(result(this, 'defaults').attributes || {}),
+      ...(this.getAttributes({ skipResolve: true }) || {}),
+    };
+    const attrs = this.dataResolverWatchers.getValueOrResolver('attributes', defaultAttrs);
+    this.setAttributes(attrs);
     this.preInit();
     this.initClasses();
     this.initComponents();
@@ -755,11 +755,13 @@ export default class Component extends StyleableModel<ComponentProperties> {
    * component.addAttributes({ 'data-key': 'value' });
    */
   addAttributes(attrs: ObjectAny, opts: SetAttrOptions = {}) {
-    const dynamicAttributes = this.dataResolverWatchers.getDynamicAttributesDefs();
+    const previousAttrs = this.dataResolverWatchers.getValueOrResolver(
+      'attributes',
+      this.getAttributes({ noClass: true, noStyle: true }),
+    );
     return this.setAttributes(
       {
-        ...this.getAttributes({ noClass: true, noStyle: true }),
-        ...dynamicAttributes,
+        ...previousAttrs,
         ...attrs,
       },
       opts,
@@ -830,7 +832,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
     if (avoidInline(em) && !opt.temporary && !opts.inline) {
       const style = this.get('style') || {};
       prop = isString(prop) ? this.parseStyle(prop) : prop;
-      prop = { ...prop, ...(style as any) };
+      prop = { ...(style as any), ...prop };
       const state = em.get('state');
       const cc = em.Css;
       const propOrig = this.getStyle({ ...opts, skipResolve: true });
@@ -856,11 +858,10 @@ export default class Component extends StyleableModel<ComponentProperties> {
   getAttributes(opts: { noClass?: boolean; noStyle?: boolean; skipResolve?: boolean } = {}) {
     const { em } = this;
     const classes: string[] = [];
-    const dynamicValues = opts.skipResolve ? this.dataResolverWatchers.getDynamicAttributesDefs() : {};
-    const attributes = {
-      ...this.get('attributes'),
-      ...dynamicValues,
-    };
+    const resolvedAttrs = { ...this.get('attributes')! };
+    const attributes = opts?.skipResolve
+      ? this.dataResolverWatchers.getValueOrResolver('attributes', resolvedAttrs)
+      : resolvedAttrs;
     const sm = em?.Selectors;
     const id = this.getId();
 
@@ -1029,12 +1030,8 @@ export default class Component extends StyleableModel<ComponentProperties> {
         if (name && value) attrs[name] = value;
       }
     });
-    const dynamicAttributes = this.dataResolverWatchers.getDynamicAttributesDefs();
-    traits.length &&
-      this.setAttributes({
-        ...attrs,
-        ...dynamicAttributes,
-      });
+    const resolvedAttributes = this.dataResolverWatchers.getValueOrResolver('attributes', attrs);
+    traits.length && this.setAttributes(resolvedAttributes);
     this.on(event, this.initTraits);
     changed && em && em.trigger('component:toggled');
     return this;
@@ -1376,15 +1373,10 @@ export default class Component extends StyleableModel<ComponentProperties> {
    * @ts-ignore */
   clone(opt: { symbol?: boolean; symbolInv?: boolean } = {}): this {
     const em = this.em;
-    const attr = {
-      ...this.attributes,
-      ...this.dataResolverWatchers.getDynamicPropsDefs(),
-    };
+    const attr = this.dataResolverWatchers.getProps(this.attributes);
     const opts = { ...this.opt };
     const id = this.getId();
     const cssc = em?.Css;
-    if (!!attr.attributes) attr.attributes = this.dataResolverWatchers.getAttributesDefsOrValues(attr.attributes);
-    if (isObject(attr.style)) attr.style = this.dataResolverWatchers.getStylesDefsOrValues(attr.style);
     // @ts-ignore
     attr.components = [];
     // @ts-ignore
@@ -1641,9 +1633,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
    * @private
    */
   toJSON(opts: ObjectAny = {}): ComponentDefinition {
-    let obj = Model.prototype.toJSON.call(this, opts);
-    obj = { ...obj, ...this.dataResolverWatchers.getDynamicPropsDefs() };
-    obj.attributes = this.dataResolverWatchers.getAttributesDefsOrValues(this.getAttributes());
+    let obj = super.toJSON(opts);
     delete obj.dataResolverWatchers;
     delete obj.attributes.class;
     delete obj.toolbar;
@@ -2021,8 +2011,10 @@ export default class Component extends StyleableModel<ComponentProperties> {
       (isObject(inlineStyle) && Object.keys(inlineStyle).length > 0);
 
     if (avoidInline(this.em) && hasInlineStyle) {
-      this.addStyle(inlineStyle);
-      this.set('style', '');
+      this.addStyle(
+        isObject(inlineStyle) ? this.dataResolverWatchers.getValueOrResolver('styles', inlineStyle) : inlineStyle,
+        { avoidStore: true, noUndo: true },
+      );
     }
   }
 
