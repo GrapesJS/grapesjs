@@ -4,8 +4,11 @@ import EditorModel from '../../editor/model/Editor';
 import CssRule from '../model/CssRule';
 import { CssEvents } from '../types';
 
+// @ts-expect-error
 export default class CssRuleView extends View<CssRule> {
   config: any;
+  // @ts-expect-error
+  model: CssRule;
 
   constructor(o: any = {}) {
     super(o);

@@ -126,7 +126,6 @@ export default class CssRule extends StyleableModel<CssRuleProperties> {
     this.em = opt.em;
     this.ensureSelectors(null, null, {});
     this.on('change', this.__onChange);
-    this.setStyle(this.get('style'));
   }
 
   __onChange(m: CssRule, opts: any) {
@@ -135,14 +134,10 @@ export default class CssRule extends StyleableModel<CssRuleProperties> {
     changed && !isEmptyObj(changed) && em?.changesUp(opts);
   }
 
-  clone(): CssRule {
-    const opts = { ...this.opt };
-    const attr = { ...this.attributes };
-    attr.selectors = this.get('selectors')!.map((s) => s.clone() as Selector);
-    if (isObject(attr.style)) attr.style = this.dataResolverWatchers.getStylesDefsOrValues(attr.style);
+  clone(): typeof this {
+    const selectors = this.get('selectors')!.map((s) => s.clone() as Selector);
 
-    // @ts-ignore
-    return new this.constructor(attr, opts);
+    return super.clone({ selectors });
   }
 
   ensureSelectors(m: any, c: any, opts: any) {
@@ -311,7 +306,6 @@ export default class CssRule extends StyleableModel<CssRuleProperties> {
 
   toJSON(opts?: ObjectAny) {
     const obj = super.toJSON(opts);
-    if (isObject(obj.style)) obj.style = this.dataResolverWatchers.getStylesDefsOrValues(obj.style);
     if (this.em?.getConfig().avoidDefaults) {
       const defaults = this.defaults();
 
