@@ -8,10 +8,11 @@ import CssRuleView from '../../css_composer/view/CssRuleView';
 import ComponentView from '../../dom_components/view/ComponentView';
 import Frame from '../../canvas/model/Frame';
 import { ToCssOptions } from '../../css_composer/model/CssRule';
-import { keyDataValues, ModelDataResolverWatchers } from '../../dom_components/model/ModelDataResolverWatchers';
+import { ModelDataResolverWatchers } from '../../dom_components/model/ModelDataResolverWatchers';
 import { DataCollectionStateMap } from '../../data_sources/model/data_collection/types';
 import { DataWatchersOptions } from '../../dom_components/model/ModelResolverWatcher';
 import { DataResolverProps } from '../../data_sources/types';
+import { _StringKey } from 'backbone';
 
 export type StyleProps = Record<string, string | string[] | DataResolverProps>;
 
@@ -48,6 +49,7 @@ export default class StyleableModel<T extends StyleableModelProperties = any> ex
   views: StyleableView[] = [];
   dataResolverWatchers: ModelDataResolverWatchers<T>;
   collectionsStateMap: DataCollectionStateMap = {};
+  opt: { em?: EditorModel };
 
   constructor(attributes: T, options: { em?: EditorModel } = {}) {
     const em = options.em!;
@@ -55,8 +57,14 @@ export default class StyleableModel<T extends StyleableModelProperties = any> ex
     super(attributes, { ...options, dataResolverWatchers });
     dataResolverWatchers.bindModel(this);
     this.dataResolverWatchers = dataResolverWatchers;
-    this.set('style', this.get('style')!);
     this.em = options.em;
+    this.opt = options;
+  }
+
+  get<A extends _StringKey<T>>(attributeName: A, opts?: { skipResolve?: boolean }): T[A] | undefined {
+    if (opts?.skipResolve) return this.dataResolverWatchers.getValueOrResolver('props')[attributeName];
+
+    return super.get(attributeName);
   }
 
   set<A extends keyof T>(
@@ -139,10 +147,7 @@ export default class StyleableModel<T extends StyleableModelProperties = any> ex
       return shouldReturnFull ? parsedStyle : parsedStyle[prop];
     }
 
-    const unresolvedStyles: StyleProps = {
-      ...parsedStyle,
-      ...this.dataResolverWatchers.getDynamicStylesDefs(),
-    };
+    const unresolvedStyles: StyleProps = this.dataResolverWatchers.getValueOrResolver('styles', parsedStyle);
 
     return shouldReturnFull ? unresolvedStyles : unresolvedStyles[prop];
   }
@@ -302,12 +307,19 @@ export default class StyleableModel<T extends StyleableModelProperties = any> ex
     this.dataResolverWatchers.onCollectionsStateMapUpdate();
   }
 
-  toJSON(opts?: ObjectAny) {
-    const obj = { ...this.dataResolverWatchers.getPropsDefsOrValues(super.toJSON(opts)) };
-    if (opts?.fromUndo) return obj;
+  clone(attributes?: any, opts?: any): typeof this {
+    const props = this.dataResolverWatchers.getProps(this.attributes);
+    const mergedProps = { ...props, ...attributes };
+    const mergedOpts = { ...this.opt, ...opts };
 
-    delete obj[keyDataValues];
-    if (isObject(obj.style)) obj.style = this.dataResolverWatchers.getStylesDefsOrValues(obj.style);
+    const ClassConstructor = this.constructor as new (attributes: any, opts?: any) => typeof this;
+
+    return new ClassConstructor(mergedProps, mergedOpts);
+  }
+
+  toJSON(opts?: ObjectAny) {
+    if (opts?.fromUndo) return { ...super.toJSON(opts) };
+    const obj = this.dataResolverWatchers.getProps(this.attributes);
 
     return obj;
   }
