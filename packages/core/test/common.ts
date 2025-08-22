@@ -1,3 +1,4 @@
+import { DataSource } from '../src';
 import CanvasEvents from '../src/canvas/types';
 import { ObjectAny } from '../src/common';
 import {
@@ -13,7 +14,17 @@ import EditorModel from '../src/editor/model/Editor';
 export const DEFAULT_CMPS = 3;
 
 export function setupTestEditor(opts?: { withCanvas?: boolean; config?: Partial<EditorConfig> }) {
-  document.body.innerHTML = '<div id="fixtures"></div> <div id="canvas-wrp"></div> <div id="editor"></div>';
+  document.body.innerHTML = '';
+  const fixtures = document.createElement('div');
+  fixtures.id = 'fixtures';
+  const canvasWrapEl = document.createElement('div');
+  canvasWrapEl.id = 'canvas-wrp';
+  const editorEl = document.createElement('div');
+  editorEl.id = 'editor';
+  document.body.appendChild(fixtures);
+  document.body.appendChild(canvasWrapEl);
+  document.body.appendChild(editorEl);
+
   const editor = new Editor({
     mediaCondition: 'max-width',
     el: document.body.querySelector('#editor') as HTMLElement,
@@ -32,9 +43,13 @@ export function setupTestEditor(opts?: { withCanvas?: boolean; config?: Partial<
     config: { ...cmpRoot.config, em },
   });
   wrapperEl.render();
-  const fixtures = document.body.querySelector('#fixtures')!;
-  fixtures.appendChild(wrapperEl.el);
-  const canvasWrapEl = document.body.querySelector('#canvas-wrp')!;
+  // Provide a safe destroy method for tests
+  const safeDestroy = () => {
+    um.clear();
+    dsm.getAll().forEach((ds: DataSource) => dsm.remove(ds.id as string));
+    editor.destroy();
+    document.body.innerHTML = '';
+  };
 
   /**
    * When trying to render the canvas, seems like jest gets stuck in a loop of iframe.onload (FrameView.ts)
@@ -50,9 +65,12 @@ export function setupTestEditor(opts?: { withCanvas?: boolean; config?: Partial<
     // Enable undo manager
     editor.Pages.postLoad();
     editor.CssComposer.postLoad();
+    editor.DataSources.postLoad();
   }
 
-  return { editor, em, dsm, um, cmpRoot, fixtures: fixtures as HTMLElement };
+  um.clear();
+
+  return { editor, em, dsm, um, cmpRoot, fixtures: fixtures as HTMLElement, destroy: safeDestroy };
 }
 
 export function fixJsDom(editor: Editor) {
