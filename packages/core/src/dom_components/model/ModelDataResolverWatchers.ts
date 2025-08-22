@@ -9,9 +9,10 @@ import {
 import { getSymbolsToUpdate } from './SymbolUtils';
 import Component from './Component';
 import { StyleableModelProperties } from '../../domain_abstract/model/StyleableModel';
+import { isObject } from '../../utils/mixins';
 
 export const updateFromWatcher = { fromDataSource: true, avoidStore: true };
-export const keyDataValues = '__dynamic_values';
+export const keyDataValues = '__data_values';
 
 export class ModelDataResolverWatchers<T extends StyleableModelProperties> {
   private propertyWatcher: ModelResolverWatcher<T>;
@@ -20,7 +21,7 @@ export class ModelDataResolverWatchers<T extends StyleableModelProperties> {
 
   constructor(
     private model: WatchableModel<T>,
-    options: ModelResolverWatcherOptions,
+    private options: ModelResolverWatcherOptions,
   ) {
     this.propertyWatcher = new ModelResolverWatcher(model, this.onPropertyUpdate, options);
     this.attributeWatcher = new ModelResolverWatcher(model, this.onAttributeUpdate, options);
@@ -39,14 +40,14 @@ export class ModelDataResolverWatchers<T extends StyleableModelProperties> {
     const filteredProps = this.filterProps(props);
     const evaluatedProps = {
       ...props,
-      ...this.propertyWatcher.addDataValues({ ...filteredProps, ...dataValues.props }),
+      ...this.propertyWatcher.addDataValues({ ...filteredProps, ...dataValues.props }, options),
     };
 
-    if (props.attributes || dataValues.attributes) {
+    if (this.shouldProcessProp('attributes', props, dataValues)) {
       evaluatedProps.attributes = this.processAttributes(props, dataValues, options);
     }
 
-    if (props.style || dataValues.style) {
+    if (this.shouldProcessProp('style', props, dataValues)) {
       evaluatedProps.style = this.processStyles(props, dataValues, options);
     }
 
@@ -54,46 +55,66 @@ export class ModelDataResolverWatchers<T extends StyleableModelProperties> {
     if (!skipOverrideUpdates) {
       this.updateSymbolOverride();
       evaluatedProps[keyDataValues] = {
-        props: this.propertyWatcher.getAllSerializableValues(),
-        style: this.styleWatcher.getAllSerializableValues(),
-        attributes: this.attributeWatcher.getAllSerializableValues(),
+        props: this.propertyWatcher.getAllDataResolvers(),
+        style: this.styleWatcher.getAllDataResolvers(),
+        attributes: this.attributeWatcher.getAllDataResolvers(),
       };
     }
 
     return evaluatedProps;
   }
 
-  setStyles(styles: ObjectAny, options: DataWatchersOptions = {}) {
-    return this.addProps({ style: styles }, options);
+  getProps(data: ObjectAny): ObjectAny {
+    const resolvedProps = this.getValueOrResolver('props', data);
+    const result = {
+      ...resolvedProps,
+    };
+    delete result[keyDataValues];
+
+    if (data.attributes) {
+      result.attributes = this.getValueOrResolver('attributes', data.attributes);
+    }
+
+    if (isObject(data.style)) {
+      result.style = this.getValueOrResolver('styles', data.style);
+    }
+
+    return result;
+  }
+
+  /**
+   * Resolves properties, styles, or attributes to their final values or returns the data resolvers.
+   * - If `data` is `null` or `undefined`, the method returns an object containing all data resolvers for the specified `target`.
+   */
+  getValueOrResolver(target: 'props' | 'styles' | 'attributes', data?: ObjectAny) {
+    let watcher;
+
+    switch (target) {
+      case 'props':
+        watcher = this.propertyWatcher;
+        break;
+      case 'styles':
+        watcher = this.styleWatcher;
+        break;
+      case 'attributes':
+        watcher = this.attributeWatcher;
+        break;
+      default:
+        const { em } = this.options;
+        em?.logError(`Invalid target '${target}'. Must be 'props', 'styles', or 'attributes'.`);
+        return {};
+    }
+
+    if (!data) {
+      return watcher.getAllDataResolvers();
+    }
+
+    return watcher.getValuesOrResolver(data);
   }
 
   removeAttributes(attributes: string[]) {
     this.attributeWatcher.removeListeners(attributes);
     this.updateSymbolOverride();
-  }
-
-  getDynamicPropsDefs() {
-    return this.propertyWatcher.getAllSerializableValues();
-  }
-
-  getDynamicAttributesDefs() {
-    return this.attributeWatcher.getAllSerializableValues();
-  }
-
-  getDynamicStylesDefs() {
-    return this.styleWatcher.getAllSerializableValues();
-  }
-
-  getPropsDefsOrValues(props: ObjectAny) {
-    return this.propertyWatcher.getSerializableValues(props);
-  }
-
-  getAttributesDefsOrValues(attributes: ObjectAny) {
-    return this.attributeWatcher.getSerializableValues(attributes);
-  }
-
-  getStylesDefsOrValues(styles: ObjectAny) {
-    return this.styleWatcher.getSerializableValues(styles);
   }
 
   /**
@@ -133,6 +154,17 @@ export class ModelDataResolverWatchers<T extends StyleableModelProperties> {
     model?.addStyle({ [key]: value }, { ...updateFromWatcher, partial: true, avoidStore: true });
   };
 
+  private shouldProcessProp(key: 'attributes' | 'style', newProps: ObjectAny, dataValues: ObjectAny): boolean {
+    const watcher = key === 'attributes' ? this.attributeWatcher : this.styleWatcher;
+    const dataSubProps = dataValues[key];
+
+    const hasNewValues = !!newProps[key];
+    const hasExistingDataValues = dataSubProps && Object.keys(dataSubProps).length > 0;
+    const hasApplicableWatchers = dataSubProps && Object.keys(watcher.getAllDataResolvers()).length > 0;
+
+    return hasNewValues || hasExistingDataValues || hasApplicableWatchers;
+  }
+
   private updateSymbolOverride() {
     const model = this.model;
     if (!this.isComponent(model)) return;
@@ -143,7 +175,7 @@ export class ModelDataResolverWatchers<T extends StyleableModelProperties> {
     const keys = this.propertyWatcher.getValuesResolvingFromCollections();
     const attributesKeys = this.attributeWatcher.getValuesResolvingFromCollections();
 
-    const combinedKeys = ['locked', 'layerable', ...keys];
+    const combinedKeys = ['locked', 'layerable', keyDataValues, ...keys];
     const haveOverridenAttributes = Object.keys(attributesKeys).length;
     if (haveOverridenAttributes) combinedKeys.push('attributes');
 
@@ -155,7 +187,7 @@ export class ModelDataResolverWatchers<T extends StyleableModelProperties> {
   }
 
   private filterProps(props: ObjectAny) {
-    const excludedFromEvaluation = ['components', 'dataResolver'];
+    const excludedFromEvaluation = ['components', 'dataResolver', keyDataValues];
     const filteredProps = Object.fromEntries(
       Object.entries(props).filter(([key]) => !excludedFromEvaluation.includes(key)),
     );

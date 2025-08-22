@@ -301,13 +301,13 @@ export default class Component extends StyleableModel<ComponentProperties> {
     this.opt = opt;
     this.em = em!;
     this.config = opt.config || {};
-    this.ccid = Component.createId(this, opt);
     const defaultAttrs = {
       ...(result(this, 'defaults').attributes || {}),
-      ...(this.getAttributes({ skipResolve: true }) || {}),
+      ...(this.get('attributes') || {}),
     };
     const attrs = this.dataResolverWatchers.getValueOrResolver('attributes', defaultAttrs);
     this.setAttributes(attrs);
+    this.ccid = Component.createId(this, opt);
     this.preInit();
     this.initClasses();
     this.initComponents();

@@ -62,7 +62,7 @@ export class ModelResolverWatcher<T extends ObjectHash> {
     );
 
     const evaluatedValues = this.addDataValues(
-      this.getSerializableValues(Object.fromEntries(resolvesFromCollections.map((key) => [key, '']))),
+      this.getValuesOrResolver(Object.fromEntries(resolvesFromCollections.map((key) => [key, '']))),
     );
 
     Object.entries(evaluatedValues).forEach(([key, value]) => this.updateFn(this.model, key, value));
@@ -133,7 +133,7 @@ export class ModelResolverWatcher<T extends ObjectHash> {
     return propsKeys;
   }
 
-  getSerializableValues(values: ObjectAny) {
+  getValuesOrResolver(values: ObjectAny) {
     if (!values) return {};
     const serializableValues: ObjectAny = { ...values };
     const propsKeys = Object.keys(serializableValues);
@@ -149,7 +149,7 @@ export class ModelResolverWatcher<T extends ObjectHash> {
     return serializableValues;
   }
 
-  getAllSerializableValues() {
+  getAllDataResolvers() {
     const serializableValues: ObjectAny = {};
     const propsKeys = Object.keys(this.resolverListeners);
 
