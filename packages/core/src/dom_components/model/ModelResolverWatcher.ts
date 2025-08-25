@@ -33,7 +33,7 @@ export class ModelResolverWatcher<T extends ObjectHash> {
     this.model = model;
   }
 
-  setDynamicValues(values: ObjectAny | undefined, options: DataWatchersOptions = {}) {
+  setDataValues(values: ObjectAny | undefined, options: DataWatchersOptions = {}) {
     const shouldSkipWatcherUpdates = options.skipWatcherUpdates || options.fromDataSource;
     if (!shouldSkipWatcherUpdates) {
       this.removeListeners();

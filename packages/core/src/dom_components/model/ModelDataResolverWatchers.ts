@@ -1,15 +1,14 @@
-import { ObjectHash } from 'backbone';
 import { ObjectAny } from '../../common';
 import {
   ModelResolverWatcher,
   ModelResolverWatcherOptions,
-  DataWatchersOptions as DataWatchersOptions,
+  DataWatchersOptions,
   WatchableModel,
 } from './ModelResolverWatcher';
 import { getSymbolsToUpdate } from './SymbolUtils';
 import Component from './Component';
 import { StyleableModelProperties } from '../../domain_abstract/model/StyleableModel';
-import { isObject } from '../../utils/mixins';
+import { isEmpty } from 'underscore';
 
 export const updateFromWatcher = { fromDataSource: true, avoidStore: true };
 export const keyDataValues = '__data_values';
@@ -71,11 +70,11 @@ export class ModelDataResolverWatchers<T extends StyleableModelProperties> {
     };
     delete result[keyDataValues];
 
-    if (data.attributes) {
+    if (!isEmpty(data.attributes)) {
       result.attributes = this.getValueOrResolver('attributes', data.attributes);
     }
 
-    if (isObject(data.style)) {
+    if (!isEmpty(data.style)) {
       result.style = this.getValueOrResolver('styles', data.style);
     }
 
@@ -196,10 +195,7 @@ export class ModelDataResolverWatchers<T extends StyleableModelProperties> {
   }
 
   private processAttributes(baseValue: ObjectAny, dataValues: ObjectAny, options: DataWatchersOptions = {}) {
-    return this.attributeWatcher.setDynamicValues(
-      { ...baseValue.attributes, ...(dataValues.attributes ?? {}) },
-      options,
-    );
+    return this.attributeWatcher.setDataValues({ ...baseValue.attributes, ...(dataValues.attributes ?? {}) }, options);
   }
 
   private processStyles(baseValue: ObjectAny | string, dataValues: ObjectAny, options: DataWatchersOptions = {}) {
@@ -208,6 +204,6 @@ export class ModelDataResolverWatchers<T extends StyleableModelProperties> {
       return baseValue;
     }
 
-    return this.styleWatcher.setDynamicValues({ ...baseValue.style, ...(dataValues.style ?? {}) }, options);
+    return this.styleWatcher.setDataValues({ ...baseValue.style, ...(dataValues.style ?? {}) }, options);
   }
 }
