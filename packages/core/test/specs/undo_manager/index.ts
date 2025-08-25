@@ -8,7 +8,9 @@ describe('Undo Manager', () => {
   let wrapper: any;
 
   beforeEach(() => {
-    ({ editor, um } = setupTestEditor());
+    ({ editor, um } = setupTestEditor({
+      withCanvas: true,
+    }));
     wrapper = editor.getWrapper();
     um.clear();
   });
@@ -73,103 +75,96 @@ describe('Undo Manager', () => {
     test('Modify component style (StyleManager)', () => {
       const comp = wrapper.append('<div></div>')[0];
 
-      setTimeout(() => {
-        um.clear();
-        comp.addStyle({ color: 'red' });
-        expect(comp.getStyle().color).toBe('red');
-        expect(um.hasUndo()).toBe(true);
+      um.clear();
+      comp.addStyle({ color: 'red' });
+      expect(comp.getStyle().color).toBe('red');
+      expect(um.hasUndo()).toBe(true);
 
-        um.undo();
-        expect(comp.getStyle().color).toBeUndefined();
+      um.undo();
+      expect(comp.getStyle().color).toBeUndefined();
 
-        um.redo();
-        expect(comp.getStyle().color).toBe('red');
-      });
+      um.redo();
+      expect(comp.getStyle().color).toBe('red');
     });
 
     test('Move component', () => {
       wrapper.append('<div>1</div><div>2</div>');
       const comp1 = wrapper.components().at(0);
       const comp2 = wrapper.components().at(1);
-      setTimeout(() => {
-        um.clear();
 
-        wrapper.append(comp1, { at: 2 });
-        expect(wrapper.components().at(0)).toBe(comp2);
-        expect(wrapper.components().at(1)).toBe(comp1);
-        expect(um.hasUndo()).toBe(true);
+      um.clear();
 
-        um.undo();
-        expect(wrapper.components().at(0)).toBe(comp1);
-        expect(wrapper.components().at(1)).toBe(comp2);
+      wrapper.append(comp1, { at: 2 });
+      expect(wrapper.components().at(0)).toBe(comp2);
+      expect(wrapper.components().at(1)).toBe(comp1);
+      expect(um.hasUndo()).toBe(true);
 
-        um.redo();
-        expect(wrapper.components().at(0)).toBe(comp2);
-        expect(wrapper.components().at(1)).toBe(comp1);
-      });
+      um.undo();
+      expect(wrapper.components().at(0)).toBe(comp1);
+      expect(wrapper.components().at(1)).toBe(comp2);
+
+      um.redo();
+      expect(wrapper.components().at(0)).toBe(comp2);
+      expect(wrapper.components().at(1)).toBe(comp1);
     });
 
     test('Grouped component additions are treated as one undo action', () => {
       wrapper.append('<div>1</div><div>2</div>');
-      setTimeout(() => {
-        expect(wrapper.components()).toHaveLength(2);
-        expect(um.getStackGroup()).toHaveLength(1);
 
-        um.undo();
-        expect(wrapper.components()).toHaveLength(0);
-      });
+      expect(wrapper.components()).toHaveLength(2);
+      expect(um.getStackGroup()).toHaveLength(1);
+
+      um.undo();
+      expect(wrapper.components()).toHaveLength(0);
     });
   });
 
   describe('CSS Rule changes', () => {
     test('Add CSS Rule', () => {
       editor.Css.addRules('.test { color: red; }');
+
       expect(editor.Css.getRules('.test')).toHaveLength(1);
 
-      setTimeout(() => {
-        expect(um.hasUndo()).toBe(true);
+      expect(um.hasUndo()).toBe(true);
 
-        um.undo();
-        expect(editor.Css.getRules('.test')).toHaveLength(0);
+      um.undo();
+      expect(editor.Css.getRules('.test')).toHaveLength(0);
 
-        um.redo();
-        expect(editor.Css.getRules('.test')).toHaveLength(1);
-        expect(editor.Css.getRule('.test')?.getStyle().color).toBe('red');
-      });
+      um.redo();
+      expect(editor.Css.getRules('.test')).toHaveLength(1);
+      expect(editor.Css.getRule('.test')?.getStyle().color).toBe('red');
     });
 
     test('Modify CSS Rule', () => {
       const rule = editor.Css.addRules('.test { color: red; }')[0];
-      setTimeout(() => {
-        um.clear();
 
-        rule.setStyle({ color: 'blue' });
-        expect(rule.getStyle().color).toBe('blue');
-        expect(um.hasUndo()).toBe(true);
+      um.clear();
 
-        um.undo();
-        expect(rule.getStyle().color).toBe('red');
+      rule.setStyle({ color: 'blue' });
+      expect(rule.getStyle().color).toBe('blue');
+      expect(um.hasUndo()).toBe(true);
 
-        um.redo();
-        expect(rule.getStyle().color).toBe('blue');
-      });
+      um.undo();
+      expect(rule.getStyle().color).toBe('red');
+
+      um.redo();
+      expect(rule.getStyle().color).toBe('blue');
     });
 
     test('Remove CSS Rule', () => {
       const rule = editor.Css.addRules('.test { color: red; }')[0];
-      setTimeout(() => {
-        um.clear();
 
-        editor.Css.remove(rule);
-        expect(editor.Css.getRules('.test')).toHaveLength(0);
-        expect(um.hasUndo()).toBe(true);
+      um.clear();
 
-        um.undo();
-        expect(editor.Css.getRules('.test')).toHaveLength(1);
+      editor.Css.remove(rule);
+      expect(editor.Css.getRules('.test')).toHaveLength(0);
+      expect(um.hasUndo()).toBe(true);
 
-        um.redo();
-        expect(editor.Css.getRules('.test')).toHaveLength(0);
-      });
+      um.undo();
+      expect(editor.Css.getRules('.test')).toHaveLength(1);
+
+      um.redo();
+      expect(editor.Css.getRules('.test')).toHaveLength(0);
     });
   });
 
@@ -177,77 +172,73 @@ describe('Undo Manager', () => {
     test('Add asset', () => {
       const am = editor.Assets;
       expect(am.getAll()).toHaveLength(0);
-      setTimeout(() => {
-        um.clear();
 
-        am.add('path/to/img.jpg');
-        expect(am.getAll()).toHaveLength(1);
-        expect(um.hasUndo()).toBe(true);
+      um.clear();
 
-        um.undo();
-        expect(am.getAll()).toHaveLength(0);
+      am.add('path/to/img.jpg');
+      expect(am.getAll()).toHaveLength(1);
+      expect(um.hasUndo()).toBe(true);
 
-        um.redo();
-        expect(am.getAll()).toHaveLength(1);
-        expect(am.get('path/to/img.jpg')).toBeTruthy();
-      });
+      um.undo();
+      expect(am.getAll()).toHaveLength(0);
+
+      um.redo();
+      expect(am.getAll()).toHaveLength(1);
+      expect(am.get('path/to/img.jpg')).toBeTruthy();
     });
 
     test('Remove asset', () => {
       const am = editor.Assets;
       const asset = am.add('path/to/img.jpg');
       expect(am.getAll()).toHaveLength(1);
-      setTimeout(() => {
-        um.clear();
 
-        am.remove(asset);
-        expect(am.getAll()).toHaveLength(0);
-        expect(um.hasUndo()).toBe(true);
+      um.clear();
 
-        um.undo();
-        expect(am.getAll()).toHaveLength(1);
+      am.remove(asset);
+      expect(am.getAll()).toHaveLength(0);
+      expect(um.hasUndo()).toBe(true);
 
-        um.redo();
-        expect(am.getAll()).toHaveLength(0);
-      });
+      um.undo();
+      expect(am.getAll()).toHaveLength(1);
+
+      um.redo();
+      expect(am.getAll()).toHaveLength(0);
     });
   });
 
   describe('Editor states changes', () => {
     test('Device change', () => {
       editor.Devices.add({ id: 'tablet', name: 'Tablet', width: 'auto' });
-      setTimeout(() => {
-        um.clear();
 
-        editor.setDevice('Tablet');
-        expect(editor.getDevice()).toBe('Tablet');
-        expect(um.hasUndo()).toBe(true);
+      um.clear();
 
-        um.undo();
-        // Default device is an empty string
-        expect(editor.getDevice()).toBe('');
+      editor.setDevice('Tablet');
+      expect(editor.getDevice()).toBe('Tablet');
+      expect(um.hasUndo()).toBe(true);
 
-        um.redo();
-        expect(editor.getDevice()).toBe('Tablet');
-      });
+      um.undo();
+      // Default device is an empty string
+      expect(editor.getDevice()).toBe('');
+
+      um.redo();
+      expect(editor.getDevice()).toBe('Tablet');
     });
 
     test('Panel visibility change', () => {
       const panel = editor.Panels.getPanel('options')!;
       panel.set('visible', true);
-      setTimeout(() => {
-        um.clear();
 
-        panel.set('visible', false);
-        expect(panel.get('visible')).toBe(false);
-        expect(um.hasUndo()).toBe(true);
+      um.clear();
 
-        um.undo();
-        expect(panel.get('visible')).toBe(true);
+      panel.set('visible', false);
+      expect(panel.get('visible')).toBe(false);
+      expect(um.hasUndo()).toBe(true);
 
-        um.redo();
-        expect(panel.get('visible')).toBe(false);
-      });
+      um.undo();
+      expect(panel.get('visible')).toBe(true);
+
+      um.redo();
+      expect(panel.get('visible')).toBe(false);
     });
   });
 
@@ -255,42 +246,40 @@ describe('Undo Manager', () => {
     test('Change selection', () => {
       const comp1 = wrapper.append('<div>1</div>')[0];
       const comp2 = wrapper.append('<div>2</div>')[0];
-      setTimeout(() => {
-        um.clear();
 
-        editor.select(comp1);
-        expect(editor.getSelected()).toBe(comp1);
-        expect(um.hasUndo()).toBe(true);
+      um.clear();
 
-        editor.select(comp2);
-        expect(editor.getSelected()).toBe(comp2);
-        expect(um.hasUndo()).toBe(true);
+      editor.select(comp1);
+      expect(editor.getSelected()).toBe(comp1);
+      expect(um.hasUndo()).toBe(true);
 
-        um.undo();
-        expect(editor.getSelected()).toBe(comp1);
+      editor.select(comp2);
+      expect(editor.getSelected()).toBe(comp2);
+      expect(um.hasUndo()).toBe(true);
 
-        um.redo();
-        expect(editor.getSelected()).toBe(comp2);
-      });
+      um.undo();
+      expect(editor.getSelected()).toBe(comp1);
+
+      um.redo();
+      expect(editor.getSelected()).toBe(comp2);
     });
   });
 
   describe('Operations with `noUndo`', () => {
     test('Skipping undo for component modification', () => {
       const comp = wrapper.append('<div></div>')[0];
-      setTimeout(() => {
-        um.clear();
 
-        comp.set('content', 'no undo content', { noUndo: true });
-        expect(um.hasUndo()).toBe(false);
+      um.clear();
 
-        wrapper.append('<div>undo this</div>');
-        expect(um.hasUndo()).toBe(true);
+      comp.set('content', 'no undo content', { noUndo: true });
+      expect(um.hasUndo()).toBe(false);
 
-        um.undo();
-        expect(wrapper.components()).toHaveLength(1);
-        expect(wrapper.components().at(0).get('content')).toBe('no undo content');
-      });
+      wrapper.append('<div>undo this</div>');
+      expect(um.hasUndo()).toBe(true);
+
+      um.undo();
+      expect(wrapper.components()).toHaveLength(1);
+      expect(wrapper.components().at(0).get('content')).toBe('no undo content');
     });
   });
 });
