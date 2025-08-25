@@ -43,13 +43,6 @@ export function setupTestEditor(opts?: { withCanvas?: boolean; config?: Partial<
     config: { ...cmpRoot.config, em },
   });
   wrapperEl.render();
-  // Provide a safe destroy method for tests
-  const safeDestroy = () => {
-    um.clear();
-    dsm.getAll().forEach((ds: DataSource) => dsm.remove(ds.id as string));
-    editor.destroy();
-    document.body.innerHTML = '';
-  };
 
   /**
    * When trying to render the canvas, seems like jest gets stuck in a loop of iframe.onload (FrameView.ts)
@@ -66,11 +59,10 @@ export function setupTestEditor(opts?: { withCanvas?: boolean; config?: Partial<
     editor.Pages.postLoad();
     editor.CssComposer.postLoad();
     editor.DataSources.postLoad();
+    editor.AssetManager.postLoad();
   }
 
-  um.clear();
-
-  return { editor, em, dsm, um, cmpRoot, fixtures: fixtures as HTMLElement, destroy: safeDestroy };
+  return { editor, em, dsm, um, cmpRoot, fixtures };
 }
 
 export function fixJsDom(editor: Editor) {

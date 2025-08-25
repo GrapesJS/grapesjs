@@ -10,7 +10,6 @@ describe('Undo Manager with Data Binding', () => {
   let um: UndoManager;
   let wrapper: Component;
   let dsm: DataSourceManager;
-  let destroy: () => void;
 
   const makeColorVar = () => ({
     type: DataVariableType,
@@ -26,7 +25,7 @@ describe('Undo Manager with Data Binding', () => {
   });
 
   beforeEach(() => {
-    ({ editor, um, dsm, destroy } = setupTestEditor({ withCanvas: true }));
+    ({ editor, um, dsm } = setupTestEditor({ withCanvas: true }));
     wrapper = editor.getWrapper()!;
     dsm.add({
       id: 'ds1',
@@ -35,7 +34,7 @@ describe('Undo Manager with Data Binding', () => {
   });
 
   afterEach(() => {
-    destroy();
+    editor.destroy();
   });
 
   describe('Initial State with Data Binding', () => {
