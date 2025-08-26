@@ -307,7 +307,7 @@ export default class StyleableModel<T extends StyleableModelProperties = any> ex
     this.dataResolverWatchers.onCollectionsStateMapUpdate();
   }
 
-  clone(attributes?: any, opts?: any): typeof this {
+  clone(attributes?: Partial<T>, opts?: any): typeof this {
     const props = this.dataResolverWatchers.getProps(this.attributes);
     const mergedProps = { ...props, ...attributes };
     const mergedOpts = { ...this.opt, ...opts };
@@ -317,9 +317,10 @@ export default class StyleableModel<T extends StyleableModelProperties = any> ex
     return new ClassConstructor(mergedProps, mergedOpts);
   }
 
-  toJSON(opts?: ObjectAny) {
+  toJSON(opts?: ObjectAny, attributes?: Partial<T>) {
     if (opts?.fromUndo) return { ...super.toJSON(opts) };
-    const obj = this.dataResolverWatchers.getProps(this.attributes);
+    const mergedProps = { ...this.attributes, ...attributes };
+    const obj = this.dataResolverWatchers.getProps(mergedProps);
 
     return obj;
   }

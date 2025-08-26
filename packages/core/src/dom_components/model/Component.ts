@@ -1633,7 +1633,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
    * @private
    */
   toJSON(opts: ObjectAny = {}): ComponentDefinition {
-    let obj = super.toJSON(opts);
+    let obj = super.toJSON(opts, { attributes: this.getAttributes() });
     delete obj.dataResolverWatchers;
     delete obj.attributes.class;
     delete obj.toolbar;
