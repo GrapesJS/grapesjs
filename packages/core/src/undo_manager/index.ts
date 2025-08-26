@@ -169,8 +169,6 @@ export default class UndoManagerModule extends Module<UndoManagerConfig & { name
    * um.add(someModelOrCollection);
    */
   add(entity: any) {
-    if (this.um.objectRegistry.isRegistered(entity)) return this;
-
     this.um.register(entity);
     return this;
   }
