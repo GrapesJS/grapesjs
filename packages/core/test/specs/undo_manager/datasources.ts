@@ -31,6 +31,7 @@ describe('Undo Manager with Data Binding', () => {
       id: 'ds1',
       records: [{ id: 'rec1', color: 'red', title: 'Initial Title', content: 'Initial Content' }],
     });
+    jest.useFakeTimers();
   });
 
   afterEach(() => {
@@ -62,6 +63,8 @@ describe('Undo Manager with Data Binding', () => {
           content: makeContentVar(),
           style: { color: 'blue', 'font-size': '12px' },
         })[0];
+
+        jest.runAllTimers();
         um.clear();
         component.setStyle({ color: makeColorVar() });
         expect(component.getStyle().color).toBe('red');
@@ -85,6 +88,7 @@ describe('Undo Manager with Data Binding', () => {
           ifFalse: 'purple',
         };
 
+        jest.runAllTimers();
         um.clear();
 
         component.addStyle({ color: conditionVar });
@@ -102,6 +106,7 @@ describe('Undo Manager with Data Binding', () => {
       it('should undo and redo the assignment of a data value to an attribute', () => {
         const component = wrapper.append({ attributes: { title: 'Static Title' } })[0];
 
+        jest.runAllTimers();
         um.clear();
 
         component.setAttributes({ title: makeTitleVar() });
@@ -119,6 +124,7 @@ describe('Undo Manager with Data Binding', () => {
       it('should undo and redo the assignment of a data value to a property', () => {
         const component = wrapper.append({ content: 'Static Content' })[0];
 
+        jest.runAllTimers();
         um.clear();
 
         component.set({ content: makeContentVar() });
@@ -140,6 +146,7 @@ describe('Undo Manager with Data Binding', () => {
         attributes: { title: 'Static Title' },
       })[0];
 
+      jest.runAllTimers();
       um.clear();
 
       component.addStyle({ color: 'green' });
@@ -153,6 +160,7 @@ describe('Undo Manager with Data Binding', () => {
     it('should correctly undo a data binding that overwrites a static style', () => {
       const component = wrapper.append({ style: { color: 'green' } })[0];
 
+      jest.runAllTimers();
       um.clear();
 
       component.addStyle({ color: makeColorVar() });
@@ -167,6 +175,7 @@ describe('Undo Manager with Data Binding', () => {
     it('should maintain listeners after a binding is restored via undo', () => {
       const component = wrapper.append({ style: { color: makeColorVar() } })[0];
 
+      jest.runAllTimers();
       um.clear();
 
       component.addStyle({ color: 'green' });
@@ -183,6 +192,7 @@ describe('Undo Manager with Data Binding', () => {
       const component = wrapper.append({ style: { color: makeColorVar() } })[0];
       expect(component.getStyle().color).toBe('red');
 
+      jest.runAllTimers();
       um.clear();
 
       dsm.remove('ds1');
@@ -223,6 +233,7 @@ describe('Undo Manager with Data Binding', () => {
       const clone = component.clone();
       wrapper.append(clone);
 
+      jest.runAllTimers();
       um.clear();
 
       component.addStyle({ color: 'blue' });
