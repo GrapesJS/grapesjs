@@ -1,5 +1,4 @@
-import { ObjectHash } from 'backbone';
-import { ObjectAny } from '../../common';
+import { ObjectAny, ObjectHash } from '../../common';
 import DataResolverListener from '../../data_sources/model/DataResolverListener';
 import { getDataResolverInstance, getDataResolverInstanceValue, isDataResolverProps } from '../../data_sources/utils';
 import StyleableModel from '../../domain_abstract/model/StyleableModel';
