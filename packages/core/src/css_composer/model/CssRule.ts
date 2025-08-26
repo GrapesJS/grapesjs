@@ -126,6 +126,7 @@ export default class CssRule extends StyleableModel<CssRuleProperties> {
     this.em = opt.em;
     this.ensureSelectors(null, null, {});
     this.on('change', this.__onChange);
+    this.setStyle(this.get('style'), { skipWatcherUpdates: true });
   }
 
   __onChange(m: CssRule, opts: any) {
