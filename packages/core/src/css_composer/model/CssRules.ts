@@ -2,7 +2,6 @@ import { Collection } from '../../common';
 import EditorModel from '../../editor/model/Editor';
 import CssRule, { CssRuleProperties } from './CssRule';
 
-// @ts-expect-error
 export default class CssRules extends Collection<CssRule> {
   editor: EditorModel;
 

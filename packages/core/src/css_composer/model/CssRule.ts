@@ -1,5 +1,5 @@
-import { isEmpty, forEach, isString, isArray, isObject } from 'underscore';
-import { Model, ObjectAny } from '../../common';
+import { isEmpty, forEach, isString, isArray } from 'underscore';
+import { ObjectAny, ObjectHash } from '../../common';
 import StyleableModel, { StyleProps } from '../../domain_abstract/model/StyleableModel';
 import Selectors from '../../selector_manager/model/Selectors';
 import { getMediaLength } from '../../code_manager/model/CssGenerator';
@@ -16,7 +16,7 @@ export interface ToCssOptions {
 }
 
 /** @private */
-export interface CssRuleProperties {
+export interface CssRuleProperties extends ObjectHash {
   /**
    * Array of selectors
    */
