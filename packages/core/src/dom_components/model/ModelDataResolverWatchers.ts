@@ -8,7 +8,7 @@ import {
 import { getSymbolsToUpdate } from './SymbolUtils';
 import Component from './Component';
 import { StyleableModelProperties } from '../../domain_abstract/model/StyleableModel';
-import { isEmpty } from 'underscore';
+import { isEmpty, isObject } from 'underscore';
 
 export const updateFromWatcher = { fromDataSource: true, avoidStore: true };
 export const keyDataValues = '__data_values';
@@ -74,7 +74,7 @@ export class ModelDataResolverWatchers<T extends StyleableModelProperties> {
       result.attributes = this.getValueOrResolver('attributes', data.attributes);
     }
 
-    if (!isEmpty(data.style)) {
+    if (isObject(data.style) && !isEmpty(data.style)) {
       result.style = this.getValueOrResolver('styles', data.style);
     }
 
