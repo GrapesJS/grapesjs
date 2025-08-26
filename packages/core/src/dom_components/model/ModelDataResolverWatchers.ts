@@ -98,10 +98,11 @@ export class ModelDataResolverWatchers<T extends StyleableModelProperties> {
       case 'attributes':
         watcher = this.attributeWatcher;
         break;
-      default:
+      default: {
         const { em } = this.options;
         em?.logError(`Invalid target '${target}'. Must be 'props', 'styles', or 'attributes'.`);
         return {};
+      }
     }
 
     if (!data) {
