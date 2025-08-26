@@ -56,10 +56,11 @@ export function setupTestEditor(opts?: { withCanvas?: boolean; config?: Partial<
       el.onload = null;
     });
     // Enable undo manager
-    editor.Pages.postLoad();
+    editor.UndoManager.postLoad();
     editor.CssComposer.postLoad();
     editor.DataSources.postLoad();
-    editor.AssetManager.postLoad();
+    editor.Components.postLoad();
+    editor.Pages.postLoad();
   }
 
   return { editor, em, dsm, um, cmpRoot, fixtures };
