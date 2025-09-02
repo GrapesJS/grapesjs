@@ -1,5 +1,5 @@
 import { isEmpty, forEach, isString, isArray } from 'underscore';
-import { Model, ObjectAny } from '../../common';
+import { ObjectAny, ObjectHash } from '../../common';
 import StyleableModel, { StyleProps } from '../../domain_abstract/model/StyleableModel';
 import Selectors from '../../selector_manager/model/Selectors';
 import { getMediaLength } from '../../code_manager/model/CssGenerator';
@@ -16,7 +16,7 @@ export interface ToCssOptions {
 }
 
 /** @private */
-export interface CssRuleProperties {
+export interface CssRuleProperties extends ObjectHash {
   /**
    * Array of selectors
    */
@@ -126,7 +126,7 @@ export default class CssRule extends StyleableModel<CssRuleProperties> {
     this.em = opt.em;
     this.ensureSelectors(null, null, {});
     this.on('change', this.__onChange);
-    this.setStyle(this.get('style'));
+    this.setStyle(this.get('style'), { skipWatcherUpdates: true });
   }
 
   __onChange(m: CssRule, opts: any) {
@@ -135,12 +135,10 @@ export default class CssRule extends StyleableModel<CssRuleProperties> {
     changed && !isEmptyObj(changed) && em?.changesUp(opts);
   }
 
-  clone(): CssRule {
-    const opts = { ...this.opt };
-    const attr = { ...this.attributes };
-    attr.selectors = this.get('selectors')!.map((s) => s.clone() as Selector);
-    // @ts-ignore
-    return new this.constructor(attr, opts);
+  clone(): typeof this {
+    const selectors = this.get('selectors')!.map((s) => s.clone() as Selector);
+
+    return super.clone({ selectors });
   }
 
   ensureSelectors(m: any, c: any, opts: any) {
@@ -307,9 +305,8 @@ export default class CssRule extends StyleableModel<CssRuleProperties> {
     return result;
   }
 
-  toJSON(...args: any) {
-    const obj = Model.prototype.toJSON.apply(this, args);
-
+  toJSON(opts?: ObjectAny) {
+    const obj = super.toJSON(opts);
     if (this.em?.getConfig().avoidDefaults) {
       const defaults = this.defaults();
 
@@ -326,7 +323,7 @@ export default class CssRule extends StyleableModel<CssRuleProperties> {
       if (isEmpty(obj.style)) delete obj.style;
     }
 
-    return { ...obj, style: this.dataResolverWatchers.getStylesDefsOrValues(obj.style) };
+    return obj;
   }
 
   /**

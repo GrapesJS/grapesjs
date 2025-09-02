@@ -275,7 +275,7 @@ export default class Trait extends Model<TraitProperties> {
       });
     } else if (this.changeProp) {
       value = component.get(name);
-      if (skipResolve) value = component.dataResolverWatchers.getPropsDefsOrValues({ [name]: value })[name];
+      if (skipResolve) value = component.dataResolverWatchers.getValueOrResolver('props', { [name]: value })[name];
     } else {
       value = component.getAttributes({ skipResolve })[name];
     }

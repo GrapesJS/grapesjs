@@ -103,14 +103,14 @@ export class DataCondition extends Model<DataConditionProps> {
     return this._conditionEvaluator.evaluate();
   }
 
-  getDataValue(skipDynamicValueResolution: boolean = false): any {
+  getDataValue(skipResolve: boolean = false): any {
     const { em, collectionsStateMap } = this;
     const options = { em, collectionsStateMap };
     const ifTrue = this.getIfTrue();
     const ifFalse = this.getIfFalse();
 
     const isConditionTrue = this.isTrue();
-    if (skipDynamicValueResolution) {
+    if (skipResolve) {
       return isConditionTrue ? ifTrue : ifFalse;
     }
 

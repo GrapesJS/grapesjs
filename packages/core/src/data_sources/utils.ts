@@ -49,7 +49,7 @@ export function getDataResolverInstance(
       break;
     }
     default:
-      options.em?.logWarning(`Unsupported dynamic type: ${type}`);
+      options.em?.logWarning(`Unsupported resolver type: ${type}`);
       return;
   }
 

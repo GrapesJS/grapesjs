@@ -16,7 +16,7 @@ import {
   DataCollectionStateMap,
 } from './types';
 import { detachSymbolInstance, getSymbolInstances } from '../../../dom_components/model/SymbolUtils';
-import { updateFromWatcher } from '../../../dom_components/model/ModelDataResolverWatchers';
+import { keyDataValues, updateFromWatcher } from '../../../dom_components/model/ModelDataResolverWatchers';
 import { ModelDestroyOptions } from 'backbone';
 import Components from '../../../dom_components/model/Components';
 
@@ -301,8 +301,7 @@ export default class ComponentDataCollection extends Component {
   }
 
   onCollectionsStateMapUpdate(collectionsStateMap: DataCollectionStateMap) {
-    this.collectionsStateMap = collectionsStateMap;
-    this.dataResolverWatchers.onCollectionsStateMapUpdate();
+    super.onCollectionsStateMapUpdate(collectionsStateMap);
 
     const items = this.getDataSourceItems();
     const { startIndex } = this.resolveCollectionConfig(items);
@@ -357,7 +356,7 @@ function getLength(items: DataVariableProps[] | object) {
 }
 
 function setCollectionStateMapAndPropagate(cmp: Component, collectionsStateMap: DataCollectionStateMap) {
-  cmp.setSymbolOverride(['locked', 'layerable']);
+  cmp.setSymbolOverride(['locked', 'layerable', keyDataValues]);
   cmp.syncComponentsCollectionState();
   cmp.onCollectionsStateMapUpdate(collectionsStateMap);
 }

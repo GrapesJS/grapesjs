@@ -131,44 +131,45 @@ export const logSymbol = (symb: Component, type: string, toUp: Component[], opts
 };
 
 export const updateSymbolProps = (symbol: Component, opts: SymbolToUpOptions = {}): void => {
-  const changed = symbol.dataResolverWatchers.getPropsDefsOrValues({ ...symbol.changedAttributes() });
-  const attrs = symbol.dataResolverWatchers.getAttributesDefsOrValues({ ...changed.attributes });
+  const changedAttributes = symbol.changedAttributes();
+  if (!changedAttributes) return;
 
-  cleanChangedProperties(changed, attrs);
+  let resolvedProps = symbol.dataResolverWatchers.getProps(changedAttributes);
+  cleanChangedProperties(resolvedProps);
 
-  if (!isEmptyObj(changed)) {
+  if (!isEmptyObj(resolvedProps)) {
     const toUpdate = getSymbolsToUpdate(symbol, opts);
 
     // Filter properties to propagate
-    filterPropertiesForPropagation(changed, symbol);
+    resolvedProps = filterPropertiesForPropagation(resolvedProps, symbol);
 
-    logSymbol(symbol, 'props', toUpdate, { opts, changed });
+    logSymbol(symbol, 'props', toUpdate, { opts, changed: resolvedProps });
 
     // Update child symbols
     toUpdate.forEach((child) => {
-      const propsToUpdate = { ...changed };
-      filterPropertiesForPropagation(propsToUpdate, child);
+      const propsToUpdate = filterPropertiesForPropagation(resolvedProps, child);
       child.set(propsToUpdate, { fromInstance: symbol, ...opts });
     });
   }
 };
 
-const cleanChangedProperties = (changed: Record<string, any>, attrs: Record<string, any>): void => {
-  const keysToDelete = ['status', 'open', keySymbols, keySymbol, keySymbolOvrd, 'attributes'];
+const cleanChangedProperties = (changed: Record<string, any>): void => {
+  const keysToDelete = ['status', 'open', keySymbols, keySymbol, keySymbolOvrd];
   keysToDelete.forEach((key) => delete changed[key]);
-  delete attrs.id;
 
-  if (!isEmptyObj(attrs)) {
-    changed.attributes = attrs;
-  }
+  delete changed.attributes?.id;
+  isEmptyObj(changed.attributes ?? {}) && delete changed.attributes;
 };
 
-const filterPropertiesForPropagation = (props: Record<string, any>, component: Component): void => {
+const filterPropertiesForPropagation = (props: Record<string, any>, component: Component) => {
+  const filteredProps = { ...props };
   keys(props).forEach((prop) => {
     if (!shouldPropagateProperty(props, prop, component)) {
-      delete props[prop];
+      delete filteredProps[prop];
     }
   });
+
+  return filteredProps;
 };
 
 const shouldPropagateProperty = (props: Record<string, any>, prop: string, component: Component): boolean => {
