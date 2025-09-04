@@ -192,6 +192,14 @@ export const escapeNodeContent = (str = '') => {
   return `${str}`.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 };
 
+export const escapeAttrValue = (str = '') => {
+  return `${str}`.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+};
+
+export const escapeAltQuoteAttrValue = (str = '') => {
+  return `${str}`.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/'/g, '&apos;');
+};
+
 export const deepMerge = (...args: ObjectAny[]) => {
   const target = { ...args[0] };
 

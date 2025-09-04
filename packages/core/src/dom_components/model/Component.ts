@@ -11,7 +11,15 @@ import {
   bindAll,
   keys,
 } from 'underscore';
-import { shallowDiff, capitalize, isEmptyObj, isObject, toLowerCase } from '../../utils/mixins';
+import {
+  shallowDiff,
+  capitalize,
+  isEmptyObj,
+  isObject,
+  toLowerCase,
+  escapeAltQuoteAttrValue,
+  escapeAttrValue,
+} from '../../utils/mixins';
 import StyleableModel, {
   GetStyleOpts,
   StyleProps,
@@ -1597,9 +1605,9 @@ export default class Component extends StyleableModel<ComponentProperties> {
         } else {
           let valueRes = '';
           if (opts.altQuoteAttr && isString(val) && val.indexOf('"') >= 0) {
-            valueRes = `'${val.replace(/'/g, '&apos;')}'`;
+            valueRes = `'${escapeAltQuoteAttrValue(val)}'`;
           } else {
-            const value = isString(val) ? val.replace(/"/g, '&quot;') : val;
+            const value = isString(val) ? escapeAttrValue(val) : val;
             valueRes = `"${value}"`;
           }
 
