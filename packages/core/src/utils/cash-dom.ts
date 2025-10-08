@@ -987,34 +987,36 @@ fn.empty = function () {
 
 function insertElement(ele, child, prepend) {
   if (prepend) {
-    ele.insertBefore(child, ele.childNodes[0]);
+    ele.prepend(child);
   } else {
-    ele.appendChild(child);
+    ele.append(child);
   }
 } // @require core/each.js
 // @require core/type_checking.js
 // @require ./insert_element.js
 
 function insertContent(parent, child, prepend) {
-  if (child === undefined) return;
-  var isStr = isString(child);
+  if (child == null) return;
 
-  if (!isStr && child.length) {
-    each(child, function (ele) {
-      return insertContent(parent, ele, prepend);
+  if (isString(child)) {
+    each(parent, function (ele) {
+      ele.insertAdjacentHTML(prepend ? 'afterbegin' : 'beforeend', child);
     });
-  } else {
-    each(
-      parent,
-      isStr
-        ? function (ele) {
-            ele.insertAdjacentHTML(prepend ? 'afterbegin' : 'beforeend', child);
-          }
-        : function (ele, index) {
-            return insertElement(ele, !index ? child : child.cloneNode(true), prepend);
-          },
-    );
+    return;
   }
+
+  const fragment = document.createDocumentFragment();
+
+  if (child.nodeType) {
+    fragment.appendChild(child);
+  } else if (typeof child.length === 'number') {
+    each(Array.from(child), (node) => fragment.appendChild(node));
+  }
+
+  each(parent, function (ele, index) {
+    const contentToInsert = index === 0 ? fragment : fragment.cloneNode(true);
+    insertElement(ele, contentToInsert, prepend);
+  });
 } // @require core/cash.js
 // @require core/each.js
 // @require ./helpers/insert_content.js
