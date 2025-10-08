@@ -87,7 +87,7 @@ export default class CssComposer extends ItemManagerModule<CssComposerConfig & {
   Selectors = Selectors;
 
   storageKey = 'styles';
-
+  private _ruleCache = new Map<string, CssRule>();
   /**
    * Initializes module. Automatically called with a new instance of the editor
    * @param {Object} config Configurations
@@ -105,6 +105,29 @@ export default class CssComposer extends ItemManagerModule<CssComposerConfig & {
 
     this.rules = new CssRules([], config);
   }
+  private _makeCacheKey(selectors: any, state?: string, width?: string) {
+    const sels = Array.isArray(selectors)
+      ? selectors.map((s) => (typeof s === 'string' ? s : s.toString())).join(',')
+      : typeof selectors === 'string'
+        ? selectors
+        : selectors?.toString() || '';
+    return `${sels}|${state || ''}|${width || ''}`;
+  } /** Add rule to cache */
+  private _cacheRule(rule: CssRule) {
+    const key = this._makeCacheKey(rule.getSelectorsString(), rule.get('state'), rule.get('mediaText'));
+    this._ruleCache.set(key, rule);
+  }
+
+  /** Remove a rule from cache */
+  private _uncacheRule(rule: CssRule) {
+    const key = this._makeCacheKey(rule.getSelectorsString(), rule.get('state'), rule.get('mediaText'));
+    this._ruleCache.delete(key);
+  }
+
+  /** Clear all cache entries */
+  private _clearRuleCache() {
+    this._ruleCache.clear();
+  }
 
   /**
    * On load callback
@@ -112,6 +135,8 @@ export default class CssComposer extends ItemManagerModule<CssComposerConfig & {
    */
   onLoad() {
     this.rules.add(this.config.rules, { silent: true });
+    this._clearRuleCache();
+    this.rules.each((r) => this._cacheRule(r));
   }
 
   /**
@@ -157,27 +182,29 @@ export default class CssComposer extends ItemManagerModule<CssComposerConfig & {
     const s = state || '';
     const w = width || '';
     const opt = { ...opts } as CssRuleProperties;
-    let rule = this.get(selectors, s, w, opt);
+    const key = this._makeCacheKey(selectors, s, w);
 
-    // do not create rules that were found before
-    // unless this is a single at-rule, for which multiple declarations
-    // make sense (e.g. multiple `@font-type`s)
-    if (rule && rule.config && !rule.config.singleAtRule) {
-      return rule;
-    } else {
-      opt.state = s;
-      opt.mediaText = w;
-      opt.selectors = [];
-      // #4727: Prevent updating atRuleType if already defined
-      if (w && !opt.atRuleType) {
-        opt.atRuleType = 'media';
-      }
-      rule = new CssRule(opt, this.config);
-      // @ts-ignore
-      rule.get('selectors').add(selectors, addOpts);
-      this.rules.add(rule, addOpts);
-      return rule;
+    const cached = this._ruleCache.get(key);
+    if (cached && cached.config && !cached.config.singleAtRule) {
+      return cached;
     }
+
+    let rule = this.get(selectors, s, w, opt);
+    if (rule && rule.config && !rule.config.singleAtRule) return rule;
+
+    opt.state = s;
+    opt.mediaText = w;
+    opt.selectors = [];
+    if (w && !opt.atRuleType) opt.atRuleType = 'media';
+
+    rule = new CssRule(opt, this.config);
+    // @ts-ignore
+    rule.get('selectors').add(selectors, addOpts);
+    this.rules.add(rule, addOpts);
+
+    this._cacheRule(rule);
+
+    return rule;
   }
 
   /**
@@ -205,6 +232,10 @@ export default class CssComposer extends ItemManagerModule<CssComposerConfig & {
     width?: string,
     ruleProps?: Omit<CssRuleProperties, 'selectors'>,
   ): CssRule | undefined {
+    const key = this._makeCacheKey(selectors, state, width);
+    const cached = this._ruleCache.get(key);
+    if (cached) return cached;
+
     let slc = selectors;
     if (isString(selectors)) {
       const sm = this.em.Selectors;
@@ -212,7 +243,10 @@ export default class CssComposer extends ItemManagerModule<CssComposerConfig & {
       const node = this.em.Parser.parserCss.checkNode({ selectors: singleSel } as any)[0];
       slc = sm.get(node.selectors as string[]);
     }
-    return this.rules.find((rule) => rule.compare(slc, state, width, ruleProps)) || null;
+
+    const rule = this.rules.find((r) => r.compare(slc, state, width, ruleProps)) || undefined;
+    if (rule) this._cacheRule(rule);
+    return rule;
   }
 
   getAll() {
@@ -485,8 +519,10 @@ export default class CssComposer extends ItemManagerModule<CssComposerConfig & {
    */
   remove(rule: string | CssRule, opts?: any) {
     const toRemove = isString(rule) ? this.getRules(rule) : rule;
-    const result = this.getAll().remove(toRemove, opts);
-    return isArray(result) ? result : [result];
+    const arr = Array.isArray(toRemove) ? toRemove : [toRemove];
+    arr.forEach((r) => this._uncacheRule(r));
+    const result = this.getAll().remove(arr, opts);
+    return Array.isArray(result) ? result : [result];
   }
 
   /**
@@ -494,6 +530,7 @@ export default class CssComposer extends ItemManagerModule<CssComposerConfig & {
    * @return {this}
    */
   clear(opts = {}) {
+    this._clearRuleCache();
     this.getAll().reset([], opts);
     return this;
   }
