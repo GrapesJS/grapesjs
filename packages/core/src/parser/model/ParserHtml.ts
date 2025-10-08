@@ -17,24 +17,24 @@ const ParserHtml = (em?: EditorModel, config: ParserConfig & { returnArray?: boo
     modelAttrStart,
 
     getPropAttribute(attrName: string, attrValue?: string) {
-      const name = attrName.replace(this.modelAttrStart, '');
-      const valueLen = attrValue?.length || 0;
-      const firstChar = attrValue?.substring(0, 1);
-      const lastChar = attrValue?.substring(valueLen - 1);
-      let value: any = attrValue === 'true' ? true : attrValue === 'false' ? false : attrValue;
+      const name = attrName.slice(this.modelAttrStart.length);
+      let value: any = attrValue;
 
-      // Try to parse JSON where it's possible
-      // I can get false positive here (eg. a selector '[data-attr]')
-      // so put it under try/catch and let fail silently
-      try {
-        value =
-          (firstChar == '{' && lastChar == '}') || (firstChar == '[' && lastChar == ']') ? JSON.parse(value) : value;
-      } catch (e) {}
+      if (value === 'true') return { name, value: true };
+      if (value === 'false') return { name, value: false };
 
-      return {
-        name,
-        value,
-      };
+      const first = value?.[0];
+      const last = value?.[value.length - 1];
+
+      if (first === '{' || first === '[') {
+        if (last === '}' || last === ']') {
+          try {
+            value = JSON.parse(value!);
+          } catch {}
+        }
+      }
+
+      return { name, value };
     },
 
     /**
@@ -72,30 +72,26 @@ const ParserHtml = (em?: EditorModel, config: ParserConfig & { returnArray?: boo
      */
     parseStyle(str: string) {
       const result: Record<string, string | string[]> = {};
+      if (!str) return result;
 
-      while (str.indexOf('/*') >= 0) {
-        const start = str.indexOf('/*');
-        const end = str.indexOf('*/');
-        const endIndex = end > -1 ? end + 2 : undefined;
-        str = str.replace(str.slice(start, endIndex), '');
-      }
+      // ⚡ Remove comments in one pass
+      str = str.replace(/\/\*[\s\S]*?\*\//g, '');
 
       const decls = str.split(';');
-
-      for (let i = 0, len = decls.length; i < len; i++) {
+      for (let i = 0; i < decls.length; i++) {
         const decl = decls[i].trim();
         if (!decl) continue;
-        const prop = decl.split(':');
-        const key = prop[0].trim();
-        const value = prop.slice(1).join(':').trim();
 
-        // Support multiple values for the same key
+        const colonIdx = decl.indexOf(':');
+        if (colonIdx === -1) continue;
+
+        const key = decl.slice(0, colonIdx).trim();
+        const value = decl.slice(colonIdx + 1).trim();
+
         if (result[key]) {
-          if (!isArray(result[key])) {
-            result[key] = [result[key] as string];
-          }
-
-          (result[key] as string[]).push(value);
+          const prev = result[key];
+          if (Array.isArray(prev)) prev.push(value);
+          else result[key] = [prev, value];
         } else {
           result[key] = value;
         }
@@ -114,57 +110,51 @@ const ParserHtml = (em?: EditorModel, config: ParserConfig & { returnArray?: boo
      * // ['test1', 'test2', 'test3']
      */
     parseClass(str: string) {
-      const result = [];
-      const cls = str.split(' ');
-
-      for (let i = 0, len = cls.length; i < len; i++) {
-        const cl = cls[i].trim();
-        if (!cl) continue;
-        result.push(cl);
-      }
-
-      return result;
+      return str.trim().split(/\s+/);
     },
 
     parseNodeAttr(node: HTMLElement, modelResult?: ComponentDefinitionDefined) {
       const model = modelResult || {};
-      const attrs = node.attributes || [];
-      const attrsLen = attrs.length;
+      if (!node || !(node as HTMLElement).attributes) return model;
+
+      const attrs = node.attributes;
       const convertHyphens = !!config?.optionsHtml?.convertDataGjsAttributesHyphens;
+      const type = model.type;
       const defaults =
-        (convertHyphens && !!model.type && result(em?.Components.getType(model.type)?.model.prototype, 'defaults')) ||
-        {};
+        (convertHyphens && type && result(em?.Components.getType(type)?.model.prototype, 'defaults')) || {};
 
-      for (let i = 0; i < attrsLen; i++) {
-        let nodeName = attrs[i].nodeName;
-        let nodeValue: string | boolean = attrs[i].nodeValue!;
+      for (let i = 0, l = attrs.length; i < l; i++) {
+        const attr = attrs[i];
+        const nodeName = attr.name;
+        let nodeValue: any = attr.value;
 
-        if (nodeName == 'style') {
-          model.style = this.parseStyle(nodeValue);
-        } else if (nodeName == 'class') {
-          model.classes = this.parseClass(nodeValue);
-        } else if (nodeName == 'contenteditable') {
-          continue;
-        } else if (nodeName.indexOf(this.modelAttrStart) === 0) {
-          const propsResult = this.getPropAttribute(nodeName, nodeValue);
-          let resolvedName = propsResult.name;
+        switch (nodeName) {
+          case 'style':
+            model.style = this.parseStyle(nodeValue);
+            continue;
+          case 'class':
+            model.classes = this.parseClass(nodeValue);
+            continue;
+          case 'contenteditable':
+            continue;
+        }
+
+        if (nodeName.startsWith(this.modelAttrStart)) {
+          const { name, value } = this.getPropAttribute(nodeName, nodeValue);
+          let resolvedName = name;
+
           if (convertHyphens && !(resolvedName in defaults)) {
             const transformed = processDataGjsAttributeHyphen(resolvedName);
-            resolvedName = transformed in defaults ? transformed : resolvedName;
+            if (transformed in defaults) resolvedName = transformed;
           }
 
-          model[resolvedName] = propsResult.value;
+          model[resolvedName] = value;
         } else {
-          // @ts-ignore Check for attributes from props (eg. required, disabled)
-          if (nodeValue === '' && node[nodeName] === true) {
+          if (nodeValue === '' && (node as any)[nodeName] === true) {
             nodeValue = true;
           }
 
-          if (!model.attributes) {
-            model.attributes = {};
-          }
-
-          model.attributes[nodeName] = nodeValue;
+          (model.attributes ||= {})[nodeName] = nodeValue;
         }
       }
 
@@ -278,37 +268,32 @@ const ParserHtml = (em?: EditorModel, config: ParserConfig & { returnArray?: boo
     parseNodes(el: HTMLElement, opts: ParseNodeOptions = {}) {
       const result: ComponentDefinitionDefined[] = [];
       const nodes = (el as HTMLTemplateElement).content?.childNodes || el.childNodes;
-      const nodesLen = nodes.length;
+      const len = nodes.length;
 
-      for (let i = 0; i < nodesLen; i++) {
+      for (let i = 0; i < len; i++) {
         const node = nodes[i] as HTMLElement;
-        const nodePrev = result[result.length - 1];
         const model = this.parseNode(node, opts);
 
-        // Check if it's a text node and if it could be moved to the prevous one
+        // Skip empty models early
+        if (!model) continue;
+
         if (model.type === 'textnode') {
-          if (nodePrev?.type === 'textnode') {
-            nodePrev.content += model.content;
+          const prev = result[result.length - 1];
+          if (prev?.type === 'textnode') {
+            prev.content += model.content;
             continue;
           }
 
-          // Try to keep meaningful whitespaces when possible (#5984)
-          // Ref: https://github.com/GrapesJS/grapesjs/pull/5719#discussion_r1518531999
           if (!opts.keepEmptyTextNodes) {
             const content = node.nodeValue || '';
-            const isFirstOrLast = i === 0 || i === nodesLen - 1;
-            const hasNewLive = content.includes('\n');
-            if (content != ' ' && !content.trim() && (isFirstOrLast || hasNewLive)) {
+            const isFirstOrLast = i === 0 || i === len - 1;
+            if (content !== ' ' && !content.trim() && (isFirstOrLast || content.includes('\n'))) {
               continue;
             }
           }
         }
 
-        // If the tagName is empty and it's not a textnode, skip it
-        if (!model.tagName && isUndefined(model.content)) {
-          continue;
-        }
-
+        if (!model.tagName && model.content === undefined) continue;
         result.push(model);
       }
 
@@ -340,6 +325,7 @@ const ParserHtml = (em?: EditorModel, config: ParserConfig & { returnArray?: boo
       const inputOptions = { input: isFunction(preParser) ? preParser(str, { editor: em?.getEditor()! }) : str };
       Parser?.__emitEvent(ParserEvents.htmlBefore, inputOptions);
       const { input } = inputOptions;
+
       const parseRes = isFunction(cf.parserHtml) ? cf.parserHtml(input, options) : BrowserParserHtml(input, options);
       let root = parseRes as HTMLElement;
       const docEl = parseRes as Document;
@@ -349,34 +335,32 @@ const ParserHtml = (em?: EditorModel, config: ParserConfig & { returnArray?: boo
         res.doctype = doctypeToString(docEl.doctype);
       }
 
-      const scripts = root.querySelectorAll('script');
-      let i = scripts.length;
-
-      // Support previous `configMain.allowScripts` option
       const allowScripts = !isUndefined(conf.allowScripts) ? conf.allowScripts : options.allowScripts;
 
-      // Remove script tags
       if (!allowScripts) {
-        while (i--) scripts[i].parentNode?.removeChild(scripts[i]);
+        //@ts-ignore
+        for (const script of root.querySelectorAll('script')) {
+          script.remove();
+        }
       }
 
-      // Remove unsafe attributes
       if (!options.allowUnsafeAttr || !options.allowUnsafeAttrValue) {
         this.__sanitizeNode(root, options);
       }
 
-      // Detach style tags and parse them
       if (parserCss) {
-        const styles = root.querySelectorAll('style');
-        let j = styles.length;
-        let styleStr = '';
+        const styleNodes = root.querySelectorAll('style');
+        const styleParts: string[] = [];
 
-        while (j--) {
-          styleStr = styles[j].innerHTML + styleStr;
-          styles[j].parentNode?.removeChild(styles[j]);
+        //@ts-ignore
+        for (const styleNode of styleNodes) {
+          styleParts.push(styleNode.innerHTML);
+          styleNode.remove(); // .remove() is a direct and optimized way to detach nodes.
         }
 
-        if (styleStr) res.css = parserCss.parse(styleStr);
+        if (styleParts.length) {
+          res.css = parserCss.parse(styleParts.join('\n'));
+        }
       }
 
       Parser?.__emitEvent(ParserEvents.htmlRoot, { input, root });
@@ -398,18 +382,26 @@ const ParserHtml = (em?: EditorModel, config: ParserConfig & { returnArray?: boo
       return res;
     },
 
-    __sanitizeNode(node: HTMLElement, opts: HTMLParserOptions) {
-      const attrs = node.attributes || [];
-      const nodes = node.childNodes || [];
-      const toRemove: string[] = [];
-      each(attrs, (attr) => {
-        const name = attr.nodeName || '';
-        const value = attr.nodeValue || '';
-        !opts.allowUnsafeAttr && name.startsWith('on') && toRemove.push(name);
-        !opts.allowUnsafeAttrValue && value.startsWith('javascript:') && toRemove.push(name);
-      });
-      toRemove.map((name) => node.removeAttribute(name));
-      each(nodes, (node) => this.__sanitizeNode(node as HTMLElement, opts));
+    __sanitizeNode(root: HTMLElement, opts: HTMLParserOptions) {
+      const stack = [root];
+      const removeAttrs: string[] = [];
+
+      while (stack.length) {
+        const node = stack.pop()!;
+        const attrs = node.attributes;
+        for (let i = 0, l = attrs.length; i < l; i++) {
+          const name = attrs[i].name;
+          const value = attrs[i].value;
+          if (!opts.allowUnsafeAttr && name.startsWith('on')) node.removeAttribute(name);
+          else if (!opts.allowUnsafeAttrValue && value.startsWith('javascript:')) node.removeAttribute(name);
+        }
+
+        const children = node.childNodes;
+        for (let i = 0, l = children.length; i < l; i++) {
+          const child = children[i];
+          if (child.nodeType === 1) stack.push(child as HTMLElement);
+        }
+      }
     },
 
     __checkAsDocument(str: string, opts: HTMLParserOptions) {
