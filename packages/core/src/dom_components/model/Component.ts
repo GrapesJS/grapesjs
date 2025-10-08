@@ -279,6 +279,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
    * @private
    * @ts-ignore */
   collection!: Components;
+  __traitsInited = false;
 
   constructor(props: ComponentProperties = {}, opt: ComponentOptions) {
     const em = opt.em;
@@ -2078,21 +2079,25 @@ export default class Component extends StyleableModel<ComponentProperties> {
   }
 
   static createId(model: Component, opts: any = {}) {
-    const list = Component.getList(model);
-    const { idMap = {} } = opts;
-    let { id } = model.get('attributes')!;
-    let nextId;
+    // const list = Component.getList(model);
+    // const { idMap = {} } = opts;
+    // let { id } = model.get('attributes')!;
+    // let nextId;
 
-    if (id) {
-      nextId = Component.getIncrementId(id, list, opts);
-      model.setId(nextId);
-      if (id !== nextId) idMap[id] = nextId;
-    } else {
-      nextId = Component.getNewId(list);
-    }
+    // if (id) {
+    //   nextId = Component.getIncrementId(id, list, opts);
+    //   model.setId(nextId);
+    //   if (id !== nextId) idMap[id] = nextId;
+    // } else {
+    //   nextId = Component.getNewId(list);
+    // }
 
-    list[nextId] = model;
-    return nextId;
+    // list[nextId] = model;
+    // return nextId;
+
+    const id = 'cmp-' + Math.random().toString(36).slice(2, 9);
+    model.setId(id);
+    return id;
   }
 
   static getNewId(list: ObjectAny) {
