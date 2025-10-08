@@ -128,7 +128,7 @@ export default class SelectorManager extends ItemManagerModule<SelectorManagerCo
   storageKey = '';
   __update: Debounced;
   __ctn?: HTMLElement;
-
+  private selectorCache = new Map<string, Selector>();
   /**
    * Get configuration object
    * @name getConfig
@@ -143,7 +143,6 @@ export default class SelectorManager extends ItemManagerModule<SelectorManagerCo
     const ppfx = config.pStylePrefix;
     if (ppfx) config.stylePrefix = ppfx + config.stylePrefix;
 
-    // Global selectors container
     this.all = new Selectors(config.selectors);
     this.selected = new Selectors([], { em, config });
     this.states = new Collection<State>(
@@ -152,16 +151,34 @@ export default class SelectorManager extends ItemManagerModule<SelectorManagerCo
     );
     this.model = new Model({ cFirst: config.componentFirst, _undo: true });
     this.__update = debounce(() => this.__trgCustom(), 0);
+
+    this.model.listenTo(this.all, 'add remove reset', () => this.rebuildSelectorCache());
+
+    this.rebuildSelectorCache();
     this.__initListen({
       collections: [this.states, this.selected],
       propagate: [{ entity: this.states, event: this.events.state }],
     });
-    em.on('change:state', (m, value) => em.trigger(evState, value));
-    this.model.on('change:cFirst', (m, value) => em.trigger('selector:type', value));
+
+    const { em: editor } = this;
+    editor.on('change:state', (m, value) => editor.trigger(evState, value));
+    this.model.on('change:cFirst', (m, value) => editor.trigger('selector:type', value));
     const eventCmpUpdateCls = `${ComponentsEvents.update}:classes`;
-    em.on(`component:toggled ${eventCmpUpdateCls}`, this.__updateSelectedByComponents);
+    editor.on(`component:toggled ${eventCmpUpdateCls}`, this.__updateSelectedByComponents);
     const listenTo = `component:toggled ${eventCmpUpdateCls} change:device styleManager:update selector:state selector:type style:target`;
-    this.model.listenTo(em, listenTo, () => this.__update());
+    this.model.listenTo(editor, listenTo, () => this.__update());
+  }
+
+  private rebuildSelectorCache() {
+    this.selectorCache.clear();
+    this.all.each((sel: Selector) => {
+      const key = this.getCacheKey(sel.get('name')!, sel.get('type')!);
+      this.selectorCache.set(key, sel);
+    });
+  }
+
+  private getCacheKey(name: string, type: number) {
+    return `${type}:${name}`;
   }
 
   __trgCustom(opts?: any) {
@@ -233,11 +250,15 @@ export default class SelectorManager extends ItemManagerModule<SelectorManagerCo
     const cname = props.name;
     const config = this.getConfig();
     const { all, em } = this;
+
     const selector = cname ? (this.get(cname, props.type) as Selector) : all.where(props)[0];
 
     if (!selector) {
       const selModel = props instanceof Selector ? props : new Selector(props, { ...cOpts, config, em });
-      return all.add(selModel, cOpts);
+      const added = all.add(selModel, cOpts);
+      const key = this.getCacheKey(selModel.get('name')!, selModel.get('type')!);
+      this.selectorCache.set(key, selModel);
+      return added;
     }
 
     return selector;
@@ -251,7 +272,14 @@ export default class SelectorManager extends ItemManagerModule<SelectorManagerCo
       name = name.substr(1);
     }
 
-    return this.all.where({ name, type })[0];
+    const key = this.getCacheKey(name, type);
+    if (this.selectorCache.has(key)) {
+      return this.selectorCache.get(key);
+    }
+
+    const selector = this.all.where({ name, type })[0];
+    if (selector) this.selectorCache.set(key, selector);
+    return selector;
   }
 
   /**
@@ -332,7 +360,9 @@ export default class SelectorManager extends ItemManagerModule<SelectorManagerCo
    * selectorManager.remove(selectorManager.get('.myclass'));
    */
   remove(selector: string | Selector, opts?: RemoveOptions) {
-    return this.__remove(selector, opts);
+    const removed = this.__remove(selector, opts);
+    this.rebuildSelectorCache();
+    return removed;
   }
 
   /**
@@ -550,6 +580,7 @@ export default class SelectorManager extends ItemManagerModule<SelectorManagerCo
     this.__destroy();
     selectorTags?.remove();
     this.selectorTags = undefined;
+    this.selectorCache.clear();
   }
 
   /**
