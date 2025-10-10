@@ -102,11 +102,12 @@ export default class DataResolverListener {
     dataListeners.push(
       this.createListener(em.DataSources.all, 'add remove reset', onChangeAndRewatch),
       this.createListener(em, `${DataSourcesEvents.path}:${normPath}`),
-    );
-
-    dataListeners.push(
       this.createListener(em, DataSourcesEvents.path, ({ path: eventPath }: { path: string }) => {
-        if (eventPath.startsWith(path)) {
+        if (
+          // Skip same path as it's already handled be the listener above
+          eventPath !== path &&
+          eventPath.startsWith(path)
+        ) {
           this.onChange();
         }
       }),
