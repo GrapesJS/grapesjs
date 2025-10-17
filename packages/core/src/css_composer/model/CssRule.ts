@@ -175,9 +175,12 @@ export default class CssRule extends StyleableModel<CssRuleProperties> {
    * cssRule.getAtRule(); // "@media (min-width: 500px)"
    */
   getAtRule() {
-    const type = this.get('atRuleType');
-    const condition = this.get('mediaText');
-    // Avoid breaks with the last condition
+    return CssRule.getAtRuleFromProps(this.attributes);
+  }
+
+  static getAtRuleFromProps(cssRuleProps: Partial<CssRuleProperties>) {
+    const type = cssRuleProps.atRuleType;
+    const condition = cssRuleProps.mediaText;
     const typeStr = type ? `@${type}` : condition ? '@media' : '';
 
     return typeStr + (condition && typeStr ? ` ${condition}` : '');
