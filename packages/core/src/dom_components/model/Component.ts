@@ -2079,30 +2079,25 @@ export default class Component extends StyleableModel<ComponentProperties> {
   }
 
   static createId(model: Component, opts: any = {}) {
-    // const list = Component.getList(model);
-    // const { idMap = {} } = opts;
-    // let { id } = model.get('attributes')!;
-    // let nextId;
+    const list = Component.getList(model);
+    const { idMap = {} } = opts;
+    let { id } = model.get('attributes')!;
+    let nextId;
 
-    // if (id) {
-    //   nextId = Component.getIncrementId(id, list, opts);
-    //   model.setId(nextId);
-    //   if (id !== nextId) idMap[id] = nextId;
-    // } else {
-    //   nextId = Component.getNewId(list);
-    // }
+    if (id) {
+      nextId = Component.getIncrementId(id, list, opts);
+      model.setId(nextId);
+      if (id !== nextId) idMap[id] = nextId;
+    } else {
+      nextId = Component.getNewId(list);
+    }
 
-    // list[nextId] = model;
-    // return nextId;
-
-    const id = 'cmp-' + Math.random().toString(36).slice(2, 9);
-    model.setId(id);
-    return id;
+    list[nextId] = model;
+    return nextId;
   }
 
   static getNewId(list: ObjectAny) {
     const count = Object.keys(list).length;
-    // Testing 1000000 components with `+ 2` returns 0 collisions
     const ilen = count.toString().length + 2;
     const uid = (Math.random() + 1.1).toString(36).slice(-ilen);
     let newId = `i${uid}`;
@@ -2116,15 +2111,22 @@ export default class Component extends StyleableModel<ComponentProperties> {
 
   static getIncrementId(id: string, list: ObjectAny, opts: { keepIds?: string[] } = {}) {
     const { keepIds = [] } = opts;
-    let counter = 1;
-    let newId = id;
+    const keepIdsSet = new Set(keepIds);
 
-    if (keepIds.indexOf(id) < 0) {
-      while (list[newId]) {
-        counter++;
-        newId = `${id}-${counter}`;
-      }
+    if (keepIdsSet.has(id)) {
+      return id;
     }
+
+    let newId = id;
+    if (!list[newId]) {
+      return newId;
+    }
+
+    let counter = 1;
+    do {
+      counter++;
+      newId = `${id}-${counter}`;
+    } while (list[newId]);
 
     return newId;
   }
