@@ -74,8 +74,12 @@ const ParserHtml = (em?: EditorModel, config: ParserConfig & { returnArray?: boo
       const result: Record<string, string | string[]> = {};
       if (!str) return result;
 
-      // ⚡ Remove comments in one pass
       str = str.replace(/\/\*[\s\S]*?\*\//g, '');
+
+      const unclosedCommentIndex = str.indexOf('/*');
+      if (unclosedCommentIndex > -1) {
+        str = str.substring(0, unclosedCommentIndex);
+      }
 
       const decls = str.split(';');
       for (let i = 0; i < decls.length; i++) {
