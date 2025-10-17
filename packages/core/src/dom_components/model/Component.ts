@@ -67,6 +67,7 @@ import {
 import { DataWatchersOptions } from './ModelResolverWatcher';
 import { DataCollectionStateMap } from '../../data_sources/model/data_collection/types';
 import { checkAndGetSyncableCollectionItemId } from '../../data_sources/utils';
+import { keyRootData } from '../constants';
 
 export interface IComponent extends ExtractMethods<Component> {}
 export interface SetAttrOptions extends SetOptions, UpdateStyleOptions, DataWatchersOptions {}
@@ -373,13 +374,13 @@ export default class Component extends StyleableModel<ComponentProperties> {
     this.components().forEach((cmp) => cmp.syncComponentsCollectionState());
   }
 
-  stopSyncComponentCollectionState() {
+  protected stopSyncComponentCollectionState() {
     this.stopListening(this.components(), 'add remove reset', this.syncOnComponentChange);
     this.collectionsStateMap = {};
     this.components().forEach((cmp) => cmp.stopSyncComponentCollectionState());
   }
 
-  syncOnComponentChange(model: Component, collection: Components, opts: any) {
+  protected syncOnComponentChange(model: Component, collection: Components, opts: any) {
     if (!this.collectionsStateMap || !Object.keys(this.collectionsStateMap).length) return;
     const options = opts || collection || {};
 
@@ -436,9 +437,9 @@ export default class Component extends StyleableModel<ComponentProperties> {
     }
   }
 
-  __onStyleChange(newStyles: StyleProps) {
-    const { em } = this;
-    if (!em) return;
+  __onStyleChange(newStyles: StyleProps, opts?: UpdateStyleOptions) {
+    const { collectionsStateMap, em } = this;
+    if (!em || opts?.noEvent) return;
 
     const styleKeys = keys(newStyles);
     const pros = { style: newStyles };
@@ -446,13 +447,14 @@ export default class Component extends StyleableModel<ComponentProperties> {
     this.emitWithEditor(ComponentsEvents.styleUpdate, this, pros);
     styleKeys.forEach((key) => this.emitWithEditor(`${ComponentsEvents.styleUpdateProperty}${key}`, this, pros));
 
-    const collectionsStateMap = this.collectionsStateMap;
-    const allParentCollectionIds = Object.keys(collectionsStateMap);
-    if (!allParentCollectionIds.length) return;
+    const parentCollectionIds = Object.keys(collectionsStateMap).filter((key) => key !== keyRootData);
 
-    const isAtInitialPosition = allParentCollectionIds.every(
-      (key) => collectionsStateMap[key].currentIndex === collectionsStateMap[key].startIndex,
-    );
+    if (parentCollectionIds.length === 0) return;
+
+    const isAtInitialPosition = parentCollectionIds.every((id) => {
+      const collection = collectionsStateMap[id] as DataCollectionStateMap;
+      return collection.currentIndex === collection.startIndex;
+    });
     if (!isAtInitialPosition) return;
 
     const componentsToUpdate = getSymbolsToUpdate(this);
@@ -460,12 +462,10 @@ export default class Component extends StyleableModel<ComponentProperties> {
       const componentCollectionsState = component.collectionsStateMap;
       const componentParentCollectionIds = Object.keys(componentCollectionsState);
 
-      const isChildOfOriginalCollections = componentParentCollectionIds.every((id) =>
-        allParentCollectionIds.includes(id),
-      );
+      const isChildOfOriginalCollections = componentParentCollectionIds.every((id) => parentCollectionIds.includes(id));
 
       if (isChildOfOriginalCollections) {
-        component.addStyle(newStyles);
+        component.addStyle({ ...newStyles }, { noEvent: true });
       }
     });
   }
@@ -854,7 +854,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
     }
 
     if (!opt.temporary) {
-      this.__onStyleChange(opts.addStyle || prop);
+      this.__onStyleChange(opts.addStyle || prop, opts);
     }
 
     return prop;

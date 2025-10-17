@@ -88,7 +88,9 @@ export default class DataSourceManager extends ItemManagerModule<ModuleConfig, D
       acc[ds.id] = ds.records.reduce((accR, dr, i) => {
         const dataRecord = dr;
 
-        accR[dataRecord.id || i] = dataRecord.attributes;
+        const attributes = { ...dataRecord.attributes };
+        delete attributes.__p;
+        accR[dataRecord.id || i] = attributes;
 
         return accR;
       }, {} as ObjectAny);

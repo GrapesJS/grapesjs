@@ -1,6 +1,8 @@
 import { DataCollectionType, keyCollectionDefinition } from './constants';
 import { ComponentDefinition } from '../../../dom_components/model/types';
 import { DataVariableProps } from '../DataVariable';
+import { keyRootData } from '../../../dom_components/constants';
+import { ObjectAny } from '../../../common';
 
 export type DataCollectionDataSource = DataVariableProps;
 
@@ -26,8 +28,11 @@ export interface DataCollectionState {
   [DataCollectionStateType.remainingItems]: number;
 }
 
+export type RootDataType = Array<ObjectAny> | ObjectAny;
+
 export interface DataCollectionStateMap {
-  [key: string]: DataCollectionState;
+  [key: string]: DataCollectionState | RootDataType | undefined;
+  rootData?: RootDataType;
 }
 
 export interface ComponentDataCollectionProps extends ComponentDefinition {

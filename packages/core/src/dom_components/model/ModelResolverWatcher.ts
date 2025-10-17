@@ -56,9 +56,6 @@ export class ModelResolverWatcher<T extends ObjectHash> {
   onCollectionsStateMapUpdate() {
     const resolvesFromCollections = this.getValuesResolvingFromCollections();
     if (!resolvesFromCollections.length) return;
-    resolvesFromCollections.forEach((key) =>
-      this.resolverListeners[key].resolver.updateCollectionsStateMap(this.collectionsStateMap),
-    );
 
     const evaluatedValues = this.addDataValues(
       this.getValuesOrResolver(Object.fromEntries(resolvesFromCollections.map((key) => [key, '']))),

@@ -172,17 +172,25 @@ const filterPropertiesForPropagation = (props: Record<string, any>, component: C
   return filteredProps;
 };
 
+const hasCollectionId = (obj: Record<string, any> | undefined): boolean => {
+  if (!obj) return false;
+  return Object.values(obj).some((val: any) => Boolean(val?.collectionId));
+};
+
+const isCollectionVariableDefinition = (props: Record<string, any>, prop: string): boolean => {
+  switch (prop) {
+    case 'attributes':
+    case 'style':
+      return hasCollectionId(props[prop]);
+    default:
+      return Boolean(props[prop]?.collectionId);
+  }
+};
+
 const shouldPropagateProperty = (props: Record<string, any>, prop: string, component: Component): boolean => {
-  const isCollectionVariableDefinition = (() => {
-    if (prop === 'attributes') {
-      const attributes = props['attributes'];
-      return Object.values(attributes).some((attr: any) => !!attr?.collectionId);
-    }
+  const isCollectionVar = isCollectionVariableDefinition(props, prop);
 
-    return !!props[prop]?.collectionId;
-  })();
-
-  return !isSymbolOverride(component, prop) || isCollectionVariableDefinition;
+  return !isSymbolOverride(component, prop) || isCollectionVar;
 };
 
 export const updateSymbolCls = (symbol: Component, opts: any = {}) => {
