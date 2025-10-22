@@ -47,8 +47,74 @@ interface BaseDataSource {
    */
   skipFromStorage?: boolean;
 }
+
+export enum DataFieldPrimitiveType {
+  string = 'string',
+  number = 'number',
+  boolean = 'boolean',
+  date = 'date',
+  json = 'json',
+  reference = 'reference',
+}
+
+export type BaseFieldType =
+  | { type: DataFieldPrimitiveType.string }
+  | { type: DataFieldPrimitiveType.number }
+  | { type: DataFieldPrimitiveType.boolean }
+  | { type: DataFieldPrimitiveType.date }
+  | { type: DataFieldPrimitiveType.json }
+  | {
+      type: DataFieldPrimitiveType.reference;
+      target: string;
+      targetKey?: string;
+      isMany?: boolean;
+    };
+
+export interface DataFieldReferenceProps {
+  /** The target data source ID or name this field references */
+  target: string;
+
+  /** Optional key in the target data source */
+  targetKey?: string;
+
+  /** Relation type: one-to-one or one-to-many */
+  isMany?: boolean;
+}
+
+export interface DataFieldSchema<T = any> {
+  type: DataFieldPrimitiveType | BaseFieldType;
+
+  /** Marks the field as the primary key (implies unique) */
+  primary?: boolean;
+
+  /** Field must be present in all records */
+  required?: boolean;
+
+  /** Value must be unique across all records */
+  unique?: boolean;
+
+  /** Default value when not provided in record */
+  default?: T;
+
+  /** Restrict allowed values */
+  enum?: T[];
+
+  /** Custom validator returning true if valid */
+  validate?: (value: T, record: Record<string, any>) => boolean;
+
+  /** Optional description, used for UI or docs */
+  description?: string;
+
+  /** Optional label, used for UI or docs */
+  label?: string;
+
+  /** Optional field order for rendering */
+  order?: number;
+}
+
 export interface DataSourceType<DR extends DataRecordProps> extends BaseDataSource {
   records: DataRecords<DR>;
+  schema?: Record<string, DataFieldSchema>;
 }
 export interface DataSourceProps<DR extends DataRecordProps> extends BaseDataSource {
   records?: DataRecords<DR> | DataRecord<DR>[] | DR[];
