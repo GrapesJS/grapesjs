@@ -57,11 +57,12 @@ describe('DataSourceManager', () => {
   test('getValue', () => {
     const ds = addDataSource();
     const testPath = ds.getRecord('id2')?.getPath('name') || '';
-    expect(dsm.getValue(`${ds.id}.id1.name`)).toBe('Name1');
     expect(dsm.getValue(testPath)).toBe('Name2');
-    expect(dsm.getValue(`${ds.id}.non-existing.name`)).toBeUndefined();
-    expect(dsm.getValue(`${ds.id}.non-existing.name`, 'Default name')).toBe('Default name');
-    expect(dsm.getValue(`${ds.id}.id1.nonExisting`)).toBeUndefined();
+    expect(dsm.getValue(`ds1.id1.name`)).toBe('Name1');
+    expect(dsm.getValue(`ds1[id1]name`)).toBe('Name1');
+    expect(dsm.getValue(`ds1.non-existing.name`)).toBeUndefined();
+    expect(dsm.getValue(`ds1.non-existing.name`, 'Default name')).toBe('Default name');
+    expect(dsm.getValue(`ds1.id1.nonExisting`)).toBeUndefined();
     expect(dsm.getValue('non-existing-ds.id1.name')).toBeUndefined();
   });
 });
