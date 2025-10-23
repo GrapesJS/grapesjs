@@ -194,11 +194,19 @@ export default class DataSource<DRProps extends DataRecordProps = DataRecordProp
           if (relationValue) {
             const targetDs = this.em.DataSources.get(fieldSchema.target);
             if (targetDs) {
+              const targetRecords = targetDs.records;
               const targetField = fieldSchema.targetField || DEF_DATA_FIELD_ID;
-              const relatedRecord = targetDs.records.find((r) => r.attributes[targetField] === relationValue);
 
-              if (relatedRecord) {
-                result[fieldName] = relatedRecord.attributes;
+              if (fieldSchema.isMany) {
+                const relationValues = Array.isArray(relationValue) ? relationValue : [relationValue];
+                const relatedRecords = targetRecords.filter((r) => relationValues.includes(r.attributes[targetField]));
+                result[fieldName] = relatedRecords.map((r) => ({ ...r.attributes }));
+              } else {
+                const relatedRecord = targetDs.records.find((r) => r.attributes[targetField] === relationValue);
+
+                if (relatedRecord) {
+                  result[fieldName] = { ...relatedRecord.attributes };
+                }
               }
             }
           }

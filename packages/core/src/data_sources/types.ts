@@ -100,6 +100,9 @@ export interface DataFieldSchemaRelation extends DataFieldSchemaBase {
    * The target field in the data source
    */
   targetField?: string;
+  /**
+   * If true, the relation is one-to-many
+   */
   isMany?: boolean;
 }
 

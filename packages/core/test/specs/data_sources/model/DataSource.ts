@@ -87,15 +87,17 @@ describe('DataSource', () => {
       const categoryRecords = [
         { id: 'cat1', uid: 'cat1-uid', name: 'Category 1' },
         { id: 'cat2', uid: 'cat2-uid', name: 'Category 2' },
+        { id: 'cat3', uid: 'cat3-uid', name: 'Category 3' },
       ];
       const userRecords = [
         { id: 'user1', username: 'user_one' },
         { id: 'user2', username: 'user_two' },
+        { id: 'user3', username: 'user_three' },
       ];
       const blogRecords = [
         { id: 'blog1', title: 'First Blog', author: 'user1', categories: ['cat1-uid'] },
         { id: 'blog2', title: 'Second Blog', author: 'user2' },
-        { id: 'blog3', title: 'Third Blog', categories: ['cat1-uid', 'cat2-uid'] },
+        { id: 'blog3', title: 'Third Blog', categories: ['cat1-uid', 'cat3-uid'] },
       ];
 
       beforeEach(() => {
@@ -135,6 +137,24 @@ describe('DataSource', () => {
           { ...blogRecords[0], author: userRecords[0] },
           { ...blogRecords[1], author: userRecords[1] },
           blogRecords[2],
+        ]);
+      });
+
+      test('return 1:many resolved values', () => {
+        const blogsDS = dsm.get('blogs');
+        blogsDS.upSchema({
+          categories: {
+            type: DataFieldPrimitiveType.relation,
+            target: 'categories',
+            targetField: 'uid',
+            isMany: true,
+          },
+        });
+        const records = blogsDS.getResolvedRecords();
+        expect(records).toEqual([
+          { ...blogRecords[0], author: userRecords[0], categories: [categoryRecords[0]] },
+          { ...blogRecords[1], author: userRecords[1] },
+          { ...blogRecords[2], categories: [categoryRecords[0], categoryRecords[2]] },
         ]);
       });
     });
