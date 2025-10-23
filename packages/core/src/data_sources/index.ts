@@ -21,6 +21,7 @@
  * @module DataSources
  */
 
+import { isEmpty } from 'underscore';
 import { ItemManagerModule, ModuleConfig } from '../abstract/Module';
 import { AddOptions, collectionEvents, ObjectAny, RemoveOptions } from '../common';
 import EditorModel from '../editor/model/Editor';
@@ -164,15 +165,16 @@ export default class DataSourceManager extends ItemManagerModule<ModuleConfig, D
    * @returns {Array} Stored data sources.
    */
   store() {
-    const data: any[] = [];
+    const data: DataSourceProps[] = [];
     this.all.forEach((dataSource) => {
-      const skipFromStorage = dataSource.get('skipFromStorage');
+      const { skipFromStorage, transformers, records, schema, ...rest } = dataSource.attributes;
+
       if (!skipFromStorage) {
         data.push({
-          id: dataSource.id,
-          name: dataSource.get('name' as any),
-          records: dataSource.records.toJSON(),
-          skipFromStorage,
+          ...rest,
+          id: rest.id!,
+          schema: !isEmpty(schema) ? schema : undefined,
+          records: !rest.provider ? records : undefined,
         });
       }
     });

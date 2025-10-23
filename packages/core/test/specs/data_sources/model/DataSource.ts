@@ -19,6 +19,7 @@ const serializeRecords = (records: any[]) => JSON.parse(JSON.stringify(records))
 
 describe('DataSource', () => {
   let em: Editor;
+  let editor: Editor['Editor'];
   let dsm: DataSourceManager;
   let ds: DataSource<TestRecord>;
   const categoryRecords = [
@@ -42,7 +43,7 @@ describe('DataSource', () => {
   };
 
   beforeEach(() => {
-    ({ em, dsm } = setupTestEditor());
+    ({ em, dsm, editor } = setupTestEditor());
   });
 
   afterEach(() => {
@@ -174,11 +175,12 @@ describe('DataSource', () => {
       records: blogRecords,
       schema: getMockSchema(),
     });
+    const getProviderBlogsGet = () => ({ url: testApiUrl, headers: testHeaders });
     const addBlogsWithProvider = () => {
       return dsm.add({
         id: 'blogs',
         provider: {
-          get: { url: testApiUrl, headers: testHeaders },
+          get: getProviderBlogsGet(),
         },
       });
     };
@@ -228,6 +230,23 @@ describe('DataSource', () => {
       expect(fetch).toHaveBeenCalledWith(testApiUrl, { headers: testHeaders });
       expect(ds.schema).toEqual({});
       expect(ds.getRecords().length).toBe(0);
+    });
+
+    test('ensure records loaded from the provider are not persisted', async () => {
+      const ds = addBlogsWithProvider();
+      await ds.loadProvider();
+
+      expect(editor.getProjectData().dataSources).toEqual([
+        { id: 'categories', records: categoryRecords },
+        { id: 'users', records: userRecords },
+        {
+          id: 'blogs',
+          schema: getMockSchema(),
+          provider: {
+            get: getProviderBlogsGet(),
+          },
+        },
+      ]);
     });
   });
 });
