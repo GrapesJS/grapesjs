@@ -14,6 +14,8 @@ interface TestRecord extends DataRecordProps {
   age?: number;
 }
 
+const serializeRecords = (records: any[]) => JSON.parse(JSON.stringify(records));
+
 describe('DataSource', () => {
   let em: Editor;
   let dsm: DataSourceManager;
@@ -79,6 +81,62 @@ describe('DataSource', () => {
       expect(ds.getSchemaField('name')).toEqual(schemaName);
       expect(ds.getSchemaField('age')).toEqual(schemaAge);
       expect(ds.getSchemaField('nonExistentField')).toBeUndefined();
+    });
+
+    describe('Relations', () => {
+      const categoryRecords = [
+        { id: 'cat1', name: 'Category 1' },
+        { id: 'cat2', name: 'Category 2' },
+      ];
+      const userRecords = [
+        { id: 'user1', username: 'user_one' },
+        { id: 'user2', username: 'user_two' },
+      ];
+      const blogRecords = [
+        { id: 'blog1', title: 'First Blog', author: 'user1', categories: ['cat1'] },
+        { id: 'blog2', title: 'Second Blog', author: 'user2' },
+        { id: 'blog3', title: 'Third Blog', categories: ['cat1', 'cat2'] },
+      ];
+
+      beforeEach(() => {
+        dsm.add({
+          id: 'categories',
+          records: categoryRecords,
+        });
+        dsm.add({
+          id: 'users',
+          records: userRecords,
+        });
+        dsm.add({
+          id: 'blogs',
+          records: blogRecords,
+          schema: {
+            title: {
+              type: DataFieldPrimitiveType.string,
+            },
+            author: {
+              type: DataFieldPrimitiveType.relation,
+              target: 'users',
+              targetField: 'id',
+            },
+          },
+        });
+      });
+
+      test('return default values', () => {
+        const blogsDS = dsm.get('blogs');
+        expect(serializeRecords(blogsDS.getRecords())).toEqual(blogRecords);
+      });
+
+      test('return resolved values', () => {
+        const blogsDS = dsm.get('blogs');
+        const records = blogsDS.getRecords({ resolveRelations: true });
+        expect(records).toEqual([
+          { ...blogRecords[0], author: userRecords[0] },
+          { ...blogRecords[1], author: userRecords[1] },
+          blogRecords[2],
+        ]);
+      });
     });
   });
 });

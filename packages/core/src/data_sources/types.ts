@@ -113,10 +113,11 @@ export type DataFieldSchemas =
 
 export interface DataSourceType<DR extends DataRecordProps> extends BaseDataSource {
   records: DataRecords<DR>;
-  schema: Record<keyof DR, DataFieldSchemas | undefined>;
+  schema: Partial<Record<keyof DR, DataFieldSchemas | undefined>>;
 }
 export interface DataSourceProps<DR extends DataRecordProps> extends BaseDataSource {
   records?: DataRecords<DR> | DataRecord<DR>[] | DR[];
+  schema?: DataSourceType<DR>['schema'];
 }
 export type RecordPropsType<T> = T extends DataRecord<infer U> ? U : never;
 export interface DataSourceTransformers {
