@@ -85,11 +85,11 @@ export default class DataSourceManager extends ItemManagerModule<ModuleConfig, D
 
   /**
    * Set value in data sources by path.
-   * @param {String} path Path to value in format 'dataSourceId/recordId/propName'
+   * @param {String} path Path to value in format 'dataSourceId.recordId.propName'
    * @param {any} value Value to set
    * @returns {Boolean} Returns true if the value was set successfully
    * @example
-   * dsm.setValue('ds_id/record_id/propName', 'new value');
+   * dsm.setValue('ds_id.record_id.propName', 'new value');
    */
   setValue(path: string, value: any) {
     const [ds, record, propPath] = this.fromPath(path);
