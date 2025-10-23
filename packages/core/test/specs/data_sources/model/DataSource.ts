@@ -184,7 +184,7 @@ describe('DataSource', () => {
     };
 
     beforeEach(() => {
-      jest.spyOn(global, 'fetch').mockImplementation((url) =>
+      jest.spyOn(global, 'fetch').mockImplementation(() =>
         Promise.resolve({
           ok: true,
           json: () => Promise.resolve(getMockProviderResponse()),
