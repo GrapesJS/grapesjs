@@ -83,6 +83,25 @@ export default class DataSourceManager extends ItemManagerModule<ModuleConfig, D
     return get(this.getContext(), path, defValue);
   }
 
+  /**
+   * Set value in data sources by path.
+   * @param {String} path Path to value in format 'dataSourceId/recordId/propName'
+   * @param {any} value Value to set
+   * @returns {Boolean} Returns true if the value was set successfully
+   * @example
+   * dsm.setValue('ds_id/record_id/propName', 'new value');
+   */
+  setValue(path: string, value: any) {
+    const [ds, record, propPath] = this.fromPath(path);
+
+    if (record && (propPath || propPath === '')) {
+      record.set(propPath, value);
+      return true;
+    }
+
+    return false;
+  }
+
   private getContext() {
     return this.all.reduce((acc, ds) => {
       acc[ds.id] = ds.records.reduce((accR, dr, i) => {
