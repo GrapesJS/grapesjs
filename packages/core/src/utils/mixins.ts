@@ -25,7 +25,7 @@ function castPath(value: string | string[], object: ObjectAny) {
   return object.hasOwnProperty(value) ? [value] : stringToPath(value);
 }
 
-export const get = (object: ObjectAny, path: string | string[], def: any) => {
+export const get = (object: ObjectAny, path: string | string[], def?: any) => {
   const paths = castPath(path, object);
   const length = paths.length;
   let index = 0;
@@ -40,22 +40,32 @@ export const set = (object: ObjectAny, path: string | string[], value: any): boo
   if (!isObject(object)) return false;
   const paths = castPath(path, object);
   const length = paths.length;
-  const lastIndex = length - 1;
-  let index = -1;
-  let nested = object;
 
-  while (nested != null && ++index < length) {
-    const key = paths[index];
-    let newValue = value;
+  if (length === 0) return false;
 
-    if (index != lastIndex) {
-      const objValue = nested[key];
-      newValue = isObject(objValue) ? objValue : !isNaN(+paths[index + 1]) ? [] : {};
-    }
-    nested[key] = newValue;
-    nested = nested[key];
+  if (length === 1) {
+    object[paths[0]] = value;
+    return true;
   }
-  return true;
+
+  const parentPath = paths.slice(0, -1);
+  const lastKey = paths[length - 1];
+  const parent = get(object, parentPath);
+
+  if (parent) {
+    if (Array.isArray(parent)) {
+      const index = +lastKey;
+      if (!isNaN(index)) {
+        parent[index] = value;
+        return true;
+      }
+    } else if (isObject(parent)) {
+      (parent as ObjectAny)[lastKey] = value;
+      return true;
+    }
+  }
+
+  return false;
 };
 
 export const serialize = (obj: ObjectAny) => JSON.parse(JSON.stringify(obj));
