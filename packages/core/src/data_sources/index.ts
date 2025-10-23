@@ -24,7 +24,7 @@
 import { ItemManagerModule, ModuleConfig } from '../abstract/Module';
 import { AddOptions, collectionEvents, ObjectAny, RemoveOptions } from '../common';
 import EditorModel from '../editor/model/Editor';
-import { get, stringToPath } from '../utils/mixins';
+import { get, set, stringToPath } from '../utils/mixins';
 import DataRecord from './model/DataRecord';
 import DataSource from './model/DataSource';
 import DataSources from './model/DataSources';
@@ -95,8 +95,11 @@ export default class DataSourceManager extends ItemManagerModule<ModuleConfig, D
     const [ds, record, propPath] = this.fromPath(path);
 
     if (record && (propPath || propPath === '')) {
-      record.set(propPath, value);
-      return true;
+      let attrs = { ...record.attributes };
+      if (set(attrs, propPath || '', value)) {
+        record.set(attrs);
+        return true;
+      }
     }
 
     return false;

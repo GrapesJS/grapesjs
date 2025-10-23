@@ -113,7 +113,10 @@ describe('DataSourceManager', () => {
 
       // Update array item
       expect(dsm.setValue('ds1.id4.metadata.roles[1]', 'editor')).toBe(true);
-      expect(dsm.getValue('ds1.id4.metadata.roles[1]')).toBe('editor');
+      expect(dsm.getValue('ds1.id4.metadata')).toEqual({
+        address: { city: 'NewCity' },
+        roles: ['admin', 'editor'],
+      });
 
       // Set entirely new nested object
       const newAddress = { city: 'AnotherCity', country: 'SomeCountry' };

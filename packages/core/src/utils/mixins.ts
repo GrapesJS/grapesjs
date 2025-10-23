@@ -36,6 +36,28 @@ export const get = (object: ObjectAny, path: string | string[], def: any) => {
   return (index && index == length ? object : undefined) ?? def;
 };
 
+export const set = (object: ObjectAny, path: string | string[], value: any): boolean => {
+  if (!isObject(object)) return false;
+  const paths = castPath(path, object);
+  const length = paths.length;
+  const lastIndex = length - 1;
+  let index = -1;
+  let nested = object;
+
+  while (nested != null && ++index < length) {
+    const key = paths[index];
+    let newValue = value;
+
+    if (index != lastIndex) {
+      const objValue = nested[key];
+      newValue = isObject(objValue) ? objValue : !isNaN(+paths[index + 1]) ? [] : {};
+    }
+    nested[key] = newValue;
+    nested = nested[key];
+  }
+  return true;
+};
+
 export const serialize = (obj: ObjectAny) => JSON.parse(JSON.stringify(obj));
 
 export const isBultInMethod = (key: string) => isFunction(obj[key]);
