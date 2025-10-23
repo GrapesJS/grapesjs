@@ -118,13 +118,33 @@ export type DataSourceSchema<DR extends DataRecordProps = DataRecordProps> = {
   [K in keyof DR]?: DataFieldSchemas;
 };
 
+export interface DataSourceProviderMethodProps {
+  url: string;
+  method?: string;
+  headers?: HeadersInit;
+  body?: BodyInit;
+}
+
+export interface DataSourceProviderDefinitionProps {
+  get: string | DataSourceProviderMethodProps;
+}
+
+export interface DataSourceProviderResult {
+  records?: DataRecordProps[];
+  schema?: DataSourceSchema;
+}
+
+export type DataSourceProviderProp = string | DataSourceProviderDefinitionProps;
+
 export interface DataSourceType<DR extends DataRecordProps> extends BaseDataSource {
   records: DataRecords<DR>;
   schema: DataSourceSchema<DR>;
+  provider?: DataSourceProviderProp;
 }
-export interface DataSourceProps<DR extends DataRecordProps> extends BaseDataSource {
+export interface DataSourceProps<DR extends DataRecordProps = DataRecordProps> extends BaseDataSource {
   records?: DataRecords<DR> | DataRecord<DR>[] | DR[];
   schema?: DataSourceSchema<DR>;
+  provider?: DataSourceProviderProp;
 }
 export type RecordPropsType<T> = T extends DataRecord<infer U> ? U : never;
 export interface DataSourceTransformers {

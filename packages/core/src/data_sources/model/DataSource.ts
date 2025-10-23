@@ -29,6 +29,7 @@
  * @extends {Model<DataSourceProps>}
  */
 
+import { isString } from 'underscore';
 import {
   AddOptions,
   collectionEvents,
@@ -43,6 +44,7 @@ import {
   DataFieldSchemaRelation,
   DataRecordProps,
   DataSourceProps,
+  DataSourceProviderResult,
   DataSourceTransformers,
   DataSourceType,
 } from '../types';
@@ -217,6 +219,35 @@ export default class DataSource<DRProps extends DataRecordProps = DataRecordProp
     });
 
     return records;
+  }
+
+  async loadProvider() {
+    const { provider } = this.attributes;
+
+    if (!provider) return;
+
+    if (isString(provider)) {
+      // TODO: implement providers as plugins (later)
+      return;
+    }
+
+    const providerGet = isString(provider.get) ? { url: provider.get } : provider.get;
+    const { url, method, headers, body } = providerGet;
+
+    const fetchProvider = async () => {
+      try {
+        const response = await fetch(url, { method, headers, body });
+        if (!response.ok) throw new Error(await response.text());
+        const providerResult: DataSourceProviderResult = await response.json();
+
+        if (providerResult?.records) this.setRecords(providerResult.records as any);
+        if (providerResult?.schema) this.upSchema(providerResult.schema);
+      } catch (error: any) {
+        this.em.logError(error.message);
+      }
+    };
+
+    await fetchProvider();
   }
 
   /**
