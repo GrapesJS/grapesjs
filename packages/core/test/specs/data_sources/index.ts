@@ -55,7 +55,7 @@ describe('DataSourceManager', () => {
   });
 
   describe('getValue', () => {
-    test('getValue', () => {
+    test('get value from records', () => {
       const ds = addDataSource();
       const testPath = ds.getRecord('id2')?.getPath('name') || '';
       expect(dsm.getValue(testPath)).toBe('Name2');
@@ -67,7 +67,7 @@ describe('DataSourceManager', () => {
       expect(dsm.getValue('non-existing-ds.id1.name')).toBeUndefined();
     });
 
-    test('getValue with nested values', () => {
+    test('with nested values', () => {
       const ds = addDataSource();
       const address = { city: 'CityName' };
       const roles = ['admin', 'user'];
@@ -85,7 +85,7 @@ describe('DataSourceManager', () => {
   });
 
   describe('setValue', () => {
-    test('Should set value in existing record', () => {
+    test('set value in existing record', () => {
       addDataSource();
       expect(dsm.setValue('ds1.id1.name', 'Name1 Up')).toBe(true);
       expect(dsm.getValue('ds1.id1.name')).toBe('Name1 Up');
@@ -95,6 +95,41 @@ describe('DataSourceManager', () => {
       expect(dsm.setValue('non-existing-ds.id1.name', 'New Name')).toBe(false);
 
       expect(dsm.setValue('invalid-path', 'New Name')).toBe(false);
+    });
+
+    test('set nested values', () => {
+      const ds = addDataSource();
+      const address = { city: 'CityName' };
+      const roles = ['admin', 'user'];
+      ds.addRecord({
+        id: 'id4',
+        name: 'Name4',
+        metadata: { address, roles },
+      });
+
+      // Update nested object property
+      expect(dsm.setValue('ds1.id4.metadata.address.city', 'NewCity')).toBe(true);
+      expect(dsm.getValue('ds1.id4.metadata.address.city')).toBe('NewCity');
+
+      // Update array item
+      expect(dsm.setValue('ds1.id4.metadata.roles[1]', 'editor')).toBe(true);
+      expect(dsm.getValue('ds1.id4.metadata.roles[1]')).toBe('editor');
+
+      // Set entirely new nested object
+      const newAddress = { city: 'AnotherCity', country: 'SomeCountry' };
+      expect(dsm.setValue('ds1.id4.metadata.address', newAddress)).toBe(true);
+      expect(dsm.getValue('ds1.id4.metadata.address')).toEqual(newAddress);
+
+      // Set new array
+      const newRoles = ['editor', 'viewer'];
+      expect(dsm.setValue('ds1.id4.metadata.roles', newRoles)).toBe(true);
+      expect(dsm.getValue('ds1.id4.metadata.roles')).toEqual(newRoles);
+
+      // Set completely new nested structure
+      const newMetadata = { tags: ['tag1', 'tag2'], settings: { theme: 'dark' } };
+      expect(dsm.setValue('ds1.id4.metadata', newMetadata)).toBe(true);
+      expect(dsm.getValue('ds1.id4.metadata')).toEqual(newMetadata);
+      expect(dsm.getValue('ds1.id4.metadata.settings.theme')).toBe('dark');
     });
   });
 });
