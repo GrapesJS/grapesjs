@@ -1,5 +1,5 @@
 import DataSourceManager from '../../../src/data_sources';
-import { DataSourceProps } from '../../../src/data_sources/types';
+import { DataSourceProps, DataFieldPrimitiveType } from '../../../src/data_sources/types';
 import { setupTestEditor } from '../../common';
 import EditorModel from '../../../src/editor/model/Editor';
 
@@ -52,5 +52,16 @@ describe('DataSourceManager', () => {
     expect(dsm.getAll().length).toBe(0);
     expect(event).toHaveBeenCalledTimes(1);
     expect(event).toHaveBeenCalledWith(ds, expect.any(Object));
+  });
+
+  test('getValue', () => {
+    const ds = addDataSource();
+    const testPath = ds.getRecord('id2')?.getPath('name') || '';
+    expect(dsm.getValue(`${ds.id}.id1.name`)).toBe('Name1');
+    expect(dsm.getValue(testPath)).toBe('Name2');
+    expect(dsm.getValue(`${ds.id}.non-existing.name`)).toBeUndefined();
+    expect(dsm.getValue(`${ds.id}.non-existing.name`, 'Default name')).toBe('Default name');
+    expect(dsm.getValue(`${ds.id}.id1.nonExisting`)).toBeUndefined();
+    expect(dsm.getValue('non-existing-ds.id1.name')).toBeUndefined();
   });
 });
