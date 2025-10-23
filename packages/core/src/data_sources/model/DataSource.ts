@@ -38,7 +38,15 @@ import {
   SetOptions,
 } from '../../common';
 import EditorModel from '../../editor/model/Editor';
-import { DataSourceTransformers, DataSourceType, DataSourceProps, DataRecordProps } from '../types';
+import {
+  DataFieldPrimitiveType,
+  DataFieldSchemaRelation,
+  DataRecordProps,
+  DataSourceProps,
+  DataSourceTransformers,
+  DataSourceType,
+} from '../types';
+import { DEF_DATA_FIELD_ID } from '../utils';
 import DataRecord from './DataRecord';
 import DataRecords from './DataRecords';
 import DataSources from './DataSources';
@@ -153,8 +161,8 @@ export default class DataSource<DRProps extends DataRecordProps = DataRecordProp
    * @returns {DataRecord<DRProps> | undefined} The data record, or `undefined` if no record is found with the given ID.
    * @name getRecord
    */
-  getRecord(id: string | number) {
-    return this.records.get(id) as DataRecord | undefined;
+  getRecord(id: string | number): DataRecord | undefined {
+    return this.records.get(id);
   }
 
   /**
@@ -166,6 +174,41 @@ export default class DataSource<DRProps extends DataRecordProps = DataRecordProp
    */
   getRecords() {
     return [...this.records.models].map((record) => this.getRecord(record.id)!);
+  }
+
+  /**
+   * Retrieves all records from the data source with resolved relations based on the schema.
+   */
+  getResolvedRecords() {
+    const schemaEntries = Object.entries(this.schema);
+    const records = this.getRecords().map((record) => {
+      const result = { ...record.attributes };
+
+      if (schemaEntries.length === 0) return result;
+
+      schemaEntries.forEach(([fieldName, schema]) => {
+        const fieldSchema = schema as DataFieldSchemaRelation;
+        if (fieldSchema?.type === DataFieldPrimitiveType.relation && fieldSchema.target) {
+          const relationValue = result[fieldName];
+
+          if (relationValue) {
+            const targetDs = this.em.DataSources.get(fieldSchema.target);
+            if (targetDs) {
+              const targetField = fieldSchema.targetField || DEF_DATA_FIELD_ID;
+              const relatedRecord = targetDs.records.find((r) => r.attributes[targetField] === relationValue);
+
+              if (relatedRecord) {
+                result[fieldName] = relatedRecord.attributes;
+              }
+            }
+          }
+        }
+      });
+
+      return result;
+    });
+
+    return records;
   }
 
   /**

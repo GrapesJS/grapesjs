@@ -10,6 +10,8 @@ import { DataConditionIfFalseType, DataConditionIfTrueType } from './model/condi
 import { getSymbolMain } from '../dom_components/model/SymbolUtils';
 import Component from '../dom_components/model/Component';
 
+export const DEF_DATA_FIELD_ID = 'id';
+
 export function isDataResolverProps(value: any): value is DataResolverProps {
   return typeof value === 'object' && [DataVariableType, DataConditionType].includes(value?.type);
 }
