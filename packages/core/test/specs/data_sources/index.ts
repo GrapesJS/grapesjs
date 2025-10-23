@@ -1,7 +1,7 @@
 import DataSourceManager from '../../../src/data_sources';
-import { DataSourceProps, DataFieldPrimitiveType } from '../../../src/data_sources/types';
-import { setupTestEditor } from '../../common';
+import { DataSourceProps } from '../../../src/data_sources/types';
 import EditorModel from '../../../src/editor/model/Editor';
+import { setupTestEditor } from '../../common';
 
 describe('DataSourceManager', () => {
   let em: EditorModel;
