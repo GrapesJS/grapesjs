@@ -124,7 +124,7 @@ export interface DataSourceType<DR extends DataRecordProps> extends BaseDataSour
 }
 export interface DataSourceProps<DR extends DataRecordProps> extends BaseDataSource {
   records?: DataRecords<DR> | DataRecord<DR>[] | DR[];
-  schema?: DataSourceType<DR>['schema'];
+  schema?: DataSourceSchema<DR>;
 }
 export type RecordPropsType<T> = T extends DataRecord<infer U> ? U : never;
 export interface DataSourceTransformers {
