@@ -70,14 +70,17 @@ describe('DataSourceManager', () => {
     test('getValue with nested values', () => {
       const ds = addDataSource();
       const address = { city: 'CityName' };
+      const roles = ['admin', 'user'];
       ds.addRecord({
         id: 'id4',
         name: 'Name4',
-        metadata: { address },
+        metadata: { address, roles },
       });
 
       expect(dsm.getValue(`ds1.id4.metadata.address`)).toEqual(address);
       expect(dsm.getValue(`ds1.id4.metadata.address.city`)).toEqual(address.city);
+      expect(dsm.getValue(`ds1.id4.metadata.roles`)).toEqual(roles);
+      expect(dsm.getValue(`ds1.id4.metadata.roles[1]`)).toEqual(roles[1]);
     });
   });
 
