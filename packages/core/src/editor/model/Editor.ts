@@ -280,7 +280,7 @@ export default class EditorModel extends Model {
     this.on('change:componentHovered', this.componentHovered, this);
     this.on('change:changesCount', this.updateChanges, this);
     this.on('change:readyLoad change:readyCanvas', this._checkReady, this);
-    toLog.forEach((e) => this.listenLog(e));
+    toLog.forEach((e) => this.listenLog(e as keyof typeof logs));
 
     // Deprecations
     [{ from: 'change:selectedComponent', to: 'component:toggled' }].forEach((event) => {
@@ -303,9 +303,12 @@ export default class EditorModel extends Model {
     return this.config.el;
   }
 
-  listenLog(event: string) {
-    //@ts-ignore
-    this.listenTo(this, `log:${event}`, logs[event]);
+  listenLog(event: keyof typeof logs) {
+    this.listenTo(this, `log:${event}`, (...args) => {
+      if (!this.config.log) return;
+      const logFn = logs[event];
+      logFn?.(...args);
+    });
   }
 
   get config() {

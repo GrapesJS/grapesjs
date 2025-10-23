@@ -162,6 +162,7 @@ describe('DataSource', () => {
 
   describe('Providers', () => {
     const testApiUrl = 'https://api.example.com/data';
+    const testHeaders = { 'Content-Type': 'application/json' };
     const getMockSchema = () => ({
       author: {
         type: DataFieldPrimitiveType.relation,
@@ -173,8 +174,23 @@ describe('DataSource', () => {
       records: blogRecords,
       schema: getMockSchema(),
     });
+    const addBlogsWithProvider = () => {
+      return dsm.add({
+        id: 'blogs',
+        provider: {
+          get: { url: testApiUrl, headers: testHeaders },
+        },
+      });
+    };
 
     beforeEach(() => {
+      jest.spyOn(global, 'fetch').mockImplementation((url) =>
+        Promise.resolve({
+          ok: true,
+          json: () => Promise.resolve(getMockProviderResponse()),
+        } as Response),
+      );
+
       dsm.add({
         id: 'categories',
         records: categoryRecords,
@@ -185,23 +201,33 @@ describe('DataSource', () => {
       });
     });
 
-    test('loadProvider', async () => {
-      const ds = dsm.add({
-        id: 'blogs',
-        provider: {
-          get: {
-            url: testApiUrl,
-            headers: { 'Content-Type': 'application/json' },
-          },
-        },
-      });
+    afterEach(() => {
+      jest.restoreAllMocks();
+    });
 
+    test('loadProvider', async () => {
+      const ds = addBlogsWithProvider();
+      await ds.loadProvider();
+
+      expect(fetch).toHaveBeenCalledWith(testApiUrl, { headers: testHeaders });
       expect(ds.schema).toEqual(getMockSchema());
       expect(ds.getResolvedRecords()).toEqual([
         { ...blogRecords[0], author: userRecords[0] },
         { ...blogRecords[1], author: userRecords[1] },
         blogRecords[2],
       ]);
+    });
+
+    test('loadProvider with failed fetch', async () => {
+      jest.spyOn(global, 'fetch').mockRejectedValueOnce(new Error('Network error'));
+
+      em.config.log = false;
+      const ds = addBlogsWithProvider();
+      await ds.loadProvider();
+
+      expect(fetch).toHaveBeenCalledWith(testApiUrl, { headers: testHeaders });
+      expect(ds.schema).toEqual({});
+      expect(ds.getRecords().length).toBe(0);
     });
   });
 });
