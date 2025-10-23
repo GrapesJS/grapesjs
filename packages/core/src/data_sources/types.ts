@@ -114,9 +114,13 @@ export type DataFieldSchemas =
   | DataFieldSchemaJSON
   | DataFieldSchemaRelation;
 
+export type DataSourceSchema<DR extends DataRecordProps = DataRecordProps> = {
+  [K in keyof DR]?: DataFieldSchemas;
+};
+
 export interface DataSourceType<DR extends DataRecordProps> extends BaseDataSource {
   records: DataRecords<DR>;
-  schema: Partial<Record<keyof DR, DataFieldSchemas | undefined>>;
+  schema: DataSourceSchema<DR>;
 }
 export interface DataSourceProps<DR extends DataRecordProps> extends BaseDataSource {
   records?: DataRecords<DR> | DataRecord<DR>[] | DR[];
