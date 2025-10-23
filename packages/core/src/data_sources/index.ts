@@ -73,14 +73,14 @@ export default class DataSourceManager extends ItemManagerModule<ModuleConfig, D
   }
 
   /**
-   * Get value from data sources by key
-   * @param {String} key Path to value.
-   * @param {any} defValue
+   * Get value from data sources by path.
+   * @param {String} path Path to value.
+   * @param {any} defValue Default value if the path is not found.
    * @returns {any}
    * const value = dsm.getValue('ds_id.record_id.propName', 'defaultValue');
    */
-  getValue(key: string | string[], defValue: any) {
-    return get(this.getContext(), key, defValue);
+  getValue(path: string | string[], defValue?: any) {
+    return get(this.getContext(), path, defValue);
   }
 
   private getContext() {

@@ -35,7 +35,7 @@ describe('DataSourceManager', () => {
     em.on(dsm.events.add, eventAdd);
     const ds = addDataSource();
     expect(dsm.getAll().length).toBe(1);
-    expect(eventAdd).toBeCalledTimes(1);
+    expect(eventAdd).toHaveBeenCalledTimes(1);
     expect(ds.getRecords().length).toBe(3);
   });
 
@@ -50,7 +50,7 @@ describe('DataSourceManager', () => {
     const ds = addDataSource();
     dsm.remove('ds1');
     expect(dsm.getAll().length).toBe(0);
-    expect(event).toBeCalledTimes(1);
-    expect(event).toBeCalledWith(ds, expect.any(Object));
+    expect(event).toHaveBeenCalledTimes(1);
+    expect(event).toHaveBeenCalledWith(ds, expect.any(Object));
   });
 });
