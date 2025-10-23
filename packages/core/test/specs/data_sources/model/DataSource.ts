@@ -5,6 +5,7 @@ import {
   DataFieldSchemaNumber,
   DataFieldSchemaString,
   DataRecordProps,
+  DataSourceProviderResult,
 } from '../../../../src/data_sources/types';
 import Editor from '../../../../src/editor/model/Editor';
 import { setupTestEditor } from '../../../common';
@@ -20,6 +21,21 @@ describe('DataSource', () => {
   let em: Editor;
   let dsm: DataSourceManager;
   let ds: DataSource<TestRecord>;
+  const categoryRecords = [
+    { id: 'cat1', uid: 'cat1-uid', name: 'Category 1' },
+    { id: 'cat2', uid: 'cat2-uid', name: 'Category 2' },
+    { id: 'cat3', uid: 'cat3-uid', name: 'Category 3' },
+  ];
+  const userRecords = [
+    { id: 'user1', username: 'user_one' },
+    { id: 'user2', username: 'user_two' },
+    { id: 'user3', username: 'user_three' },
+  ];
+  const blogRecords = [
+    { id: 'blog1', title: 'First Blog', author: 'user1', categories: ['cat1-uid'] },
+    { id: 'blog2', title: 'Second Blog', author: 'user2' },
+    { id: 'blog3', title: 'Third Blog', categories: ['cat1-uid', 'cat3-uid'] },
+  ];
 
   const addTestDataSource = (records?: TestRecord[]) => {
     return dsm.add<TestRecord>({ id: 'test', records: records || [{ id: 'user1', age: 30 }] });
@@ -84,22 +100,6 @@ describe('DataSource', () => {
     });
 
     describe('Relations', () => {
-      const categoryRecords = [
-        { id: 'cat1', uid: 'cat1-uid', name: 'Category 1' },
-        { id: 'cat2', uid: 'cat2-uid', name: 'Category 2' },
-        { id: 'cat3', uid: 'cat3-uid', name: 'Category 3' },
-      ];
-      const userRecords = [
-        { id: 'user1', username: 'user_one' },
-        { id: 'user2', username: 'user_two' },
-        { id: 'user3', username: 'user_three' },
-      ];
-      const blogRecords = [
-        { id: 'blog1', title: 'First Blog', author: 'user1', categories: ['cat1-uid'] },
-        { id: 'blog2', title: 'Second Blog', author: 'user2' },
-        { id: 'blog3', title: 'Third Blog', categories: ['cat1-uid', 'cat3-uid'] },
-      ];
-
       beforeEach(() => {
         dsm.add({
           id: 'categories',
@@ -157,6 +157,51 @@ describe('DataSource', () => {
           { ...blogRecords[2], categories: [categoryRecords[0], categoryRecords[2]] },
         ]);
       });
+    });
+  });
+
+  describe('Providers', () => {
+    const testApiUrl = 'https://api.example.com/data';
+    const getMockSchema = () => ({
+      author: {
+        type: DataFieldPrimitiveType.relation,
+        target: 'users',
+        targetField: 'id',
+      },
+    });
+    const getMockProviderResponse: () => DataSourceProviderResult = () => ({
+      records: blogRecords,
+      schema: getMockSchema(),
+    });
+
+    beforeEach(() => {
+      dsm.add({
+        id: 'categories',
+        records: categoryRecords,
+      });
+      dsm.add({
+        id: 'users',
+        records: userRecords,
+      });
+    });
+
+    test('loadProvider', async () => {
+      const ds = dsm.add({
+        id: 'blogs',
+        provider: {
+          get: {
+            url: testApiUrl,
+            headers: { 'Content-Type': 'application/json' },
+          },
+        },
+      });
+
+      expect(ds.schema).toEqual(getMockSchema());
+      expect(ds.getResolvedRecords()).toEqual([
+        { ...blogRecords[0], author: userRecords[0] },
+        { ...blogRecords[1], author: userRecords[1] },
+        blogRecords[2],
+      ]);
     });
   });
 });
