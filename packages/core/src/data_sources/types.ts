@@ -54,67 +54,66 @@ export enum DataFieldPrimitiveType {
   boolean = 'boolean',
   date = 'date',
   json = 'json',
-  reference = 'reference',
+  relation = 'relation',
 }
 
-export type BaseFieldType =
-  | { type: DataFieldPrimitiveType.string }
-  | { type: DataFieldPrimitiveType.number }
-  | { type: DataFieldPrimitiveType.boolean }
-  | { type: DataFieldPrimitiveType.date }
-  | { type: DataFieldPrimitiveType.json }
-  | {
-      type: DataFieldPrimitiveType.reference;
-      target: string;
-      targetKey?: string;
-      isMany?: boolean;
-    };
+export interface DataFieldSchemaBase<T = unknown> {
+  default?: T;
+  description?: string;
+  label?: string;
+  [key: string]: unknown;
+  // order?: number;
+  // primary?: boolean;
+  // required?: boolean;
+  // unique?: boolean;
+  // validate?: (value: T, record: Record<string, any>) => boolean;
+}
 
-export interface DataFieldReferenceProps {
-  /** The target data source ID or name this field references */
+export interface DataFieldSchemaString extends DataFieldSchemaBase<string> {
+  type: DataFieldPrimitiveType.string;
+  enum?: string[];
+}
+
+export interface DataFieldSchemaNumber extends DataFieldSchemaBase<number> {
+  type: DataFieldPrimitiveType.number;
+}
+
+export interface DataFieldSchemaBoolean extends DataFieldSchemaBase<boolean> {
+  type: DataFieldPrimitiveType.boolean;
+}
+
+export interface DataFieldSchemaDate extends DataFieldSchemaBase<Date> {
+  type: DataFieldPrimitiveType.date;
+}
+
+export interface DataFieldSchemaJSON extends DataFieldSchemaBase<any> {
+  type: DataFieldPrimitiveType.json;
+}
+
+export interface DataFieldSchemaRelation extends DataFieldSchemaBase {
+  type: DataFieldPrimitiveType.relation;
+  /**
+   * The target data source ID
+   */
   target: string;
-
-  /** Optional key in the target data source */
-  targetKey?: string;
-
-  /** Relation type: one-to-one or one-to-many */
+  /**
+   * The target field in the data source
+   */
+  targetField?: string;
   isMany?: boolean;
 }
 
-export interface DataFieldSchema<T = any> {
-  type: DataFieldPrimitiveType | BaseFieldType;
-
-  /** Marks the field as the primary key (implies unique) */
-  primary?: boolean;
-
-  /** Field must be present in all records */
-  required?: boolean;
-
-  /** Value must be unique across all records */
-  unique?: boolean;
-
-  /** Default value when not provided in record */
-  default?: T;
-
-  /** Restrict allowed values */
-  enum?: T[];
-
-  /** Custom validator returning true if valid */
-  validate?: (value: T, record: Record<string, any>) => boolean;
-
-  /** Optional description, used for UI or docs */
-  description?: string;
-
-  /** Optional label, used for UI or docs */
-  label?: string;
-
-  /** Optional field order for rendering */
-  order?: number;
-}
+export type DataFieldSchemas =
+  | DataFieldSchemaString
+  | DataFieldSchemaNumber
+  | DataFieldSchemaBoolean
+  | DataFieldSchemaDate
+  | DataFieldSchemaJSON
+  | DataFieldSchemaRelation;
 
 export interface DataSourceType<DR extends DataRecordProps> extends BaseDataSource {
   records: DataRecords<DR>;
-  schema?: Record<string, DataFieldSchema>;
+  schema: Record<keyof DR, DataFieldSchemas | undefined>;
 }
 export interface DataSourceProps<DR extends DataRecordProps> extends BaseDataSource {
   records?: DataRecords<DR> | DataRecord<DR>[] | DR[];

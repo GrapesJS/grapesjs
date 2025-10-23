@@ -29,7 +29,14 @@
  * @extends {Model<DataSourceProps>}
  */
 
-import { AddOptions, collectionEvents, CombinedModelConstructorOptions, Model, RemoveOptions } from '../../common';
+import {
+  AddOptions,
+  collectionEvents,
+  CombinedModelConstructorOptions,
+  Model,
+  RemoveOptions,
+  SetOptions,
+} from '../../common';
 import EditorModel from '../../editor/model/Editor';
 import { DataSourceTransformers, DataSourceType, DataSourceProps, DataRecordProps } from '../types';
 import DataRecord from './DataRecord';
@@ -68,6 +75,7 @@ export default class DataSource<DRProps extends DataRecordProps = DataRecordProp
   constructor(props: DataSourceProps<DRProps>, opts: DataSourceOptions) {
     super(
       {
+        schema: {},
         ...props,
         records: [],
       } as unknown as DataSourceType<DRProps>,
@@ -92,6 +100,16 @@ export default class DataSource<DRProps extends DataRecordProps = DataRecordProp
    */
   get records() {
     return this.attributes.records as NonNullable<DataRecords<DRProps>>;
+  }
+
+  /**
+   * Retrieves the collection of records associated with this data source.
+   *
+   * @returns {DataRecords<DRProps>} The collection of data records.
+   * @name records
+   */
+  get schema() {
+    return this.attributes.schema!;
   }
 
   /**
@@ -180,6 +198,25 @@ export default class DataSource<DRProps extends DataRecordProps = DataRecordProp
     records.forEach((record) => {
       this.records.add(record);
     });
+  }
+
+  /**
+   * Update the schema.
+   * @example
+   * dataSource.upSchema({ name: { type: 'string' } });
+   */
+  upSchema(schema: Partial<typeof this.schema>, opts?: SetOptions) {
+    this.set('schema', { ...this.schema, ...schema }, opts);
+  }
+
+  /**
+   * Get schema field definition.
+   * @example
+   * const fieldSchema = dataSource.getSchemaField('name');
+   * fieldSchema.type; // 'string'
+   */
+  getSchemaField(fieldKey: keyof DRProps) {
+    return this.schema[fieldKey];
   }
 
   private handleChanges(m: any, c: any, o: any) {
