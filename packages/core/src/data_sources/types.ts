@@ -1,6 +1,7 @@
-import { Model, Collection, ObjectAny } from '../common';
+import { Model, Collection, ObjectAny, AddOptions, RemoveOptions } from '../common';
 import DataRecord from './model/DataRecord';
 import DataRecords from './model/DataRecords';
+import DataSource from './model/DataSource';
 import DataVariable, { DataVariableProps } from './model/DataVariable';
 import { DataConditionProps, DataCondition } from './model/conditional_variables/DataCondition';
 
@@ -175,6 +176,8 @@ export type DeepPartialDot<T> = {
       : never;
 };
 
+export type DataSourceEvent = `${DataSourcesEvents}`;
+
 /**{START_EVENTS}*/
 export enum DataSourcesEvents {
   /**
@@ -242,6 +245,12 @@ export enum DataSourcesEvents {
   all = 'data',
 }
 /**{END_EVENTS}*/
+
+export interface DataSourcesEventCallback {
+  [DataSourcesEvents.add]: [DataSource, AddOptions];
+  [DataSourcesEvents.remove]: [DataSource, RemoveOptions];
+  [DataSourcesEvents.update]: [DataSource, AddOptions];
+}
 
 // need this to avoid the TS documentation generator to break
 export default DataSourcesEvents;

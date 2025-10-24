@@ -4,6 +4,7 @@ import { BlocksEventCallback } from '../block_manager/types';
 import { CanvasEvent } from '../canvas';
 import { CommandEvent } from '../commands';
 import { LiteralUnion } from '../common';
+import { DataSourceEvent, DataSourcesEventCallback } from '../data_sources/types';
 import { ComponentEvent } from '../dom_components';
 import { KeymapEvent } from '../keymaps';
 import { ModalEvent } from '../modal_dialog';
@@ -16,6 +17,7 @@ import EditorModel from './model/Editor';
 type GeneralEvent = 'canvasScroll' | 'undo' | 'redo' | 'load' | 'update';
 
 type EditorBuiltInEvents =
+  | DataSourceEvent
   | ComponentEvent
   | BlockEvent
   | AssetEvent
@@ -35,7 +37,7 @@ export type EditorConfigType = EditorConfig & { pStylePrefix?: string };
 
 export type EditorModelParam<T extends keyof EditorModel, N extends number> = Parameters<EditorModel[T]>[N];
 
-export interface EditorEventCallbacks extends BlocksEventCallback {
+export interface EditorEventCallbacks extends BlocksEventCallback, DataSourcesEventCallback {
   [key: string]: any[];
 }
 
