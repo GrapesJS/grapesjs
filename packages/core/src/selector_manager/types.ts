@@ -51,8 +51,6 @@ export enum SelectorEvents {
 }
 /**{END_EVENTS}*/
 
-export type SelectorEvent = `${SelectorEvents}`;
-
 export type SelectorStringObject = string | { name?: string; label?: string; type?: number };
 
 // need this to avoid the TS documentation generator to break

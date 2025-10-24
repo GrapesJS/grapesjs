@@ -84,7 +84,5 @@ export enum StyleManagerEvents {
 }
 /**{END_EVENTS}*/
 
-export type StyleManagerEvent = `${StyleManagerEvents}`;
-
 // need this to avoid the TS documentation generator to break
 export default StyleManagerEvents;

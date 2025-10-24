@@ -81,6 +81,12 @@ Parse HTML string and return the object containing the Component Definition
     *   `options.htmlType` **[String][6]?** [HTML mime type][7] to parse
     *   `options.allowScripts` **[Boolean][8]** Allow `<script>` tags (optional, default `false`)
     *   `options.allowUnsafeAttr` **[Boolean][8]** Allow unsafe HTML attributes (eg. `on*` inline event handlers) (optional, default `false`)
+    *   `options.allowUnsafeAttrValue` **[Boolean][8]** Allow unsafe HTML attribute values (eg. `src="javascript:..."`) (optional, default `false`)
+    *   `options.keepEmptyTextNodes` **[Boolean][8]** Keep whitespaces regardless of whether they are meaningful (optional, default `false`)
+    *   `options.asDocument` **[Boolean][8]?** Treat the HTML string as document
+    *   `options.detectDocument` **([Boolean][8] | [Function][9])?** Indicate if or how to detect if the HTML string should be treated as document
+    *   `options.preParser` **[Function][9]?** How to pre-process the HTML string before parsing
+    *   `options.convertDataGjsAttributesHyphens` **[Boolean][8]** Convert `data-gjs-*` attributes from hyphenated to camelCase (eg. `data-gjs-my-component` to `data-gjs-myComponent`) (optional, default `false`)
 
 ### Examples
 
@@ -113,7 +119,7 @@ const res = Parser.parseCss('.cls { color: red }');
 // [{ ... }]
 ```
 
-Returns **[Array][9]<[Object][5]>** Array containing the result
+Returns **[Array][10]<[Object][5]>** Array containing the result
 
 [1]: https://github.com/GrapesJS/grapesjs/blob/master/src/parser/config/config.ts
 
@@ -131,4 +137,6 @@ Returns **[Array][9]<[Object][5]>** Array containing the result
 
 [8]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean
 
-[9]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array
+[9]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function
+
+[10]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array

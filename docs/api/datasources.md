@@ -44,11 +44,25 @@ editor.on('data:path', ({ dataSource, dataRecord, path }) => {
 editor.on('data:pathSource:SOURCE_ID', ({ dataSource, dataRecord, path }) => { ... });
 ```
 
+* `data:provider:load` Data source provider load.
+
+```javascript
+editor.on('data:provider:load', ({ dataSource, result }) => { ... });
+```
+
+* `data:provider:loadAll` Load of all data source providers (eg. on project load).
+
+```javascript
+editor.on('data:provider:loadAll', () => { ... });
+```
+
 * `data` Catch-all event for all the events mentioned above.
 
 ```javascript
 editor.on('data', ({ event, model, ... }) => { ... });
 ```
+
+* DataSourcesEventCallback
 
 ## Methods
 
@@ -101,14 +115,31 @@ Returns **[DataSource]** Data source.
 
 ## getValue
 
-Get value from data sources by key
+Get value from data sources by path.
 
 ### Parameters
 
-*   `key` **[String][7]** Path to value.
-*   `defValue` **any**&#x20;
+*   `path` **[String][7]** Path to value.
+*   `defValue` **any** Default value if the path is not found.
 
 Returns **any** const value = dsm.getValue('ds\_id.record\_id.propName', 'defaultValue');
+
+## setValue
+
+Set value in data sources by path.
+
+### Parameters
+
+*   `path` **[String][7]** Path to value in format 'dataSourceId.recordId.propName'
+*   `value` **any** Value to set
+
+### Examples
+
+```javascript
+dsm.setValue('ds_id.record_id.propName', 'new value');
+```
+
+Returns **[Boolean][8]** Returns true if the value was set successfully
 
 ## remove
 
@@ -152,7 +183,7 @@ data record, and optional property path.
 
 Store data sources to a JSON object.
 
-Returns **[Array][8]** Stored data sources.
+Returns **[Array][9]** Stored data sources.
 
 ## load
 
@@ -178,4 +209,6 @@ Returns **[Object][6]** Loaded data sources.
 
 [7]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
 
-[8]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array
+[8]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean
+
+[9]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array

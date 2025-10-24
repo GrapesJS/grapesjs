@@ -35,24 +35,56 @@ const editor = grapesjs.init({
 })
 ```
 
-Once the editor is instantiated you can use its API and listen to its events. Before using these methods, you should get the module from the instance.
+Once the editor is instantiated you can use its API. Before using these methods you should get the module from the instance.
 
 ```js
-// Listen to events
-editor.on('selector:add', (selector) => { ... });
-
-// Use the API
 const sm = editor.Selectors;
-sm.add(...);
 ```
 
 ## Available Events
+* `selector:add` Selector added. The Selector is passed as an argument to the callback.
 
-*   `selector:add` - Selector added. The [Selector] is passed as an argument to the callback.
-*   `selector:remove` - Selector removed. The [Selector] is passed as an argument to the callback.
-*   `selector:update` - Selector updated. The [Selector] and the object containing changes are passed as arguments to the callback.
-*   `selector:state` - States changed. An object containing all the available data about the triggered event is passed as an argument to the callback.
-*   `selector` - Catch-all event for all the events mentioned above. An object containing all the available data about the triggered event is passed as an argument to the callback.
+```javascript
+editor.on('selector:add', (selector) => { ... });
+```
+
+* `selector:remove` Selector removed. The Selector is passed as an argument to the callback.
+
+```javascript
+editor.on('selector:remove', (selector) => { ... });
+```
+
+* `selector:remove:before` Before selector remove. The Selector is passed as an argument to the callback.
+
+```javascript
+editor.on('selector:remove:before', (selector) => { ... });
+```
+
+* `selector:update` Selector updated. The Selector and the object containing changes are passed as arguments to the callback.
+
+```javascript
+editor.on('selector:update', (selector, changes) => { ... });
+```
+
+* `selector:state` States changed. An object containing all the available data about the triggered event is passed as an argument to the callback.
+
+```javascript
+editor.on('selector:state', (state) => { ... });
+```
+
+* `selector:custom` Custom selector event. An object containing states, selected selectors, and container is passed as an argument.
+
+```javascript
+editor.on('selector:custom', ({ states, selected, container }) => { ... });
+```
+
+* `selector` Catch-all event for all the events mentioned above. An object containing all the available data about the triggered event is passed as an argument to the callback.
+
+```javascript
+editor.on('selector', ({ event, selector, changes, ... }) => { ... });
+```
+
+* SelectorStringObject
 
 ## Methods
 

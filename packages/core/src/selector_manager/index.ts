@@ -79,7 +79,7 @@ import State from './model/State';
 import { SelectorEvents, SelectorStringObject } from './types';
 import ClassTagsView from './view/ClassTagsView';
 
-export type { SelectorEvent } from './types';
+export type SelectorEvent = `${SelectorEvents}`;
 
 const isId = (str: string) => isString(str) && str[0] == '#';
 const isClass = (str: string) => isString(str) && str[0] == '.';

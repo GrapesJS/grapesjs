@@ -31,6 +31,44 @@ dataSource.addRecord({ id: 'id3', name: 'value3' });
 *   `props` **DataSourceProps** Properties to initialize the data source.
 *   `opts` **DataSourceOptions** Options to initialize the data source.
 
+### hasProvider
+
+Indicates if the data source has a provider for records.
+
+### getResolvedRecords
+
+Retrieves all records from the data source with resolved relations based on the schema.
+
+### upSchema
+
+Update the schema.
+
+#### Parameters
+
+*   `schema` **Partial\<any>**&#x20;
+*   `opts` **SetOptions?**&#x20;
+
+#### Examples
+
+```javascript
+dataSource.upSchema({ name: { type: 'string' } });
+```
+
+### getSchemaField
+
+Get schema field definition.
+
+#### Parameters
+
+*   `fieldKey` **any**&#x20;
+
+#### Examples
+
+```javascript
+const fieldSchema = dataSource.getSchemaField('name');
+fieldSchema.type; // 'string'
+```
+
 ## defaults
 
 Returns the default properties for the data source.
@@ -48,6 +86,12 @@ If the `records` property is not an instance of `DataRecords`, it will be conver
 
 *   `props` **DataSourceProps\<DRProps>** Properties to initialize the data source.
 *   `opts` **DataSourceOptions** Options to initialize the data source.
+
+## records
+
+Retrieves the collection of records associated with this data source.
+
+Returns **DataRecords\<DRProps>** The collection of data records.
 
 ## records
 
