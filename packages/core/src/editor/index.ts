@@ -44,43 +44,49 @@
  */
 import { IBaseModule } from '../abstract/Module';
 import AssetManager from '../asset_manager';
-import { AssetEvent } from '../asset_manager/types';
-import BlockManager, { BlockEvent } from '../block_manager';
-import CanvasModule, { CanvasEvent } from '../canvas';
+import BlockManager from '../block_manager';
+import CanvasModule from '../canvas';
 import CodeManagerModule from '../code_manager';
-import CommandsModule, { CommandEvent } from '../commands';
-import { AddOptions, EventHandler, LiteralUnion } from '../common';
+import CommandsModule from '../commands';
+import { AddOptions, EventHandler } from '../common';
 import CssComposer from '../css_composer';
 import CssRule from '../css_composer/model/CssRule';
 import CssRules from '../css_composer/model/CssRules';
 import DataSourceManager from '../data_sources';
 import DeviceManager from '../device_manager';
-import ComponentManager, { ComponentEvent } from '../dom_components';
+import ComponentManager from '../dom_components';
 import Component from '../dom_components/model/Component';
 import Components from '../dom_components/model/Components';
 import ComponentWrapper from '../dom_components/model/ComponentWrapper';
 import { AddComponentsOption, ComponentAdd, DragMode } from '../dom_components/model/types';
 import StyleableModel from '../domain_abstract/model/StyleableModel';
 import I18nModule from '../i18n';
-import KeymapsModule, { KeymapEvent } from '../keymaps';
-import ModalModule, { ModalEvent } from '../modal_dialog';
+import KeymapsModule from '../keymaps';
+import ModalModule from '../modal_dialog';
 import LayerManager from '../navigator';
 import PageManager from '../pages';
 import PanelManager from '../panels';
 import ParserModule from '../parser';
 import { CustomParserCss } from '../parser/config/config';
-import RichTextEditorModule, { RichTextEditorEvent } from '../rich_text_editor';
+import RichTextEditorModule from '../rich_text_editor';
 import { CustomRTE } from '../rich_text_editor/config/config';
-import SelectorManager, { SelectorEvent } from '../selector_manager';
-import StorageManager, { ProjectData, StorageEvent, StorageOptions } from '../storage_manager';
-import StyleManager, { StyleManagerEvent } from '../style_manager';
+import SelectorManager from '../selector_manager';
+import StorageManager, { ProjectData, StorageOptions } from '../storage_manager';
+import StyleManager from '../style_manager';
 import TraitManager from '../trait_manager';
 import UndoManagerModule from '../undo_manager';
 import UtilsModule from '../utils';
 import html from '../utils/html';
 import defConfig, { EditorConfig, EditorConfigKeys } from './config/config';
 import EditorModel, { EditorLoadOptions } from './model/Editor';
-import { EditorEvents } from './types';
+import {
+  EditorConfigType,
+  EditorEvent,
+  EditorEventCallbacks,
+  EditorEventHandler,
+  EditorEvents,
+  EditorModelParam,
+} from './types';
 import EditorView from './view/EditorView';
 
 export type ParsedRule = {
@@ -89,28 +95,6 @@ export type ParsedRule = {
   atRule?: string;
   params?: string;
 };
-
-type GeneralEvent = 'canvasScroll' | 'undo' | 'redo' | 'load' | 'update';
-
-type EditorBuiltInEvents =
-  | ComponentEvent
-  | BlockEvent
-  | AssetEvent
-  | KeymapEvent
-  | StyleManagerEvent
-  | StorageEvent
-  | CanvasEvent
-  | SelectorEvent
-  | RichTextEditorEvent
-  | ModalEvent
-  | CommandEvent
-  | GeneralEvent;
-
-type EditorEvent = LiteralUnion<EditorBuiltInEvents, string>;
-
-type EditorConfigType = EditorConfig & { pStylePrefix?: string };
-
-type EditorModelParam<T extends keyof EditorModel, N extends number> = Parameters<EditorModel[T]>[N];
 
 export type EditorParam<T extends keyof Editor, N extends number> = Parameters<Editor[T]>[N];
 
@@ -733,8 +717,8 @@ export default class Editor implements IBaseModule<EditorConfig> {
    * @param  {Function} callback Callback function
    * @return {this}
    */
-  on(event: EditorEvent, callback: EventHandler) {
-    this.em.on(event, callback);
+  on<E extends EditorEvent>(event: E, callback: EditorEventHandler<E>) {
+    this.em.on(event as string, callback);
     return this;
   }
 
@@ -744,8 +728,8 @@ export default class Editor implements IBaseModule<EditorConfig> {
    * @param  {Function} callback Callback function
    * @return {this}
    */
-  once(event: EditorEvent, callback: EventHandler) {
-    this.em.once(event, callback);
+  once<E extends EditorEvent>(event: E, callback: EditorEventHandler<E>) {
+    this.em.once(event as string, callback);
     return this;
   }
 
@@ -755,8 +739,8 @@ export default class Editor implements IBaseModule<EditorConfig> {
    * @param  {Function} callback Callback function
    * @return {this}
    */
-  off(event: EditorEvent, callback: EventHandler) {
-    this.em.off(event, callback);
+  off<E extends EditorEvent>(event: E, callback: EditorEventHandler<E>) {
+    this.em.off(event as string, callback);
     return this;
   }
 
@@ -765,8 +749,11 @@ export default class Editor implements IBaseModule<EditorConfig> {
    * @param  {string} event Event to trigger
    * @return {this}
    */
-  trigger(event: EditorEvent, ...args: any[]) {
-    this.em.trigger.apply(this.em, [event, ...args]);
+  trigger<E extends EditorEvent>(
+    event: E,
+    ...args: E extends keyof EditorEventCallbacks ? EditorEventCallbacks[E] : any[]
+  ) {
+    this.em.trigger.apply(this.em, [event as string, ...args]);
     return this;
   }
 
