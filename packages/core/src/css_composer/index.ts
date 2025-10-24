@@ -107,89 +107,9 @@ export default class CssComposer extends ItemManagerModule<CssComposerConfig & {
     this._setupListeners();
   }
 
-  /**
-   * Initialize event listeners for the rules collection.
-   */
-  private _setupListeners() {
-    this.em.listenTo(this.rules, 'add', this._onRuleAdd.bind(this));
-    this.em.listenTo(this.rules, 'remove', this._onRuleRemove.bind(this));
-    this.em.listenTo(this.rules, 'reset', this._onRulesReset.bind(this));
-    this.em.listenTo(this.rules, 'change:selectors change:state change:mediaText', this._onRuleKeyChange.bind(this));
-  }
-
-  /**
-   * Handles the 'add' event on the rules collection.
-   * @param {CssRule} rule The added rule.
-   */
-  private _onRuleAdd(rule: CssRule) {
-    this._cacheRule(rule);
-  }
-
-  /**
-   * Handles the 'remove' event on the rules collection.
-   * @param {CssRule} rule The removed rule.
-   */
-  private _onRuleRemove(rule: CssRule) {
-    this._uncacheRule(rule);
-  }
-
-  /**
-   * Handles the 'reset' event on the rules collection.
-   * Clears the cache and repopulates it with the new set of rules.
-   * @param {CssRules} rules The new collection of rules.
-   */
-  private _onRulesReset(rules: CssRules) {
-    this._clearRuleCache();
-    rules.each((rule) => this._cacheRule(rule));
-  }
-
-  /**
-   * Handles changes to rule properties that affect the cache key (eg. renaming a selector).
-   * This method finds the old cache entry by its value (the rule instance), removes it,
-   * and then re-caches the rule with its new key.
-   * @param {CssRule} rule The changed rule.
-   */
-  private _onRuleKeyChange(rule: CssRule) {
-    let oldKey: string | undefined;
-    // Find the old cache entry by iterating through the cache values
-    for (const [key, cachedRule] of (this._ruleCache as any).entries()) {
-      if (cachedRule === rule) {
-        oldKey = key;
-        break;
-      }
-    }
-
-    if (oldKey) {
-      this._ruleCache.delete(oldKey);
-    }
-
-    this._cacheRule(rule);
-  }
-
-  private _makeCacheKey(selectors: any, state?: string, width?: string) {
-    const sels = Array.isArray(selectors)
-      ? selectors.map((s) => (typeof s === 'string' ? s : s.toString())).join(',')
-      : typeof selectors === 'string'
-        ? selectors
-        : selectors?.toString() || '';
-    return `${sels}|${state || ''}|${width || ''}`;
-  }
-
-  /** Add rule to cache */
-  private _cacheRule(rule: CssRule) {
-    const key = this._makeCacheKey(rule.getSelectorsString(), rule.get('state'), rule.get('mediaText'));
-    this._ruleCache.set(key, rule);
-  }
-
-  /** Remove a rule from cache */
-  private _uncacheRule(rule: CssRule) {
-    const key = this._makeCacheKey(rule.getSelectorsString(), rule.get('state'), rule.get('mediaText'));
-    this._ruleCache.delete(key);
-  }
-
-  /** Clear all cache entries */
-  private _clearRuleCache() {
-    this._ruleCache.clear();
+  protected override _setupListeners() {
+    super._setupListeners();
+    this.em.listenTo(this.rules, 'change:selectors change:state change:mediaText', this._onItemKeyChange.bind(this));
   }
 
   /**
@@ -197,9 +117,8 @@ export default class CssComposer extends ItemManagerModule<CssComposerConfig & {
    * @private
    */
   onLoad() {
-    this._setupListeners();
     this.rules.add(this.config.rules, { silent: true });
-    this._onRulesReset(this.rules);
+    this._onItemsReset(this.rules as any);
   }
 
   /**
@@ -265,8 +184,6 @@ export default class CssComposer extends ItemManagerModule<CssComposerConfig & {
     rule.get('selectors').add(selectors, addOpts);
     this.rules.add(rule, addOpts);
 
-    this._cacheRule(rule);
-
     return rule;
   }
 
@@ -308,7 +225,7 @@ export default class CssComposer extends ItemManagerModule<CssComposerConfig & {
     }
 
     const rule = this.rules.find((r) => r.compare(slc, state, width, ruleProps)) || null;
-    if (rule) this._cacheRule(rule);
+    if (rule) this._cacheItem(rule);
     return rule;
   }
 
@@ -583,7 +500,6 @@ export default class CssComposer extends ItemManagerModule<CssComposerConfig & {
   remove(rule: string | CssRule, opts?: any) {
     const toRemove = isString(rule) ? this.getRules(rule) : rule;
     const arr = Array.isArray(toRemove) ? toRemove : [toRemove];
-    arr.forEach((r) => this._uncacheRule(r));
     const result = this.getAll().remove(arr, opts);
     return Array.isArray(result) ? result : [result];
   }
@@ -593,7 +509,7 @@ export default class CssComposer extends ItemManagerModule<CssComposerConfig & {
    * @return {this}
    */
   clear(opts = {}) {
-    this._clearRuleCache();
+    this._clearItemCache();
     this.getAll().reset([], opts);
     return this;
   }
