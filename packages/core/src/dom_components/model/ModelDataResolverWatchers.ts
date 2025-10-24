@@ -34,55 +34,29 @@ export class ModelDataResolverWatchers<T extends StyleableModelProperties> {
   }
 
   addProps(props: ObjectAny, options: DataWatchersOptions = {}) {
-    const dataValues = props[keyDataValues] || {};
-    const skipOverrideUpdates = options.skipWatcherUpdates || options.fromDataSource;
+    const dataValues = props[keyDataValues] ?? {};
 
-    const filteredProps: ObjectAny = {};
-    for (const k in props) {
-      if (k !== 'components' && k !== 'dataResolver' && k !== keyDataValues) {
-        filteredProps[k] = props[k];
-      }
-    }
-
-    const evaluatedProps = props;
-    const propDataValues = dataValues.props || {};
-    const addedValues = this.propertyWatcher.addDataValues(Object.assign({}, filteredProps, propDataValues), options);
-
-    for (const key in addedValues) {
-      evaluatedProps[key] = addedValues[key];
-    }
+    const filteredProps = this.filterProps(props);
+    const evaluatedProps = {
+      ...props,
+      ...this.propertyWatcher.addDataValues({ ...filteredProps, ...dataValues.props }, options),
+    };
 
     if (this.shouldProcessProp('attributes', props, dataValues)) {
-      evaluatedProps.attributes = this.attributeWatcher.setDataValues(
-        Object.assign({}, props.attributes || {}, dataValues.attributes || {}),
-        options,
-      );
+      evaluatedProps.attributes = this.processAttributes(props, dataValues, options);
     }
 
     if (this.shouldProcessProp('style', props, dataValues)) {
-      const baseStyle = props.style;
-      if (typeof baseStyle === 'string') {
-        this.styleWatcher.removeListeners();
-        evaluatedProps.style = baseStyle;
-      } else {
-        evaluatedProps.style = this.styleWatcher.setDataValues(
-          Object.assign({}, baseStyle || {}, dataValues.style || {}),
-          options,
-        );
-      }
+      evaluatedProps.style = this.processStyles(props, dataValues, options);
     }
 
+    const skipOverrideUpdates = options.skipWatcherUpdates || options.fromDataSource;
     if (!skipOverrideUpdates) {
       this.updateSymbolOverride();
-
-      const propResolvers = this.propertyWatcher.getAllDataResolvers();
-      const styleResolvers = this.styleWatcher.getAllDataResolvers();
-      const attrResolvers = this.attributeWatcher.getAllDataResolvers();
-
       evaluatedProps[keyDataValues] = {
-        props: propResolvers,
-        style: styleResolvers,
-        attributes: attrResolvers,
+        props: this.propertyWatcher.getAllDataResolvers(),
+        style: this.styleWatcher.getAllDataResolvers(),
+        attributes: this.attributeWatcher.getAllDataResolvers(),
       };
     }
 
