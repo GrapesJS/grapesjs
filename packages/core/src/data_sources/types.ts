@@ -1,9 +1,9 @@
-import { Model, Collection, ObjectAny, AddOptions, RemoveOptions } from '../common';
+import { AddOptions, Collection, Model, ObjectAny, RemoveOptions, SetOptions } from '../common';
 import DataRecord from './model/DataRecord';
 import DataRecords from './model/DataRecords';
 import DataSource from './model/DataSource';
 import DataVariable, { DataVariableProps } from './model/DataVariable';
-import { DataConditionProps, DataCondition } from './model/conditional_variables/DataCondition';
+import { DataCondition, DataConditionProps } from './model/conditional_variables/DataCondition';
 
 export type DataResolver = DataVariable | DataCondition;
 export type DataResolverProps = DataVariableProps | DataConditionProps;
@@ -250,6 +250,16 @@ export interface DataSourcesEventCallback {
   [DataSourcesEvents.add]: [DataSource, AddOptions];
   [DataSourcesEvents.remove]: [DataSource, RemoveOptions];
   [DataSourcesEvents.update]: [DataSource, AddOptions];
+  [DataSourcesEvents.path]: [{ dataSource: DataSource; dataRecord: DataRecord; path: string; options: SetOptions }];
+  [DataSourcesEvents.pathSource]: [
+    { dataSource: DataSource; dataRecord: DataRecord; path: string; options: SetOptions },
+  ];
+  [DataSourcesEvents.providerLoad]: [{ dataSource: DataSource; result: DataSourceProviderResult }];
+  [DataSourcesEvents.providerLoadBefore]: [{ dataSource: DataSource }];
+  [DataSourcesEvents.providerLoadError]: [{ dataSource: DataSource; error: Error }];
+  [DataSourcesEvents.providerLoadAll]: [];
+  [DataSourcesEvents.providerLoadAllBefore]: [];
+  [DataSourcesEvents.all]: [{ event: DataSourceEvent; model?: Model; options: ObjectAny }];
 }
 
 // need this to avoid the TS documentation generator to break
