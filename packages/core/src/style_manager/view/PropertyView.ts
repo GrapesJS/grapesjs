@@ -257,53 +257,22 @@ export default class PropertyView extends View<Property> {
     const type = model.getType();
     const cls = model.get('className') || '';
     const className = `${pfx}property`;
+    // Support old integer classname
     const clsType = type === 'number' ? `${pfx}${type} ${pfx}integer` : `${pfx}${type}`;
 
-    if (this.createdEl) {
-      this.__destroyFn?.(this._getClbOpts());
-      this.createdEl = undefined;
-    }
+    this.createdEl && this.__destroyFn(this._getClbOpts());
+    $el.empty().append(this.template(model));
+    $el.find('[data-sm-label]').append(this.templateLabel(model));
+    const create = this.create && this.create.bind(this);
+    this.createdEl = create && create(this._getClbOpts());
+    $el.find('[data-sm-fields]').append(this.createdEl || this.templateInput(model));
 
-    const mainHtml = this.template(model);
-    $el.html(mainHtml);
+    el.className = `${className} ${clsType} ${className}__${name} ${cls}`.trim();
+    el.className += model.isFull() ? ` ${className}--full` : '';
 
-    const labelContainer = el.querySelector('[data-sm-label]');
-    const fieldsContainer = el.querySelector('[data-sm-fields]');
-
-    if (labelContainer) {
-      const labelHtml = this.templateLabel(model);
-      labelContainer.insertAdjacentHTML('beforeend', labelHtml);
-    }
-
-    const create = this.create;
-    const opts = this._getClbOpts();
-    let fieldEl: HTMLElement | string | undefined;
-
-    if (create) {
-      fieldEl = create.call(this, opts);
-    }
-
-    if (fieldsContainer) {
-      if (fieldEl) {
-        if (typeof fieldEl === 'string') {
-          fieldsContainer.insertAdjacentHTML('beforeend', fieldEl);
-        } else {
-          fieldsContainer.appendChild(fieldEl);
-        }
-      } else {
-        const inputHtml = this.templateInput(model);
-        fieldsContainer.insertAdjacentHTML('beforeend', inputHtml);
-      }
-    }
-
-    const isFull = model.isFull();
-    el.className = `${className} ${clsType} ${className}__${name} ${cls}${isFull ? ` ${className}--full` : ''}`.trim();
-
-    if (this.onRender) this.onRender();
-
-    const value = model.getValue?.();
-    if (value !== undefined) this.setValue(value);
-
+    const onRender = this.onRender && this.onRender.bind(this);
+    onRender && onRender();
+    this.setValue(model.getValue());
     return this;
   }
 
