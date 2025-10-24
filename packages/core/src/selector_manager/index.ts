@@ -29,23 +29,13 @@
  * })
  * ```
  *
- * Once the editor is instantiated you can use its API and listen to its events. Before using these methods, you should get the module from the instance.
+ * Once the editor is instantiated you can use its API. Before using these methods you should get the module from the instance.
  *
  * ```js
- * // Listen to events
- * editor.on('selector:add', (selector) => { ... });
- *
- * // Use the API
  * const sm = editor.Selectors;
- * sm.add(...);
  * ```
  *
- * ## Available Events
- * * `selector:add` - Selector added. The [Selector] is passed as an argument to the callback.
- * * `selector:remove` - Selector removed. The [Selector] is passed as an argument to the callback.
- * * `selector:update` - Selector updated. The [Selector] and the object containing changes are passed as arguments to the callback.
- * * `selector:state` - States changed. An object containing all the available data about the triggered event is passed as an argument to the callback.
- * * `selector` - Catch-all event for all the events mentioned above. An object containing all the available data about the triggered event is passed as an argument to the callback.
+ * {REPLACE_EVENTS}
  *
  * ## Methods
  * * [getConfig](#getconfig)
@@ -73,46 +63,26 @@
  * @module Selectors
  */
 
-import { isString, debounce, isObject, isArray, bindAll } from 'underscore';
+import { bindAll, debounce, isArray, isObject, isString } from 'underscore';
+import { ItemManagerModule } from '../abstract/Module';
+import { Collection, Debounced, Model, RemoveOptions, SetOptions } from '../common';
+import Component from '../dom_components/model/Component';
+import { ComponentsEvents } from '../dom_components/types';
+import StyleableModel from '../domain_abstract/model/StyleableModel';
+import EditorModel from '../editor/model/Editor';
+import { StyleModuleParam } from '../style_manager';
 import { isComponent, isRule } from '../utils/mixins';
-import { Model, Collection, RemoveOptions, SetOptions, Debounced } from '../common';
 import defConfig, { SelectorManagerConfig } from './config/config';
 import Selector from './model/Selector';
 import Selectors from './model/Selectors';
 import State from './model/State';
+import { SelectorEvents, SelectorStringObject } from './types';
 import ClassTagsView from './view/ClassTagsView';
-import EditorModel from '../editor/model/Editor';
-import Component from '../dom_components/model/Component';
-import { ItemManagerModule } from '../abstract/Module';
-import { StyleModuleParam } from '../style_manager';
-import StyleableModel from '../domain_abstract/model/StyleableModel';
-import { ComponentsEvents } from '../dom_components/types';
 
-export type SelectorEvent = 'selector:add' | 'selector:remove' | 'selector:update' | 'selector:state' | 'selector';
+export type { SelectorEvent } from './types';
 
 const isId = (str: string) => isString(str) && str[0] == '#';
 const isClass = (str: string) => isString(str) && str[0] == '.';
-
-export const evAll = 'selector';
-export const evPfx = `${evAll}:`;
-export const evAdd = `${evPfx}add`;
-export const evUpdate = `${evPfx}update`;
-export const evRemove = `${evPfx}remove`;
-export const evRemoveBefore = `${evRemove}:before`;
-export const evCustom = `${evPfx}custom`;
-export const evState = `${evPfx}state`;
-
-const selectorEvents = {
-  all: evAll,
-  update: evUpdate,
-  add: evAdd,
-  remove: evRemove,
-  removeBefore: evRemoveBefore,
-  state: evState,
-  custom: evCustom,
-};
-
-type SelectorStringObject = string | { name?: string; label?: string; type?: number };
 
 export default class SelectorManager extends ItemManagerModule<SelectorManagerConfig & { pStylePrefix?: string }> {
   Selector = Selector;
@@ -124,7 +94,7 @@ export default class SelectorManager extends ItemManagerModule<SelectorManagerCo
   selectorTags?: ClassTagsView;
   selected: Selectors;
   all: Selectors;
-  events!: typeof selectorEvents;
+  events = SelectorEvents;
   storageKey = '';
   __update: Debounced;
   __ctn?: HTMLElement;
@@ -137,9 +107,9 @@ export default class SelectorManager extends ItemManagerModule<SelectorManagerCo
    */
 
   constructor(em: EditorModel) {
-    super(em, 'SelectorManager', new Selectors([]), selectorEvents, defConfig(), { skipListen: true });
+    super(em, 'SelectorManager', new Selectors([]), SelectorEvents, defConfig(), { skipListen: true });
     bindAll(this, '__updateSelectedByComponents');
-    const { config } = this;
+    const { config, events } = this;
     const ppfx = config.pStylePrefix;
     if (ppfx) config.stylePrefix = ppfx + config.stylePrefix;
 
@@ -154,9 +124,9 @@ export default class SelectorManager extends ItemManagerModule<SelectorManagerCo
     this.__update = debounce(() => this.__trgCustom(), 0);
     this.__initListen({
       collections: [this.states, this.selected],
-      propagate: [{ entity: this.states, event: this.events.state }],
+      propagate: [{ entity: this.states, event: events.state }],
     });
-    em.on('change:state', (m, value) => em.trigger(evState, value));
+    em.on('change:state', (m, value) => em.trigger(events.state, value));
     this.model.on('change:cFirst', (m, value) => em.trigger('selector:type', value));
     const eventCmpUpdateCls = `${ComponentsEvents.update}:classes`;
     em.on(`component:toggled ${eventCmpUpdateCls}`, this.__updateSelectedByComponents);

@@ -9,7 +9,7 @@
  * })
  * ```
  *
- * Once the editor is instantiated you can use its API. Before using these methods you should get the module from the instance
+ * Once the editor is instantiated you can use its API. Before using these methods you should get the module from the instance.
  *
  * ```js
  * const layers = editor.Layers;
