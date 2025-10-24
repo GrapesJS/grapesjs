@@ -179,6 +179,7 @@ describe('DataSource', () => {
     const addBlogsWithProvider = () => {
       return dsm.add({
         id: 'blogs',
+        name: 'My blogs',
         provider: {
           get: getProviderBlogsGet(),
         },
@@ -232,8 +233,11 @@ describe('DataSource', () => {
       expect(ds.getRecords().length).toBe(0);
     });
 
-    test('ensure records loaded from the provider are not persisted', async () => {
+    test('records loaded from the provider are not persisted', async () => {
       const ds = addBlogsWithProvider();
+      const eventLoad = jest.fn();
+      em.on(dsm.events.providerLoad, eventLoad);
+
       await ds.loadProvider();
 
       expect(editor.getProjectData().dataSources).toEqual([
@@ -241,12 +245,51 @@ describe('DataSource', () => {
         { id: 'users', records: userRecords },
         {
           id: 'blogs',
+          name: 'My blogs',
           schema: getMockSchema(),
-          provider: {
-            get: getProviderBlogsGet(),
-          },
+          provider: { get: getProviderBlogsGet() },
         },
       ]);
+      expect(eventLoad).toHaveBeenCalledTimes(1);
+      expect(eventLoad).toHaveBeenCalledWith({
+        dataSource: ds,
+        result: getMockProviderResponse(),
+      });
+    });
+
+    test('load providers on project load', (done) => {
+      dsm.getConfig().autoloadProviders = true;
+
+      editor.on(dsm.events.providerLoadAll, () => {
+        expect(dsm.get('blogs').getResolvedRecords()).toEqual([
+          { ...blogRecords[0], author: userRecords[0] },
+          { ...blogRecords[1], author: userRecords[1] },
+          blogRecords[2],
+        ]);
+
+        expect(editor.getProjectData().dataSources).toEqual([
+          { id: 'categories', records: categoryRecords },
+          { id: 'users', records: userRecords },
+          {
+            id: 'blogs',
+            schema: getMockSchema(),
+            provider: { get: testApiUrl },
+          },
+        ]);
+
+        done();
+      });
+
+      editor.loadProjectData({
+        dataSources: [
+          { id: 'categories', records: categoryRecords },
+          { id: 'users', records: userRecords },
+          {
+            id: 'blogs',
+            provider: { get: testApiUrl },
+          },
+        ],
+      });
     });
   });
 });

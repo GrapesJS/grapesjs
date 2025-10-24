@@ -26,19 +26,20 @@ import { ItemManagerModule, ModuleConfig } from '../abstract/Module';
 import { AddOptions, collectionEvents, ObjectAny, RemoveOptions } from '../common';
 import EditorModel from '../editor/model/Editor';
 import { get, set, stringToPath } from '../utils/mixins';
+import defConfig, { DataSourcesConfig } from './config/config';
 import DataRecord from './model/DataRecord';
 import DataSource from './model/DataSource';
 import DataSources from './model/DataSources';
 import { DataSourcesEvents, DataSourceProps, DataRecordProps } from './types';
 import { Events } from 'backbone';
 
-export default class DataSourceManager extends ItemManagerModule<ModuleConfig, DataSources> {
+export default class DataSourceManager extends ItemManagerModule<DataSourcesConfig & ModuleConfig, DataSources> {
   storageKey = 'dataSources';
   events = DataSourcesEvents;
   destroy(): void {}
 
   constructor(em: EditorModel) {
-    super(em, 'DataSources', new DataSources([], em), DataSourcesEvents);
+    super(em, 'DataSources', new DataSources([], em), DataSourcesEvents, defConfig());
     Object.assign(this, Events); // Mixin Backbone.Events
   }
 
@@ -188,7 +189,24 @@ export default class DataSourceManager extends ItemManagerModule<ModuleConfig, D
    * @returns {Object} Loaded data sources.
    */
   load(data: any) {
-    return this.loadProjectData(data);
+    const { config, all, events, em } = this;
+    const result = this.loadProjectData(data);
+
+    if (config.autoloadProviders) {
+      const dsWithProviders = all.filter((ds) => ds.hasProvider);
+
+      if (!!dsWithProviders.length) {
+        const loadProviders = async () => {
+          em.trigger(events.providerLoadAllBefore);
+          const providersToLoad = dsWithProviders.map((ds) => ds.loadProvider());
+          await Promise.all(providersToLoad);
+          em.trigger(events.providerLoadAll);
+        };
+        loadProviders();
+      }
+    }
+
+    return result;
   }
 
   postLoad() {

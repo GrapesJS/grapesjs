@@ -46,6 +46,8 @@ interface BaseDataSource {
    * If true will store the data source in the GrapesJS project.json file.
    */
   skipFromStorage?: boolean;
+
+  [key: string]: unknown;
 }
 
 export enum DataFieldPrimitiveType {
@@ -214,6 +216,23 @@ export enum DataSourcesEvents {
    * editor.on('data:pathSource:SOURCE_ID', ({ dataSource, dataRecord, path }) => { ... });
    */
   pathSource = 'data:pathSource:',
+
+  /**
+   * @event `data:provider:load` Data source provider load.
+   * @example
+   * editor.on('data:provider:load', ({ dataSource, result }) => { ... });
+   */
+  providerLoad = 'data:provider:load',
+  providerLoadBefore = 'data:provider:load:before',
+  providerLoadError = 'data:provider:load:error',
+
+  /**
+   * @event `data:provider:loadAll` Load of all data source providers (eg. on project load).
+   * @example
+   * editor.on('data:provider:loadAll', () => { ... });
+   */
+  providerLoadAll = 'data:provider:loadAll',
+  providerLoadAllBefore = 'data:provider:loadAll:before',
 
   /**
    * @event `data` Catch-all event for all the events mentioned above.

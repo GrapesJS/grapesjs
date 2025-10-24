@@ -133,6 +133,13 @@ export default class DataSource<DRProps extends DataRecordProps = DataRecordProp
   }
 
   /**
+   * Indicates if the data source has a provider for records.
+   */
+  get hasProvider() {
+    return !!this.attributes.provider;
+  }
+
+  /**
    * Handles the `add` event for records in the data source.
    * This method triggers a change event on the newly added record.
    *
@@ -222,7 +229,8 @@ export default class DataSource<DRProps extends DataRecordProps = DataRecordProp
   }
 
   async loadProvider() {
-    const { provider } = this.attributes;
+    const { attributes, em } = this;
+    const { provider } = attributes;
 
     if (!provider) return;
 
@@ -235,15 +243,22 @@ export default class DataSource<DRProps extends DataRecordProps = DataRecordProp
     const { url, method, headers, body } = providerGet;
 
     const fetchProvider = async () => {
+      const dataSource = this;
+
       try {
+        em.trigger(em.DataSources.events.providerLoadBefore, { dataSource });
+
         const response = await fetch(url, { method, headers, body });
         if (!response.ok) throw new Error(await response.text());
-        const providerResult: DataSourceProviderResult = await response.json();
+        const result: DataSourceProviderResult = await response.json();
 
-        if (providerResult?.records) this.setRecords(providerResult.records as any);
-        if (providerResult?.schema) this.upSchema(providerResult.schema);
+        if (result?.records) this.setRecords(result.records as any);
+        if (result?.schema) this.upSchema(result.schema);
+
+        em.trigger(em.DataSources.events.providerLoad, { result, dataSource });
       } catch (error: any) {
-        this.em.logError(error.message);
+        em.logError(error.message);
+        em.trigger(em.DataSources.events.providerLoadError, { dataSource, error });
       }
     };
 
