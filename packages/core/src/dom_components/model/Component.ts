@@ -280,7 +280,6 @@ export default class Component extends StyleableModel<ComponentProperties> {
    * @private
    * @ts-ignore */
   collection!: Components;
-  __traitsInited = false;
 
   constructor(props: ComponentProperties = {}, opt: ComponentOptions) {
     const em = opt.em;
@@ -2098,6 +2097,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
 
   static getNewId(list: ObjectAny) {
     const count = Object.keys(list).length;
+    // Testing 1000000 components with `+ 2` returns 0 collisions
     const ilen = count.toString().length + 2;
     const uid = (Math.random() + 1.1).toString(36).slice(-ilen);
     let newId = `i${uid}`;
@@ -2111,22 +2111,15 @@ export default class Component extends StyleableModel<ComponentProperties> {
 
   static getIncrementId(id: string, list: ObjectAny, opts: { keepIds?: string[] } = {}) {
     const { keepIds = [] } = opts;
-    const keepIdsSet = new Set(keepIds);
-
-    if (keepIdsSet.has(id)) {
-      return id;
-    }
-
-    let newId = id;
-    if (!list[newId]) {
-      return newId;
-    }
-
     let counter = 1;
-    do {
-      counter++;
-      newId = `${id}-${counter}`;
-    } while (list[newId]);
+    let newId = id;
+
+    if (keepIds.indexOf(id) < 0) {
+      while (list[newId]) {
+        counter++;
+        newId = `${id}-${counter}`;
+      }
+    }
 
     return newId;
   }
