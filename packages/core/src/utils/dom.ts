@@ -49,33 +49,21 @@ export const replaceWith = (oldEl: HTMLElement, newEl: HTMLElement) => {
 };
 
 export const appendAtIndex = (parent: HTMLElement | DocumentFragment, child: ChildHTML, index?: number) => {
-  const total = parent.childNodes.length;
-  const at = index == null ? total : index;
+  const { childNodes } = parent;
+  const total = childNodes.length;
+  const at = isUndefined(index) ? total : index;
 
-  if (typeof child === 'string') {
-    const temp = document.createElement('template');
-    temp.innerHTML = child.trim();
-
-    const node = temp.content.childNodes.length === 1 ? temp.content.firstChild! : temp.content;
-
-    if (at >= total) {
-      parent.appendChild(node);
-    } else {
-      parent.insertBefore(node, parent.childNodes[at]);
-    }
-    return;
-  }
-
-  const currentParent = child.parentNode;
-  if (currentParent === parent) {
-    const currentIndex = Array.prototype.indexOf.call(parent.childNodes, child);
-    if (currentIndex === at) return;
+  if (isString(child)) {
+    // @ts-ignore
+    parent.insertAdjacentHTML('beforeEnd', child);
+    child = parent.lastChild as HTMLElement;
+    parent.removeChild(child);
   }
 
   if (at >= total) {
     parent.appendChild(child);
   } else {
-    parent.insertBefore(child, parent.childNodes[at]);
+    parent.insertBefore(child, childNodes[at]);
   }
 };
 
@@ -83,30 +71,11 @@ export const append = (parent: HTMLElement, child: ChildHTML) => appendAtIndex(p
 
 export const createEl = (tag: string, attrs: ObjectAny = {}, child?: ChildHTML) => {
   const el = document.createElement(tag);
+  attrs && each(attrs, (value, key) => el.setAttribute(key, value));
 
-  if (attrs) {
-    for (const key in attrs) {
-      const val = attrs[key];
-      if (val == null) continue;
-
-      if (key === 'class') el.className = val;
-      else if (key === 'id') el.id = val;
-      else if (key === 'style' && typeof val === 'object') {
-        // Avoid reparse of style string
-        for (const s in val) el.style[s as any] = val[s];
-      } else {
-        el.setAttribute(key, val);
-      }
-    }
-  }
-
-  if (child != null) {
-    if (typeof child === 'string') {
-      if (child.includes('<')) el.innerHTML = child;
-      else el.textContent = child;
-    } else {
-      el.appendChild(child);
-    }
+  if (child) {
+    if (isString(child)) el.innerHTML = child;
+    else el.appendChild(child);
   }
 
   return el;
