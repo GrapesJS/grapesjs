@@ -1,3 +1,50 @@
+import { AssetEvent } from '../asset_manager/types';
+import { BlockEvent } from '../block_manager';
+import { BlocksEventCallback } from '../block_manager/types';
+import { CanvasEvent } from '../canvas';
+import { CommandEvent } from '../commands';
+import { LiteralUnion } from '../common';
+import { DataSourceEvent, DataSourcesEventCallback } from '../data_sources/types';
+import { ComponentEvent } from '../dom_components';
+import { KeymapEvent } from '../keymaps';
+import { ModalEvent } from '../modal_dialog';
+import { RichTextEditorEvent } from '../rich_text_editor';
+import { SelectorEvent } from '../selector_manager';
+import { StyleManagerEvent } from '../style_manager';
+import { EditorConfig } from './config/config';
+import EditorModel from './model/Editor';
+
+type GeneralEvent = 'canvasScroll' | 'undo' | 'redo' | 'load' | 'update';
+
+type EditorBuiltInEvents =
+  | DataSourceEvent
+  | ComponentEvent
+  | BlockEvent
+  | AssetEvent
+  | KeymapEvent
+  | StyleManagerEvent
+  | StorageEvent
+  | CanvasEvent
+  | SelectorEvent
+  | RichTextEditorEvent
+  | ModalEvent
+  | CommandEvent
+  | GeneralEvent;
+
+export type EditorEvent = LiteralUnion<EditorBuiltInEvents, string>;
+
+export type EditorConfigType = EditorConfig & { pStylePrefix?: string };
+
+export type EditorModelParam<T extends keyof EditorModel, N extends number> = Parameters<EditorModel[T]>[N];
+
+export interface EditorEventCallbacks extends BlocksEventCallback, DataSourcesEventCallback {
+  [key: string]: any[];
+}
+
+export type EditorEventHandler<E extends EditorEvent> = E extends keyof EditorEventCallbacks
+  ? (...args: EditorEventCallbacks[E]) => void
+  : (...args: any[]) => void;
+
 /**{START_EVENTS}*/
 export enum EditorEvents {
   /**

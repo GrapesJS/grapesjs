@@ -97,33 +97,43 @@ async function generateDocs() {
         throw `File not found '${filePath}'`;
       }
 
-      return build([filePath], { shallow: true })
-        .then((cm) => formats.md(cm /*{ markdownToc: true }*/))
-        .then(async (output) => {
-          let addLogs = [];
-          let result = output
-            .replace(/\*\*\\\[/g, '**[')
-            .replace(/\*\*\(\\\[/g, '**([')
-            .replace(/<\\\[/g, '<[')
-            .replace(/<\(\\\[/g, '<([')
-            .replace(/\| \\\[/g, '| [')
-            .replace(/\\n```js/g, '```js')
-            .replace(/docsjs\./g, '')
-            .replace('**Extends ModuleModel**', '')
-            .replace('**Extends Model**', '');
+      try {
+        return build([filePath], { shallow: true })
+          .then((cm) => formats.md(cm /*{ markdownToc: true }*/))
+          .then(async (output) => {
+            let addLogs = [];
+            let result = output
+              .replace(/\*\*\\\[/g, '**[')
+              .replace(/\*\*\(\\\[/g, '**([')
+              .replace(/<\\\[/g, '<[')
+              .replace(/<\(\\\[/g, '<([')
+              .replace(/\| \\\[/g, '| [')
+              .replace(/\\n```js/g, '```js')
+              .replace(/docsjs\./g, '')
+              .replace('**Extends ModuleModel**', '')
+              .replace('**Extends Model**', '');
 
-          // Search for module event documentation
-          if (result.indexOf(REPLACE_EVENTS) >= 0) {
-            const eventsMd = await getEventsMdFromTypes(filePath);
-            if (eventsMd && result.indexOf(REPLACE_EVENTS) >= 0) {
-              addLogs.push('replaced events');
+            // Search for module event documentation
+            if (result.indexOf(REPLACE_EVENTS) >= 0) {
+              try {
+                const eventsMd = await getEventsMdFromTypes(filePath);
+                if (eventsMd && result.indexOf(REPLACE_EVENTS) >= 0) {
+                  addLogs.push('replaced events');
+                }
+                result = eventsMd ? result.replace(REPLACE_EVENTS, `## Available Events\n${eventsMd}`) : result;
+              } catch (err) {
+                console.error(`Failed getting events: ${file[0]}`);
+                throw err;
+              }
             }
-            result = eventsMd ? result.replace(REPLACE_EVENTS, `## Available Events\n${eventsMd}`) : result;
-          }
 
-          writeFileSync(`${docRoot}/api/${file[1]}`, result);
-          log('Created', file[1], addLogs.length ? `(${addLogs.join(', ')})` : '');
-        });
+            writeFileSync(`${docRoot}/api/${file[1]}`, result);
+            log('Created', file[1], addLogs.length ? `(${addLogs.join(', ')})` : '');
+          });
+      } catch (err) {
+        console.error(`Build failed: ${file[0]}`);
+        throw err;
+      }
     }),
   );
 

@@ -1,8 +1,9 @@
-import { Model, Collection, ObjectAny } from '../common';
+import { AddOptions, Collection, Model, ObjectAny, RemoveOptions, SetOptions } from '../common';
 import DataRecord from './model/DataRecord';
 import DataRecords from './model/DataRecords';
+import DataSource from './model/DataSource';
 import DataVariable, { DataVariableProps } from './model/DataVariable';
-import { DataConditionProps, DataCondition } from './model/conditional_variables/DataCondition';
+import { DataCondition, DataConditionProps } from './model/conditional_variables/DataCondition';
 
 export type DataResolver = DataVariable | DataCondition;
 export type DataResolverProps = DataVariableProps | DataConditionProps;
@@ -46,12 +47,107 @@ interface BaseDataSource {
    * If true will store the data source in the GrapesJS project.json file.
    */
   skipFromStorage?: boolean;
+
+  [key: string]: unknown;
 }
+
+export enum DataFieldPrimitiveType {
+  string = 'string',
+  number = 'number',
+  boolean = 'boolean',
+  date = 'date',
+  json = 'json',
+  relation = 'relation',
+}
+
+export interface DataFieldSchemaBase<T = unknown> {
+  default?: T;
+  description?: string;
+  label?: string;
+  [key: string]: unknown;
+  // order?: number;
+  // primary?: boolean;
+  // required?: boolean;
+  // unique?: boolean;
+  // validate?: (value: T, record: Record<string, any>) => boolean;
+}
+
+export interface DataFieldSchemaString extends DataFieldSchemaBase<string> {
+  type: DataFieldPrimitiveType.string;
+  enum?: string[];
+}
+
+export interface DataFieldSchemaNumber extends DataFieldSchemaBase<number> {
+  type: DataFieldPrimitiveType.number;
+}
+
+export interface DataFieldSchemaBoolean extends DataFieldSchemaBase<boolean> {
+  type: DataFieldPrimitiveType.boolean;
+}
+
+export interface DataFieldSchemaDate extends DataFieldSchemaBase<Date> {
+  type: DataFieldPrimitiveType.date;
+}
+
+export interface DataFieldSchemaJSON extends DataFieldSchemaBase<any> {
+  type: DataFieldPrimitiveType.json;
+}
+
+export interface DataFieldSchemaRelation extends DataFieldSchemaBase {
+  type: DataFieldPrimitiveType.relation;
+  /**
+   * The target data source ID
+   */
+  target: string;
+  /**
+   * The target field in the data source
+   */
+  targetField?: string;
+  /**
+   * If true, the relation is one-to-many
+   */
+  isMany?: boolean;
+}
+
+export type DataFieldSchemas =
+  | DataFieldSchemaString
+  | DataFieldSchemaNumber
+  | DataFieldSchemaBoolean
+  | DataFieldSchemaDate
+  | DataFieldSchemaJSON
+  | DataFieldSchemaRelation;
+
+export type DataSourceSchema<DR extends DataRecordProps = DataRecordProps> = {
+  [K in keyof DR]?: DataFieldSchemas;
+};
+
+export interface DataSourceProviderMethodProps {
+  url: string;
+  method?: string;
+  headers?: HeadersInit;
+  body?: BodyInit;
+}
+
+export interface DataSourceProviderDefinitionProps {
+  get: string | DataSourceProviderMethodProps;
+}
+
+export interface DataSourceProviderResult {
+  records?: DataRecordProps[];
+  schema?: DataSourceSchema;
+}
+
+export type DataSourceProviderProp = string | DataSourceProviderDefinitionProps;
+
 export interface DataSourceType<DR extends DataRecordProps> extends BaseDataSource {
   records: DataRecords<DR>;
+  schema: DataSourceSchema<DR>;
+  provider?: DataSourceProviderProp;
 }
-export interface DataSourceProps<DR extends DataRecordProps> extends BaseDataSource {
+export interface DataSourceProps<DR extends DataRecordProps = DataRecordProps> extends BaseDataSource {
   records?: DataRecords<DR> | DataRecord<DR>[] | DR[];
+  schema?: DataSourceSchema<DR>;
+  provider?: DataSourceProviderProp;
 }
 export type RecordPropsType<T> = T extends DataRecord<infer U> ? U : never;
 export interface DataSourceTransformers {
@@ -79,6 +175,8 @@ export type DeepPartialDot<T> = {
       ? T[P]
       : never;
 };
+
+export type DataSourceEvent = `${DataSourcesEvents}`;
 
 /**{START_EVENTS}*/
 export enum DataSourcesEvents {
@@ -123,6 +221,23 @@ export enum DataSourcesEvents {
   pathSource = 'data:pathSource:',
 
   /**
+   * @event `data:provider:load` Data source provider load.
+   * @example
+   * editor.on('data:provider:load', ({ dataSource, result }) => { ... });
+   */
+  providerLoad = 'data:provider:load',
+  providerLoadBefore = 'data:provider:load:before',
+  providerLoadError = 'data:provider:load:error',
+
+  /**
+   * @event `data:provider:loadAll` Load of all data source providers (eg. on project load).
+   * @example
+   * editor.on('data:provider:loadAll', () => { ... });
+   */
+  providerLoadAll = 'data:provider:loadAll',
+  providerLoadAllBefore = 'data:provider:loadAll:before',
+
+  /**
    * @event `data` Catch-all event for all the events mentioned above.
    * @example
    * editor.on('data', ({ event, model, ... }) => { ... });
@@ -130,6 +245,22 @@ export enum DataSourcesEvents {
   all = 'data',
 }
 /**{END_EVENTS}*/
+
+export interface DataSourcesEventCallback {
+  [DataSourcesEvents.add]: [DataSource, AddOptions];
+  [DataSourcesEvents.remove]: [DataSource, RemoveOptions];
+  [DataSourcesEvents.update]: [DataSource, AddOptions];
+  [DataSourcesEvents.path]: [{ dataSource: DataSource; dataRecord: DataRecord; path: string; options: SetOptions }];
+  [DataSourcesEvents.pathSource]: [
+    { dataSource: DataSource; dataRecord: DataRecord; path: string; options: SetOptions },
+  ];
+  [DataSourcesEvents.providerLoad]: [{ dataSource: DataSource; result: DataSourceProviderResult }];
+  [DataSourcesEvents.providerLoadBefore]: [{ dataSource: DataSource }];
+  [DataSourcesEvents.providerLoadError]: [{ dataSource: DataSource; error: Error }];
+  [DataSourcesEvents.providerLoadAll]: [];
+  [DataSourcesEvents.providerLoadAllBefore]: [];
+  [DataSourcesEvents.all]: [{ event: DataSourceEvent; model?: Model; options: ObjectAny }];
+}
 
 // need this to avoid the TS documentation generator to break
 export default DataSourcesEvents;

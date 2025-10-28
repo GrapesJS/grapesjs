@@ -122,6 +122,14 @@ editor.on('canvas:frame:load:body', ({ window }) => {
 });
 ```
 
+* `canvas:frame:unload` Frame is unloading from the canvas.
+
+```javascript
+editor.on('canvas:frame:unload', ({ frame }) => {
+ console.log('Unloading frame', frame);
+});
+```
+
 [Component]: component.html
 
 [Frame]: frame.html

@@ -9,15 +9,13 @@
  * })
  * ```
  *
- * Once the editor is instantiated you can use its API. Before using these methods you should get the module from the instance
+ * Once the editor is instantiated you can use its API. Before using these methods you should get the module from the instance.
  *
  * ```js
  * const layers = editor.Layers;
  * ```
  *
- * ## Available Events
- * * `layer:root` - Root layer changed. The new root component is passed as an argument to the callback.
- * * `layer:component` - Component layer is updated. The updated component is passed as an argument to the callback.
+ * {REPLACE_EVENTS}
  *
  * ## Methods
  * * [setRoot](#setroot)
@@ -39,38 +37,18 @@
  * @module Layers
  */
 
-import { isString, bindAll } from 'underscore';
+import { bindAll, isString } from 'underscore';
 import { ModuleModel } from '../abstract';
 import Module from '../abstract/Module';
 import Component from '../dom_components/model/Component';
+import { ComponentsEvents } from '../dom_components/types';
 import EditorModel from '../editor/model/Editor';
 import { hasWin, isComponent, isDef } from '../utils/mixins';
 import defConfig, { LayerManagerConfig } from './config/config';
+import { LayerData, LayerEvents } from './types';
 import View from './view/ItemView';
-import { ComponentsEvents } from '../dom_components/types';
 
-interface LayerData {
-  name: string;
-  open: boolean;
-  selected: boolean;
-  hovered: boolean;
-  visible: boolean;
-  locked: boolean;
-  components: Component[];
-}
-
-export const evAll = 'layer';
-export const evPfx = `${evAll}:`;
-export const evRoot = `${evPfx}root`;
-export const evComponent = `${evPfx}component`;
-export const evCustom = `${evPfx}custom`;
-
-const events = {
-  all: evAll,
-  root: evRoot,
-  component: evComponent,
-  custom: evCustom,
-};
+export type LayerEvent = `${LayerEvents}`;
 
 const styleOpts = { mediaText: '' };
 
@@ -88,7 +66,7 @@ export default class LayerManager extends Module<LayerManagerConfig> {
 
   view?: View;
 
-  events = events;
+  events = LayerEvents;
 
   constructor(em: EditorModel) {
     super(em, 'LayerManager', defConfig());
@@ -358,9 +336,10 @@ export default class LayerManager extends Module<LayerManagerConfig> {
   }
 
   __onRootChange() {
+    const { em, events } = this;
     const root = this.getRoot();
     this.view?.setRoot(root);
-    this.em.trigger(evRoot, root);
+    em.trigger(events.root, root);
     this.__trgCustom();
   }
 
@@ -390,6 +369,7 @@ export default class LayerManager extends Module<LayerManagerConfig> {
   }
 
   updateLayer(component: Component, opts?: any) {
-    this.em.trigger(evComponent, component, opts);
+    const { em, events } = this;
+    em.trigger(events.component, component, opts);
   }
 }

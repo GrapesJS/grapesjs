@@ -11,20 +11,13 @@
  * })
  * ```
  *
- * Once the editor is instantiated you can use its API and listen to its events. Before using these methods, you should get the module from the instance.
+ * Once the editor is instantiated you can use its API. Before using these methods you should get the module from the instance.
  *
  * ```js
- * // Listen to events
- * editor.on('rte:enable', () => { ... });
- *
- * // Use the API
  * const rte = editor.RichTextEditor;
- * rte.add(...);
  * ```
  *
- * ## Available Events
- * * `rte:enable` - RTE enabled. The view, on which RTE is enabled, is passed as an argument
- * * `rte:disable` - RTE disabled. The view, on which RTE is disabled, is passed as an argument
+ * {REPLACE_EVENTS}
  *
  * ## Methods
  * * [add](#add)
@@ -39,37 +32,20 @@
 
 import { debounce, isFunction, isString } from 'underscore';
 import { Module } from '../abstract';
+import CanvasEvents from '../canvas/types';
 import { Debounced, DisableOptions, Model } from '../common';
+import { ComponentsEvents } from '../dom_components/types';
+import ComponentTextView from '../dom_components/view/ComponentTextView';
 import EditorModel from '../editor/model/Editor';
 import { createEl, cx, on, removeEl } from '../utils/dom';
 import { hasWin, isDef } from '../utils/mixins';
 import defConfig, { CustomRTE, CustomRteOptions, RichTextEditorConfig } from './config/config';
 import RichTextEditor, { RichTextEditorAction } from './model/RichTextEditor';
-import CanvasEvents from '../canvas/types';
-import { ComponentsEvents } from '../dom_components/types';
-import ComponentTextView from '../dom_components/view/ComponentTextView';
+import { ModelRTE, RichTextEditorEvents, RteDisableResult } from './types';
 
-export type RichTextEditorEvent = 'rte:enable' | 'rte:disable' | 'rte:custom';
+export type { RichTextEditorEvent, RteDisableResult } from './types';
 
 const eventsUp = `${CanvasEvents.refresh} frame:scroll ${ComponentsEvents.update}`;
-
-export const evEnable = 'rte:enable';
-export const evDisable = 'rte:disable';
-export const evCustom = 'rte:custom';
-
-const events = {
-  enable: evEnable,
-  disable: evDisable,
-  custom: evCustom,
-};
-
-interface ModelRTE {
-  currentView?: ComponentTextView;
-}
-
-export interface RteDisableResult {
-  forceSync?: boolean;
-}
 
 export default class RichTextEditorModule extends Module<RichTextEditorConfig & { pStylePrefix?: string }> {
   pfx: string;
@@ -81,7 +57,7 @@ export default class RichTextEditorModule extends Module<RichTextEditorConfig & 
   customRte?: CustomRTE;
   model: Model<ModelRTE>;
   __dbdTrgCustom: Debounced;
-  events = events;
+  events = RichTextEditorEvents;
 
   /**
    * Get configuration object
@@ -362,7 +338,7 @@ export default class RichTextEditorModule extends Module<RichTextEditorConfig & 
    * */
   async enable(view: ComponentTextView, rte: RichTextEditor, opts: CustomRteOptions) {
     this.lastEl = view.el;
-    const { customRte, em } = this;
+    const { customRte, em, events } = this;
     const el = view.getChildrenContainer();
 
     this.toolbar.style.display = '';
@@ -372,7 +348,7 @@ export default class RichTextEditorModule extends Module<RichTextEditorConfig & 
       setTimeout(this.updatePosition.bind(this), 0);
       em.off(eventsUp, this.updatePosition, this);
       em.on(eventsUp, this.updatePosition, this);
-      em.trigger('rte:enable', view, rteInst);
+      em.trigger(events.enable, view, rteInst);
     }
 
     this.model.set({ currentView: view });
@@ -407,7 +383,7 @@ export default class RichTextEditorModule extends Module<RichTextEditorConfig & 
    * */
   async disable(view: ComponentTextView, rte?: RichTextEditor, opts: DisableOptions = {}) {
     let result: RteDisableResult = {};
-    const { em } = this;
+    const { em, events } = this;
     const customRte = this.customRte;
 
     if (customRte) {
@@ -423,7 +399,7 @@ export default class RichTextEditorModule extends Module<RichTextEditorConfig & 
 
     if (em) {
       em.off(eventsUp, this.updatePosition, this);
-      !opts.fromMove && em.trigger('rte:disable', view, rte);
+      !opts.fromMove && em.trigger(events.disable, view, rte);
     }
 
     this.model.unset('currentView');

@@ -15,21 +15,30 @@ const editor = grapesjs.init({
 })
 ```
 
-Once the editor is instantiated you can use its API and listen to its events. Before using these methods, you should get the module from the instance.
+Once the editor is instantiated you can use its API. Before using these methods you should get the module from the instance.
 
 ```js
-// Listen to events
-editor.on('rte:enable', () => { ... });
-
-// Use the API
 const rte = editor.RichTextEditor;
-rte.add(...);
 ```
 
 ## Available Events
+* `rte:enable` RTE enabled. The view, on which RTE is enabled, and the RTE instance are passed as arguments.
 
-*   `rte:enable` - RTE enabled. The view, on which RTE is enabled, is passed as an argument
-*   `rte:disable` - RTE disabled. The view, on which RTE is disabled, is passed as an argument
+```javascript
+editor.on('rte:enable', (view, rte) => { ... });
+```
+
+* `rte:disable` RTE disabled. The view, on which RTE is disabled, and the RTE instance are passed as arguments.
+
+```javascript
+editor.on('rte:disable', (view, rte) => { ... });
+```
+
+* `rte:custom` Custom RTE event. Object with enabled status, container, and actions is passed as an argument.
+
+```javascript
+editor.on('rte:custom', ({ enabled, container, actions }) => { ... });
+```
 
 ## Methods
 

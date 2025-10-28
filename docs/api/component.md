@@ -137,7 +137,7 @@ By setting override to specific properties, changes of those properties will be 
 ### Parameters
 
 *   `value` **([Boolean][3] | [String][1] | [Array][5]<[String][1]>)**&#x20;
-*   `options` **DynamicWatchersOptions**  (optional, default `{}`)
+*   `options` **DataWatchersOptions**  (optional, default `{}`)
 
 ### Examples
 
@@ -335,8 +335,7 @@ Get the style of the component
 
 ### Parameters
 
-*   `options` **any**  (optional, default `{}`)
-*   `optsAdd` **any**  (optional, default `{}`)
+*   `opts` **GetComponentStyleOpts?**&#x20;
 
 Returns **[Object][2]**&#x20;
 
@@ -363,7 +362,7 @@ Return all component's attributes
 
 ### Parameters
 
-*   `opts` **{noClass: [boolean][3]?, noStyle: [boolean][3]?}**  (optional, default `{}`)
+*   `opts` **{noClass: [boolean][3]?, noStyle: [boolean][3]?, skipResolve: [boolean][3]?}**  (optional, default `{}`)
 
 Returns **[Object][2]**&#x20;
 

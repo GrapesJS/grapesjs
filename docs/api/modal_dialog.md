@@ -19,10 +19,23 @@ const modal = editor.Modal;
 ```
 
 ## Available Events
+* `modal:open` Modal is opened
 
-*   `modal:open` - Modal is opened
-*   `modal:close` - Modal is closed
-*   `modal` - Event triggered on any change related to the modal. An object containing all the available data about the triggered event is passed as an argument to the callback.
+```javascript
+editor.on('modal:open', () => { ... });
+```
+
+* `modal:close` Modal is closed
+
+```javascript
+editor.on('modal:close', () => { ... });
+```
+
+* `modal` Event triggered on any change related to the modal. An object containing all the available data about the triggered event is passed as an argument to the callback.
+
+```javascript
+editor.on('modal', ({ open, title, content, ... }) => { ... });
+```
 
 ## Methods
 
