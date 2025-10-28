@@ -272,7 +272,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
   views!: ComponentView[];
   view?: ComponentView;
   viewLayer?: ItemView;
-  rule?: CssRule;
+  rule?: CssRule | null;
   prevColl?: Components;
   __hasUm?: boolean;
   __symbReady?: boolean;

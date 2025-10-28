@@ -261,12 +261,7 @@ export default class CssComposer extends ItemManagerModule<CssComposerConfig & {
    *   color: '#000',
    * });
    * */
-  get(
-    selectors: any,
-    state?: string,
-    width?: string,
-    ruleProps?: Omit<CssRuleProperties, 'selectors'>,
-  ): CssRule | null {
+  get(selectors: any, state?: string, width?: string, ruleProps?: Omit<CssRuleProperties, 'selectors'>) {
     const key = this._makeCacheKeyFromProps({
       ...ruleProps,
       selectors: Array.isArray(selectors) ? selectors : [selectors],
