@@ -128,6 +128,7 @@ export default class SelectorManager extends ItemManagerModule<SelectorManagerCo
   storageKey = '';
   __update: Debounced;
   __ctn?: HTMLElement;
+  protected _itemCache = new Map<string, Selector>();
   /**
    * Get configuration object
    * @name getConfig
@@ -151,24 +152,22 @@ export default class SelectorManager extends ItemManagerModule<SelectorManagerCo
     this.model = new Model({ cFirst: config.componentFirst, _undo: true });
     this.__update = debounce(() => this.__trgCustom(), 0);
 
-    this._setupListeners();
-    this._onItemsReset(this.all);
+    this._setupCacheListeners();
     this.__initListen({
       collections: [this.states, this.selected],
       propagate: [{ entity: this.states, event: this.events.state }],
     });
 
-    const { em: editor } = this;
-    editor.on('change:state', (m, value) => editor.trigger(evState, value));
-    this.model.on('change:cFirst', (m, value) => editor.trigger('selector:type', value));
+    em.on('change:state', (m, value) => em.trigger(evState, value));
+    this.model.on('change:cFirst', (m, value) => em.trigger('selector:type', value));
     const eventCmpUpdateCls = `${ComponentsEvents.update}:classes`;
-    editor.on(`component:toggled ${eventCmpUpdateCls}`, this.__updateSelectedByComponents);
+    em.on(`component:toggled ${eventCmpUpdateCls}`, this.__updateSelectedByComponents);
     const listenTo = `component:toggled ${eventCmpUpdateCls} change:device styleManager:update selector:state selector:type style:target`;
-    this.model.listenTo(editor, listenTo, () => this.__update());
+    this.model.listenTo(em, listenTo, () => this.__update());
   }
 
-  protected override _setupListeners() {
-    super._setupListeners();
+  protected override _setupCacheListeners() {
+    super._setupCacheListeners();
     this.em.listenTo(this.all, 'change:name change:type', this._onItemKeyChange.bind(this));
   }
 
@@ -269,9 +268,8 @@ export default class SelectorManager extends ItemManagerModule<SelectorManagerCo
     }
 
     const key = this.getCacheKey(name, type);
-    if (this._itemCache.has(key)) {
-      return this._itemCache.get(key);
-    }
+    const cached = this._itemCache.get(key);
+    if (cached) return cached;
 
     const selector = this.all.where({ name, type })[0];
     if (selector) this._itemCache.set(key, selector);

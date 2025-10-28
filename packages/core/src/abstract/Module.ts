@@ -130,7 +130,7 @@ export abstract class ItemManagerModule<
   all: TCollection;
   view?: View;
   events!: Record<string, string>;
-  protected _itemCache = new Map<string, any>();
+  protected _itemCache = new Map<string, Model>();
 
   constructor(
     em: EditorModel,
@@ -208,38 +208,25 @@ export abstract class ItemManagerModule<
     }, {} as any);
   }
 
-  protected _makeCacheKey(selectors: any, state?: string, width?: string) {
-    const sels = Array.isArray(selectors)
-      ? selectors.map((s) => (typeof s === 'string' ? s : s.toString())).join(',')
-      : typeof selectors === 'string'
-        ? selectors
-        : selectors?.toString() || '';
-    return `${sels}|${state || ''}|${width || ''}`;
+  protected _makeCacheKey(m: Model) {
+    return '';
   }
 
   protected _cacheItem(item: Model) {
     const key = this._makeCacheKey(item);
-    this._itemCache.set(key, item);
+    key && this._itemCache.set(key, item);
   }
 
   protected _uncacheItem(item: Model) {
     const key = this._makeCacheKey(item);
-    this._itemCache.delete(key);
+    key && this._itemCache.delete(key);
   }
 
   protected _clearItemCache() {
     this._itemCache.clear();
   }
 
-  protected _onItemAdd(item: Model) {
-    this._cacheItem(item);
-  }
-
-  protected _onItemRemove(item: Model) {
-    this._uncacheItem(item);
-  }
-
-  protected _onItemsReset(collection: Collection) {
+  protected _onItemsResetCache(collection: Collection) {
     this._clearItemCache();
     collection.each((item: Model) => this._cacheItem(item));
   }
@@ -260,10 +247,10 @@ export abstract class ItemManagerModule<
     this._cacheItem(item);
   }
 
-  protected _setupListeners() {
-    this.em.listenTo(this.all, 'add', this._onItemAdd.bind(this));
-    this.em.listenTo(this.all, 'remove', this._onItemRemove.bind(this));
-    this.em.listenTo(this.all, 'reset', this._onItemsReset.bind(this));
+  protected _setupCacheListeners() {
+    this.em.listenTo(this.all, 'add', this._cacheItem.bind(this));
+    this.em.listenTo(this.all, 'remove', this._uncacheItem.bind(this));
+    this.em.listenTo(this.all, 'reset', this._onItemsResetCache.bind(this));
   }
 
   __initListen(opts: any = {}) {

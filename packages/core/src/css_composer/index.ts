@@ -87,7 +87,7 @@ export default class CssComposer extends ItemManagerModule<CssComposerConfig & {
   Selectors = Selectors;
 
   storageKey = 'styles';
-  private _ruleCache = new Map<string, CssRule>();
+  protected _itemCache = new Map<string, CssRule>();
   /**
    * Initializes module. Automatically called with a new instance of the editor
    * @param {Object} config Configurations
@@ -104,12 +104,34 @@ export default class CssComposer extends ItemManagerModule<CssComposerConfig & {
     config.rules = this.em.config.style || config.rules || '';
 
     this.rules = new CssRules([], config);
-    this._setupListeners();
+    this._setupCacheListeners();
   }
 
-  protected override _setupListeners() {
-    super._setupListeners();
+  protected override _setupCacheListeners() {
+    super._setupCacheListeners();
     this.em.listenTo(this.rules, 'change:selectors change:state change:mediaText', this._onItemKeyChange.bind(this));
+  }
+
+  protected _makeCacheKey(rule: CssRule) {
+    const atRuleKey = rule.getAtRule();
+    const selectorsKey = rule.selectorsToString();
+    return `${atRuleKey}__${selectorsKey}`;
+  }
+
+  _makeCacheKeyFromProps(ruleProps: CssRuleProperties) {
+    const { atRuleType = '', mediaText = '', state = '', selectorsAdd = '', selectors = [] } = ruleProps;
+
+    const selectorsStr = selectors.map((selector) => (isString(selector) ? selector : selector.toString())).join('');
+
+    const selectorsRes = [];
+    selectorsStr && selectorsRes.push(`${selectorsStr}${state ? `:${state}` : ''}`);
+    selectorsAdd && selectorsRes.push(selectorsAdd);
+    const selectorsKey = selectorsRes.join(', ');
+
+    const typeStr = atRuleType ? `@${atRuleType}` : mediaText ? '@media' : '';
+    const atRuleKey = typeStr + (mediaText && typeStr ? ` ${mediaText}` : '');
+
+    return `${atRuleKey}__${selectorsKey}`;
   }
 
   /**
@@ -118,7 +140,7 @@ export default class CssComposer extends ItemManagerModule<CssComposerConfig & {
    */
   onLoad() {
     this.rules.add(this.config.rules, { silent: true });
-    this._onItemsReset(this.rules as any);
+    this._onItemsResetCache(this.rules as any);
   }
 
   /**
@@ -139,6 +161,28 @@ export default class CssComposer extends ItemManagerModule<CssComposerConfig & {
       // @ts-ignore Fix add() first in CssRules
       all: this.rules,
     });
+  }
+
+  /**
+   * Find a rule in the collection by its properties.
+   * @private
+   */
+  _findRule(
+    selectors: any,
+    state?: string,
+    width?: string,
+    ruleProps?: Omit<CssRuleProperties, 'selectors'>,
+  ): CssRule | null {
+    let slc = selectors;
+    if (isString(selectors)) {
+      const sm = this.em.Selectors;
+      const singleSel = selectors.split(',')[0].trim();
+      const node = this.em.Parser.parserCss.checkNode({ selectors: singleSel } as any)[0];
+      slc = sm.get(node.selectors as string[]);
+    }
+
+    const rule = this.rules.find((r) => r.compare(slc, state, width, ruleProps)) || null;
+    return rule;
   }
 
   /**
@@ -164,15 +208,24 @@ export default class CssComposer extends ItemManagerModule<CssComposerConfig & {
     const s = state || '';
     const w = width || '';
     const opt = { ...opts } as CssRuleProperties;
-    const key = this._makeCacheKey(selectors, s, w);
+    const key = this._makeCacheKeyFromProps({
+      state: s,
+      mediaText: w,
+      ...opt,
+      selectors: Array.isArray(selectors) ? selectors : [selectors],
+    });
 
-    const cached = this._ruleCache.get(key);
+    const cached = this._itemCache.get(key);
     if (cached && cached.config && !cached.config.singleAtRule) {
       return cached;
     }
 
-    let rule = this.get(selectors, s, w, opt);
-    if (rule && rule.config && !rule.config.singleAtRule) return rule;
+    let rule = this._findRule(selectors, s, w, opt);
+
+    if (rule && rule.config && !rule.config.singleAtRule) {
+      this._cacheItem(rule);
+      return rule;
+    }
 
     opt.state = s;
     opt.mediaText = w;
@@ -183,6 +236,8 @@ export default class CssComposer extends ItemManagerModule<CssComposerConfig & {
     // @ts-ignore
     rule.get('selectors').add(selectors, addOpts);
     this.rules.add(rule, addOpts);
+
+    this._cacheItem(rule);
 
     return rule;
   }
@@ -211,21 +266,23 @@ export default class CssComposer extends ItemManagerModule<CssComposerConfig & {
     state?: string,
     width?: string,
     ruleProps?: Omit<CssRuleProperties, 'selectors'>,
-  ): CssRule | undefined {
-    const key = this._makeCacheKey(selectors, state, width);
-    const cached = this._ruleCache.get(key);
+  ): CssRule | null {
+    const key = this._makeCacheKeyFromProps({
+      ...ruleProps,
+      selectors: Array.isArray(selectors) ? selectors : [selectors],
+      state,
+      width,
+      mediaText: width,
+    });
+    const cached = this._itemCache.get(key);
     if (cached) return cached;
 
-    let slc = selectors;
-    if (isString(selectors)) {
-      const sm = this.em.Selectors;
-      const singleSel = selectors.split(',')[0].trim();
-      const node = this.em.Parser.parserCss.checkNode({ selectors: singleSel } as any)[0];
-      slc = sm.get(node.selectors as string[]);
+    const rule = this._findRule(selectors, state, width, ruleProps);
+
+    if (rule) {
+      this._cacheItem(rule);
     }
 
-    const rule = this.rules.find((r) => r.compare(slc, state, width, ruleProps)) || null;
-    if (rule) this._cacheItem(rule);
     return rule;
   }
 
