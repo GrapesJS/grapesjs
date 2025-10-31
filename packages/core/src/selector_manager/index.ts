@@ -144,7 +144,7 @@ export default class SelectorManager extends ItemManagerModule<SelectorManagerCo
     return this.getCacheKey(selector.get('name')!, selector.get('type')!);
   }
 
-  private getCacheKey(name: string, type: number) {
+  private getCacheKey(name: string, type = Selector.TYPE_CLASS) {
     return `${type}__${name}`;
   }
 
@@ -214,11 +214,8 @@ export default class SelectorManager extends ItemManagerModule<SelectorManagerCo
       props.name = this.escapeName(props.label);
     }
 
-    const cname = props.name;
-    const config = this.getConfig();
-    const { all, em } = this;
-
-    const selector = cname ? (this.get(cname, props.type) as Selector) : all.where(props)[0];
+    const { all, em, config } = this;
+    const selector = all.get(props);
 
     if (!selector) {
       const selModel = props instanceof Selector ? props : new Selector(props, { ...cOpts, config, em });
@@ -240,7 +237,7 @@ export default class SelectorManager extends ItemManagerModule<SelectorManagerCo
     const cached = this._itemCache.get(key);
     if (cached) return cached;
 
-    const selector = this.all.where({ name, type })[0];
+    const selector = this.all.get({ name, type } as any);
     if (selector) this._itemCache.set(key, selector);
     return selector;
   }

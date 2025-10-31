@@ -1123,7 +1123,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
       return coll as any;
     } else {
       coll.reset(undefined, opts);
-      return components ? this.append(components, opts) : ([] as any);
+      return (components ? this.append(components, opts) : []) as any;
     }
   }
 
