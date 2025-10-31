@@ -510,6 +510,10 @@ export default class SelectorManager extends ItemManagerModule<SelectorManagerCo
     this.selectorTags = undefined;
   }
 
+  // Need for the IStorableModule to run the clenup
+  load() {}
+  store() {}
+
   /**
    * Get common selectors from the current selection.
    * @return {Array<Selector>}
