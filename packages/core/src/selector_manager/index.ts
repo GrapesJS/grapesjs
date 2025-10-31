@@ -98,7 +98,6 @@ export default class SelectorManager extends ItemManagerModule<SelectorManagerCo
   storageKey = '';
   __update: Debounced;
   __ctn?: HTMLElement;
-  protected _itemCache = new Map<string, Selector>();
   /**
    * Get configuration object
    * @name getConfig
@@ -121,8 +120,6 @@ export default class SelectorManager extends ItemManagerModule<SelectorManagerCo
     );
     this.model = new Model({ cFirst: config.componentFirst, _undo: true });
     this.__update = debounce(() => this.__trgCustom(), 0);
-
-    this._setupCacheListeners();
     this.__initListen({
       collections: [this.states, this.selected],
       propagate: [{ entity: this.states, event: events.state }],
@@ -133,19 +130,6 @@ export default class SelectorManager extends ItemManagerModule<SelectorManagerCo
     em.on(`component:toggled ${eventCmpUpdateCls}`, this.__updateSelectedByComponents);
     const listenTo = `component:toggled ${eventCmpUpdateCls} change:device styleManager:update selector:state selector:type style:target`;
     this.model.listenTo(em, listenTo, () => this.__update());
-  }
-
-  protected override _setupCacheListeners() {
-    super._setupCacheListeners();
-    this.em.listenTo(this.all, 'change:name change:type', this._onItemKeyChange.bind(this));
-  }
-
-  protected override _makeCacheKey(selector: Selector): string {
-    return this.getCacheKey(selector.get('name')!, selector.get('type')!);
-  }
-
-  private getCacheKey(name: string, type = Selector.TYPE_CLASS) {
-    return `${type}__${name}`;
   }
 
   __trgCustom(opts?: any) {
@@ -166,14 +150,6 @@ export default class SelectorManager extends ItemManagerModule<SelectorManagerCo
       container: this.__ctn,
     };
   }
-
-  // postLoad() {
-  //   this.__postLoad();
-  //   const { em, model } = this;
-  //   const um = em.get('UndoManager');
-  //   um && um.add(model);
-  //   um && um.add(this.pages);
-  // },
 
   postRender() {
     this.__appendTo();
@@ -233,13 +209,7 @@ export default class SelectorManager extends ItemManagerModule<SelectorManagerCo
       name = name.substr(1);
     }
 
-    const key = this.getCacheKey(name, type);
-    const cached = this._itemCache.get(key);
-    if (cached) return cached;
-
-    const selector = this.all.get({ name, type } as any);
-    if (selector) this._itemCache.set(key, selector);
-    return selector;
+    return this.all.get({ name, type } as any);
   }
 
   /**
@@ -538,7 +508,6 @@ export default class SelectorManager extends ItemManagerModule<SelectorManagerCo
     this.__destroy();
     selectorTags?.remove();
     this.selectorTags = undefined;
-    this._clearItemCache();
   }
 
   /**
