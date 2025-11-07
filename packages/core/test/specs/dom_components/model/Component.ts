@@ -436,6 +436,30 @@ describe('Component', () => {
     expect(comp1.getId()).toEqual(comp1Id);
   });
 
+  test('Ensure duplicated component clones also the rules', () => {
+    const idName = 'test';
+    const cmp = dcomp.addComponent(`
+      <div>
+        <div id="${idName}">Comp 1</div>
+      </div>
+      <style>
+        #test { color: red; }
+        @media (max-width: 992px) {
+          #test { color: blue; }
+        }
+      </style>
+    `) as Component;
+    expect(em.getCss()).toBe('#test{color:red;}@media (max-width: 992px){#test{color:blue;}}');
+    cmp.components().resetFromString(`
+      <div id="${idName}">Comp 1</div>
+      <div id="${idName}">Comp 2</div>
+    `);
+    const newId = cmp.components().at(1).getId();
+    expect(em.getCss()).toBe(
+      `#test{color:red;}#${newId}{color:red;}@media (max-width: 992px){#test{color:blue;}#${newId}{color:blue;}}`,
+    );
+  });
+
   test('Ability to stop/change propagation chain', () => {
     obj.append({
       removable: false,
