@@ -27,8 +27,9 @@ export default class HTMLGenerator extends Model {
         })
         .filter(Boolean);
 
+      const attributes = htmlOpts.attributes;
       htmlOpts.attributes = (mod, attrs) => {
-        attrs = typeof htmlOpts.attributes === 'function' ? htmlOpts.attributes(mod, attrs) : attrs;
+        attrs = typeof attributes === 'function' ? attributes(mod, attrs) : attrs;
         const { id } = attrs;
         if (
           id &&
