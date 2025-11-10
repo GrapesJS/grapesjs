@@ -41,6 +41,10 @@ export default class ComponentWithCollectionsState<DataResolverType> extends Com
     return this.set('dataResolver', dataResolver);
   }
 
+  getDataResolver() {
+    return this.dataResolverProps;
+  }
+
   get dataResolverProps(): DataResolverType | undefined {
     return this.get('dataResolver');
   }
