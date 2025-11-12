@@ -6,7 +6,7 @@ import {
   WatchableModel,
 } from './ModelResolverWatcher';
 import { getSymbolsToUpdate } from './SymbolUtils';
-import Component from './Component';
+import Component, { keySymbolOvrd } from './Component';
 import { StyleableModelProperties } from '../../domain_abstract/model/StyleableModel';
 import { isEmpty, isObject } from 'underscore';
 
@@ -187,7 +187,15 @@ export class ModelDataResolverWatchers<T extends StyleableModelProperties> {
   }
 
   private filterProps(props: ObjectAny) {
-    const excludedFromEvaluation = ['components', 'dataResolver', keyDataValues];
+    const excludedFromEvaluation = [
+      'components',
+      'dataResolver',
+      'status',
+      'state',
+      'open',
+      keySymbolOvrd,
+      keyDataValues,
+    ];
     const filteredProps = Object.fromEntries(
       Object.entries(props).filter(([key]) => !excludedFromEvaluation.includes(key)),
     );

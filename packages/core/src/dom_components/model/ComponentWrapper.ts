@@ -1,16 +1,16 @@
 import { isUndefined } from 'underscore';
-import { attrToString } from '../../utils/dom';
-import Component from './Component';
-import ComponentHead, { type as typeHead } from './ComponentHead';
-import { ComponentOptions, ComponentProperties, ToHTMLOptions } from './types';
-import Components from './Components';
-import DataResolverListener from '../../data_sources/model/DataResolverListener';
-import { DataVariableProps } from '../../data_sources/model/DataVariable';
-import { DataCollectionStateMap } from '../../data_sources/model/data_collection/types';
 import ComponentWithCollectionsState, {
   DataSourceRecords,
 } from '../../data_sources/model/ComponentWithCollectionsState';
+import DataResolverListener from '../../data_sources/model/DataResolverListener';
+import { DataVariableProps } from '../../data_sources/model/DataVariable';
+import { DataCollectionStateMap } from '../../data_sources/model/data_collection/types';
+import { attrToString } from '../../utils/dom';
 import { keyRootData } from '../constants';
+import Component from './Component';
+import ComponentHead, { type as typeHead } from './ComponentHead';
+import Components from './Components';
+import { ComponentOptions, ComponentProperties, ToHTMLOptions } from './types';
 
 type ResolverCurrentItemType = string | number;
 
@@ -23,6 +23,7 @@ export default class ComponentWrapper extends ComponentWithCollectionsState<Data
     return {
       // @ts-ignore
       ...super.defaults,
+      dataResolver: null,
       tagName: 'body',
       removable: false,
       copyable: false,

@@ -75,6 +75,16 @@ export default class DataSourceManager extends ItemManagerModule<DataSourcesConf
   }
 
   /**
+   * Return all data sources.
+   * @returns {Array<[DataSource]>}
+   * @example
+   * const ds = dsm.getAll();
+   */
+  getAll() {
+    return [...this.all.models];
+  }
+
+  /**
    * Get value from data sources by path.
    * @param {String} path Path to value.
    * @param {any} defValue Default value if the path is not found.
