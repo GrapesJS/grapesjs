@@ -5,7 +5,7 @@ import {
   DataWatchersOptions,
   WatchableModel,
 } from './ModelResolverWatcher';
-import { getSymbolsToUpdate } from './SymbolUtils';
+import { getSymbolsToUpdate, isSymbol } from './SymbolUtils';
 import Component, { keySymbolOvrd } from './Component';
 import { StyleableModelProperties } from '../../domain_abstract/model/StyleableModel';
 import { isEmpty, isObject } from 'underscore';
@@ -166,8 +166,8 @@ export class ModelDataResolverWatchers<T extends StyleableModelProperties> {
   }
 
   private updateSymbolOverride() {
-    const model = this.model;
-    if (!this.isComponent(model)) return;
+    const { model } = this;
+    if (!this.isComponent(model) || !isSymbol(model)) return;
 
     const isCollectionItem = !!Object.keys(model?.collectionsStateMap ?? {}).length;
     if (!isCollectionItem) return;
