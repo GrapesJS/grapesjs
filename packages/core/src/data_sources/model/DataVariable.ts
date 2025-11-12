@@ -1,6 +1,7 @@
 import { Model } from '../../common';
 import { keyRootData } from '../../dom_components/constants';
 import EditorModel from '../../editor/model/Editor';
+import { DataComponentTypes } from '../types';
 import { isDataVariable } from '../utils';
 import {
   DataCollectionStateMap,
@@ -9,7 +10,7 @@ import {
   RootDataType,
 } from './data_collection/types';
 
-export const DataVariableType = 'data-variable' as const;
+export const DataVariableType = DataComponentTypes.variable as const;
 
 export interface DataVariableProps {
   type?: typeof DataVariableType;

@@ -1,12 +1,10 @@
 import EditorModel from '../editor/model/Editor';
-import { DataResolver, DataResolverProps, ResolverFromProps } from './types';
+import { DataComponentTypes, DataResolver, DataResolverProps, ResolverFromProps } from './types';
 import { DataCollectionStateMap } from './model/data_collection/types';
-import { DataCollectionItemType } from './model/data_collection/constants';
 import { DataConditionType, DataCondition } from './model/conditional_variables/DataCondition';
 import DataVariable, { DataVariableProps, DataVariableType } from './model/DataVariable';
 import { ComponentDefinition, ComponentOptions } from '../dom_components/model/types';
 import { serialize } from '../utils/mixins';
-import { DataConditionIfFalseType, DataConditionIfTrueType } from './model/conditional_variables/constants';
 import { getSymbolMain } from '../dom_components/model/SymbolUtils';
 import Component from '../dom_components/model/Component';
 
@@ -85,7 +83,12 @@ export const ensureComponentInstance = (
 };
 
 export const isComponentDataOutputType = (type: string | undefined) => {
-  return !!type && [DataCollectionItemType, DataConditionIfTrueType, DataConditionIfFalseType].includes(type);
+  return (
+    !!type &&
+    [DataComponentTypes.collectionItem, DataComponentTypes.conditionTrue, DataComponentTypes.conditionFalse].includes(
+      type as DataComponentTypes,
+    )
+  );
 };
 
 export function enumToArray(enumObj: any) {

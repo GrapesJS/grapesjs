@@ -7,6 +7,7 @@ import { keyRootData } from '../../../../src/dom_components/constants';
 import Editor from '../../../../src/editor';
 import EditorModel from '../../../../src/editor/model/Editor';
 import { setupTestEditor } from '../../../common';
+import { DataComponentTypes } from '../../../../src/data_sources/types';
 
 describe('ComponentWrapper', () => {
   let em: Editor;
@@ -93,7 +94,7 @@ describe('ComponentWrapper', () => {
       wrapper.append({
         type: 'default',
         title: {
-          type: 'data-variable',
+          type: DataComponentTypes.variable,
           collectionId: keyRootData,
           path,
         },

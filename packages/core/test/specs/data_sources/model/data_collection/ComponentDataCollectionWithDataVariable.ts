@@ -1,16 +1,16 @@
 import { Component, DataRecord, DataSource, DataSourceManager, Editor } from '../../../../../src';
 import { DataVariableType } from '../../../../../src/data_sources/model/DataVariable';
 import {
-  DataCollectionItemType,
-  DataCollectionType,
-} from '../../../../../src/data_sources/model/data_collection/constants';
-import {
   ComponentDataCollectionProps,
   DataCollectionStateType,
 } from '../../../../../src/data_sources/model/data_collection/types';
+import { DataComponentTypes } from '../../../../../src/data_sources/types';
 import EditorModel from '../../../../../src/editor/model/Editor';
 import { ProjectData } from '../../../../../src/storage_manager';
 import { setupTestEditor } from '../../../../common';
+
+const DataCollectionItemType = DataComponentTypes.collectionItem;
+const DataCollectionType = DataComponentTypes.collection;
 
 describe('Collection variable components', () => {
   let em: EditorModel;

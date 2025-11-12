@@ -1,8 +1,8 @@
-import { DataCollectionType, keyCollectionDefinition } from './constants';
-import { ComponentDefinition } from '../../../dom_components/model/types';
-import { DataVariableProps } from '../DataVariable';
-import { keyRootData } from '../../../dom_components/constants';
 import { ObjectAny } from '../../../common';
+import { ComponentDefinition } from '../../../dom_components/model/types';
+import { DataComponentTypes } from '../../types';
+import { DataVariableProps } from '../DataVariable';
+import { keyCollectionDefinition } from './constants';
 
 export type DataCollectionDataSource = DataVariableProps;
 
@@ -36,7 +36,7 @@ export interface DataCollectionStateMap {
 }
 
 export interface ComponentDataCollectionProps extends ComponentDefinition {
-  type: typeof DataCollectionType;
+  type: `${DataComponentTypes.collection}`;
   [keyCollectionDefinition]: DataCollectionProps;
 }
 

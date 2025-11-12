@@ -1,11 +1,7 @@
-import { DataSource } from '../src';
 import CanvasEvents from '../src/canvas/types';
 import { ObjectAny } from '../src/common';
-import {
-  DataConditionIfFalseType,
-  DataConditionIfTrueType,
-} from '../src/data_sources/model/conditional_variables/constants';
 import { NumberOperation } from '../src/data_sources/model/conditional_variables/operators/NumberOperator';
+import { DataComponentTypes } from '../src/data_sources/types';
 import Editor from '../src/editor';
 import { EditorConfig } from '../src/editor/config/config';
 import EditorModel from '../src/editor/model/Editor';
@@ -138,11 +134,12 @@ const createConditionalComponentDef = (type: string, content: string) => ({
   components: [createContent(content)],
 });
 
+const DataConditionIfTrueType = DataComponentTypes.conditionTrue;
+const DataConditionIfFalseType = DataComponentTypes.conditionFalse;
 export const ifTrueText = 'true text';
 export const newIfTrueText = 'new true text';
 export const ifFalseText = 'false text';
 export const newIfFalseText = 'new false text';
-
 export const ifTrueComponentDef = createConditionalComponentDef(DataConditionIfTrueType, ifTrueText);
 export const newIfTrueComponentDef = createConditionalComponentDef(DataConditionIfTrueType, newIfTrueText);
 export const ifFalseComponentDef = createConditionalComponentDef(DataConditionIfFalseType, ifFalseText);

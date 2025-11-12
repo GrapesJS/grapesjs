@@ -13,6 +13,15 @@ export type ResolverFromProps<T extends DataResolverProps> = T extends DataVaria
     ? DataCondition
     : never;
 
+export enum DataComponentTypes {
+  variable = 'data-variable',
+  condition = 'data-condition',
+  conditionTrue = 'data-condition-true-content',
+  conditionFalse = 'data-condition-false-content',
+  collection = 'data-collection',
+  collectionItem = 'data-collection-item',
+}
+
 export interface DataRecordProps extends ObjectAny {
   /**
    * Record id.
