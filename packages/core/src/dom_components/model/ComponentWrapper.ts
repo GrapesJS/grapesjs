@@ -16,7 +16,7 @@ type ResolverCurrentItemType = string | number;
 
 export default class ComponentWrapper extends ComponentWithCollectionsState<DataVariableProps> {
   dataSourceWatcher?: DataResolverListener;
-  private _resolverCurrentItem?: ResolverCurrentItemType;
+  private _resolverCurrentItem?: ResolverCurrentItemType = 0;
   private _isWatchingCollectionStateMap = false;
 
   get defaults() {
@@ -129,6 +129,10 @@ export default class ComponentWrapper extends ComponentWithCollectionsState<Data
   set resolverCurrentItem(value: ResolverCurrentItemType) {
     this._resolverCurrentItem = value;
     this.onCollectionsStateMapUpdate(this.getCollectionsStateMap());
+  }
+
+  setResolverCurrentItem(value: ResolverCurrentItemType) {
+    this.resolverCurrentItem = value;
   }
 
   protected onDataSourceChange() {
