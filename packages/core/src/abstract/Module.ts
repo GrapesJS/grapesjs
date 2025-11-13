@@ -130,6 +130,7 @@ export abstract class ItemManagerModule<
   all: TCollection;
   view?: View;
   events!: Record<string, string>;
+  protected _itemCache = new Map<string, Model>();
 
   constructor(
     em: EditorModel,
@@ -205,6 +206,51 @@ export abstract class ItemManagerModule<
       acc[i.get(i.idAttribute)] = i;
       return acc;
     }, {} as any);
+  }
+
+  protected _makeCacheKey(m: Model) {
+    return '';
+  }
+
+  protected _cacheItem(item: Model) {
+    const key = this._makeCacheKey(item);
+    key && this._itemCache.set(key, item);
+  }
+
+  protected _uncacheItem(item: Model) {
+    const key = this._makeCacheKey(item);
+    key && this._itemCache.delete(key);
+  }
+
+  protected _clearItemCache() {
+    this._itemCache.clear();
+  }
+
+  protected _onItemsResetCache(collection: Collection) {
+    this._clearItemCache();
+    collection.each((item: Model) => this._cacheItem(item));
+  }
+
+  protected _onItemKeyChange(item: Model) {
+    let oldKey: string | undefined;
+    for (const [key, cachedItem] of (this._itemCache as any).entries()) {
+      if (cachedItem === item) {
+        oldKey = key;
+        break;
+      }
+    }
+
+    if (oldKey) {
+      this._itemCache.delete(oldKey);
+    }
+
+    this._cacheItem(item);
+  }
+
+  protected _setupCacheListeners() {
+    this.em.listenTo(this.all, 'add', this._cacheItem.bind(this));
+    this.em.listenTo(this.all, 'remove', this._uncacheItem.bind(this));
+    this.em.listenTo(this.all, 'reset', this._onItemsResetCache.bind(this));
   }
 
   __initListen(opts: any = {}) {

@@ -11,7 +11,7 @@ import { setViewEl } from '../../utils/mixins';
 import { DomComponentsConfig } from '../config/config';
 import Component, { avoidInline } from '../model/Component';
 import Components from '../model/Components';
-import { ComponentOptions } from '../model/types';
+import { ComponentOptions, UpdateComponentsOptions } from '../model/types';
 import ComponentsView from './ComponentsView';
 import { ComponentsEvents } from '../types';
 
@@ -315,7 +315,7 @@ TComp> {
    * @private
    * */
   updateClasses() {
-    const str = this.model.classes.pluck('name').join(' ');
+    const str = this.model.classes.pluck?.('name').join(' ') || '';
     this.setAttribute('class', str);
 
     // Regenerate status class
@@ -570,7 +570,8 @@ TComp> {
     }
   }
 
-  renderAttributes() {
+  renderAttributes(m?: any, v?: any, opts: UpdateComponentsOptions = {}) {
+    if (opts.skipViewUpdate) return;
     this.updateAttributes();
     this.updateClasses();
   }

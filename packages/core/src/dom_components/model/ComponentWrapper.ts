@@ -2,9 +2,23 @@ import { isUndefined } from 'underscore';
 import { attrToString } from '../../utils/dom';
 import Component from './Component';
 import ComponentHead, { type as typeHead } from './ComponentHead';
-import { ToHTMLOptions } from './types';
+import { ComponentOptions, ComponentProperties, ToHTMLOptions } from './types';
+import Components from './Components';
+import DataResolverListener from '../../data_sources/model/DataResolverListener';
+import { DataVariableProps } from '../../data_sources/model/DataVariable';
+import { DataCollectionStateMap } from '../../data_sources/model/data_collection/types';
+import ComponentWithCollectionsState, {
+  DataSourceRecords,
+} from '../../data_sources/model/ComponentWithCollectionsState';
+import { keyRootData } from '../constants';
 
-export default class ComponentWrapper extends Component {
+type ResolverCurrentItemType = string | number;
+
+export default class ComponentWrapper extends ComponentWithCollectionsState<DataVariableProps> {
+  dataSourceWatcher?: DataResolverListener;
+  private _resolverCurrentItem?: ResolverCurrentItemType;
+  private _isWatchingCollectionStateMap = false;
+
   get defaults() {
     return {
       // @ts-ignore
@@ -28,6 +42,16 @@ export default class ComponentWrapper extends Component {
         'background-size',
       ],
     };
+  }
+
+  constructor(props: ComponentProperties = {}, opt: ComponentOptions) {
+    super(props, opt);
+
+    const hasDataResolver = this.dataResolverProps;
+    if (hasDataResolver) {
+      this.onDataSourceChange();
+      this.syncComponentsCollectionState();
+    }
   }
 
   preInit() {
@@ -76,6 +100,73 @@ export default class ComponentWrapper extends Component {
     const docElAttr = (asDoc && attrToString(docEl?.getAttrToHTML())) || '';
     const docElAttrStr = docElAttr ? ` ${docElAttr}` : '';
     return asDoc ? `${doctype}<html${docElAttrStr}>${headStr}${body}</html>` : body;
+  }
+
+  onCollectionsStateMapUpdate(collectionsStateMap: DataCollectionStateMap) {
+    const { head } = this;
+    super.onCollectionsStateMapUpdate(collectionsStateMap);
+    head.onCollectionsStateMapUpdate(collectionsStateMap);
+  }
+
+  syncComponentsCollectionState() {
+    super.syncComponentsCollectionState();
+    this.head.syncComponentsCollectionState();
+  }
+
+  syncOnComponentChange(model: Component, collection: Components, opts: any) {
+    const collectionsStateMap: any = this.getCollectionsStateMap();
+
+    this.collectionsStateMap = collectionsStateMap;
+    super.syncOnComponentChange(model, collection, opts);
+    this.onCollectionsStateMapUpdate(collectionsStateMap);
+  }
+
+  get resolverCurrentItem(): ResolverCurrentItemType | undefined {
+    return this._resolverCurrentItem;
+  }
+
+  set resolverCurrentItem(value: ResolverCurrentItemType) {
+    this._resolverCurrentItem = value;
+    this.onCollectionsStateMapUpdate(this.getCollectionsStateMap());
+  }
+
+  protected onDataSourceChange() {
+    this.onCollectionsStateMapUpdate(this.getCollectionsStateMap());
+  }
+
+  protected listenToPropsChange() {
+    this.on(`change:dataResolver`, (_, value) => {
+      const hasResolver = !isUndefined(value);
+
+      if (hasResolver && !this._isWatchingCollectionStateMap) {
+        this._isWatchingCollectionStateMap = true;
+        this.syncComponentsCollectionState();
+        this.onCollectionsStateMapUpdate(this.getCollectionsStateMap());
+        this.listenToDataSource();
+      } else if (!hasResolver && this._isWatchingCollectionStateMap) {
+        this._isWatchingCollectionStateMap = false;
+        this.stopSyncComponentCollectionState();
+      }
+    });
+
+    this.listenToDataSource();
+  }
+
+  private getCollectionsStateMap(): DataCollectionStateMap {
+    const { dataResolverPath: dataSourcePath, resolverCurrentItem } = this;
+
+    if (!dataSourcePath) {
+      return {};
+    }
+
+    const allItems = this.getDataSourceItems();
+    const selectedItems = !isUndefined(resolverCurrentItem)
+      ? allItems[resolverCurrentItem as keyof DataSourceRecords]
+      : allItems;
+
+    return {
+      [keyRootData]: selectedItems,
+    } as DataCollectionStateMap;
   }
 
   __postAdd() {

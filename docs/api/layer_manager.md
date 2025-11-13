@@ -13,16 +13,30 @@ const editor = grapesjs.init({
 })
 ```
 
-Once the editor is instantiated you can use its API. Before using these methods you should get the module from the instance
+Once the editor is instantiated you can use its API. Before using these methods you should get the module from the instance.
 
 ```js
 const layers = editor.Layers;
 ```
 
 ## Available Events
+* `layer:root` Root layer changed. The new root component is passed as an argument to the callback.
 
-*   `layer:root` - Root layer changed. The new root component is passed as an argument to the callback.
-*   `layer:component` - Component layer is updated. The updated component is passed as an argument to the callback.
+```javascript
+editor.on('layer:root', (component) => { ... });
+```
+
+* `layer:component` Component layer is updated. The updated component is passed as an argument to the callback.
+
+```javascript
+editor.on('layer:component', (component, opts) => { ... });
+```
+
+* `layer:custom` Custom layer event. Object with container and root is passed as an argument to the callback.
+
+```javascript
+editor.on('layer:custom', ({ container, root }) => { ... });
+```
 
 ## Methods
 

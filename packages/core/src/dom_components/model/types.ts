@@ -1,4 +1,4 @@
-import { DynamicWatchersOptions } from './ModelResolverWatcher';
+import { DataWatchersOptions } from './ModelResolverWatcher';
 import Frame from '../../canvas/model/Frame';
 import { AddOptions, Nullable, OptionAsDocument } from '../../common';
 import EditorModel from '../../editor/model/Editor';
@@ -19,7 +19,11 @@ export type DraggableDroppableFn = (source: Component, target: Component, index?
 
 export interface AddComponentsOption extends AddOptions, OptionAsDocument {}
 
-export interface ResetComponentsOptions extends AddComponentsOption {
+export interface UpdateComponentsOptions extends AddComponentsOption {
+  skipViewUpdate?: boolean;
+}
+
+export interface ResetComponentsOptions extends UpdateComponentsOptions {
   previousModels?: Component[];
   keepIds?: string[];
   skipDomReset?: boolean;
@@ -253,7 +257,7 @@ export interface ComponentProperties {
   [key: string]: any;
 }
 
-export interface SymbolToUpOptions extends DynamicWatchersOptions {
+export interface SymbolToUpOptions extends DataWatchersOptions {
   changed?: string;
   fromInstance?: boolean;
   noPropagate?: boolean;

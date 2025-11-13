@@ -40,13 +40,16 @@ export default class ComponentImageView<TComp extends ComponentImage = Component
       const fu = em.Assets.FileUploader();
       fu?.uploadFile(
         {
-          // @ts-ignore
           dataTransfer: { files: [file] },
-        },
-        (res: any) => {
+        } as unknown as DragEvent,
+        (res) => {
           const obj = res && res.data && res.data[0];
           const src = obj && (isString(obj) ? obj : obj.src);
           src && model.set({ src });
+        },
+        {
+          componentView: this,
+          file,
         },
       );
       model.set('file', '');

@@ -1,5 +1,5 @@
 import { isEmpty, forEach, isString, isArray } from 'underscore';
-import { Model, ObjectAny } from '../../common';
+import { ObjectAny, ObjectHash } from '../../common';
 import StyleableModel, { StyleProps } from '../../domain_abstract/model/StyleableModel';
 import Selectors from '../../selector_manager/model/Selectors';
 import { getMediaLength } from '../../code_manager/model/CssGenerator';
@@ -16,7 +16,7 @@ export interface ToCssOptions {
 }
 
 /** @private */
-export interface CssRuleProperties {
+export interface CssRuleProperties extends ObjectHash {
   /**
    * Array of selectors
    */
@@ -125,8 +125,8 @@ export default class CssRule extends StyleableModel<CssRuleProperties> {
     this.opt = opt;
     this.em = opt.em;
     this.ensureSelectors(null, null, {});
+    this.setStyle(this.get('style'), { skipWatcherUpdates: true });
     this.on('change', this.__onChange);
-    this.setStyle(this.get('style'));
   }
 
   __onChange(m: CssRule, opts: any) {
@@ -135,12 +135,10 @@ export default class CssRule extends StyleableModel<CssRuleProperties> {
     changed && !isEmptyObj(changed) && em?.changesUp(opts);
   }
 
-  clone(): CssRule {
-    const opts = { ...this.opt };
-    const attr = { ...this.attributes };
-    attr.selectors = this.get('selectors')!.map((s) => s.clone() as Selector);
-    // @ts-ignore
-    return new this.constructor(attr, opts);
+  clone(): typeof this {
+    const selectors = this.get('selectors')!.map((s) => s.clone() as Selector);
+
+    return super.clone({ selectors });
   }
 
   ensureSelectors(m: any, c: any, opts: any) {
@@ -177,9 +175,12 @@ export default class CssRule extends StyleableModel<CssRuleProperties> {
    * cssRule.getAtRule(); // "@media (min-width: 500px)"
    */
   getAtRule() {
-    const type = this.get('atRuleType');
-    const condition = this.get('mediaText');
-    // Avoid breaks with the last condition
+    return CssRule.getAtRuleFromProps(this.attributes);
+  }
+
+  static getAtRuleFromProps(cssRuleProps: Partial<CssRuleProperties>) {
+    const type = cssRuleProps.atRuleType;
+    const condition = cssRuleProps.mediaText;
     const typeStr = type ? `@${type}` : condition ? '@media' : '';
 
     return typeStr + (condition && typeStr ? ` ${condition}` : '');
@@ -307,9 +308,8 @@ export default class CssRule extends StyleableModel<CssRuleProperties> {
     return result;
   }
 
-  toJSON(...args: any) {
-    const obj = Model.prototype.toJSON.apply(this, args);
-
+  toJSON(opts?: ObjectAny) {
+    const obj = super.toJSON(opts);
     if (this.em?.getConfig().avoidDefaults) {
       const defaults = this.defaults();
 
@@ -326,7 +326,7 @@ export default class CssRule extends StyleableModel<CssRuleProperties> {
       if (isEmpty(obj.style)) delete obj.style;
     }
 
-    return { ...obj, style: this.dataResolverWatchers.getStylesDefsOrValues(obj.style) };
+    return obj;
   }
 
   /**

@@ -1,12 +1,12 @@
 import { bindAll, indexOf } from 'underscore';
 import CanvasModule from '../canvas';
 import { ObjectStrings } from '../common';
+import Component from '../dom_components/model/Component';
 import EditorModel from '../editor/model/Editor';
 import { getDocumentScroll, off, on } from './dom';
-import { DragDirection, DragSource } from './sorter/types';
 import CanvasNewComponentNode from './sorter/CanvasNewComponentNode';
 import ComponentSorter from './sorter/ComponentSorter';
-import Component from '../dom_components/model/Component';
+import { DragDirection, DraggableContent, DragSource } from './sorter/types';
 
 // TODO move in sorter
 type SorterOptions = {
@@ -233,7 +233,7 @@ export default class Droppable {
   handleDrop(ev: Event | DragEvent) {
     ev.preventDefault();
     const dt = (ev as DragEvent).dataTransfer;
-    const content = this.getContentByData(dt).content;
+    const content = this.getContentByData(dt!).content || '';
     if (this.draggedNode) {
       this.draggedNode.content = content;
     }
@@ -241,12 +241,12 @@ export default class Droppable {
     this.endDrop(!content, ev);
   }
 
-  getContentByData(dt: any) {
+  getContentByData(dt?: DataTransfer) {
     const em = this.em;
-    const types = dt && dt.types;
-    const files = (dt && dt.files) || [];
+    const types = dt?.types || [];
+    const files = dt?.files || [];
     const dragSource: DragSource<Component> = em.get('dragSource');
-    let content = dt && dt.getData('text');
+    let content: DraggableContent['content'] = dt?.getData('text') || '';
 
     if (files.length) {
       content = [];
@@ -280,9 +280,13 @@ export default class Droppable {
       content = `<div>${content}</div>`;
     }
 
-    const result = { content };
+    const result = {
+      content,
+      setContent(content: DraggableContent['content']) {
+        result.content = content;
+      },
+    };
     em.trigger('canvas:dragdata', dt, result);
-
     return result;
   }
 }

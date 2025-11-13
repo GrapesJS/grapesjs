@@ -1,5 +1,5 @@
 import { isEmpty, isArray, isString, isFunction, each, includes, extend, flatten, keys } from 'underscore';
-import Component from './Component';
+import Component, { SetAttrOptions } from './Component';
 import { AddOptions, Collection } from '../../common';
 import { DomComponentsConfig } from '../config/config';
 import EditorModel from '../../editor/model/Editor';
@@ -18,6 +18,21 @@ import ComponentWrapper from './ComponentWrapper';
 import { ComponentsEvents, ParseStringOptions } from '../types';
 import { isSymbolInstance, isSymbolRoot, updateSymbolComps } from './SymbolUtils';
 
+export interface ResetCommonUpdateProps {
+  component: Component;
+  item: ComponentDefinitionDefined;
+  options: SetAttrOptions;
+}
+
+export interface ResetFromStringOptions {
+  visitedCmps?: Record<string, Component[]>;
+  keepIds?: string[];
+  updateOptions?: {
+    onAttributes?: (props: ResetCommonUpdateProps & { attributes: Record<string, any> }) => void;
+    onStyle?: (props: ResetCommonUpdateProps & { style: Record<string, any> }) => void;
+  };
+}
+
 export const getComponentIds = (cmp?: Component | Component[] | Components, res: string[] = []) => {
   if (!cmp) return [];
   const cmps = (isArray(cmp) || isFunction((cmp as Components).map) ? cmp : [cmp]) as Component[];
@@ -35,6 +50,7 @@ const getComponentsFromDefs = (
 ) => {
   opts.visitedCmps = opts.visitedCmps || {};
   const { visitedCmps } = opts;
+  const updateOptions = (opts.updateOptions as ResetFromStringOptions['updateOptions']) || {};
   const itms = isArray(items) ? items : [items];
 
   return itms.map((item) => {
@@ -50,10 +66,21 @@ const getComponentsFromDefs = (
         // Update the component if exists already
         if (all[id]) {
           result = all[id] as any;
-          const cmp = result as unknown as Component;
-          tagName && cmp.set({ tagName }, { ...opts, silent: true });
-          keys(restAttr).length && cmp.addAttributes(restAttr, { ...opts });
-          keys(style).length && cmp.addStyle(style, opts);
+          const { onAttributes, onStyle } = updateOptions;
+          const component = result as unknown as Component;
+          tagName && component.set({ tagName }, { ...opts, silent: true });
+
+          if (onAttributes) {
+            onAttributes({ item, component, attributes: restAttr, options: opts });
+          } else if (keys(restAttr).length) {
+            component.addAttributes(restAttr, { ...opts });
+          }
+
+          if (onStyle) {
+            onStyle({ item, component, style, options: opts });
+          } else if (keys(style).length) {
+            component.addStyle(style, opts);
+          }
         }
       } else {
         // Found another component with the same ID, treat it as a new component
@@ -131,14 +158,15 @@ Component> {
     models.each((model) => this.onAdd(model));
   }
 
-  resetFromString(input = '', opts: { visitedCmps?: Record<string, Component[]>; keepIds?: string[] } = {}) {
+  resetFromString(input = '', opts: ResetFromStringOptions = {}) {
     opts.keepIds = getComponentIds(this);
     const { domc, em, parent } = this;
     const cssc = em?.Css;
     const allByID = domc?.allById() || {};
     const parsed = this.parseString(input, opts);
-    const newCmps = getComponentsFromDefs(parsed, allByID, opts);
-    const { visitedCmps = {} } = opts;
+    const fromDefOpts = { skipViewUpdate: true, ...opts };
+    const newCmps = getComponentsFromDefs(parsed, allByID, fromDefOpts);
+    const { visitedCmps = {} } = fromDefOpts;
 
     // Clone styles for duplicated components
     Object.keys(visitedCmps).forEach((id) => {
@@ -391,15 +419,18 @@ Component> {
 
   onAdd(model: Component, c?: any, opts: { temporary?: boolean } = {}) {
     const { domc, em } = this;
-    const style = model.getStyle();
-    const avoidInline = em && em.getConfig().avoidInlineStyle;
+    const avoidInline = em.config.avoidInlineStyle;
     domc && domc.Component.ensureInList(model);
 
-    if (!isEmpty(style) && !avoidInline && em && em.getConfig().forceClass && !opts.temporary) {
-      const name = model.cid;
-      em.Css.setClassRule(name, style);
-      model.setStyle({});
-      model.addClass(name);
+    if (!avoidInline && em.config.forceClass && !opts.temporary) {
+      const style = model.getStyle();
+
+      if (!isEmpty(style)) {
+        const name = model.cid;
+        em.Css.setClassRule(name, style);
+        model.setStyle({});
+        model.addClass(name);
+      }
     }
 
     model.__postAdd({ recursive: true });

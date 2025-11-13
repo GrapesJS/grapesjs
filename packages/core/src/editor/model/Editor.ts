@@ -76,6 +76,7 @@ const storableDeps: (new (em: EditorModel) => IModule & IStorableModule)[] = [
   CssComposer,
   PageManager,
   ComponentManager,
+  SelectorManager,
 ];
 
 Extender({ $ });
@@ -119,6 +120,7 @@ export default class EditorModel extends Model {
   destroyed = false;
   _config: InitEditorConfig;
   _storageTimeout?: ReturnType<typeof setTimeout>;
+  _isStoring: boolean = false;
   attrsOrig: any;
   timedInterval?: ReturnType<typeof setTimeout>;
   updateItr?: ReturnType<typeof setTimeout>;
@@ -279,7 +281,7 @@ export default class EditorModel extends Model {
     this.on('change:componentHovered', this.componentHovered, this);
     this.on('change:changesCount', this.updateChanges, this);
     this.on('change:readyLoad change:readyCanvas', this._checkReady, this);
-    toLog.forEach((e) => this.listenLog(e));
+    toLog.forEach((e) => this.listenLog(e as keyof typeof logs));
 
     // Deprecations
     [{ from: 'change:selectedComponent', to: 'component:toggled' }].forEach((event) => {
@@ -302,9 +304,12 @@ export default class EditorModel extends Model {
     return this.config.el;
   }
 
-  listenLog(event: string) {
-    //@ts-ignore
-    this.listenTo(this, `log:${event}`, logs[event]);
+  listenLog(event: keyof typeof logs) {
+    this.listenTo(this, `log:${event}`, (...args) => {
+      if (!this.config.log) return;
+      const logFn = logs[event];
+      logFn?.(...args);
+    });
   }
 
   get config() {
@@ -842,7 +847,7 @@ export default class EditorModel extends Model {
     const keepUnusedStyles = !isUndefined(opts.keepUnusedStyles) ? opts.keepUnusedStyles : config.keepUnusedStyles;
     const cssc = this.Css;
     const wrp = opts.component || this.Components.getComponent();
-    const protCss = !avoidProt ? config.protectedCss! : '';
+    const protCss = !avoidProt ? config.protectedCss || '' : '';
     const css =
       wrp &&
       this.CodeManager.getCode(wrp, 'css', {
@@ -869,9 +874,19 @@ export default class EditorModel extends Model {
    * @public
    */
   async store<T extends StorageOptions>(options?: T) {
+    if (this._isStoring) return;
+    this._isStoring = true;
+    // We use a 1ms timeout to defer the cleanup to the next tick of the event loop.
+    // This prevents a race condition where a store operation, like 'sync:content',
+    // might increase the dirty count before it can be properly cleared.
+    setTimeout(() => {
+      this.clearDirtyCount();
+    }, 1);
     const data = this.storeData();
     await this.Storage.store(data, options);
-    this.clearDirtyCount();
+    setTimeout(() => {
+      this._isStoring = false;
+    }, 1);
     return data;
   }
 

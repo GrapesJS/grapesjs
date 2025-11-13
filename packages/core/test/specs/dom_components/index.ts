@@ -264,9 +264,9 @@ describe('DOM Components', () => {
         #${id} { background-color: red }
       </style>`) as Component;
       const rule = cc.getAll().at(0);
-      expect(rule.toCSS()).toEqual(`#${id}{background-color:red;color:red;padding:50px 100px;}`);
+      expect(rule.toCSS()).toEqual(`#${id}{color:red;padding:50px 100px;background-color:red;}`);
       obj.getComponents().first().addStyle({ margin: '10px' });
-      const css = `#${id}{background-color:red;color:red;padding:50px 100px;margin:10px;}`;
+      const css = `#${id}{color:red;padding:50px 100px;background-color:red;margin:10px;}`;
       expect(rule.toCSS()).toEqual(css);
 
       setTimeout(() => {

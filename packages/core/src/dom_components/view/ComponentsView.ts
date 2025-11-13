@@ -1,14 +1,14 @@
 import { isUndefined } from 'underscore';
-import { removeEl } from '../../utils/dom';
-import { View } from '../../common';
-import { DomComponentsConfig } from '../config/config';
-import EditorModel from '../../editor/model/Editor';
-import Component from '../model/Component';
-import ComponentView from './ComponentView';
 import FrameView from '../../canvas/view/FrameView';
+import { View } from '../../common';
+import EditorModel from '../../editor/model/Editor';
+import { removeEl } from '../../utils/dom';
+import { DomComponentsConfig } from '../config/config';
+import Component from '../model/Component';
 import Components from '../model/Components';
 import { ResetComponentsOptions } from '../model/types';
 import { ComponentsEvents } from '../types';
+import ComponentView from './ComponentView';
 
 export default class ComponentsView extends View {
   opts!: any;
@@ -127,6 +127,8 @@ export default class ComponentsView extends View {
   }
 
   resetChildren(models: Components, opts: ResetComponentsOptions = {}) {
+    if (opts.skipViewUpdate) return;
+
     const { previousModels } = opts;
     if (!opts.skipDomReset) {
       this.parentEl!.innerHTML = '';

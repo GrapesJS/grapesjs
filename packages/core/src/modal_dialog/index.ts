@@ -14,10 +14,7 @@
  * const modal = editor.Modal;
  * ```
  *
- * ## Available Events
- * * `modal:open` - Modal is opened
- * * `modal:close` - Modal is closed
- * * `modal` - Event triggered on any change related to the modal. An object containing all the available data about the triggered event is passed as an argument to the callback.
+ * {REPLACE_EVENTS}
  *
  * ## Methods
  * * [open](#open)
@@ -35,18 +32,20 @@
 
 import { debounce, isFunction, isString } from 'underscore';
 import { Module } from '../abstract';
-import EditorView from '../editor/view/EditorView';
+import { EventHandler } from '../common';
 import EditorModel from '../editor/model/Editor';
+import EditorView from '../editor/view/EditorView';
 import { createText } from '../utils/dom';
 import defConfig, { ModalConfig } from './config/config';
 import ModalM from './model/Modal';
+import { ModalEvents } from './types';
 import ModalView from './view/ModalView';
-import { EventHandler } from '../common';
 
-export type ModalEvent = 'modal:open' | 'modal:close' | 'modal';
+export type ModalEvent = `${ModalEvents}`;
 
 export default class ModalModule extends Module<ModalConfig> {
   modal?: ModalView;
+  events = ModalEvents;
 
   /**
    * Initialize module. Automatically called with a new instance of the editor
@@ -55,10 +54,10 @@ export default class ModalModule extends Module<ModalConfig> {
    */
   constructor(em: EditorModel) {
     super(em, 'Modal', defConfig());
-
+    const { events } = this;
     this.model = new ModalM(this);
     this.model.on('change:open', (m: ModalM, enable: boolean) => {
-      em.trigger(`modal:${enable ? 'open' : 'close'}`);
+      em.trigger(enable ? events.open : events.close);
     });
     this.model.on(
       'change',
@@ -67,7 +66,7 @@ export default class ModalModule extends Module<ModalConfig> {
         const { custom } = this.config;
         //@ts-ignore
         isFunction(custom) && custom(data);
-        em.trigger('modal', data);
+        em.trigger(events.all, data);
       }, 0),
     );
 
@@ -142,7 +141,8 @@ export default class ModalModule extends Module<ModalConfig> {
    * });
    */
   onceClose(clb: EventHandler) {
-    this.em.once('modal:close', clb);
+    const { em, events } = this;
+    em.once(events.close, clb);
     return this;
   }
 
@@ -157,7 +157,8 @@ export default class ModalModule extends Module<ModalConfig> {
    * });
    */
   onceOpen(clb: EventHandler) {
-    this.em.once('modal:open', clb);
+    const { em, events } = this;
+    em.once(events.open, clb);
     return this;
   }
 

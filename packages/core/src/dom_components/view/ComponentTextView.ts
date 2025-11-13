@@ -248,9 +248,11 @@ export default class ComponentTextView<TComp extends ComponentText = ComponentTe
     mixins.off(elDocs, 'mousedown', this.onDisable as any);
     mixins[method](elDocs, 'mousedown', this.onDisable as any);
     em[method]('toolbar:run:before', this.onDisable);
+
     if (model) {
+      const rteEvents = em.RichTextEditor.events;
       model[method]('removed', this.onDisable);
-      model.trigger(`rte:${enable ? 'enable' : 'disable'}`);
+      model.trigger(enable ? rteEvents.enable : rteEvents.disable);
     }
 
     // @ts-ignore Avoid closing edit mode on component click

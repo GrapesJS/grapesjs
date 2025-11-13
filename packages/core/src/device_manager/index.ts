@@ -13,12 +13,7 @@
  * ```js
  * const deviceManager = editor.Devices;
  * ```
- * ## Available Events
- * * `device:add` - Added new device. The [Device] is passed as an argument to the callback
- * * `device:remove` - Device removed. The [Device] is passed as an argument to the callback
- * * `device:select` - New device selected. The newly selected [Device] and the previous one, are passed as arguments to the callback
- * * `device:update` - Device updated. The updated [Device] and the object containing changes are passed as arguments to the callback
- * * `device` - Catch-all event for all the events mentioned above. An object containing all the available data about the triggered event is passed as an argument to the callback
+ * {REPLACE_EVENTS}
  *
  * ## Methods
  * * [add](#add)

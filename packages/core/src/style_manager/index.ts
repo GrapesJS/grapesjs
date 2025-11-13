@@ -9,29 +9,13 @@
  * })
  * ```
  *
- * Once the editor is instantiated you can use its API and listen to its events. Before using these methods, you should get the module from the instance.
+ * Once the editor is instantiated you can use its API. Before using these methods you should get the module from the instance.
  *
  * ```js
- * // Listen to events
- * editor.on('style:sector:add', (sector) => { ... });
- *
- * // Use the API
  * const styleManager = editor.StyleManager;
- * styleManager.addSector(...);
  * ```
- * ## Available Events
- * * `style:sector:add` - Sector added. The [Sector] is passed as an argument to the callback.
- * * `style:sector:remove` - Sector removed. The [Sector] is passed as an argument to the callback.
- * * `style:sector:update` - Sector updated. The [Sector] and the object containing changes are passed as arguments to the callback.
- * * `style:property:add` - Property added. The [Property] is passed as an argument to the callback.
- * * `style:property:remove` - Property removed. The [Property] is passed as an argument to the callback.
- * * `style:property:update` - Property updated. The [Property] and the object containing changes are passed as arguments to the callback.
- * * `style:target` - Target selection changed. The target (or `null` in case the target is deselected) is passed as an argument to the callback.
- * <!--
- * * `styleManager:update:target` - The target (Component or CSSRule) is changed
- * * `styleManager:change` - Triggered on style property change from new selected component, the view of the property is passed as an argument to the callback
- * * `styleManager:change:{propertyName}` - As above but for a specific style property
- * -->
+ *
+ * {REPLACE_EVENTS}
  *
  * ## Methods
  * * [getConfig](#getconfig)
@@ -63,71 +47,32 @@
  * @module docsjs.StyleManager
  */
 
-import { isUndefined, isArray, isString, debounce, bindAll } from 'underscore';
-import { isComponent } from '../utils/mixins';
+import { bindAll, debounce, isArray, isString, isUndefined } from 'underscore';
+import { ItemManagerModule } from '../abstract/Module';
 import { AddOptions, Debounced, Model } from '../common';
+import CssRule from '../css_composer/model/CssRule';
+import Component from '../dom_components/model/Component';
+import { ComponentsEvents } from '../dom_components/types';
+import StyleableModel, { StyleProps } from '../domain_abstract/model/StyleableModel';
+import EditorModel from '../editor/model/Editor';
+import { isComponent } from '../utils/mixins';
 import defConfig, { StyleManagerConfig } from './config/config';
+import Properties from './model/Properties';
+import Property, { PropertyProps } from './model/Property';
+import PropertyComposite from './model/PropertyComposite';
+import PropertyFactory from './model/PropertyFactory';
+import PropertyStack from './model/PropertyStack';
 import Sector, { SectorProperties } from './model/Sector';
 import Sectors from './model/Sectors';
-import Properties from './model/Properties';
-import PropertyFactory from './model/PropertyFactory';
-import SectorsView from './view/SectorsView';
-import { ItemManagerModule } from '../abstract/Module';
-import EditorModel from '../editor/model/Editor';
-import Property, { PropertyProps } from './model/Property';
-import Component from '../dom_components/model/Component';
-import CssRule from '../css_composer/model/CssRule';
-import StyleableModel, { StyleProps } from '../domain_abstract/model/StyleableModel';
+import { PropertyTypes, StyleManagerEvents, StyleTarget } from './types';
 import { CustomPropertyView } from './view/PropertyView';
-import { PropertySelectProps } from './model/PropertySelect';
-import { PropertyNumberProps } from './model/PropertyNumber';
-import PropertyStack, { PropertyStackProps } from './model/PropertyStack';
-import PropertyComposite from './model/PropertyComposite';
-import { ComponentsEvents } from '../dom_components/types';
+import SectorsView from './view/SectorsView';
 
-export type PropertyTypes = PropertyStackProps | PropertySelectProps | PropertyNumberProps;
+export type { PropertyTypes, StyleModuleParam, StyleTarget } from './types';
 
-export type StyleManagerEvent =
-  | 'style:sector:add'
-  | 'style:sector:remove'
-  | 'style:sector:update'
-  | 'style:property:add'
-  | 'style:property:remove'
-  | 'style:property:update'
-  | 'style:target';
-
-export type StyleTarget = StyleableModel;
-
-export const evAll = 'style';
-export const evPfx = `${evAll}:`;
-export const evSector = `${evPfx}sector`;
-export const evSectorAdd = `${evSector}:add`;
-export const evSectorRemove = `${evSector}:remove`;
-export const evSectorUpdate = `${evSector}:update`;
-export const evProp = `${evPfx}property`;
-export const evPropAdd = `${evProp}:add`;
-export const evPropRemove = `${evProp}:remove`;
-export const evPropUp = `${evProp}:update`;
-export const evLayerSelect = `${evPfx}layer:select`;
-export const evTarget = `${evPfx}target`;
-export const evCustom = `${evPfx}custom`;
-
-export type StyleModuleParam<T extends keyof StyleManager, N extends number> = Parameters<StyleManager[T]>[N];
+export type StyleManagerEvent = `${StyleManagerEvents}`;
 
 const propDef = (value: any) => value || value === 0;
-
-const stylesEvents = {
-  all: evAll,
-  sectorAdd: evSectorAdd,
-  sectorRemove: evSectorRemove,
-  sectorUpdate: evSectorUpdate,
-  propertyAdd: evPropAdd,
-  propertyRemove: evPropRemove,
-  propertyUpdate: evPropUp,
-  layerSelect: evLayerSelect,
-  target: evTarget,
-  custom: evCustom,
-};
 
 export default class StyleManager extends ItemManagerModule<
   StyleManagerConfig,
@@ -137,7 +82,7 @@ export default class StyleManager extends ItemManagerModule<
   builtIn: PropertyFactory;
   upAll: Debounced;
   properties: typeof Properties;
-  events!: typeof stylesEvents;
+  events = StyleManagerEvents;
   sectors: Sectors;
   SectView!: SectorsView;
   Sector = Sector;
@@ -157,8 +102,9 @@ export default class StyleManager extends ItemManagerModule<
    * @private
    */
   constructor(em: EditorModel) {
-    super(em, 'StyleManager', new Sectors([], { em }), stylesEvents, defConfig());
+    super(em, 'StyleManager', new Sectors([], { em }), StyleManagerEvents, defConfig());
     bindAll(this, '__clearStateTarget');
+    const { events } = this;
     const c = this.config;
     const ppfx = c.pStylePrefix;
     if (ppfx) c.stylePrefix = ppfx + c.stylePrefix;
@@ -185,10 +131,10 @@ export default class StyleManager extends ItemManagerModule<
 
     // Triggers only custom event
     const trgCustom = debounce(() => this.__trgCustom(), 0);
-    model.listenTo(em, `${evLayerSelect} ${evTarget}`, trgCustom);
+    model.listenTo(em, `${events.layerSelect} ${events.target}`, trgCustom);
 
     // Other listeners
-    model.on('change:lastTarget', () => em.trigger(evTarget, this.getSelected()));
+    model.on('change:lastTarget', () => em.trigger(events.target, this.getSelected()));
   }
 
   __upSel() {

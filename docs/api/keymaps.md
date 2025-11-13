@@ -19,23 +19,30 @@ const editor = grapesjs.init({
 })
 ```
 
-Once the editor is instantiated you can use its API and listen to its events. Before using these methods, you should get the module from the instance.
+Once the editor is instantiated you can use its API. Before using these methods you should get the module from the instance.
 
 ```js
-// Listen to events
-editor.on('keymap:add', () => { ... });
-
-// Use the API
 const keymaps = editor.Keymaps;
-keymaps.add(...);
 ```
 
 ## Available Events
+* `keymap:add` New keymap added. The new keymap object is passed as an argument to the callback.
 
-*   `keymap:add` - New keymap added. The new keyamp object is passed as an argument
-*   `keymap:remove` - Keymap removed. The removed keyamp object is passed as an argument
-*   `keymap:emit` - Some keymap emitted, in arguments you get keymapId, shortcutUsed, Event
-*   `keymap:emit:{keymapId}` - `keymapId` emitted, in arguments you get keymapId, shortcutUsed, Event
+```javascript
+editor.on('keymap:add', (keymap) => { ... });
+```
+
+* `keymap:remove` Keymap removed. The removed keymap object is passed as an argument to the callback.
+
+```javascript
+editor.on('keymap:remove', (keymap) => { ... });
+```
+
+* `keymap:emit` Some keymap emitted. The keymapId, shortcutUsed, and Event are passed as arguments to the callback.
+
+```javascript
+editor.on('keymap:emit', (keymapId, shortcutUsed, event) => { ... });
+```
 
 ## Methods
 

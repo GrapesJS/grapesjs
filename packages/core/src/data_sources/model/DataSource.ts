@@ -29,9 +29,26 @@
  * @extends {Model<DataSourceProps>}
  */
 
-import { AddOptions, collectionEvents, CombinedModelConstructorOptions, Model, RemoveOptions } from '../../common';
+import { isString } from 'underscore';
+import {
+  AddOptions,
+  collectionEvents,
+  CombinedModelConstructorOptions,
+  Model,
+  RemoveOptions,
+  SetOptions,
+} from '../../common';
 import EditorModel from '../../editor/model/Editor';
-import { DataSourceTransformers, DataSourceType, DataSourceProps, DataRecordProps } from '../types';
+import {
+  DataFieldPrimitiveType,
+  DataFieldSchemaRelation,
+  DataRecordProps,
+  DataSourceProps,
+  DataSourceProviderResult,
+  DataSourceTransformers,
+  DataSourceType,
+} from '../types';
+import { DEF_DATA_FIELD_ID } from '../utils';
 import DataRecord from './DataRecord';
 import DataRecords from './DataRecords';
 import DataSources from './DataSources';
@@ -68,6 +85,7 @@ export default class DataSource<DRProps extends DataRecordProps = DataRecordProp
   constructor(props: DataSourceProps<DRProps>, opts: DataSourceOptions) {
     super(
       {
+        schema: {},
         ...props,
         records: [],
       } as unknown as DataSourceType<DRProps>,
@@ -95,6 +113,16 @@ export default class DataSource<DRProps extends DataRecordProps = DataRecordProp
   }
 
   /**
+   * Retrieves the collection of records associated with this data source.
+   *
+   * @returns {DataRecords<DRProps>} The collection of data records.
+   * @name records
+   */
+  get schema() {
+    return this.attributes.schema!;
+  }
+
+  /**
    * Retrieves the editor model associated with this data source.
    *
    * @returns {EditorModel} The editor model.
@@ -102,6 +130,13 @@ export default class DataSource<DRProps extends DataRecordProps = DataRecordProp
    */
   get em() {
     return (this.collection as unknown as DataSources).em;
+  }
+
+  /**
+   * Indicates if the data source has a provider for records.
+   */
+  get hasProvider() {
+    return !!this.attributes.provider;
   }
 
   /**
@@ -135,8 +170,8 @@ export default class DataSource<DRProps extends DataRecordProps = DataRecordProp
    * @returns {DataRecord<DRProps> | undefined} The data record, or `undefined` if no record is found with the given ID.
    * @name getRecord
    */
-  getRecord(id: string | number) {
-    return this.records.get(id) as DataRecord | undefined;
+  getRecord(id: string | number): DataRecord | undefined {
+    return this.records.get(id);
   }
 
   /**
@@ -148,6 +183,86 @@ export default class DataSource<DRProps extends DataRecordProps = DataRecordProp
    */
   getRecords() {
     return [...this.records.models].map((record) => this.getRecord(record.id)!);
+  }
+
+  /**
+   * Retrieves all records from the data source with resolved relations based on the schema.
+   */
+  getResolvedRecords() {
+    const schemaEntries = Object.entries(this.schema);
+    const records = this.getRecords().map((record) => {
+      const result = { ...record.attributes };
+
+      if (schemaEntries.length === 0) return result;
+
+      schemaEntries.forEach(([fieldName, schema]) => {
+        const fieldSchema = schema as DataFieldSchemaRelation;
+        if (fieldSchema?.type === DataFieldPrimitiveType.relation && fieldSchema.target) {
+          const relationValue = result[fieldName];
+
+          if (relationValue) {
+            const targetDs = this.em.DataSources.get(fieldSchema.target);
+            if (targetDs) {
+              const targetRecords = targetDs.records;
+              const targetField = fieldSchema.targetField || DEF_DATA_FIELD_ID;
+
+              if (fieldSchema.isMany) {
+                const relationValues = Array.isArray(relationValue) ? relationValue : [relationValue];
+                const relatedRecords = targetRecords.filter((r) => relationValues.includes(r.attributes[targetField]));
+                result[fieldName] = relatedRecords.map((r) => ({ ...r.attributes }));
+              } else {
+                const relatedRecord = targetDs.records.find((r) => r.attributes[targetField] === relationValue);
+
+                if (relatedRecord) {
+                  result[fieldName] = { ...relatedRecord.attributes };
+                }
+              }
+            }
+          }
+        }
+      });
+
+      return result;
+    });
+
+    return records;
+  }
+
+  async loadProvider() {
+    const { attributes, em } = this;
+    const { provider } = attributes;
+
+    if (!provider) return;
+
+    if (isString(provider)) {
+      // TODO: implement providers as plugins (later)
+      return;
+    }
+
+    const providerGet = isString(provider.get) ? { url: provider.get } : provider.get;
+    const { url, method, headers, body } = providerGet;
+
+    const fetchProvider = async () => {
+      const dataSource = this;
+
+      try {
+        em.trigger(em.DataSources.events.providerLoadBefore, { dataSource });
+
+        const response = await fetch(url, { method, headers, body });
+        if (!response.ok) throw new Error(await response.text());
+        const result: DataSourceProviderResult = await response.json();
+
+        if (result?.records) this.setRecords(result.records as any);
+        if (result?.schema) this.upSchema(result.schema);
+
+        em.trigger(em.DataSources.events.providerLoad, { result, dataSource });
+      } catch (error: any) {
+        em.logError(error.message);
+        em.trigger(em.DataSources.events.providerLoadError, { dataSource, error });
+      }
+    };
+
+    await fetchProvider();
   }
 
   /**
@@ -180,6 +295,25 @@ export default class DataSource<DRProps extends DataRecordProps = DataRecordProp
     records.forEach((record) => {
       this.records.add(record);
     });
+  }
+
+  /**
+   * Update the schema.
+   * @example
+   * dataSource.upSchema({ name: { type: 'string' } });
+   */
+  upSchema(schema: Partial<typeof this.schema>, opts?: SetOptions) {
+    this.set('schema', { ...this.schema, ...schema }, opts);
+  }
+
+  /**
+   * Get schema field definition.
+   * @example
+   * const fieldSchema = dataSource.getSchemaField('name');
+   * fieldSchema.type; // 'string'
+   */
+  getSchemaField(fieldKey: keyof DRProps) {
+    return this.schema[fieldKey];
   }
 
   private handleChanges(m: any, c: any, o: any) {

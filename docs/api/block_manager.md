@@ -84,6 +84,8 @@ editor.on('block:custom', ({ container, blocks, ... }) => { ... });
 editor.on('block', ({ event, model, ... }) => { ... });
 ```
 
+* BlocksEventCallback
+
 [Block]: block.html
 
 [Component]: component.html

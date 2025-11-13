@@ -1,7 +1,13 @@
 import { Model } from '../../common';
+import { keyRootData } from '../../dom_components/constants';
 import EditorModel from '../../editor/model/Editor';
 import { isDataVariable } from '../utils';
-import { DataCollectionStateMap, DataCollectionState, DataCollectionStateType } from './data_collection/types';
+import {
+  DataCollectionStateMap,
+  DataCollectionState,
+  DataCollectionStateType,
+  RootDataType,
+} from './data_collection/types';
 
 export const DataVariableType = 'data-variable' as const;
 
@@ -134,36 +140,44 @@ export default class DataVariable extends Model<DataVariableProps> {
     );
   }
 
-  private resolveCollectionVariable(): unknown {
+  private resolveCollectionVariable() {
     const { em, collectionsStateMap } = this;
     return DataVariable.resolveCollectionVariable(this.attributes, { em, collectionsStateMap });
   }
 
   static resolveCollectionVariable(
-    dataResolverProps: {
+    params: {
       collectionId?: string;
       variableType?: DataCollectionStateType;
       path?: string;
       defaultValue?: string;
     },
-    opts: DataVariableOptions,
-  ): unknown {
-    const { collectionId = '', variableType, path, defaultValue = '' } = dataResolverProps;
-    const { em, collectionsStateMap } = opts;
+    ctx: DataVariableOptions,
+  ) {
+    const { collectionId = '', variableType, path, defaultValue = '' } = params;
+    const { em, collectionsStateMap } = ctx;
 
     if (!collectionsStateMap) return defaultValue;
 
     const collectionItem = collectionsStateMap[collectionId];
     if (!collectionItem) return defaultValue;
 
+    if (collectionId === keyRootData) {
+      const root = collectionItem as RootDataType;
+      return path ? root?.[path as keyof RootDataType] : root;
+    }
+
     if (!variableType) {
       em.logError(`Missing collection variable type for collection: ${collectionId}`);
       return defaultValue;
     }
 
-    return variableType === 'currentItem'
-      ? DataVariable.resolveCurrentItem(collectionItem, path, collectionId, em)
-      : collectionItem[variableType];
+    if (variableType === 'currentItem') {
+      return DataVariable.resolveCurrentItem(collectionItem as DataCollectionState, path, collectionId, em);
+    }
+
+    const state = collectionItem as DataCollectionState;
+    return state[variableType] ?? defaultValue;
   }
 
   private static resolveCurrentItem(
@@ -171,7 +185,7 @@ export default class DataVariable extends Model<DataVariableProps> {
     path: string | undefined,
     collectionId: string,
     em: EditorModel,
-  ): unknown {
+  ) {
     const currentItem = collectionItem.currentItem;
     if (!currentItem) {
       em.logError(`Current item is missing for collection: ${collectionId}`);

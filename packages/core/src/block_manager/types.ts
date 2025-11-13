@@ -1,4 +1,5 @@
 import { ItemsByCategory } from '../abstract/ModuleCategory';
+import { AddOptions, RemoveOptions } from '../common';
 import Block from './model/Block';
 
 export interface BlocksByCategory extends ItemsByCategory<Block> {}
@@ -76,6 +77,12 @@ export enum BlocksEvents {
   all = 'block',
 }
 /**{END_EVENTS}*/
+
+export interface BlocksEventCallback {
+  [BlocksEvents.add]: [Block, AddOptions];
+  [BlocksEvents.remove]: [Block, RemoveOptions];
+  [BlocksEvents.update]: [Block, AddOptions];
+}
 
 // need this to avoid the TS documentation generator to break
 export default BlocksEvents;

@@ -1,4 +1,4 @@
-import { DataSourceManager } from '../src';
+import { DataSource } from '../src';
 import CanvasEvents from '../src/canvas/types';
 import { ObjectAny } from '../src/common';
 import {
@@ -14,7 +14,17 @@ import EditorModel from '../src/editor/model/Editor';
 export const DEFAULT_CMPS = 3;
 
 export function setupTestEditor(opts?: { withCanvas?: boolean; config?: Partial<EditorConfig> }) {
-  document.body.innerHTML = '<div id="fixtures"></div> <div id="canvas-wrp"></div> <div id="editor"></div>';
+  document.body.innerHTML = '';
+  const fixtures = document.createElement('div');
+  fixtures.id = 'fixtures';
+  const canvasWrapEl = document.createElement('div');
+  canvasWrapEl.id = 'canvas-wrp';
+  const editorEl = document.createElement('div');
+  editorEl.id = 'editor';
+  document.body.appendChild(fixtures);
+  document.body.appendChild(canvasWrapEl);
+  document.body.appendChild(editorEl);
+
   const editor = new Editor({
     mediaCondition: 'max-width',
     el: document.body.querySelector('#editor') as HTMLElement,
@@ -23,6 +33,7 @@ export function setupTestEditor(opts?: { withCanvas?: boolean; config?: Partial<
   });
   const em = editor.getModel();
   const dsm = em.DataSources;
+  const um = em.UndoManager;
   const { Pages, Components, Canvas } = em;
   Pages.onLoad();
   const cmpRoot = Components.getWrapper()!;
@@ -32,9 +43,6 @@ export function setupTestEditor(opts?: { withCanvas?: boolean; config?: Partial<
     config: { ...cmpRoot.config, em },
   });
   wrapperEl.render();
-  const fixtures = document.body.querySelector('#fixtures')!;
-  fixtures.appendChild(wrapperEl.el);
-  const canvasWrapEl = document.body.querySelector('#canvas-wrp')!;
 
   /**
    * When trying to render the canvas, seems like jest gets stuck in a loop of iframe.onload (FrameView.ts)
@@ -48,10 +56,14 @@ export function setupTestEditor(opts?: { withCanvas?: boolean; config?: Partial<
       el.onload = null;
     });
     // Enable undo manager
+    editor.UndoManager.postLoad();
+    editor.CssComposer.postLoad();
+    editor.DataSources.postLoad();
+    editor.Components.postLoad();
     editor.Pages.postLoad();
   }
 
-  return { editor, em, dsm, cmpRoot, fixtures: fixtures as HTMLElement };
+  return { editor, em, dsm, um, cmpRoot, fixtures };
 }
 
 export function fixJsDom(editor: Editor) {
