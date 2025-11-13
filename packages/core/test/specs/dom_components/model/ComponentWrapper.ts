@@ -1,13 +1,13 @@
-import { DataSourceManager, DataSource, DataRecord } from '../../../../src';
+import { DataRecord, DataSourceManager } from '../../../../src';
 import { DataVariableProps, DataVariableType } from '../../../../src/data_sources/model/DataVariable';
+import { DataComponentTypes } from '../../../../src/data_sources/types';
+import { keyRootData } from '../../../../src/dom_components/constants';
 import Component from '../../../../src/dom_components/model/Component';
 import ComponentHead from '../../../../src/dom_components/model/ComponentHead';
 import ComponentWrapper from '../../../../src/dom_components/model/ComponentWrapper';
-import { keyRootData } from '../../../../src/dom_components/constants';
 import Editor from '../../../../src/editor';
 import EditorModel from '../../../../src/editor/model/Editor';
 import { setupTestEditor } from '../../../common';
-import { DataComponentTypes } from '../../../../src/data_sources/types';
 
 describe('ComponentWrapper', () => {
   let em: Editor;
@@ -44,10 +44,11 @@ describe('ComponentWrapper', () => {
   describe('ComponentWrapper with DataResolver', () => {
     let em: EditorModel;
     let dsm: DataSourceManager;
-    let blogDataSource: DataSource;
     let wrapper: ComponentWrapper;
     let firstRecord: DataRecord;
 
+    const contentDataSourceId = 'contentDataSource';
+    const blogDataSourceId = 'blogs';
     const firstBlog = { id: 'blog1', title: 'How to Test Components' };
     const blogsData = [
       firstBlog,
@@ -64,8 +65,8 @@ describe('ComponentWrapper', () => {
       ({ em, dsm } = setupTestEditor());
       wrapper = em.getWrapper() as ComponentWrapper;
 
-      blogDataSource = dsm.add({
-        id: 'contentDataSource',
+      dsm.add({
+        id: contentDataSourceId,
         records: [
           {
             id: 'blogs',
@@ -78,7 +79,12 @@ describe('ComponentWrapper', () => {
         ],
       });
 
-      firstRecord = em.DataSources.get('contentDataSource').getRecord('blogs')!;
+      dsm.add({
+        id: blogDataSourceId,
+        records: blogsData,
+      });
+
+      firstRecord = em.DataSources.get(contentDataSourceId).getRecord('blogs')!;
     });
 
     afterEach(() => {
@@ -102,7 +108,7 @@ describe('ComponentWrapper', () => {
 
     test('children reflect resolved value from dataResolver', () => {
       wrapper.setDataResolver(createDataResolver('contentDataSource.blogs.data'));
-      wrapper.resolverCurrentItem = 0;
+      wrapper.setResolverCurrentItem(0);
       const child = appendChildWithTitle();
 
       expect(child.get('title')).toBe(blogsData[0].title);
@@ -114,7 +120,7 @@ describe('ComponentWrapper', () => {
     test('children update collectionStateMap on wrapper.setDataResolver', () => {
       const child = appendChildWithTitle();
       wrapper.setDataResolver(createDataResolver('contentDataSource.blogs.data'));
-      wrapper.resolverCurrentItem = 0;
+      wrapper.setResolverCurrentItem(0);
 
       expect(child.get('title')).toBe(blogsData[0].title);
 
@@ -124,10 +130,23 @@ describe('ComponentWrapper', () => {
 
     test('wrapper should handle objects as collection state', () => {
       wrapper.setDataResolver(createDataResolver('contentDataSource.productsById.data'));
-      wrapper.resolverCurrentItem = 'product1';
+      wrapper.setResolverCurrentItem('product1');
       const child = appendChildWithTitle('title');
 
       expect(child.get('title')).toBe(productsById.product1.title);
+    });
+
+    test('wrapper should handle default data source records', () => {
+      wrapper.setDataResolver(createDataResolver(blogDataSourceId));
+
+      const child = appendChildWithTitle('title');
+      expect(child.get('title')).toBe(blogsData[0].title);
+
+      wrapper.setResolverCurrentItem(1);
+      expect(child.get('title')).toBe(blogsData[1].title);
+
+      wrapper.setResolverCurrentItem(blogsData[2].id);
+      expect(child.get('title')).toBe(blogsData[2].title);
     });
   });
 });

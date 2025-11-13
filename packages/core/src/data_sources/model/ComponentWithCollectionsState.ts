@@ -83,8 +83,9 @@ export default class ComponentWithCollectionsState<DataResolverType> extends Com
   }
 
   protected getDataSourceItems(): DataSourceRecords {
-    const dataSourceProps = this.dataSourceProps;
+    const { dataSourceProps } = this;
     if (!dataSourceProps) return [];
+
     const items = this.listDataSourceItems(dataSourceProps);
     if (items && isArray(items)) {
       return items;
