@@ -57,6 +57,9 @@ export function setupTestEditor(opts?: { withCanvas?: boolean; config?: Partial<
     editor.DataSources.postLoad();
     editor.Components.postLoad();
     editor.Pages.postLoad();
+
+    em.set({ readyLoad: true, readyCanvas: true, ready: true });
+    em.loadTriggered = true;
   }
 
   return { editor, em, dsm, um, cmpRoot, fixtures };

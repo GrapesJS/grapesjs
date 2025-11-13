@@ -53,7 +53,7 @@ export enum EditorEvents {
    * editor.on('update', () => { ... });
    */
   update = 'update',
-  updateDebug = 'update:debug',
+  updateBefore = 'updateBefore',
 
   /**
    * @event `undo` Undo executed.

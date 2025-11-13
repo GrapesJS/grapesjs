@@ -431,7 +431,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
     ['status', 'open', 'toolbar', 'traits'].forEach((name) => delete changed[name]);
     // Propagate component prop changes
     if (!isEmptyObj(changed)) {
-      this.__changesUp(opts);
+      this.__changesUp(opts, { changed });
       this.__propSelfToParent({ component: this, changed, options: opts });
     }
   }
@@ -469,12 +469,10 @@ export default class Component extends StyleableModel<ComponentProperties> {
     });
   }
 
-  __changesUp(options: any) {
+  __changesUp(options: any, data: Record<string, any> = {}) {
     const { em, frame } = this;
     [frame, em].forEach((md) => {
-      if (md) {
-        md.changesUp(options, { component: this, options });
-      }
+      md?.changesUp(options, { component: this, options, ...data });
     });
   }
 

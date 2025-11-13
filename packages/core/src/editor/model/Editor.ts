@@ -464,12 +464,13 @@ export default class EditorModel extends Model {
    * @param  {Object} opt  Options
    * @private
    * */
-  handleUpdates(model: any, val: any, opt: any = {}) {
+  handleUpdates(opt: any = {}, data: Record<string, any>) {
     // Component has been added temporarily - do not update storage or record changes
     if (this.__skip || !this.loadTriggered || opt.temporary || opt.noCount || opt.avoidStore || opt.partial) {
       return;
     }
 
+    this.trigger(this.events.updateBefore, data);
     this.timedInterval && clearTimeout(this.timedInterval);
     this.timedInterval = setTimeout(() => {
       const curr = this.getDirtyCount() || 0;
@@ -479,8 +480,7 @@ export default class EditorModel extends Model {
   }
 
   changesUp(opts: any, data: Record<string, any>) {
-    this.trigger(this.events.updateDebug, data);
-    this.handleUpdates(0, 0, opts);
+    this.handleUpdates(opts, data);
   }
 
   /**

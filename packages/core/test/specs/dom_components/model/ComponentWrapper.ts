@@ -62,7 +62,7 @@ describe('ComponentWrapper', () => {
     };
 
     beforeEach(() => {
-      ({ em, dsm } = setupTestEditor());
+      ({ em, dsm } = setupTestEditor({ withCanvas: true }));
       wrapper = em.getWrapper() as ComponentWrapper;
 
       dsm.add({
@@ -104,6 +104,11 @@ describe('ComponentWrapper', () => {
           collectionId: keyRootData,
           path,
         },
+        components: {
+          tagName: 'span',
+          type: DataComponentTypes.variable,
+          dataResolver: { collectionId: keyRootData, path },
+        },
       })[0];
 
     test('children reflect resolved value from dataResolver', () => {
@@ -141,12 +146,21 @@ describe('ComponentWrapper', () => {
 
       const child = appendChildWithTitle('title');
       expect(child.get('title')).toBe(blogsData[0].title);
+      expect(child.getInnerHTML()).toBe(`<span>${blogsData[0].title}</span>`);
+
+      const eventUpdate = jest.fn();
+      em.on(em.events.updateBefore, eventUpdate);
 
       wrapper.setResolverCurrentItem(1);
       expect(child.get('title')).toBe(blogsData[1].title);
+      expect(child.getInnerHTML()).toBe(`<span>${blogsData[1].title}</span>`);
 
       wrapper.setResolverCurrentItem(blogsData[2].id);
       expect(child.get('title')).toBe(blogsData[2].title);
+      expect(child.getInnerHTML()).toBe(`<span>${blogsData[2].title}</span>`);
+
+      // No update events are expected
+      expect(eventUpdate).toHaveBeenCalledTimes(0);
     });
   });
 });
