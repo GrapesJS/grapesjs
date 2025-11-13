@@ -469,9 +469,13 @@ export default class Component extends StyleableModel<ComponentProperties> {
     });
   }
 
-  __changesUp(opts: any) {
+  __changesUp(options: any) {
     const { em, frame } = this;
-    [frame, em].forEach((md) => md && md.changesUp(opts));
+    [frame, em].forEach((md) => {
+      if (md) {
+        md.changesUp(options, { component: this, options });
+      }
+    });
   }
 
   __propSelfToParent(props: any) {

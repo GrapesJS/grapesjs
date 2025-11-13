@@ -478,7 +478,8 @@ export default class EditorModel extends Model {
     }, 0);
   }
 
-  changesUp(opts: any) {
+  changesUp(opts: any, data: Record<string, any>) {
+    this.trigger(this.events.updateDebug, data);
     this.handleUpdates(0, 0, opts);
   }
 

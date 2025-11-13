@@ -234,7 +234,10 @@ export default class DataSourceManager extends ItemManagerModule<DataSourcesConf
 
   postLoad() {
     const { em, all } = this;
-    em.listenTo(all, collectionEvents, (m, c, o) => em.changesUp(o || c));
+    em.listenTo(all, collectionEvents, (dataSource, c, o) => {
+      const options = o || c;
+      em.changesUp(options, { dataSource, options });
+    });
     this.em.UndoManager.add(all);
   }
 }
