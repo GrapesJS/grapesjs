@@ -2135,10 +2135,15 @@ export default class Component extends StyleableModel<ComponentProperties> {
     components: ComponentDefinitionDefined | ComponentDefinitionDefined[],
     styles: CssRuleJSON[] = [],
     list: ObjectAny = {},
-    opts: { keepIds?: string[]; idMap?: PrevToNewIdMap } = {},
+    opts: {
+      keepIds?: string[];
+      idMap?: PrevToNewIdMap;
+      updatedIds?: Record<string, ComponentDefinitionDefined[]>;
+    } = {},
   ) {
+    opts.updatedIds = opts.updatedIds || {};
     const comps = isArray(components) ? components : [components];
-    const { keepIds = [], idMap = {} } = opts;
+    const { keepIds = [], idMap = {}, updatedIds } = opts;
     comps.forEach((comp) => {
       comp.attributes;
       const { attributes = {}, components } = comp;
@@ -2147,6 +2152,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
       // Check if we have collisions with current components
       if (id && list[id] && keepIds.indexOf(id) < 0) {
         const newId = Component.getIncrementId(id, list);
+        updatedIds[id] = updatedIds[id] ? [...updatedIds[id], comp] : [comp];
         idMap[id] = newId;
         attributes.id = newId;
         // Update passed styles
@@ -2161,5 +2167,9 @@ export default class Component extends StyleableModel<ComponentProperties> {
 
       components && Component.checkId(components, styles, list, opts);
     });
+
+    return {
+      updatedIds: opts.updatedIds,
+    };
   }
 }

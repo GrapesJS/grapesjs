@@ -460,6 +460,30 @@ describe('Component', () => {
     );
   });
 
+  test('Ensure duplicated component clones the rules also cross components', () => {
+    const idName = 'test';
+    const cmp = dcomp.addComponent(`
+      <div>
+        <div id="${idName}">Comp 1</div>
+      </div>
+      <style>
+        #test { color: red; }
+        @media (max-width: 992px) {
+          #test { color: blue; }
+        }
+      </style>
+    `) as Component;
+    const cmp2 = dcomp.addComponent(`<div>Text</div>`) as Component;
+    cmp2.components().resetFromString(`<div id="${idName}">Comp 2</div>`);
+    const newId = cmp2.components().at(0).getId();
+    expect(em.getHtml()).toBe(
+      `<body><div><div id="test">Comp 1</div></div><div><div id="test-2">Comp 2</div></div></body>`,
+    );
+    expect(em.getCss()).toBe(
+      `#test{color:red;}#${newId}{color:red;}@media (max-width: 992px){#test{color:blue;}#${newId}{color:blue;}}`,
+    );
+  });
+
   test('Ability to stop/change propagation chain', () => {
     obj.append({
       removable: false,
