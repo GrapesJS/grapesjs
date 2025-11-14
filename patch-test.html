@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>GrapesJS Patch Test</title>
+    <script src="./packages/core/dist/grapes.min.js"></script>
+    <link rel="stylesheet" href="./packages/core/dist/css/grapes.min.css" />
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+      }
+      #gjs {
+        height: 100vh;
+        border: 2px solid #333;
+      }
+    </style>
+  </head>
+  <body style="height: 100%; position: absolute; width: 100%">
+    <div id="gjs"></div>
+
+    <script>
+      const editor = grapesjs.init({
+        container: '#gjs',
+        height: '100%',
+        headless: true,
+        patches: { enable: true, debug: true },
+        projectData: {
+          pages: [
+            {
+              frames: [
+                {
+                  component: {
+                    type: 'wrapper',
+                    stylable: [
+                      'background',
+                      'background-color',
+                      'background-image',
+                      'background-repeat',
+                      'background-attachment',
+                      'background-position',
+                      'background-size',
+                    ],
+                    attributes: {
+                      id: 'body',
+                    },
+                    components: [
+                      {
+                        tagName: 'section',
+                        components: [
+                          {
+                            tagName: 'h1',
+                            type: 'text',
+                            attributes: {
+                              id: 'main-title',
+                            },
+                            components: [
+                              {
+                                type: 'textnode',
+                                content: 'This is a simple title',
+                              },
+                            ],
+                          },
+                          {
+                            type: 'text',
+                            components: [
+                              {
+                                type: 'textnode',
+                                content: 'This is just a Lorem text: Lorem ipsum dolor sit amet',
+                              },
+                            ],
+                          },
+                        ],
+                      },
+                    ],
+                  },
+                },
+              ],
+              id: 'ljc0blhC1ZeiCYyY',
+            },
+            {
+              frames: [
+                {
+                  component: {
+                    type: 'wrapper',
+                    stylable: [
+                      'background',
+                      'background-color',
+                      'background-image',
+                      'background-repeat',
+                      'background-attachment',
+                      'background-position',
+                      'background-size',
+                    ],
+                    attributes: {
+                      id: 'body',
+                    },
+                    components: [
+                      {
+                        tagName: 'section',
+                        components: [
+                          {
+                            tagName: 'h1',
+                            type: 'text',
+                            attributes: {
+                              id: 'main-title',
+                            },
+                            components: [
+                              {
+                                type: 'textnode',
+                                content: 'This is another title',
+                              },
+                            ],
+                          },
+                          {
+                            type: 'text',
+                            components: [
+                              {
+                                type: 'textnode',
+                                content: 'Some other text',
+                              },
+                            ],
+                          },
+                        ],
+                      },
+                    ],
+                  },
+                },
+              ],
+              id: '1zKkQnGVzy8nKXKE',
+            },
+          ],
+        },
+      });
+
+      let pages = editor.Pages.getAll().map((page) => {
+        const component = page.getMainComponent();
+        return editor.getHtml({ component });
+      });
+
+      console.log(pages);
+
+      let got = null;
+
+      editor.on('patch:update', (e) => {
+        console.log('🔥 PATCH UPDATE:', e.patch);
+        got = e.patch;
+      });
+
+      const wrapper = editor.getWrapper();
+      const cmp = wrapper.append({ type: 'text', content: 'Hello world' })[0];
+
+      // Меняем атрибут
+      cmp.addAttributes({ title: 'Hi' });
+      // Меняем стиль
+      cmp.setStyle({ color: 'red', 'font-size': '20px' });
+
+      setTimeout(() => {
+        console.log('HAS_PATCH:', !!got, 'OPS:', got && got.changes.length);
+        console.log('SAMPLE OPS:', got && got.changes.slice(0, 2));
+      }, 100);
+    </script>
+  </body>
+</html>

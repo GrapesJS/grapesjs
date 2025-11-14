@@ -3,6 +3,7 @@ import { PageManagerConfig } from '../types';
 import Frames from '../../canvas/model/Frames';
 import { Model } from '../../common';
 import ComponentWrapper from '../../dom_components/model/ComponentWrapper';
+import Component from '../../dom_components/model/Component';
 import EditorModel from '../../editor/model/Editor';
 import { CssRuleJSON } from '../../css_composer/model/CssRule';
 import { ComponentDefinition } from '../../dom_components/model/types';
@@ -60,6 +61,12 @@ export default class Page extends Model<PagePropertiesDefined> {
     const frms: any[] = props.frames || [defFrame];
     const frames = new Frames(em!.Canvas, frms);
     frames.page = this;
+    frames.forEach((frame) => {
+      const root = frame.getComponent();
+      if (!root) return;
+      Component.ensurePageKey(root);
+      root.forEachChild((child) => Component.ensurePageKey(child));
+    });
     this.set('frames', frames);
     !this.getId() && this.set('id', em?.Pages._createId());
     em?.UndoManager.add(frames);

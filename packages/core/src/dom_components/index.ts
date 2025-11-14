@@ -339,6 +339,7 @@ export default class ComponentManager extends ItemManagerModule<DomComponentsCon
   ];
 
   componentsById: { [id: string]: Component } = {};
+  componentsByAttr: { [pageId: string]: { [id: string]: Component } } = {};
   componentView?: ComponentWrapperView;
 
   Component = Component;
@@ -358,6 +359,52 @@ export default class ComponentManager extends ItemManagerModule<DomComponentsCon
 
   storageKey = 'components';
   keySymbols = 'symbols';
+
+  private getPageAttrKey(page?: { getId?: () => string } | string) {
+    if (typeof page === 'string') {
+      return page || '__global__';
+    }
+
+    return page?.getId?.() || '__global__';
+  }
+
+  getPageAttrMap(page?: { getId?: () => string } | string, opts: { create?: boolean } = {}) {
+    const { create = true } = opts;
+    const key = this.getPageAttrKey(page);
+    let map = this.componentsByAttr[key];
+
+    if (!map && create) {
+      map = {};
+      this.componentsByAttr[key] = map;
+    }
+
+    return map;
+  }
+
+  private getComponentByAttr(
+    id: string,
+    opts: { page?: { getId?: () => string } | string; fallbackAll?: boolean } = {},
+  ): Component | null {
+    const { page, fallbackAll = true } = opts;
+
+    if (page) {
+      const map = this.getPageAttrMap(page, { create: false });
+      if (map?.[id]) {
+        return map[id];
+      }
+    }
+
+    if (!fallbackAll) return null;
+
+    const maps = this.componentsByAttr;
+
+    for (const key in maps) {
+      const cmp = maps[key]?.[id];
+      if (cmp) return cmp;
+    }
+
+    return null;
+  }
 
   shallow?: Component;
   symbols: Symbols;
@@ -939,13 +986,15 @@ export default class ComponentManager extends ItemManagerModule<DomComponentsCon
   }
 
   getById(id: string) {
-    return this.componentsById[id] || null;
+    const page = this.em.Pages?.getSelected();
+    return this.componentsById[id] || this.getComponentByAttr(id, { page }) || null;
   }
 
   destroy() {
     const all = this.allById();
     Object.keys(all).forEach((id) => all[id] && all[id].remove());
     this.componentView?.remove();
+    this.componentsByAttr = {};
     [this.em, this.componentsById, this.componentView].forEach((i) => (i = {}));
   }
 }

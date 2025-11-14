@@ -1,5 +1,6 @@
 import { AddOptions, OptionAsDocument, WithHTMLParserOptions } from '../common';
 import Component from './model/Component';
+import Frame from '../canvas/model/Frame';
 
 export enum ActionLabelComponents {
   remove = 'component:remove',
@@ -19,6 +20,7 @@ export interface SymbolInfo {
 
 export interface ParseStringOptions extends AddOptions, OptionAsDocument, WithHTMLParserOptions {
   keepIds?: string[];
+  frame?: Frame;
 }
 
 export enum ComponentsEvents {

@@ -267,19 +267,42 @@ describe('Managing pages', () => {
 
     // Check component/rule from the first page
     const cmp1 = domc.allById()[id];
-    const rule1 = em.Css.getRule(idSel)!;
     expect(cmp1.getId()).toBe(id);
-    expect(rule1.getSelectorsString()).toBe(idSel);
-    expect(rule1.getStyle()).toEqual({ color: 'red' });
 
-    // Check component/rule from the second page
+    const rule = em.Css.getRule(idSel)!;
+    expect(rule.getSelectorsString()).toBe(idSel);
+    expect(em.Css.getRule(`#${id}-2`)).toBeFalsy();
+
+    // Check component from the second page keeps the same attribute id
     const id2 = 'myid-2';
-    const idSel2 = `#${id2}`;
     const cmp2 = domc.allById()[id2];
-    const rule2 = em.Css.getRule(idSel2)!;
-    expect(cmp2.getId()).toBe(id2);
-    expect(rule2.getSelectorsString()).toBe(idSel2);
-    expect(rule2.getStyle()).toEqual({ color: 'blue' });
+    expect(cmp2.getId()).toBe(id);
+    expect(cmp2.get('id')).toBe(id2);
+  });
+
+  test('Multiple pages keep the same attribute id', () => {
+    const id = 'shared-id';
+    const pageA = pm.add({
+      component: `<div id="${id}">Page A</div>`,
+    })!;
+    const pageB = pm.add({
+      component: `<div id="${id}">Page B</div>`,
+    })!;
+    expect(pm.getAll().length).toBe(3);
+
+    const cmpA = pageA.getMainComponent().components().at(0)!;
+    const cmpB = pageB.getMainComponent().components().at(0)!;
+
+    expect(cmpA.getId()).toBe(id);
+    expect(cmpB.getId()).toBe(id);
+
+    const allById = domc.allById();
+    const cmpAStored = allById[id];
+    const cmpBStored = allById[`${id}-2`];
+
+    expect(cmpAStored).toBe(cmpA);
+    expect(cmpBStored).toBe(cmpB);
+    expect(cmpBStored?.get('id')).toBe(`${id}-2`);
   });
 });
 

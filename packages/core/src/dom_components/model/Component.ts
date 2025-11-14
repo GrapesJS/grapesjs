@@ -85,6 +85,7 @@ export const keySymbol = '__symbol';
 export const keySymbolOvrd = '__symbol_ovrd';
 export const keyUpdate = ComponentsEvents.update;
 export const keyUpdateInside = ComponentsEvents.updateInside;
+const defaultPageId = '__global__';
 
 type GetComponentStyleOpts = GetStyleOpts & {
   inline?: boolean;
@@ -269,6 +270,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
   opt!: ComponentOptions;
   config!: DomComponentsConfig;
   ccid!: string;
+  private pageKey?: string;
   views!: ComponentView[];
   view?: ComponentView;
   viewLayer?: ItemView;
@@ -1721,6 +1723,13 @@ export default class Component extends StyleableModel<ComponentProperties> {
   }
 
   /**
+   * Return the internal component id used for editor bookkeeping
+   */
+  getComponentId(): string {
+    return this.get('id') || this.ccid || this.cid;
+  }
+
+  /**
    * Set new id on the component
    * @param {String} id
    * @return {this}
@@ -2035,18 +2044,107 @@ export default class Component extends StyleableModel<ComponentProperties> {
     const list = Component.getList(this);
 
     // If the ID already exists I need to rollback to the old one
-    if (list[id] || (!id && idPrev)) {
+    const attrList = Component.getAttrList(this);
+    const attrConflict = id && attrList && attrList[id] && attrList[id] !== this;
+
+    if (attrConflict || (!id && idPrev)) {
       return this.setId(idPrev, { idUpdate: true });
     }
 
-    // Remove the old ID reference and add the new one
-    delete list[idPrev];
-    list[id] = this;
-    this.ccid = id;
+    Component.unregisterAttr(this, idPrev);
+    id && Component.registerAttr(this, id);
+    Component.updateComponentId(this, id);
 
     // Update the style selector name
     const selector = this._getStyleSelector({ id: idPrev });
     selector && selector.set({ name: id, label: id });
+  }
+
+  static buildPageKey(model: Component) {
+    return model.page?.getId?.() || model.frame?.id || defaultPageId;
+  }
+
+  static ensurePageKey(model: Component) {
+    const desired = String(Component.buildPageKey(model));
+    const { pageKey } = model;
+    const dm = model.em?.Components as any;
+    if (!pageKey) {
+      model.pageKey = desired;
+      return desired;
+    }
+
+    if (desired !== pageKey && dm?.componentsByAttr) {
+      const currentMap = dm.componentsByAttr[pageKey];
+      const attrId = model.getId();
+
+      if (currentMap && attrId && currentMap[attrId] === model) {
+        delete currentMap[attrId];
+        dm.componentsByAttr[desired] = dm.componentsByAttr[desired] || {};
+        dm.componentsByAttr[desired][attrId] = model;
+      }
+    }
+
+    model.pageKey = desired;
+    return desired;
+  }
+
+  static getPageId(model: Component) {
+    return Component.ensurePageKey(model);
+  }
+
+  static getAttrList(model: Component, opts: { create?: boolean } = {}) {
+    const { create = true } = opts;
+    const dm = (model.em?.Components || {}) as any;
+    dm.componentsByAttr = dm.componentsByAttr || {};
+    const attrByPage = dm.componentsByAttr;
+    const pageId = Component.ensurePageKey(model);
+
+    if (!attrByPage[pageId]) {
+      if (!create) return undefined;
+      attrByPage[pageId] = {};
+    }
+
+    return attrByPage[pageId];
+  }
+
+  static registerAttr(model: Component, id?: string) {
+    if (!id) return;
+    const list = Component.getAttrList(model);
+    list && (list[id] = model);
+  }
+
+  static unregisterAttr(model: Component, id?: string) {
+    if (!id) return;
+    const list = Component.getAttrList(model, { create: false });
+    if (list && list[id] === model) {
+      delete list[id];
+    }
+  }
+
+  private static setComponentInternalId(model: Component, id: string, list: ObjectAny) {
+    if (!id) return;
+    list[id] = model;
+    model.ccid = id;
+    model.set('id', id, { silent: true });
+    (model as any).id = id;
+  }
+
+  static updateComponentId(model: Component, baseId?: string, opts: { keepIds?: string[] } = {}) {
+    const list = Component.getList(model);
+    const currentId = model.getComponentId();
+    currentId && list[currentId] === model && delete list[currentId];
+    const nextBase = baseId || currentId;
+    const nextId = nextBase ? Component.getIncrementId(nextBase, list, opts) : Component.getNewId(list);
+    Component.setComponentInternalId(model, nextId, list);
+    return nextId;
+  }
+
+  static removeFromLists(model: Component) {
+    const list = Component.getList(model);
+    const compId = model.getComponentId();
+    compId && list[compId] === model && delete list[compId];
+    const attrId = model.getId();
+    Component.unregisterAttr(model, attrId);
   }
 
   static typeExtends = new Set<string>();
@@ -2059,40 +2157,49 @@ export default class Component extends StyleableModel<ComponentProperties> {
     return { tagName: toLowerCase(el.tagName) };
   }
 
-  static ensureInList(model: Component) {
-    const list = Component.getList(model);
+  static ensureInList(model: Component, opts: { keepIds?: string[] } = {}) {
+    const attrList = Component.getAttrList(model);
     const id = model.getId();
-    const current = list[id];
+    const current = id && attrList ? attrList[id] : null;
 
-    if (!current) {
-      // Insert in list
-      list[id] = model;
-    } else if (current !== model) {
-      // Create new ID
-      const nextId = Component.getIncrementId(id, list);
-      model.setId(nextId);
-      list[nextId] = model;
+    if (attrList && id) {
+      if (!current) {
+        attrList[id] = model;
+      } else if (current !== model) {
+        const nextId = Component.getIncrementId(id, attrList, opts);
+        model.setId(nextId);
+        attrList[nextId] = model;
+      }
     }
 
-    model.components().forEach((i) => Component.ensureInList(i));
+    Component.updateComponentId(model, id, opts);
+
+    model.components().forEach((i) => Component.ensureInList(i, opts));
   }
 
   static createId(model: Component, opts: any = {}) {
-    const list = Component.getList(model);
     const { idMap = {} } = opts;
-    let { id } = model.get('attributes')!;
-    let nextId;
+    const attrList = Component.getAttrList(model);
+    const attrs = model.get('attributes') || {};
+    const currentId = attrs.id;
+    let nextId = currentId;
+    const listToUse = attrList || {};
 
-    if (id) {
-      nextId = Component.getIncrementId(id, list, opts);
-      model.setId(nextId);
-      if (id !== nextId) idMap[id] = nextId;
+    if (nextId) {
+      const incremented = Component.getIncrementId(nextId, listToUse, opts);
+      if (incremented !== nextId) {
+        idMap[nextId] = incremented;
+        nextId = incremented;
+        model.setId(nextId);
+      }
     } else {
-      nextId = Component.getNewId(list);
+      nextId = Component.getNewId(listToUse);
+      model.setId(nextId);
     }
 
-    list[nextId] = model;
-    return nextId;
+    attrList && (attrList[nextId] = model);
+
+    return Component.updateComponentId(model, nextId, opts);
   }
 
   static getNewId(list: ObjectAny) {

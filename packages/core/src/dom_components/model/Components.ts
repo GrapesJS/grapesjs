@@ -5,6 +5,7 @@ import { DomComponentsConfig } from '../config/config';
 import EditorModel from '../../editor/model/Editor';
 import ComponentManager from '..';
 import CssRule from '../../css_composer/model/CssRule';
+import Frame from '../../canvas/model/Frame';
 
 import {
   ComponentAdd,
@@ -31,6 +32,7 @@ export interface ResetFromStringOptions {
     onAttributes?: (props: ResetCommonUpdateProps & { attributes: Record<string, any> }) => void;
     onStyle?: (props: ResetCommonUpdateProps & { style: Record<string, any> }) => void;
   };
+  frame?: Frame;
 }
 
 export const getComponentIds = (cmp?: Component | Component[] | Components, res: string[] = []) => {
@@ -114,6 +116,7 @@ export interface ComponentsOptions {
   em: EditorModel;
   config?: DomComponentsConfig;
   domc?: ComponentManager;
+  frame?: Frame;
 }
 
 interface AddComponentOptions extends AddOptions {
@@ -162,7 +165,9 @@ Component> {
     opts.keepIds = getComponentIds(this);
     const { domc, em, parent } = this;
     const cssc = em?.Css;
-    const allByID = domc?.allById() || {};
+    const targetFrame = opts.frame || this.opt.frame;
+    const targetPage = targetFrame?.getPage?.() || parent?.page;
+    const allByID = domc?.getPageAttrMap(targetPage, { create: false }) || {};
     const parsed = this.parseString(input, opts);
     const fromDefOpts = { skipViewUpdate: true, ...opts };
     const newCmps = getComponentsFromDefs(parsed, allByID, fromDefOpts);
@@ -207,11 +212,10 @@ Component> {
     if (!isTemp) {
       // Remove the component from the global list
       const id = removed.getId();
+      Component.removeFromLists(removed);
       const sels = em.Selectors.getAll();
       const rules = em.Css.getAll();
       const canRemoveStyle = (opts.keepIds || []).indexOf(id) < 0;
-      const allByID = domc ? domc.allById() : {};
-      delete allByID[id];
 
       // Remove all component related styles
       const rulesRemoved = (
@@ -317,8 +321,12 @@ Component> {
       root.set({ doctype: parsed.doctype });
     }
 
+    const targetFrame = opt.frame || this.opt.frame;
+    const targetPage = targetFrame?.getPage?.() || parent?.page;
+    const attrList = domc?.getPageAttrMap(targetPage, { create: false }) || {};
+
     // We need this to avoid duplicate IDs
-    Component.checkId(components, parsed.css, domc!.componentsById, opt);
+    Component.checkId(components, parsed.css, attrList, opt);
 
     if (parsed.css && cssc && !opt.temporary) {
       const { at, ...optsToPass } = opt;
