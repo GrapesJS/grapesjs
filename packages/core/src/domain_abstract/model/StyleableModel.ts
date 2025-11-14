@@ -182,9 +182,9 @@ export default class StyleableModel<T extends StyleableModelProperties = any> ex
         return;
       }
     });
-    const resolvedProps = this.dataResolverWatchers.addProps({ style: newStyle }, opts) as Partial<T>;
-    this.set(resolvedProps, opts as any);
-    newStyle = resolvedProps['style']! as StyleProps;
+
+    this.set({ style: newStyle }, opts);
+    newStyle = this.attributes['style'] as StyleProps;
 
     const changedKeys = Object.keys(shallowDiff(propOrig, propNew));
     const diff: ObjectAny = changedKeys.reduce((acc, key) => {
