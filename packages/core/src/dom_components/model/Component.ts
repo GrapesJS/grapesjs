@@ -1656,7 +1656,6 @@ export default class Component extends StyleableModel<ComponentProperties> {
       delete obj[keySymbol];
       delete obj[keySymbolOvrd];
       delete obj[keySymbols];
-      delete obj.attributes.id;
     }
 
     if (!opts.fromUndo) {

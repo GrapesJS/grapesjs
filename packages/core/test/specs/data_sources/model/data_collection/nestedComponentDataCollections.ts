@@ -28,7 +28,12 @@ describe('Collection component', () => {
   function getCmpDef(nestedCmpDef: ComponentDataCollectionProps): ComponentDataCollectionProps {
     return {
       type: DataCollectionType,
-      components: { type: DataCollectionItemType, components: nestedCmpDef },
+      attributes: { id: 'cmp-coll-parent' },
+      components: {
+        type: DataCollectionItemType,
+        attributes: { id: 'cmp-coll-parent-item' },
+        components: nestedCmpDef,
+      },
       dataResolver: {
         collectionId: 'parent_collection',
         dataSource: {
@@ -64,10 +69,13 @@ describe('Collection component', () => {
 
     nestedCmpDef = {
       type: DataCollectionType,
+      attributes: { id: 'cmp-coll' },
       components: {
         type: DataCollectionItemType,
+        attributes: { id: 'cmp-coll-item' },
         components: {
           type: 'default',
+          attributes: { id: 'cmp-coll-item-child-1' },
           name: {
             type: DataVariableType,
             variableType: DataCollectionStateType.currentItem,

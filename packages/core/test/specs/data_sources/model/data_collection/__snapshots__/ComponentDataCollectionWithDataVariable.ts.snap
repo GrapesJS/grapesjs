@@ -2,13 +2,25 @@
 
 exports[`Collection variable components Serialization Saving: Collection with collection variable component ( no grandchildren ) 1`] = `
 {
+  "attributes": {
+    "id": "cmp-coll",
+  },
   "components": [
     {
+      "attributes": {
+        "id": "cmp-coll-item",
+      },
       "components": [
         {
+          "attributes": {
+            "id": "cmp-coll-item-child-1",
+          },
           "type": "default",
         },
         {
+          "attributes": {
+            "id": "cmp-coll-item-child",
+          },
           "dataResolver": {
             "collectionId": "my_collection",
             "path": "user",
@@ -35,12 +47,24 @@ exports[`Collection variable components Serialization Saving: Collection with co
 
 exports[`Collection variable components Serialization Saving: Collection with collection variable component ( with grandchildren ) 1`] = `
 {
+  "attributes": {
+    "id": "cmp-coll",
+  },
   "components": [
     {
+      "attributes": {
+        "id": "cmp-coll-item",
+      },
       "components": [
         {
+          "attributes": {
+            "id": "cmp-coll-item-child-1",
+          },
           "components": [
             {
+              "attributes": {
+                "id": "cmp-var",
+              },
               "dataResolver": {
                 "collectionId": "my_collection",
                 "path": "user",
@@ -52,6 +76,9 @@ exports[`Collection variable components Serialization Saving: Collection with co
           "type": "default",
         },
         {
+          "attributes": {
+            "id": "cmp-coll-item-child",
+          },
           "dataResolver": {
             "collectionId": "my_collection",
             "path": "user",
@@ -78,13 +105,25 @@ exports[`Collection variable components Serialization Saving: Collection with co
 
 exports[`Collection variable components Serialization Serializion to JSON: Collection with collection variable component ( no grandchildren ) 1`] = `
 {
+  "attributes": {
+    "id": "cmp-coll",
+  },
   "components": [
     {
+      "attributes": {
+        "id": "cmp-coll-item",
+      },
       "components": [
         {
+          "attributes": {
+            "id": "cmp-coll-item-child-1",
+          },
           "type": "default",
         },
         {
+          "attributes": {
+            "id": "cmp-coll-item-child",
+          },
           "dataResolver": {
             "collectionId": "my_collection",
             "path": "user",
@@ -111,12 +150,24 @@ exports[`Collection variable components Serialization Serializion to JSON: Colle
 
 exports[`Collection variable components Serialization Serializion to JSON: Collection with collection variable component ( with grandchildren ) 1`] = `
 {
+  "attributes": {
+    "id": "cmp-coll",
+  },
   "components": [
     {
+      "attributes": {
+        "id": "cmp-coll-item",
+      },
       "components": [
         {
+          "attributes": {
+            "id": "cmp-coll-item-child-1",
+          },
           "components": [
             {
+              "attributes": {
+                "id": "cmp-var",
+              },
               "dataResolver": {
                 "collectionId": "my_collection",
                 "path": "user",
@@ -128,6 +179,9 @@ exports[`Collection variable components Serialization Serializion to JSON: Colle
           "type": "default",
         },
         {
+          "attributes": {
+            "id": "cmp-coll-item-child",
+          },
           "dataResolver": {
             "collectionId": "my_collection",
             "path": "user",

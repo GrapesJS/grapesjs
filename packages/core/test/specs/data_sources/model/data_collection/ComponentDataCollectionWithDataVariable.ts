@@ -116,6 +116,7 @@ describe('Collection variable components', () => {
     beforeEach(() => {
       const variableCmpDef = {
         type: DataVariableType,
+        attributes: { id: 'cmp-coll-item-child' },
         dataResolver: {
           variableType: DataCollectionStateType.currentItem,
           collectionId: 'my_collection',
@@ -125,11 +126,14 @@ describe('Collection variable components', () => {
 
       const collectionCmpDef = {
         type: DataCollectionType,
+        attributes: { id: 'cmp-coll' },
         components: {
           type: DataCollectionItemType,
+          attributes: { id: 'cmp-coll-item' },
           components: [
             {
               type: 'default',
+              attributes: { id: 'cmp-coll-item-child-1' },
             },
             variableCmpDef,
           ],
@@ -154,6 +158,7 @@ describe('Collection variable components', () => {
       const firstChild = cmp.components().at(0);
       const newChildDefinition = {
         type: DataVariableType,
+        attributes: { id: 'cmp-var' },
         dataResolver: {
           variableType: DataCollectionStateType.currentIndex,
           collectionId: 'my_collection',
@@ -175,6 +180,7 @@ describe('Collection variable components', () => {
       const firstChild = cmp.components().at(0);
       const newChildDefinition = {
         type: DataVariableType,
+        attributes: { id: 'cmp-var' },
         dataResolver: {
           variableType: DataCollectionStateType.currentIndex,
           collectionId: 'my_collection',

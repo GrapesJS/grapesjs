@@ -298,7 +298,6 @@ export default class ComponentDataCollection extends ComponentWithCollectionsSta
     const json = super.toJSON.call(this, opts) as ComponentDataCollectionProps;
     delete json.droppable;
     delete json[keySymbol];
-    delete json.attributes?.id;
 
     const firstChild = this.firstChild as any;
     return { ...json, components: [firstChild] };
