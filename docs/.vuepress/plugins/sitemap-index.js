@@ -14,10 +14,14 @@ module.exports = (options, context) => {
       const now = new Date().toISOString();
       const sitemapIndexXml = `<?xml version="1.0" encoding="UTF-8"?>
 <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${sitemaps.map(sitemap => `  <sitemap>
+${sitemaps
+  .map(
+    (sitemap) => `  <sitemap>
     <loc>${sitemap}</loc>
     <lastmod>${now}</lastmod>
-  </sitemap>`).join('\n')}
+  </sitemap>`,
+  )
+  .join('\n')}
 </sitemapindex>`;
 
       fs.writeFileSync(sitemapIndexPath, sitemapIndexXml);
@@ -25,4 +29,3 @@ ${sitemaps.map(sitemap => `  <sitemap>
     },
   };
 };
-
