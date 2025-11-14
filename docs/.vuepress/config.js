@@ -148,5 +148,6 @@ module.exports = {
   plugins: [
     ['@vuepress/google-analytics', { ga: 'UA-74284223-1' }],
     ['sitemap', { hostname: 'https://grapesjs.com' }],
+    ['./plugins/sitemap-index'],
   ],
 };
