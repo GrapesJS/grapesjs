@@ -21,12 +21,14 @@
     "html-entities": "~1.4.0"
   },
   "devDependencies": {
+    "chalk": "4.1.2",
     "@types/markdown-it": "14.1.2",
     "@vuepress/plugin-google-analytics": "1.8.2",
     "@vuepress/types": "1.9.10",
     "documentation": "14.0.3",
     "postcss": "8",
     "sass": "1.80.3",
+    "vuepress-plugin-sitemap": "2.3.1",
     "vuepress": "1.9.10",
     "webpack": "4.0.0",
     "whatwg-fetch": "3.6.20"
