@@ -917,13 +917,9 @@ export default class ComponentManager extends ItemManagerModule<DomComponentsCon
     if (isFunction(droppable)) {
       droppable = !!droppable(srcModel, target, index);
     } else {
-      if (droppable === false && target.isInstanceOf('text') && srcModel.get('textable')) {
-        droppable = true;
-      } else {
-        const el = srcModel.getEl();
-        droppable = isArray(droppable) ? droppable.join(',') : droppable;
-        droppable = isString(droppable) ? el?.matches(droppable) : droppable;
-      }
+      const el = srcModel.getEl();
+      droppable = isArray(droppable) ? droppable.join(',') : droppable;
+      droppable = isString(droppable) ? el?.matches(droppable) : droppable;
     }
 
     // Ensure the target is not inside the source
