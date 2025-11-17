@@ -154,6 +154,7 @@ type GetComponentStyleOpts = GetStyleOpts & {
  * @module docsjs.Component
  */
 export default class Component extends StyleableModel<ComponentProperties> {
+  patchObjectType = 'component';
   /**
    * @private
    * @ts-ignore */

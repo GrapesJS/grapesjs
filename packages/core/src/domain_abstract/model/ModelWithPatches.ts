@@ -1,9 +1,9 @@
 // src/domain_abstract/model/ModelWithPatches.ts
-import Backbone, { ObjectHash } from 'backbone';
+import { Model, ObjectHash } from '../../common';
 import type { JsonPatch } from '../../utils/jsonDiff';
 import { diffObjects } from '../../utils/jsonDiff';
 
-export default class ModelWithPatches<T extends ObjectHash = any> extends Backbone.Model<T> {
+export default class ModelWithPatches<T extends ObjectHash = any, S = any> extends Model<T, S> {
   patchObjectType = ''; // наприклад 'component'
 
   set(key: any, val?: any, opts?: any) {

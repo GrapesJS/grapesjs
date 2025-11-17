@@ -15,3 +15,10 @@ export interface PatchProps {
   reverseChanges: JsonPatch[]; // инверсия для undo
   meta?: Record<string, any>; // user, txnId, etc.
 }
+
+export interface PatchManagerConfig {
+  enable?: boolean;
+  maxHistory?: number;
+  coalesceMs?: number;
+  debug?: boolean;
+}

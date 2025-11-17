@@ -1,6 +1,6 @@
 // src/patch_manager/PatchManager.ts
 import { genId } from '../utils/id';
-import type { PatchProps, JsonPatch } from './types';
+import type { PatchManagerConfig, PatchProps, JsonPatch } from './types';
 import { ItemManagerModule } from '../abstract/Module';
 import { Collection } from '../common';
 import type EditorModel from '../editor/model/Editor';
@@ -25,10 +25,10 @@ export default class PatchManager extends ItemManagerModule {
   onInit(): void {
     const cfg = (this.getConfig() as any) ?? {};
     const normalized = typeof cfg === 'boolean' ? { enable: cfg } : cfg;
-    this.init(normalized);
+    this.init({ enable: true, ...normalized });
   }
 
-  init(cfg: { enable?: boolean; maxHistory?: number; coalesceMs?: number; debug?: boolean } = {}) {
+  init(cfg: PatchManagerConfig = {}) {
     this.isEnabled = !!cfg.enable;
     this.maxHistory = cfg.maxHistory ?? this.maxHistory;
     this.coalesceMs = cfg.coalesceMs ?? 0;
@@ -63,10 +63,7 @@ export default class PatchManager extends ItemManagerModule {
 
     this.em.trigger('patch:update', { patch });
     if (this.debug) {
-      try {
-        // eslint-disable-next-line no-console
-        console.log('[Patches] update', patch);
-      } catch {}
+      this.logWithEditor('update', patch);
     }
   }
 
@@ -111,10 +108,7 @@ export default class PatchManager extends ItemManagerModule {
       this.applyJsonPatchList(patch.changes);
       this.em.trigger('patch:applied:external', { patch });
       if (this.debug) {
-        try {
-          // eslint-disable-next-line no-console
-          console.log('[Patches] applied external', patch);
-        } catch {}
+        this.logWithEditor('applied external', patch);
       }
     } finally {
       this.isApplyingExternal = false;
@@ -124,7 +118,12 @@ export default class PatchManager extends ItemManagerModule {
   undo() {
     if (!this.isEnabled || this.index < 0) return;
     const patch = this.history[this.index];
-    this.applyJsonPatchList(patch.reverseChanges);
+    this.isApplyingExternal = true;
+    try {
+      this.applyJsonPatchList(patch.reverseChanges);
+    } finally {
+      this.isApplyingExternal = false;
+    }
     this.index--;
     this.em.trigger('patch:undo', { patch });
   }
@@ -132,7 +131,12 @@ export default class PatchManager extends ItemManagerModule {
   redo() {
     if (!this.isEnabled || this.index >= this.history.length - 1) return;
     const patch = this.history[this.index + 1];
-    this.applyJsonPatchList(patch.changes);
+    this.isApplyingExternal = true;
+    try {
+      this.applyJsonPatchList(patch.changes);
+    } finally {
+      this.isApplyingExternal = false;
+    }
     this.index++;
     this.em.trigger('patch:redo', { patch });
   }
@@ -232,5 +236,13 @@ export default class PatchManager extends ItemManagerModule {
     this.isApplyingExternal = false;
     super.__destroy?.();
   }
+  private logWithEditor(eventName: string, patch: PatchProps) {
+    try {
+      this.em.log(`[Patches] ${eventName}`, {
+        ns: 'patches',
+        level: 'debug',
+        patch,
+      });
+    } catch {}
+  }
 }
-

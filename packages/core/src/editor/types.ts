@@ -13,8 +13,17 @@ import { SelectorEvent } from '../selector_manager';
 import { StyleManagerEvent } from '../style_manager';
 import { EditorConfig } from './config/config';
 import EditorModel from './model/Editor';
+import type { PatchProps } from '../patch_manager/types';
 
-type GeneralEvent = 'canvasScroll' | 'undo' | 'redo' | 'load' | 'update';
+type GeneralEvent =
+  | 'canvasScroll'
+  | 'undo'
+  | 'redo'
+  | 'load'
+  | 'update'
+  | 'patch:update'
+  | 'patch:undo'
+  | 'patch:redo';
 
 type EditorBuiltInEvents =
   | DataSourceEvent
@@ -38,6 +47,9 @@ export type EditorConfigType = EditorConfig & { pStylePrefix?: string };
 export type EditorModelParam<T extends keyof EditorModel, N extends number> = Parameters<EditorModel[T]>[N];
 
 export interface EditorEventCallbacks extends BlocksEventCallback, DataSourcesEventCallback {
+  'patch:update': [{ patch: PatchProps }];
+  'patch:undo': [{ patch: PatchProps }];
+  'patch:redo': [{ patch: PatchProps }];
   [key: string]: any[];
 }
 
@@ -53,6 +65,27 @@ export enum EditorEvents {
    * editor.on('update', () => { ... });
    */
   update = 'update',
+
+  /**
+   * @event `patch:update` Event triggered when the patch manager produces a new JSON patch with the recorded changes.
+   * @example
+   * editor.on('patch:update', ({ patch }) => { ... });
+   */
+  patchUpdate = 'patch:update',
+
+  /**
+   * @event `patch:undo` Patch manager undo executed.
+   * @example
+   * editor.on('patch:undo', ({ patch }) => { ... });
+   */
+  patchUndo = 'patch:undo',
+
+  /**
+   * @event `patch:redo` Patch manager redo executed.
+   * @example
+   * editor.on('patch:redo', ({ patch }) => { ... });
+   */
+  patchRedo = 'patch:redo',
 
   /**
    * @event `undo` Undo executed.

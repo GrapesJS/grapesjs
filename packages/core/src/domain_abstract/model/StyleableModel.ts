@@ -1,5 +1,6 @@
 import { isArray, isObject, isString, keys } from 'underscore';
-import { Model, ObjectAny, ObjectHash, SetOptions } from '../../common';
+import ModelWithPatches from './ModelWithPatches';
+import { ObjectAny, ObjectHash, SetOptions } from '../../common';
 import ParserHtml from '../../parser/model/ParserHtml';
 import Selectors from '../../selector_manager/model/Selectors';
 import { shallowDiff } from '../../utils/mixins';
@@ -44,7 +45,7 @@ type WithDataResolvers<T> = {
   [P in keyof T]?: T[P] | DataResolverProps;
 };
 
-export default class StyleableModel<T extends StyleableModelProperties = any> extends Model<T, UpdateStyleOptions> {
+export default class StyleableModel<T extends StyleableModelProperties = any> extends ModelWithPatches<T, UpdateStyleOptions> {
   em?: EditorModel;
   views: StyleableView[] = [];
   dataResolverWatchers: ModelDataResolverWatchers<T>;

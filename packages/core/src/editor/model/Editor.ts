@@ -29,6 +29,7 @@ import KeymapsModule from '../../keymaps';
 import ModalModule from '../../modal_dialog';
 import PanelManager from '../../panels';
 import CodeManagerModule from '../../code_manager';
+import PatchManager from '../../patch_manager';
 import UndoManagerModule from '../../undo_manager';
 import RichTextEditorModule from '../../rich_text_editor';
 import CommandsModule from '../../commands';
@@ -54,6 +55,7 @@ const deps: (new (em: EditorModel) => IModule)[] = [
   I18nModule,
   KeymapsModule,
   UndoManagerModule,
+  PatchManager,
   StorageManager,
   DeviceManager,
   ParserModule,
@@ -176,6 +178,10 @@ export default class EditorModel extends Model {
 
   get UndoManager(): UndoManagerModule {
     return this.get('UndoManager');
+  }
+
+  get Patches(): PatchManager {
+    return this.get('Patches');
   }
 
   get RichTextEditor(): RichTextEditorModule {

@@ -24,6 +24,7 @@ import { HTMLGeneratorBuildOptions } from '../../code_manager/model/HtmlGenerato
 import { CssGeneratorBuildOptions } from '../../code_manager/model/CssGenerator';
 import { ObjectAny } from '../../common';
 import { ColorPickerOptions } from '../../utils/ColorPicker';
+import type { PatchManagerConfig } from '../../patch_manager/types';
 
 export interface EditorConfig {
   /**
@@ -305,6 +306,11 @@ export interface EditorConfig {
    * Configurations for Undo Manager
    */
   undoManager?: UndoManagerConfig | boolean;
+
+  /**
+   * Configurations for Patch Manager.
+   */
+  patches?: PatchManagerConfig | boolean;
 
   /**
    * Configurations for Asset Manager.
