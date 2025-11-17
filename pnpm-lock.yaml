@@ -120,6 +120,9 @@ importers:
       '@vuepress/types':
         specifier: 1.9.10
         version: 1.9.10
+      chalk:
+        specifier: 4.1.2
+        version: 4.1.2
       documentation:
         specifier: 14.0.3
         version: 14.0.3
@@ -132,6 +135,9 @@ importers:
       vuepress:
         specifier: 1.9.10
         version: 1.9.10(@vue/compiler-sfc@3.5.12)(ejs@3.1.10)(hogan.js@3.0.2)(lodash@4.17.21)(prettier@3.3.3)(underscore@1.13.1)
+      vuepress-plugin-sitemap:
+        specifier: 2.3.1
+        version: 2.3.1(chalk@4.1.2)(commander@10.0.1)(esm@3.2.25)
       webpack:
         specifier: 4.0.0
         version: 4.0.0
@@ -3892,6 +3898,10 @@ packages:
     deprecated: This version is no longer supported. Please see https://eslint.org/version-support for other options.
     hasBin: true
 
+  esm@3.2.25:
+    resolution: {integrity: sha512-U1suiZ2oDVWv4zPO56S0NcR5QriEahGtdN2OR6FiOG4WJvcjBVFB0qI4+eKoWFH483PKGuLuu6V8Z4T5g63UVA==}
+    engines: {node: '>=6'}
+
   espree@9.6.1:
     resolution: {integrity: sha512-oruZaFkjorTpF32kDSI5/75ViwGeZginGGy2NoOSg3Q9bnwlnmDm4HLnkl0RE3n+njDXR037aY1+x58Z/zFdwQ==}
     engines: {node: ^12.22.0 || ^14.17.0 || >=16.0.0}
@@ -5613,6 +5623,9 @@ packages:
   lodash._reinterpolate@3.0.0:
     resolution: {integrity: sha512-xYHt68QRoYGjeeM/XOE1uJtvXQAgvszfBhjV4yvsQH0u2i9I6cI6c6/eG4Hh3UAOVn0y/xAXwmTzEay49Q//HA==}
 
+  lodash.chunk@4.2.0:
+    resolution: {integrity: sha512-ZzydJKfUHJwHa+hF5X66zLFCBrWn5GeF28OHEr4WVWtNDXlQ/IjWKPBiikqKo2ne0+v6JgCgJ0GzJp8k8bHC7w==}
+
   lodash.clonedeep@4.5.0:
     resolution: {integrity: sha512-H5ZhCF25riFd9uB5UCkVKo61m3S/xZk1x4wA6yp/L3RFP6Z/eHH1ymQcGLo7J3GMPfm0V/7m1tryHuGVxpqEBQ==}
 
@@ -5627,6 +5640,12 @@ packages:
 
   lodash.merge@4.6.2:
     resolution: {integrity: sha512-0KpjqXRVvrYyCsX1swR/XTK0va6VQkQM6MNo7PqW77ByjAhoARA8EfrP1N4+KlKj8YS0ZUCtRT/YUuhyYDujIQ==}
+
+  lodash.padstart@4.6.1:
+    resolution: {integrity: sha512-sW73O6S8+Tg66eY56DBk85aQzzUJDtpoXFBgELMd5P/SotAguo+1kYO6RuYgXxA4HJH3LFTFPASX6ET6bjfriw==}
+
+  lodash.sortby@4.7.0:
+    resolution: {integrity: sha512-HDWXG8isMntAyRF5vZ7xKuEvOhT4AhlRt/3czTSjvGUxjYCBVRQY48ViDHyfYz9VIoBkW4TMGQNapx+l3RUwdA==}
 
   lodash.template@4.5.0:
     resolution: {integrity: sha512-84vYFxIkmidUiFxidA/KjjH9pAycqW+h980j7Fuz5qxRtO9pgB7MDFTdys1N7A5mcucRiDyEq4fusljItR1T/A==}
@@ -7422,6 +7441,10 @@ packages:
   sisteransi@1.0.5:
     resolution: {integrity: sha512-bLGGlR1QxBcynn2d5YmDX4MGjlZvy2MRBDRNHLJ8VI6l6+9FUiyTFNJ0IveOSP0bcXgVDPRcfGqA0pjaqUpfVg==}
 
+  sitemap@3.2.2:
+    resolution: {integrity: sha512-TModL/WU4m2q/mQcrDgNANn0P4LwprM9MMvG4hu5zP4c6IIKs2YLTu6nXXnNr8ODW/WFtxKggiJ1EGn2W0GNmg==}
+    engines: {node: '>=6.0.0', npm: '>=4.0.0'}
+
   slash@1.0.0:
     resolution: {integrity: sha512-3TYDR7xWt4dIqV2JauJr+EJeW356RXijHeUlO+8djJ+uBXPn8/2dpzBc8yQhh583sVvc9CvFAeQVgijsH+PNNg==}
     engines: {node: '>=0.10.0'}
@@ -7885,6 +7908,9 @@ packages:
   tough-cookie@4.1.4:
     resolution: {integrity: sha512-Loo5UUvLD9ScZ6jh8beX1T6sO1w2/MpCRpEP7V280GKMVUQ0Jzar2U3UJPsrdbziLEMMhu3Ujnq//rhiFuIeag==}
     engines: {node: '>=6'}
+
+  tr46@1.0.1:
+    resolution: {integrity: sha512-dTpowEjclQ7Kgx5SdBkqRzVhERQXov8/l9Ft9dVM9fmg0W0KQSVaXX9T4i6twCPNtYiZM53lpSSUAwJbFPOHxA==}
 
   tr46@3.0.0:
     resolution: {integrity: sha512-l7FvfAHlcmulp8kr+flpQZmVwtu7nfRV7NZujtN0OqES8EL4O4e0qqzL0DC5gAvx/ZC/9lk6rhcUwYvkBnBnYA==}
@@ -8350,6 +8376,14 @@ packages:
   vuepress-plugin-container@2.1.5:
     resolution: {integrity: sha512-TQrDX/v+WHOihj3jpilVnjXu9RcTm6m8tzljNJwYhxnJUW0WWQ0hFLcDTqTBwgKIFdEiSxVOmYE+bJX/sq46MA==}
 
+  vuepress-plugin-sitemap@2.3.1:
+    resolution: {integrity: sha512-n+8lbukhrKrsI9H/EX0EBgkE1pn85LAQFvQ5dIvrZP4Kz6JxPOPPNTQmZMhahQV1tXbLZQCEN7A1WZH4x+arJQ==}
+    hasBin: true
+    peerDependencies:
+      chalk: ^2.0.0
+      commander: ^2.0.0
+      esm: ^3.0.0
+
   vuepress-plugin-smooth-scroll@0.0.3:
     resolution: {integrity: sha512-qsQkDftLVFLe8BiviIHaLV0Ea38YLZKKonDGsNQy1IE0wllFpFIEldWD8frWZtDFdx6b/O3KDMgVQ0qp5NjJCg==}
 
@@ -8387,6 +8421,9 @@ packages:
 
   web-namespaces@2.0.1:
     resolution: {integrity: sha512-bKr1DkiNa2krS7qxNtdrtHAmzuYGFQLiQ13TsorsdT6ULTkPLKuu5+GsFpDlg6JFjUTwX2DyhMPG2be8uPrqsQ==}
+
+  webidl-conversions@4.0.2:
+    resolution: {integrity: sha512-YQ+BmxuTgd6UXZW3+ICGfyqRyHXVlD5GtQr5+qjiNW7bF0cqrzX500HVXPBOvgXb5YnzDd+h0zqyv61KUD7+Sg==}
 
   webidl-conversions@7.0.0:
     resolution: {integrity: sha512-VwddBukDzu71offAQR975unBIGqfKZpM+8ZX6ySk8nYhVoo5CYaZyzt3YBvYtRtO+aoGlqxPg/B87NGVZ/fu6g==}
@@ -8556,6 +8593,9 @@ packages:
     resolution: {integrity: sha512-1lfMEm2IEr7RIV+f4lUNPOqfFL+pO+Xw3fJSqmjX9AbXcXcYOkCe1P6+9VBZB6n94af16NfZf+sSk0JCBZC9aw==}
     engines: {node: '>=18'}
 
+  whatwg-url@7.1.0:
+    resolution: {integrity: sha512-WUu7Rg1DroM7oQvGWfOiAK21n74Gg+T4elXEQYkOhtyLeWiJFoOGLXPKI/9gzIie9CtwVLm8wtw6YJdKyxSjeg==}
+
   when@3.6.4:
     resolution: {integrity: sha512-d1VUP9F96w664lKINMGeElWdhhb5sC+thXM+ydZGU3ZnaE09Wv6FaS+mpM9570kcDs/xMfcXJBTLsMdHEFYY9Q==}
 
@@ -8672,6 +8712,10 @@ packages:
   xml-name-validator@5.0.0:
     resolution: {integrity: sha512-EvGK8EJ3DhaHfbRlETOWAS5pO9MZITeauHKJyb8wyajUfQUenkIg2MvLDTZ4T/TgIcm3HU0TFBgWWboAZ30UHg==}
     engines: {node: '>=18'}
+
+  xmlbuilder@13.0.2:
+    resolution: {integrity: sha512-Eux0i2QdDYKbdbA6AM6xE4m6ZTZr4G4xF9kahI2ukSEMCzwce2eX9WlTI5J3s+NU7hpasFsr8hWIONae7LluAQ==}
+    engines: {node: '>=6.0'}
 
   xmlchars@2.2.0:
     resolution: {integrity: sha512-JZnDKK8B0RCDw84FNdDAIpZK+JuJw+s7Lz8nksI7SIuU3UXJJslUthsi+uWBUYOwPFwW7W7PRLRfUKpxjtjFCw==}
@@ -13356,6 +13400,8 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
+  esm@3.2.25: {}
+
   espree@9.6.1:
     dependencies:
       acorn: 8.13.0
@@ -15507,6 +15553,8 @@ snapshots:
 
   lodash._reinterpolate@3.0.0: {}
 
+  lodash.chunk@4.2.0: {}
+
   lodash.clonedeep@4.5.0: {}
 
   lodash.debounce@4.0.8: {}
@@ -15516,6 +15564,10 @@ snapshots:
   lodash.memoize@4.1.2: {}
 
   lodash.merge@4.6.2: {}
+
+  lodash.padstart@4.6.1: {}
+
+  lodash.sortby@4.7.0: {}
 
   lodash.template@4.5.0:
     dependencies:
@@ -17700,6 +17752,13 @@ snapshots:
 
   sisteransi@1.0.5: {}
 
+  sitemap@3.2.2:
+    dependencies:
+      lodash.chunk: 4.2.0
+      lodash.padstart: 4.6.1
+      whatwg-url: 7.1.0
+      xmlbuilder: 13.0.2
+
   slash@1.0.0: {}
 
   slash@2.0.0: {}
@@ -18221,6 +18280,10 @@ snapshots:
       punycode: 2.3.1
       universalify: 0.2.0
       url-parse: 1.5.10
+
+  tr46@1.0.1:
+    dependencies:
+      punycode: 2.3.1
 
   tr46@3.0.0:
     dependencies:
@@ -18816,6 +18879,13 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
+  vuepress-plugin-sitemap@2.3.1(chalk@4.1.2)(commander@10.0.1)(esm@3.2.25):
+    dependencies:
+      chalk: 4.1.2
+      commander: 10.0.1
+      esm: 3.2.25
+      sitemap: 3.2.2
+
   vuepress-plugin-smooth-scroll@0.0.3:
     dependencies:
       smoothscroll-polyfill: 0.4.4
@@ -18935,6 +19005,8 @@ snapshots:
       defaults: 1.0.4
 
   web-namespaces@2.0.1: {}
+
+  webidl-conversions@4.0.2: {}
 
   webidl-conversions@7.0.0: {}
 
@@ -19248,6 +19320,12 @@ snapshots:
       tr46: 5.0.0
       webidl-conversions: 7.0.0
 
+  whatwg-url@7.1.0:
+    dependencies:
+      lodash.sortby: 4.7.0
+      tr46: 1.0.1
+      webidl-conversions: 4.0.2
+
   when@3.6.4: {}
 
   which-boxed-primitive@1.0.2:
@@ -19383,6 +19461,8 @@ snapshots:
   xml-name-validator@4.0.0: {}
 
   xml-name-validator@5.0.0: {}
+
+  xmlbuilder@13.0.2: {}
 
   xmlchars@2.2.0: {}
 
