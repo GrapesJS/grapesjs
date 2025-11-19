@@ -1,7 +1,7 @@
 import { DataRecord, DataSourceManager } from '../../../../src';
+import { DataCollectionStateType } from '../../../../src/data_sources/model/data_collection/types';
 import { DataVariableProps, DataVariableType } from '../../../../src/data_sources/model/DataVariable';
-import { DataComponentTypes } from '../../../../src/data_sources/types';
-import { keyRootData } from '../../../../src/dom_components/constants';
+import { DataCollectionKeys, DataComponentTypes } from '../../../../src/data_sources/types';
 import Component from '../../../../src/dom_components/model/Component';
 import ComponentHead from '../../../../src/dom_components/model/ComponentHead';
 import ComponentWrapper from '../../../../src/dom_components/model/ComponentWrapper';
@@ -10,6 +10,7 @@ import EditorModel from '../../../../src/editor/model/Editor';
 import { setupTestEditor } from '../../../common';
 
 describe('ComponentWrapper', () => {
+  const keyRootData = DataCollectionKeys.rootData;
   let em: Editor;
 
   beforeEach(() => {
@@ -101,13 +102,14 @@ describe('ComponentWrapper', () => {
         type: 'default',
         title: {
           type: DataComponentTypes.variable,
+          variableType: DataCollectionStateType.currentItem,
           collectionId: keyRootData,
           path,
         },
         components: {
           tagName: 'span',
           type: DataComponentTypes.variable,
-          dataResolver: { collectionId: keyRootData, path },
+          dataResolver: { collectionId: keyRootData, variableType: DataCollectionStateType.currentItem, path },
         },
       })[0];
 

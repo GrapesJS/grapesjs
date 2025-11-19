@@ -3,8 +3,8 @@ import ComponentWithCollectionsState from '../../data_sources/model/ComponentWit
 import DataResolverListener from '../../data_sources/model/DataResolverListener';
 import { DataVariableProps } from '../../data_sources/model/DataVariable';
 import { DataCollectionStateMap } from '../../data_sources/model/data_collection/types';
+import { DataCollectionKeys } from '../../data_sources/types';
 import { attrToString } from '../../utils/dom';
-import { keyRootData } from '../constants';
 import Component from './Component';
 import ComponentHead, { type as typeHead } from './ComponentHead';
 import Components from './Components';
@@ -160,15 +160,19 @@ export default class ComponentWrapper extends ComponentWithCollectionsState<Data
     const dsm = em.DataSources;
     if (!dataResolverPath) return {};
 
+    const collectionId = DataCollectionKeys.rootData;
     const allItems = this.getDataSourceItems() as any;
-    const selectedItems = isNumber(resolverCurrentItem)
+    const currentItem = isNumber(resolverCurrentItem)
       ? allItems[resolverCurrentItem]
       : isString(resolverCurrentItem)
         ? dsm.getValue(`${dataResolverPath}.${resolverCurrentItem}`)
         : allItems;
 
     return {
-      [keyRootData]: selectedItems,
+      [collectionId]: {
+        collectionId,
+        currentItem,
+      },
     } as DataCollectionStateMap;
   }
 

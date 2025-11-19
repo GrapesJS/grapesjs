@@ -22,6 +22,10 @@ export enum DataComponentTypes {
   collectionItem = 'data-collection-item',
 }
 
+export enum DataCollectionKeys {
+  rootData = '__rootData',
+}
+
 export interface DataRecordProps extends ObjectAny {
   /**
    * Record id.

@@ -1,14 +1,8 @@
 import { Model } from '../../common';
-import { keyRootData } from '../../dom_components/constants';
 import EditorModel from '../../editor/model/Editor';
 import { DataComponentTypes } from '../types';
 import { isDataVariable } from '../utils';
-import {
-  DataCollectionStateMap,
-  DataCollectionState,
-  DataCollectionStateType,
-  RootDataType,
-} from './data_collection/types';
+import { DataCollectionState, DataCollectionStateMap, DataCollectionStateType } from './data_collection/types';
 
 export const DataVariableType = DataComponentTypes.variable as const;
 
@@ -163,18 +157,15 @@ export default class DataVariable extends Model<DataVariableProps> {
     const collectionItem = collectionsStateMap[collectionId];
     if (!collectionItem) return defaultValue;
 
-    if (collectionId === keyRootData) {
-      const root = collectionItem as RootDataType;
-      return path ? root?.[path as keyof RootDataType] : root;
-    }
-
     if (!variableType) {
       em.logError(`Missing collection variable type for collection: ${collectionId}`);
       return defaultValue;
     }
 
     if (variableType === 'currentItem') {
-      return DataVariable.resolveCurrentItem(collectionItem as DataCollectionState, path, collectionId, em);
+      return (
+        DataVariable.resolveCurrentItem(collectionItem as DataCollectionState, path, collectionId, em) ?? defaultValue
+      );
     }
 
     const state = collectionItem as DataCollectionState;
@@ -190,7 +181,7 @@ export default class DataVariable extends Model<DataVariableProps> {
     const currentItem = collectionItem.currentItem;
     if (!currentItem) {
       em.logError(`Current item is missing for collection: ${collectionId}`);
-      return '';
+      return;
     }
 
     if (currentItem.type === DataVariableType) {
@@ -199,8 +190,7 @@ export default class DataVariable extends Model<DataVariableProps> {
     }
 
     if (path && !(currentItem as any)[path]) {
-      em.logError(`Path not found in current item: ${path} for collection: ${collectionId}`);
-      return '';
+      return;
     }
 
     return path ? (currentItem as any)[path] : currentItem;

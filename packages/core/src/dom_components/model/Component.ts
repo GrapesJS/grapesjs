@@ -1,36 +1,62 @@
+import { Model, ModelDestroyOptions } from 'backbone';
 import {
-  isUndefined,
-  isFunction,
-  isArray,
-  isEmpty,
-  isBoolean,
-  has,
-  isString,
-  forEach,
-  result,
   bindAll,
+  forEach,
+  has,
+  isArray,
+  isBoolean,
+  isEmpty,
+  isFunction,
+  isString,
+  isUndefined,
   keys,
+  result,
 } from 'underscore';
-import {
-  shallowDiff,
-  capitalize,
-  isEmptyObj,
-  isObject,
-  toLowerCase,
-  escapeAltQuoteAttrValue,
-  escapeAttrValue,
-} from '../../utils/mixins';
+import Frame from '../../canvas/model/Frame';
+import { AddOptions, ExtractMethods, ObjectAny, PrevToNewIdMap, SetOptions } from '../../common';
+import CssRule, { CssRuleJSON } from '../../css_composer/model/CssRule';
+import { DataCollectionStateMap } from '../../data_sources/model/data_collection/types';
+import { DataCollectionKeys } from '../../data_sources/types';
+import { checkAndGetSyncableCollectionItemId } from '../../data_sources/utils';
 import StyleableModel, {
   GetStyleOpts,
   StyleProps,
   UpdateStyleOptions,
 } from '../../domain_abstract/model/StyleableModel';
-import { Model, ModelDestroyOptions } from 'backbone';
-import Components from './Components';
+import EditorModel from '../../editor/model/Editor';
+import ItemView from '../../navigator/view/ItemView';
 import Selector from '../../selector_manager/model/Selector';
 import Selectors from '../../selector_manager/model/Selectors';
+import Trait from '../../trait_manager/model/Trait';
 import Traits from '../../trait_manager/model/Traits';
-import EditorModel from '../../editor/model/Editor';
+import { TraitProperties } from '../../trait_manager/types';
+import {
+  capitalize,
+  escapeAltQuoteAttrValue,
+  escapeAttrValue,
+  isEmptyObj,
+  isObject,
+  shallowDiff,
+  toLowerCase,
+} from '../../utils/mixins';
+import { DomComponentsConfig } from '../config/config';
+import { ActionLabelComponents, ComponentsEvents } from '../types';
+import ComponentView from '../view/ComponentView';
+import Components from './Components';
+import { DataWatchersOptions } from './ModelResolverWatcher';
+import {
+  getSymbolInstances,
+  getSymbolMain,
+  getSymbolsToUpdate,
+  initSymbol,
+  isSymbol,
+  isSymbolMain,
+  isSymbolRoot,
+  updateSymbolCls,
+  updateSymbolComps,
+  updateSymbolProps,
+} from './SymbolUtils';
+import { ToolbarButtonProps } from './ToolbarButton';
 import {
   ComponentAdd,
   ComponentDefinition,
@@ -42,32 +68,6 @@ import {
   SymbolToUpOptions,
   ToHTMLOptions,
 } from './types';
-import Frame from '../../canvas/model/Frame';
-import { DomComponentsConfig } from '../config/config';
-import ComponentView from '../view/ComponentView';
-import { AddOptions, ExtractMethods, ObjectAny, PrevToNewIdMap, SetOptions } from '../../common';
-import CssRule, { CssRuleJSON } from '../../css_composer/model/CssRule';
-import Trait from '../../trait_manager/model/Trait';
-import { ToolbarButtonProps } from './ToolbarButton';
-import { TraitProperties } from '../../trait_manager/types';
-import { ActionLabelComponents, ComponentsEvents } from '../types';
-import ItemView from '../../navigator/view/ItemView';
-import {
-  getSymbolMain,
-  getSymbolInstances,
-  initSymbol,
-  isSymbol,
-  isSymbolMain,
-  isSymbolRoot,
-  updateSymbolCls,
-  updateSymbolComps,
-  updateSymbolProps,
-  getSymbolsToUpdate,
-} from './SymbolUtils';
-import { DataWatchersOptions } from './ModelResolverWatcher';
-import { DataCollectionStateMap } from '../../data_sources/model/data_collection/types';
-import { checkAndGetSyncableCollectionItemId } from '../../data_sources/utils';
-import { keyRootData } from '../constants';
 
 export interface IComponent extends ExtractMethods<Component> {}
 export interface SetAttrOptions extends SetOptions, UpdateStyleOptions, DataWatchersOptions {}
@@ -446,7 +446,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
     this.emitWithEditor(ComponentsEvents.styleUpdate, this, pros);
     styleKeys.forEach((key) => this.emitWithEditor(`${ComponentsEvents.styleUpdateProperty}${key}`, this, pros));
 
-    const parentCollectionIds = Object.keys(collectionsStateMap).filter((key) => key !== keyRootData);
+    const parentCollectionIds = Object.keys(collectionsStateMap).filter((key) => key !== DataCollectionKeys.rootData);
 
     if (parentCollectionIds.length === 0) return;
 

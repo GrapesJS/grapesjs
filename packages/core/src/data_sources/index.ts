@@ -36,12 +36,13 @@ import { DataCollectionStateType } from './model/data_collection/types';
 import DataRecord from './model/DataRecord';
 import DataSource from './model/DataSource';
 import DataSources from './model/DataSources';
-import { DataComponentTypes, DataRecordProps, DataSourceProps, DataSourcesEvents } from './types';
+import { DataCollectionKeys, DataComponentTypes, DataRecordProps, DataSourceProps, DataSourcesEvents } from './types';
 
 export default class DataSourceManager extends ItemManagerModule<DataSourcesConfig & ModuleConfig, DataSources> {
   storageKey = 'dataSources';
   events = DataSourcesEvents;
   dataComponentTypes = DataComponentTypes;
+  dataCollectionKeys = DataCollectionKeys;
   dataCollectionStateTypes = DataCollectionStateType;
   dataOperationTypes = {
     any: AnyTypeOperation,
@@ -104,8 +105,8 @@ export default class DataSourceManager extends ItemManagerModule<DataSourcesConf
    * @returns {any}
    * const value = dsm.getValue('ds_id.record_id.propName', 'defaultValue');
    */
-  getValue(path: string | string[], defValue?: any) {
-    return get(this.getContext(), path, defValue);
+  getValue(path: string | string[], defValue?: any, opts?: { context?: Record<string, any> }) {
+    return get(opts?.context || this.getContext(), path, defValue);
   }
 
   /**
@@ -130,7 +131,7 @@ export default class DataSourceManager extends ItemManagerModule<DataSourcesConf
     return false;
   }
 
-  private getContext() {
+  getContext() {
     return this.all.reduce((acc, ds) => {
       acc[ds.id] = ds.records.reduce((accR, dr, i) => {
         const dataRecord = dr;
