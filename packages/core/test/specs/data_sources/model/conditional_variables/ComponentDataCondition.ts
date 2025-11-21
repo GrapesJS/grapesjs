@@ -1,9 +1,10 @@
-import { Component, Components, ComponentView, DataSourceManager, Editor } from '../../../../../src';
-import { DataConditionIfTrueType } from '../../../../../src/data_sources/model/conditional_variables/constants';
+import { DataSourceManager, Editor } from '../../../../../src';
 import { DataVariableType } from '../../../../../src/data_sources/model/DataVariable';
+import ComponentDataCondition from '../../../../../src/data_sources/model/conditional_variables/ComponentDataCondition';
 import { DataConditionType } from '../../../../../src/data_sources/model/conditional_variables/DataCondition';
 import { AnyTypeOperation } from '../../../../../src/data_sources/model/conditional_variables/operators/AnyTypeOperator';
 import { NumberOperation } from '../../../../../src/data_sources/model/conditional_variables/operators/NumberOperator';
+import { DataComponentTypes } from '../../../../../src/data_sources/types';
 import ComponentDataConditionView from '../../../../../src/data_sources/view/ComponentDataConditionView';
 import ComponentWrapper from '../../../../../src/dom_components/model/ComponentWrapper';
 import EditorModel from '../../../../../src/editor/model/Editor';
@@ -17,7 +18,6 @@ import {
   setupTestEditor,
   TRUE_CONDITION,
 } from '../../../../common';
-import ComponentDataCondition from '../../../../../src/data_sources/model/conditional_variables/ComponentDataCondition';
 
 describe('ComponentDataCondition', () => {
   let editor: Editor;
@@ -147,7 +147,7 @@ describe('ComponentDataCondition', () => {
       },
       components: [
         {
-          type: DataConditionIfTrueType,
+          type: DataComponentTypes.conditionTrue,
           components: {
             type: DataConditionType,
             dataResolver: {

@@ -1,16 +1,16 @@
 import { Component, DataSource, DataSourceManager } from '../../../../../src';
 import { DataVariableType } from '../../../../../src/data_sources/model/DataVariable';
-import {
-  DataCollectionItemType,
-  DataCollectionType,
-} from '../../../../../src/data_sources/model/data_collection/constants';
+import ComponentDataCollection from '../../../../../src/data_sources/model/data_collection/ComponentDataCollection';
 import {
   ComponentDataCollectionProps,
   DataCollectionStateType,
 } from '../../../../../src/data_sources/model/data_collection/types';
+import { DataComponentTypes } from '../../../../../src/data_sources/types';
 import EditorModel from '../../../../../src/editor/model/Editor';
 import { setupTestEditor } from '../../../../common';
-import ComponentDataCollection from '../../../../../src/data_sources/model/data_collection/ComponentDataCollection';
+
+const DataCollectionItemType = DataComponentTypes.collectionItem;
+const DataCollectionType = DataComponentTypes.collection;
 
 describe('Collection component getters and setters', () => {
   let em: EditorModel;

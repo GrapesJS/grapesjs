@@ -316,7 +316,8 @@ export default class DataSource<DRProps extends DataRecordProps = DataRecordProp
     return this.schema[fieldKey];
   }
 
-  private handleChanges(m: any, c: any, o: any) {
-    this.em.changesUp(o || c);
+  private handleChanges(dataRecord: any, c: any, o: any) {
+    const options = o || c;
+    this.em.changesUp(options, { dataRecord, options });
   }
 }

@@ -2,14 +2,29 @@
 
 exports[`Collection component Nested collections are correctly serialized 1`] = `
 {
+  "attributes": {
+    "id": "cmp-coll-parent",
+  },
   "components": [
     {
+      "attributes": {
+        "id": "cmp-coll-parent-item",
+      },
       "components": [
         {
+          "attributes": {
+            "id": "cmp-coll",
+          },
           "components": [
             {
+              "attributes": {
+                "id": "cmp-coll-item",
+              },
               "components": [
                 {
+                  "attributes": {
+                    "id": "cmp-coll-item-child-1",
+                  },
                   "name": {
                     "collectionId": "nested_collection",
                     "path": "user",

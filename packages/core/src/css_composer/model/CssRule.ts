@@ -129,10 +129,10 @@ export default class CssRule extends StyleableModel<CssRuleProperties> {
     this.on('change', this.__onChange);
   }
 
-  __onChange(m: CssRule, opts: any) {
+  __onChange(rule: CssRule, options: any) {
     const { em } = this;
     const changed = this.changedAttributes();
-    changed && !isEmptyObj(changed) && em?.changesUp(opts);
+    changed && !isEmptyObj(changed) && em?.changesUp(options, { rule, changed, options });
   }
 
   clone(): typeof this {

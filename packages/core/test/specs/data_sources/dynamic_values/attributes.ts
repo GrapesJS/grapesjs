@@ -240,6 +240,63 @@ describe('Dynamic Attributes', () => {
     const input = cmp.getEl();
     expect(input?.getAttribute('dynamicAttribute')).toBe(null);
   });
+
+  test('attributes should not collide with styles', () => {
+    ({ em, dsm, cmpRoot } = setupTestEditor({ config: { avoidInlineStyle: false } }));
+    dsm.add({
+      id: 'ds_id',
+      records: [
+        { id: 'id1', value: 'test-value' },
+        { id: 'id2', value: 'second-test-value' },
+      ],
+    });
+
+    const cmp = cmpRoot.append({
+      tagName: 'input',
+    })[0];
+
+    cmp.addAttributes({
+      static: 'static-value-attr',
+      dynamic: {
+        type: DataVariableType,
+        defaultValue: 'default',
+        path: 'ds_id.id1.value',
+      },
+    });
+    cmp.addStyle({
+      static: 'static-value-style',
+      dynamic: {
+        type: DataVariableType,
+        defaultValue: 'default',
+        path: 'ds_id.id2.value',
+      },
+    });
+
+    testAttribute(cmp, 'style', 'static:static-value-style;dynamic:second-test-value;');
+    testAttribute(cmp, 'dynamic', 'test-value');
+    testAttribute(cmp, 'static', 'static-value-attr');
+
+    cmp.addAttributes({
+      static: 'static-value-attr-2',
+      dynamic: {
+        type: DataVariableType,
+        defaultValue: 'default',
+        path: 'ds_id.id2.value',
+      },
+    });
+    cmp.addStyle({
+      static: 'static-value-style-2',
+      dynamic: {
+        type: DataVariableType,
+        defaultValue: 'default',
+        path: 'ds_id.id1.value',
+      },
+    });
+
+    testAttribute(cmp, 'style', 'static:static-value-style-2;dynamic:test-value;');
+    testAttribute(cmp, 'dynamic', 'second-test-value');
+    testAttribute(cmp, 'static', 'static-value-attr-2');
+  });
 });
 
 function changeDataSourceValue(dsm: DataSourceManager, id: string) {

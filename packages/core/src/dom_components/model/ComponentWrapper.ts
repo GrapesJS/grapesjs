@@ -1,28 +1,27 @@
-import { isUndefined } from 'underscore';
-import { attrToString } from '../../utils/dom';
-import Component from './Component';
-import ComponentHead, { type as typeHead } from './ComponentHead';
-import { ComponentOptions, ComponentProperties, ToHTMLOptions } from './types';
-import Components from './Components';
+import { isNumber, isString, isUndefined } from 'underscore';
+import ComponentWithCollectionsState from '../../data_sources/model/ComponentWithCollectionsState';
 import DataResolverListener from '../../data_sources/model/DataResolverListener';
 import { DataVariableProps } from '../../data_sources/model/DataVariable';
 import { DataCollectionStateMap } from '../../data_sources/model/data_collection/types';
-import ComponentWithCollectionsState, {
-  DataSourceRecords,
-} from '../../data_sources/model/ComponentWithCollectionsState';
-import { keyRootData } from '../constants';
+import { DataCollectionKeys } from '../../data_sources/types';
+import { attrToString } from '../../utils/dom';
+import Component from './Component';
+import ComponentHead, { type as typeHead } from './ComponentHead';
+import Components from './Components';
+import { ComponentOptions, ComponentProperties, ToHTMLOptions } from './types';
 
 type ResolverCurrentItemType = string | number;
 
 export default class ComponentWrapper extends ComponentWithCollectionsState<DataVariableProps> {
   dataSourceWatcher?: DataResolverListener;
-  private _resolverCurrentItem?: ResolverCurrentItemType;
+  private _resolverCurrentItem?: ResolverCurrentItemType = 0;
   private _isWatchingCollectionStateMap = false;
 
   get defaults() {
     return {
       // @ts-ignore
       ...super.defaults,
+      dataResolver: null,
       tagName: 'body',
       removable: false,
       copyable: false,
@@ -130,6 +129,10 @@ export default class ComponentWrapper extends ComponentWithCollectionsState<Data
     this.onCollectionsStateMapUpdate(this.getCollectionsStateMap());
   }
 
+  setResolverCurrentItem(value: ResolverCurrentItemType) {
+    this.resolverCurrentItem = value;
+  }
+
   protected onDataSourceChange() {
     this.onCollectionsStateMapUpdate(this.getCollectionsStateMap());
   }
@@ -153,19 +156,23 @@ export default class ComponentWrapper extends ComponentWithCollectionsState<Data
   }
 
   private getCollectionsStateMap(): DataCollectionStateMap {
-    const { dataResolverPath: dataSourcePath, resolverCurrentItem } = this;
+    const { dataResolverPath, resolverCurrentItem, em } = this;
+    const dsm = em.DataSources;
+    if (!dataResolverPath) return {};
 
-    if (!dataSourcePath) {
-      return {};
-    }
-
-    const allItems = this.getDataSourceItems();
-    const selectedItems = !isUndefined(resolverCurrentItem)
-      ? allItems[resolverCurrentItem as keyof DataSourceRecords]
-      : allItems;
+    const collectionId = DataCollectionKeys.rootData;
+    const allItems = this.getDataSourceItems() as any;
+    const currentItem = isNumber(resolverCurrentItem)
+      ? allItems[resolverCurrentItem]
+      : isString(resolverCurrentItem)
+        ? dsm.getValue(`${dataResolverPath}.${resolverCurrentItem}`)
+        : allItems;
 
     return {
-      [keyRootData]: selectedItems,
+      [collectionId]: {
+        collectionId,
+        currentItem,
+      },
     } as DataCollectionStateMap;
   }
 

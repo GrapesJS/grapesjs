@@ -21,21 +21,35 @@
  * @module DataSources
  */
 
+import { Events } from 'backbone';
 import { isEmpty } from 'underscore';
 import { ItemManagerModule, ModuleConfig } from '../abstract/Module';
 import { AddOptions, collectionEvents, ObjectAny, RemoveOptions } from '../common';
 import EditorModel from '../editor/model/Editor';
 import { get, set, stringToPath } from '../utils/mixins';
 import defConfig, { DataSourcesConfig } from './config/config';
+import { AnyTypeOperation } from './model/conditional_variables/operators/AnyTypeOperator';
+import { BooleanOperation } from './model/conditional_variables/operators/BooleanOperator';
+import { NumberOperation } from './model/conditional_variables/operators/NumberOperator';
+import { StringOperation } from './model/conditional_variables/operators/StringOperator';
+import { DataCollectionStateType } from './model/data_collection/types';
 import DataRecord from './model/DataRecord';
 import DataSource from './model/DataSource';
 import DataSources from './model/DataSources';
-import { DataSourcesEvents, DataSourceProps, DataRecordProps } from './types';
-import { Events } from 'backbone';
+import { DataCollectionKeys, DataComponentTypes, DataRecordProps, DataSourceProps, DataSourcesEvents } from './types';
 
 export default class DataSourceManager extends ItemManagerModule<DataSourcesConfig & ModuleConfig, DataSources> {
   storageKey = 'dataSources';
   events = DataSourcesEvents;
+  dataComponentTypes = DataComponentTypes;
+  dataCollectionKeys = DataCollectionKeys;
+  dataCollectionStateTypes = DataCollectionStateType;
+  dataOperationTypes = {
+    any: AnyTypeOperation,
+    boolean: BooleanOperation,
+    number: NumberOperation,
+    string: StringOperation,
+  };
   destroy(): void {}
 
   constructor(em: EditorModel) {
@@ -75,14 +89,24 @@ export default class DataSourceManager extends ItemManagerModule<DataSourcesConf
   }
 
   /**
+   * Return all data sources.
+   * @returns {Array<[DataSource]>}
+   * @example
+   * const ds = dsm.getAll();
+   */
+  getAll() {
+    return [...this.all.models];
+  }
+
+  /**
    * Get value from data sources by path.
    * @param {String} path Path to value.
    * @param {any} defValue Default value if the path is not found.
    * @returns {any}
    * const value = dsm.getValue('ds_id.record_id.propName', 'defaultValue');
    */
-  getValue(path: string | string[], defValue?: any) {
-    return get(this.getContext(), path, defValue);
+  getValue(path: string | string[], defValue?: any, opts?: { context?: Record<string, any> }) {
+    return get(opts?.context || this.getContext(), path, defValue);
   }
 
   /**
@@ -107,7 +131,7 @@ export default class DataSourceManager extends ItemManagerModule<DataSourcesConf
     return false;
   }
 
-  private getContext() {
+  getContext() {
     return this.all.reduce((acc, ds) => {
       acc[ds.id] = ds.records.reduce((accR, dr, i) => {
         const dataRecord = dr;
@@ -211,7 +235,10 @@ export default class DataSourceManager extends ItemManagerModule<DataSourcesConf
 
   postLoad() {
     const { em, all } = this;
-    em.listenTo(all, collectionEvents, (m, c, o) => em.changesUp(o || c));
+    em.listenTo(all, collectionEvents, (dataSource, c, o) => {
+      const options = o || c;
+      em.changesUp(options, { dataSource, options });
+    });
     this.em.UndoManager.add(all);
   }
 }
