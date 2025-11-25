@@ -149,6 +149,8 @@ export type { default as DataRecord } from './data_sources/model/DataRecord';
 export type { default as DataRecords } from './data_sources/model/DataRecords';
 export type { default as DataVariable } from './data_sources/model/DataVariable';
 export type { default as ComponentDataVariable } from './data_sources/model/ComponentDataVariable';
+export type { default as ComponentWithCollectionsState } from './data_sources/model/ComponentWithCollectionsState';
+export type { ComponentWithDataResolver } from './data_sources/model/ComponentWithDataResolver';
 export type { default as ComponentDataCollection } from './data_sources/model/data_collection/ComponentDataCollection';
 export type { default as ComponentDataCondition } from './data_sources/model/conditional_variables/ComponentDataCondition';
 export type {

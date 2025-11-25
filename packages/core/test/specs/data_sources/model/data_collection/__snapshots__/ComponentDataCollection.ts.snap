@@ -2,8 +2,14 @@
 
 exports[`Collection component Serialization Saving: Collection with grandchildren 1`] = `
 {
+  "attributes": {
+    "id": "cmp-coll",
+  },
   "components": [
     {
+      "attributes": {
+        "id": "cmp-coll-item",
+      },
       "components": [
         {
           "attributes": {
@@ -13,6 +19,7 @@ exports[`Collection component Serialization Saving: Collection with grandchildre
               "type": "data-variable",
               "variableType": "currentItem",
             },
+            "id": "cmp-coll-item-child-1",
             "name": {
               "collectionId": "my_collection",
               "path": "user",
@@ -22,6 +29,9 @@ exports[`Collection component Serialization Saving: Collection with grandchildre
           },
           "components": [
             {
+              "attributes": {
+                "id": "cmp-coll-item-child-UP",
+              },
               "name": {
                 "collectionId": "my_collection",
                 "path": "user",
@@ -70,8 +80,14 @@ exports[`Collection component Serialization Saving: Collection with grandchildre
 
 exports[`Collection component Serialization Saving: Collection with no grandchildren 1`] = `
 {
+  "attributes": {
+    "id": "cmp-coll",
+  },
   "components": [
     {
+      "attributes": {
+        "id": "cmp-coll-item",
+      },
       "components": [
         {
           "attributes": {
@@ -81,6 +97,7 @@ exports[`Collection component Serialization Saving: Collection with no grandchil
               "type": "data-variable",
               "variableType": "currentItem",
             },
+            "id": "cmp-coll-item-child-1",
             "name": {
               "collectionId": "my_collection",
               "path": "user",
@@ -97,6 +114,7 @@ exports[`Collection component Serialization Saving: Collection with no grandchil
                   "type": "data-variable",
                   "variableType": "currentItem",
                 },
+                "id": "cmp-coll-item-child-1-1",
                 "name": {
                   "collectionId": "my_collection",
                   "path": "user",
@@ -132,6 +150,7 @@ exports[`Collection component Serialization Saving: Collection with no grandchil
                   "type": "data-variable",
                   "variableType": "currentItem",
                 },
+                "id": "cmp-coll-item-child-1-2",
                 "name": {
                   "collectionId": "my_collection",
                   "path": "user",
@@ -199,8 +218,14 @@ exports[`Collection component Serialization Saving: Collection with no grandchil
 
 exports[`Collection component Serialization Serializion with Collection Variables to JSON: Collection with grandchildren 1`] = `
 {
+  "attributes": {
+    "id": "cmp-coll",
+  },
   "components": [
     {
+      "attributes": {
+        "id": "cmp-coll-item",
+      },
       "components": [
         {
           "attributes": {
@@ -210,6 +235,7 @@ exports[`Collection component Serialization Serializion with Collection Variable
               "type": "data-variable",
               "variableType": "currentItem",
             },
+            "id": "cmp-coll-item-child-1",
             "name": {
               "collectionId": "my_collection",
               "path": "user",
@@ -226,6 +252,7 @@ exports[`Collection component Serialization Serializion with Collection Variable
                   "type": "data-variable",
                   "variableType": "currentItem",
                 },
+                "id": "cmp-coll-item-child-1-1",
                 "name": {
                   "collectionId": "my_collection",
                   "path": "user",
@@ -235,6 +262,9 @@ exports[`Collection component Serialization Serializion with Collection Variable
               },
               "components": [
                 {
+                  "attributes": {
+                    "id": "cmp-coll-item-child-UP",
+                  },
                   "name": {
                     "collectionId": "my_collection",
                     "path": "user",
@@ -272,6 +302,7 @@ exports[`Collection component Serialization Serializion with Collection Variable
                   "type": "data-variable",
                   "variableType": "currentItem",
                 },
+                "id": "cmp-coll-item-child-1-2",
                 "name": {
                   "collectionId": "my_collection",
                   "path": "user",
@@ -339,8 +370,14 @@ exports[`Collection component Serialization Serializion with Collection Variable
 
 exports[`Collection component Serialization Serializion with Collection Variables to JSON: Collection with no grandchildren 1`] = `
 {
+  "attributes": {
+    "id": "cmp-coll",
+  },
   "components": [
     {
+      "attributes": {
+        "id": "cmp-coll-item",
+      },
       "components": [
         {
           "attributes": {
@@ -350,6 +387,7 @@ exports[`Collection component Serialization Serializion with Collection Variable
               "type": "data-variable",
               "variableType": "currentItem",
             },
+            "id": "cmp-coll-item-child-1",
             "name": {
               "collectionId": "my_collection",
               "path": "user",
@@ -366,6 +404,7 @@ exports[`Collection component Serialization Serializion with Collection Variable
                   "type": "data-variable",
                   "variableType": "currentItem",
                 },
+                "id": "cmp-coll-item-child-1-1",
                 "name": {
                   "collectionId": "my_collection",
                   "path": "user",
@@ -401,6 +440,7 @@ exports[`Collection component Serialization Serializion with Collection Variable
                   "type": "data-variable",
                   "variableType": "currentItem",
                 },
+                "id": "cmp-coll-item-child-1-2",
                 "name": {
                   "collectionId": "my_collection",
                   "path": "user",

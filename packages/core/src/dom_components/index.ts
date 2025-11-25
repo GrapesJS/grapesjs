@@ -55,13 +55,23 @@
  */
 import { debounce, isArray, isEmpty, isFunction, isString, isSymbol, result } from 'underscore';
 import { ItemManagerModule } from '../abstract/Module';
+import { BlockProperties } from '../block_manager/model/Block';
 import { ObjectAny } from '../common';
+import ComponentDataVariable from '../data_sources/model/ComponentDataVariable';
+import ComponentDataCondition from '../data_sources/model/conditional_variables/ComponentDataCondition';
+import ComponentDataOutput from '../data_sources/model/conditional_variables/ComponentDataOutput';
+import ComponentDataCollection from '../data_sources/model/data_collection/ComponentDataCollection';
+import { DataComponentTypes } from '../data_sources/types';
+import ComponentDataCollectionView from '../data_sources/view/ComponentDataCollectionView';
+import ComponentDataConditionView from '../data_sources/view/ComponentDataConditionView';
+import ComponentDataVariableView from '../data_sources/view/ComponentDataVariableView';
 import EditorModel from '../editor/model/Editor';
 import { isComponent } from '../utils/mixins';
 import defConfig, { DomComponentsConfig } from './config/config';
 import Component, { IComponent, keyUpdate, keyUpdateInside } from './model/Component';
 import ComponentComment from './model/ComponentComment';
 import ComponentFrame from './model/ComponentFrame';
+import ComponentHead, { type as typeHead } from './model/ComponentHead';
 import ComponentImage from './model/ComponentImage';
 import ComponentLabel from './model/ComponentLabel';
 import ComponentLink from './model/ComponentLink';
@@ -81,12 +91,25 @@ import ComponentVideo from './model/ComponentVideo';
 import ComponentWrapper from './model/ComponentWrapper';
 import Components from './model/Components';
 import {
+  detachSymbolInstance,
+  getSymbolInstances,
+  getSymbolMain,
+  getSymbolsToUpdate,
+  getSymbolTop,
+  isSymbol as isSymbolComponent,
+  isSymbolInstance,
+  isSymbolMain,
+  isSymbolRoot,
+} from './model/SymbolUtils';
+import Symbols from './model/Symbols';
+import {
   AddComponentsOption,
   ComponentAdd,
   ComponentDefinition,
   ComponentDefinitionDefined,
   ComponentStackItem,
 } from './model/types';
+import { ComponentsEvents, SymbolInfo } from './types';
 import ComponentCommentView from './view/ComponentCommentView';
 import ComponentFrameView from './view/ComponentFrameView';
 import ComponentImageView from './view/ComponentImageView';
@@ -107,35 +130,6 @@ import ComponentVideoView from './view/ComponentVideoView';
 import ComponentView, { IComponentView } from './view/ComponentView';
 import ComponentWrapperView from './view/ComponentWrapperView';
 import ComponentsView from './view/ComponentsView';
-import ComponentHead, { type as typeHead } from './model/ComponentHead';
-import {
-  getSymbolMain,
-  getSymbolInstances,
-  getSymbolsToUpdate,
-  isSymbolMain,
-  isSymbolInstance,
-  detachSymbolInstance,
-  isSymbolRoot,
-  isSymbol as isSymbolComponent,
-  getSymbolTop,
-} from './model/SymbolUtils';
-import { ComponentsEvents, SymbolInfo } from './types';
-import Symbols from './model/Symbols';
-import { BlockProperties } from '../block_manager/model/Block';
-import ComponentDataVariable from '../data_sources/model/ComponentDataVariable';
-import ComponentDataVariableView from '../data_sources/view/ComponentDataVariableView';
-import { DataVariableType } from '../data_sources/model/DataVariable';
-import { DataConditionType } from '../data_sources/model/conditional_variables/DataCondition';
-import ComponentDataConditionView from '../data_sources/view/ComponentDataConditionView';
-import ComponentDataCollection from '../data_sources/model/data_collection/ComponentDataCollection';
-import { DataCollectionItemType, DataCollectionType } from '../data_sources/model/data_collection/constants';
-import ComponentDataCollectionView from '../data_sources/view/ComponentDataCollectionView';
-import ComponentDataCondition from '../data_sources/model/conditional_variables/ComponentDataCondition';
-import {
-  DataConditionIfFalseType,
-  DataConditionIfTrueType,
-} from '../data_sources/model/conditional_variables/constants';
-import ComponentDataOutput from '../data_sources/model/conditional_variables/ComponentDataOutput';
 
 export type ComponentEvent =
   | 'component:create'
@@ -202,32 +196,32 @@ export interface CanMoveResult {
 export default class ComponentManager extends ItemManagerModule<DomComponentsConfig, any> {
   componentTypes: ComponentStackItem[] = [
     {
-      id: DataCollectionItemType,
+      id: DataComponentTypes.collectionItem,
       model: ComponentDataOutput,
       view: ComponentView,
     },
     {
-      id: DataConditionIfTrueType,
+      id: DataComponentTypes.conditionTrue,
       model: ComponentDataOutput,
       view: ComponentView,
     },
     {
-      id: DataConditionIfFalseType,
+      id: DataComponentTypes.conditionFalse,
       model: ComponentDataOutput,
       view: ComponentView,
     },
     {
-      id: DataCollectionType,
+      id: DataComponentTypes.collection,
       model: ComponentDataCollection,
       view: ComponentDataCollectionView,
     },
     {
-      id: DataConditionType,
+      id: DataComponentTypes.condition,
       model: ComponentDataCondition,
       view: ComponentDataConditionView,
     },
     {
-      id: DataVariableType,
+      id: DataComponentTypes.variable,
       model: ComponentDataVariable,
       view: ComponentDataVariableView,
     },

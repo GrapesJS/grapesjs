@@ -21,6 +21,7 @@ export interface SymbolInfo {
 export interface ParseStringOptions extends AddOptions, OptionAsDocument, WithHTMLParserOptions {
   keepIds?: string[];
   frame?: Frame;
+  cloneRules?: boolean;
 }
 
 export enum ComponentsEvents {

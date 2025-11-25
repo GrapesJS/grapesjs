@@ -1,3 +1,4 @@
+import Component from '../../../dom_components/model/Component';
 import {
   ComponentAddType,
   ComponentDefinitionDefined,
@@ -6,19 +7,15 @@ import {
   ToHTMLOptions,
 } from '../../../dom_components/model/types';
 import { toLowerCase } from '../../../utils/mixins';
+import { DataComponentTypes, DataResolver } from '../../types';
+import { ComponentWithDataResolver } from '../ComponentWithDataResolver';
+import { DataCollectionStateMap } from '../data_collection/types';
 import { DataCondition, DataConditionProps, DataConditionType } from './DataCondition';
 import { ConditionProps } from './DataConditionEvaluator';
 import { StringOperation } from './operators/StringOperator';
-import { DataConditionIfTrueType, DataConditionIfFalseType } from './constants';
-import { ComponentWithDataResolver } from '../ComponentWithDataResolver';
-import Component from '../../../dom_components/model/Component';
-import { DataResolver } from '../../types';
-import { DataCollectionStateMap } from '../data_collection/types';
-
-export type DataConditionDisplayType = typeof DataConditionIfTrueType | typeof DataConditionIfFalseType;
 
 export interface ComponentDataConditionProps extends ComponentProperties {
-  type: typeof DataConditionType;
+  type: DataComponentTypes.condition;
   dataResolver: DataConditionProps;
 }
 
@@ -28,7 +25,7 @@ export default class ComponentDataCondition extends ComponentWithDataResolver<Da
       // @ts-ignore
       ...super.defaults,
       droppable: false,
-      type: DataConditionType,
+      type: DataComponentTypes.condition,
       dataResolver: {
         condition: {
           left: '',
@@ -38,10 +35,10 @@ export default class ComponentDataCondition extends ComponentWithDataResolver<Da
       },
       components: [
         {
-          type: DataConditionIfTrueType,
+          type: DataComponentTypes.conditionTrue,
         },
         {
-          type: DataConditionIfFalseType,
+          type: DataComponentTypes.conditionFalse,
         },
       ],
     };

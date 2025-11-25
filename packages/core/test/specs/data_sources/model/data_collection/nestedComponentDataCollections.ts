@@ -1,16 +1,16 @@
-import { Component, DataRecord, DataSource, DataSourceManager, Editor } from '../../../../../src';
+import { Component, DataRecord, DataSource, DataSourceManager } from '../../../../../src';
 import { DataVariableType } from '../../../../../src/data_sources/model/DataVariable';
 import ComponentDataCollection from '../../../../../src/data_sources/model/data_collection/ComponentDataCollection';
-import {
-  DataCollectionItemType,
-  DataCollectionType,
-} from '../../../../../src/data_sources/model/data_collection/constants';
 import {
   ComponentDataCollectionProps,
   DataCollectionStateType,
 } from '../../../../../src/data_sources/model/data_collection/types';
+import { DataComponentTypes } from '../../../../../src/data_sources/types';
 import EditorModel from '../../../../../src/editor/model/Editor';
 import { setupTestEditor } from '../../../../common';
+
+const DataCollectionItemType = DataComponentTypes.collectionItem;
+const DataCollectionType = DataComponentTypes.collection;
 
 describe('Collection component', () => {
   let em: EditorModel;
@@ -28,7 +28,12 @@ describe('Collection component', () => {
   function getCmpDef(nestedCmpDef: ComponentDataCollectionProps): ComponentDataCollectionProps {
     return {
       type: DataCollectionType,
-      components: { type: DataCollectionItemType, components: nestedCmpDef },
+      attributes: { id: 'cmp-coll-parent' },
+      components: {
+        type: DataCollectionItemType,
+        attributes: { id: 'cmp-coll-parent-item' },
+        components: nestedCmpDef,
+      },
       dataResolver: {
         collectionId: 'parent_collection',
         dataSource: {
@@ -64,10 +69,13 @@ describe('Collection component', () => {
 
     nestedCmpDef = {
       type: DataCollectionType,
+      attributes: { id: 'cmp-coll' },
       components: {
         type: DataCollectionItemType,
+        attributes: { id: 'cmp-coll-item' },
         components: {
           type: 'default',
+          attributes: { id: 'cmp-coll-item-child-1' },
           name: {
             type: DataVariableType,
             variableType: DataCollectionStateType.currentItem,

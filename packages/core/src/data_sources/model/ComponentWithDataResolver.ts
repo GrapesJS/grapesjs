@@ -55,14 +55,6 @@ export abstract class ComponentWithDataResolver<T extends DataResolverProps> ext
   }
 
   protected listenToPropsChange() {
-    this.listenTo(
-      this.dataResolver,
-      'change',
-      (() => {
-        this.__changesUp({ m: this });
-      }).bind(this),
-    );
-
     this.on('change:dataResolver', () => {
       // @ts-ignore
       this.dataResolver.set(this.get('dataResolver'));

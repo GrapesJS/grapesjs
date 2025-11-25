@@ -1,17 +1,17 @@
 import { Component, DataRecord, DataSource, DataSourceManager, Editor } from '../../../../../src';
 import { DataVariableType } from '../../../../../src/data_sources/model/DataVariable';
-import {
-  DataCollectionItemType,
-  DataCollectionType,
-} from '../../../../../src/data_sources/model/data_collection/constants';
+import ComponentDataCollection from '../../../../../src/data_sources/model/data_collection/ComponentDataCollection';
 import {
   ComponentDataCollectionProps,
   DataCollectionStateType,
 } from '../../../../../src/data_sources/model/data_collection/types';
+import { DataComponentTypes } from '../../../../../src/data_sources/types';
 import EditorModel from '../../../../../src/editor/model/Editor';
-import { setupTestEditor } from '../../../../common';
 import { ProjectData } from '../../../../../src/storage_manager';
-import ComponentDataCollection from '../../../../../src/data_sources/model/data_collection/ComponentDataCollection';
+import { setupTestEditor } from '../../../../common';
+
+const DataCollectionItemType = DataComponentTypes.collectionItem;
+const DataCollectionType = DataComponentTypes.collection;
 
 describe('Collection component', () => {
   let em: EditorModel;
@@ -104,6 +104,12 @@ describe('Collection component', () => {
         expect(cmp.getInnerHTML()).toBe(innerHTML);
         expect(cmp.toHTML()).toBe(`<${tagName} id="${cmp.getId()}">${innerHTML}</${tagName}>`);
         expect(cmp.getEl()?.innerHTML).toBe(innerHTML);
+        expect(JSON.parse(JSON.stringify(cmp.toJSON()))).toEqual({
+          tagName: cmp.tagName,
+          dataResolver: cmp.get('dataResolver'),
+          type: cmp.getType(),
+          attributes: cmp.getAttributes(),
+        });
       };
 
       const checkRecordsWithInnerCmp = () => {
@@ -621,13 +627,34 @@ describe('Collection component', () => {
 
       const collectionCmpDef = {
         type: DataCollectionType,
+        attributes: { id: 'cmp-coll' },
         components: [
           {
             type: DataCollectionItemType,
+            attributes: { id: 'cmp-coll-item' },
             components: [
               {
                 ...childCmpDef,
-                components: [childCmpDef, childCmpDef],
+                attributes: {
+                  ...childCmpDef.attributes,
+                  id: 'cmp-coll-item-child-1',
+                },
+                components: [
+                  {
+                    ...childCmpDef,
+                    attributes: {
+                      ...childCmpDef.attributes,
+                      id: 'cmp-coll-item-child-1-1',
+                    },
+                  },
+                  {
+                    ...childCmpDef,
+                    attributes: {
+                      ...childCmpDef.attributes,
+                      id: 'cmp-coll-item-child-1-2',
+                    },
+                  },
+                ],
               },
             ],
           },
@@ -652,6 +679,9 @@ describe('Collection component', () => {
       const firstItemCmp = cmp.getCollectionItemComponents().at(0);
       const newChildDefinition = {
         type: 'default',
+        attributes: {
+          id: 'cmp-coll-item-child-UP',
+        },
         name: {
           type: DataVariableType,
           variableType: DataCollectionStateType.currentIndex,
@@ -674,6 +704,9 @@ describe('Collection component', () => {
       const firstItemCmp = cmp.getCollectionItemComponents().at(0);
       const newChildDefinition = {
         type: 'default',
+        attributes: {
+          id: 'cmp-coll-item-child-UP',
+        },
         name: {
           type: DataVariableType,
           variableType: DataCollectionStateType.currentIndex,

@@ -116,7 +116,10 @@ export default class PageManager extends ItemManagerModule<PageManagerConfig, Pa
     const um = em.UndoManager;
     um.add(model);
     um.add(pages);
-    pages.on('add remove reset change', (m, c, o) => em.changesUp(o || c));
+    pages.on('add remove reset change', (page, c, o) => {
+      const options = o || c;
+      em.changesUp(o || c, { page, options });
+    });
   }
 
   /**

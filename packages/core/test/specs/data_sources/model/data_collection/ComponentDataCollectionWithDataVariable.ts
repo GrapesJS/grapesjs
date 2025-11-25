@@ -1,16 +1,16 @@
 import { Component, DataRecord, DataSource, DataSourceManager, Editor } from '../../../../../src';
 import { DataVariableType } from '../../../../../src/data_sources/model/DataVariable';
 import {
-  DataCollectionItemType,
-  DataCollectionType,
-} from '../../../../../src/data_sources/model/data_collection/constants';
-import {
   ComponentDataCollectionProps,
   DataCollectionStateType,
 } from '../../../../../src/data_sources/model/data_collection/types';
+import { DataComponentTypes } from '../../../../../src/data_sources/types';
 import EditorModel from '../../../../../src/editor/model/Editor';
 import { ProjectData } from '../../../../../src/storage_manager';
 import { setupTestEditor } from '../../../../common';
+
+const DataCollectionItemType = DataComponentTypes.collectionItem;
+const DataCollectionType = DataComponentTypes.collection;
 
 describe('Collection variable components', () => {
   let em: EditorModel;
@@ -116,6 +116,7 @@ describe('Collection variable components', () => {
     beforeEach(() => {
       const variableCmpDef = {
         type: DataVariableType,
+        attributes: { id: 'cmp-coll-item-child' },
         dataResolver: {
           variableType: DataCollectionStateType.currentItem,
           collectionId: 'my_collection',
@@ -125,11 +126,14 @@ describe('Collection variable components', () => {
 
       const collectionCmpDef = {
         type: DataCollectionType,
+        attributes: { id: 'cmp-coll' },
         components: {
           type: DataCollectionItemType,
+          attributes: { id: 'cmp-coll-item' },
           components: [
             {
               type: 'default',
+              attributes: { id: 'cmp-coll-item-child-1' },
             },
             variableCmpDef,
           ],
@@ -154,6 +158,7 @@ describe('Collection variable components', () => {
       const firstChild = cmp.components().at(0);
       const newChildDefinition = {
         type: DataVariableType,
+        attributes: { id: 'cmp-var' },
         dataResolver: {
           variableType: DataCollectionStateType.currentIndex,
           collectionId: 'my_collection',
@@ -175,6 +180,7 @@ describe('Collection variable components', () => {
       const firstChild = cmp.components().at(0);
       const newChildDefinition = {
         type: DataVariableType,
+        attributes: { id: 'cmp-var' },
         dataResolver: {
           variableType: DataCollectionStateType.currentIndex,
           collectionId: 'my_collection',

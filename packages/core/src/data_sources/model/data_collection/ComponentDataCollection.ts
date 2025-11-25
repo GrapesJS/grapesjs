@@ -1,21 +1,22 @@
-import { isArray, size } from 'underscore';
+import { isArray } from 'underscore';
 import { ObjectAny } from '../../../common';
 import Component, { keySymbol } from '../../../dom_components/model/Component';
+import { keyDataValues, updateFromWatcher } from '../../../dom_components/model/ModelDataResolverWatchers';
+import { detachSymbolInstance, getSymbolInstances } from '../../../dom_components/model/SymbolUtils';
 import { ComponentAddType, ComponentDefinitionDefined, ComponentOptions } from '../../../dom_components/model/types';
 import EditorModel from '../../../editor/model/Editor';
 import { toLowerCase } from '../../../utils/mixins';
+import { DataComponentTypes } from '../../types';
+import ComponentWithCollectionsState, { DataVariableMap } from '../ComponentWithCollectionsState';
 import DataResolverListener from '../DataResolverListener';
 import { DataVariableProps } from '../DataVariable';
-import { DataCollectionItemType, DataCollectionType, keyCollectionDefinition } from './constants';
+import { keyCollectionDefinition } from './constants';
 import {
   ComponentDataCollectionProps,
   DataCollectionDataSource,
   DataCollectionProps,
   DataCollectionStateMap,
 } from './types';
-import { detachSymbolInstance, getSymbolInstances } from '../../../dom_components/model/SymbolUtils';
-import { keyDataValues, updateFromWatcher } from '../../../dom_components/model/ModelDataResolverWatchers';
-import ComponentWithCollectionsState, { DataVariableMap } from '../ComponentWithCollectionsState';
 
 const AvoidStoreOptions = { avoidStore: true, partial: true };
 
@@ -28,10 +29,10 @@ export default class ComponentDataCollection extends ComponentWithCollectionsSta
       ...super.defaults,
       droppable: false,
       dataResolver: {},
-      type: DataCollectionType,
+      type: DataComponentTypes.collection,
       components: [
         {
-          type: DataCollectionItemType,
+          type: DataComponentTypes.collectionItem,
         },
       ],
     };
@@ -281,17 +282,8 @@ export default class ComponentDataCollection extends ComponentWithCollectionsSta
   }
 
   private ensureFirstChild() {
-    const dataConditionItemModel = this.em.Components.getType(DataCollectionItemType)!.model;
-
-    return (
-      this.firstChild ||
-      new dataConditionItemModel(
-        {
-          type: DataCollectionItemType,
-        },
-        this.opt,
-      )
-    );
+    const dataConditionItemModel = this.em.Components.getType(DataComponentTypes.collectionItem)!.model;
+    return this.firstChild || new dataConditionItemModel({ type: DataComponentTypes.collectionItem }, this.opt);
   }
 
   private get collectionId() {
@@ -299,14 +291,13 @@ export default class ComponentDataCollection extends ComponentWithCollectionsSta
   }
 
   static isComponent(el: HTMLElement) {
-    return toLowerCase(el.tagName) === DataCollectionType;
+    return toLowerCase(el.tagName) === DataComponentTypes.collection;
   }
 
   toJSON(opts?: ObjectAny) {
     const json = super.toJSON.call(this, opts) as ComponentDataCollectionProps;
     delete json.droppable;
     delete json[keySymbol];
-    delete json.attributes?.id;
 
     const firstChild = this.firstChild as any;
     return { ...json, components: [firstChild] };

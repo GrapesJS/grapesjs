@@ -65,6 +65,7 @@ export enum EditorEvents {
    * editor.on('update', () => { ... });
    */
   update = 'update',
+  updateBefore = 'updateBefore',
 
   /**
    * @event `patch:update` Event triggered when the patch manager produces a new JSON patch with the recorded changes.

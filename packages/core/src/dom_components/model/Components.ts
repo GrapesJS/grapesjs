@@ -26,7 +26,7 @@ export interface ResetCommonUpdateProps {
 }
 
 export interface ResetFromStringOptions {
-  visitedCmps?: Record<string, Component[]>;
+  visitedCmps?: Record<string, ComponentDefinitionDefined[]>;
   keepIds?: string[];
   updateOptions?: {
     onAttributes?: (props: ResetCommonUpdateProps & { attributes: Record<string, any> }) => void;
@@ -171,27 +171,7 @@ Component> {
     const parsed = this.parseString(input, opts);
     const fromDefOpts = { skipViewUpdate: true, ...opts };
     const newCmps = getComponentsFromDefs(parsed, allByID, fromDefOpts);
-    const { visitedCmps = {} } = fromDefOpts;
-
-    // Clone styles for duplicated components
-    Object.keys(visitedCmps).forEach((id) => {
-      const cmps = visitedCmps[id];
-      if (cmps.length) {
-        // Get all available rules of the component
-        const rulesToClone = cssc?.getRules(`#${id}`) || [];
-
-        if (rulesToClone.length) {
-          cmps.forEach((cmp) => {
-            rulesToClone.forEach((rule) => {
-              const newRule = rule.clone();
-              // @ts-ignore
-              newRule.set('selectors', [`#${cmp.attributes.id}`]);
-              cssc!.getAll().add(newRule);
-            });
-          });
-        }
-      }
-    });
+    Components.cloneCssRules(em, fromDefOpts.visitedCmps);
 
     this.reset(newCmps, opts as any);
     em?.trigger('component:content', parent, opts, input);
@@ -325,8 +305,10 @@ Component> {
     const targetPage = targetFrame?.getPage?.() || parent?.page;
     const attrList = domc?.getPageAttrMap(targetPage, { create: false }) || {};
 
+     Component.checkId(components, parsed.css, attrList, opt);
     // We need this to avoid duplicate IDs
-    Component.checkId(components, parsed.css, attrList, opt);
+    const result = Component.checkId(components, parsed.css, domc!.componentsById, opt);
+    opt.cloneRules && Components.cloneCssRules(em, result.updatedIds);
 
     if (parsed.css && cssc && !opt.temporary) {
       const { at, ...optsToPass } = opt;
@@ -454,5 +436,27 @@ Component> {
         domc.symbols.__trgEvent(domc.events.symbolInstanceAdd, { component: model }, true);
       }
     }
+  }
+
+  static cloneCssRules(em: EditorModel, cmpsMap: Record<string, ComponentDefinitionDefined[]> = {}) {
+    const { Css } = em;
+    Object.keys(cmpsMap).forEach((id) => {
+      const cmps = cmpsMap[id];
+      if (cmps.length) {
+        // Get all available rules of the component
+        const rulesToClone = (Css.getRules(`#${id}`) || []).filter((rule) => !isEmpty(rule.attributes.style));
+
+        if (rulesToClone.length) {
+          const rules = Css.getAll();
+          cmps.forEach((cmp) => {
+            rulesToClone.forEach((rule) => {
+              const newRule = rule.clone();
+              newRule.set('selectors', [`#${cmp.attributes.id}`] as any);
+              rules.add(newRule);
+            });
+          });
+        }
+      }
+    });
   }
 }
