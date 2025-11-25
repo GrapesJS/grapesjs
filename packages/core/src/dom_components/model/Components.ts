@@ -213,7 +213,14 @@ Component> {
         });
         removed.removed();
         removed.trigger('removed');
-        em.trigger(ComponentsEvents.remove, removed);
+        const collection = coll || removed.prevColl || this;
+        const eventOpts = { ...opts, collection };
+        if (typeof eventOpts.index !== 'number') {
+          const prevModels = (opts.previousModels || []) as Component[];
+          const idx = prevModels.indexOf(removed);
+          eventOpts.index = idx >= 0 ? idx : collection?.indexOf?.(removed);
+        }
+        em.trigger(ComponentsEvents.remove, removed, eventOpts);
 
         if (domc && isSymbolInstance(removed) && isSymbolRoot(removed)) {
           domc.symbols.__trgEvent(domc.events.symbolInstanceRemove, { component: removed }, true);
@@ -397,7 +404,7 @@ Component> {
     return model;
   }
 
-  onAdd(model: Component, c?: any, opts: { temporary?: boolean } = {}) {
+  onAdd(model: Component, c?: any, opts: { temporary?: boolean; at?: number } = {}) {
     const { domc, em } = this;
     const avoidInline = em.config.avoidInlineStyle;
     domc && domc.Component.ensureInList(model);
@@ -417,7 +424,10 @@ Component> {
 
     if (em && !opts.temporary) {
       const triggerAdd = (model: Component) => {
-        em.trigger(ComponentsEvents.add, model, opts);
+        const coll = model.collection || model.parent()?.components() || c;
+        const at = typeof opts.at === 'number' && coll === c ? opts.at : coll?.indexOf?.(model);
+        const eventOpts = { ...opts, at, collection: coll };
+        em.trigger(ComponentsEvents.add, model, eventOpts);
         model.components().forEach((comp) => triggerAdd(comp));
       };
       triggerAdd(model);

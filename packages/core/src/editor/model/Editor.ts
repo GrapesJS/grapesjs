@@ -43,6 +43,7 @@ import { AddComponentsOption, ComponentAdd, DragMode } from '../../dom_component
 import ComponentWrapper from '../../dom_components/model/ComponentWrapper';
 import { CanvasSpotBuiltInTypes } from '../../canvas/model/CanvasSpot';
 import DataSourceManager from '../../data_sources';
+import PatchManager from '../../patch_manager';
 import { ComponentsEvents } from '../../dom_components/types';
 import { InitEditorConfig } from '../..';
 import { EditorEvents, SelectComponentOptions } from '../types';
@@ -54,6 +55,7 @@ const deps: (new (em: EditorModel) => IModule)[] = [
   I18nModule,
   KeymapsModule,
   UndoManagerModule,
+  PatchManager,
   StorageManager,
   DeviceManager,
   ParserModule,
@@ -240,6 +242,10 @@ export default class EditorModel extends Model {
 
   get DataSources(): DataSourceManager {
     return this.get('DataSources');
+  }
+
+  get Patches(): PatchManager {
+    return this.get('Patches');
   }
 
   constructor(conf: EditorConfig = {}) {
@@ -480,6 +486,8 @@ export default class EditorModel extends Model {
   }
 
   changesUp(opts: any, data: Record<string, any>) {
+    if (this.__skip) return;
+    this.Patches?.handleChange(data, opts);
     this.handleUpdates(opts, data);
   }
 

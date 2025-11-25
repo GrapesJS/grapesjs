@@ -75,6 +75,7 @@ import StorageManager, { ProjectData, StorageOptions } from '../storage_manager'
 import StyleManager from '../style_manager';
 import TraitManager from '../trait_manager';
 import UndoManagerModule from '../undo_manager';
+import PatchManager from '../patch_manager';
 import UtilsModule from '../utils';
 import html from '../utils/html';
 import defConfig, { EditorConfig, EditorConfigKeys } from './config/config';
@@ -151,6 +152,9 @@ export default class Editor implements IBaseModule<EditorConfig> {
   }
   get UndoManager(): UndoManagerModule {
     return this.em.UndoManager;
+  }
+  get Patches(): PatchManager {
+    return this.em.Patches;
   }
   get RichTextEditor(): RichTextEditorModule {
     return this.em.RichTextEditor;

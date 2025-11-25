@@ -15,6 +15,7 @@ import { RichTextEditorConfig } from '../../rich_text_editor/config/config';
 import { SelectorManagerConfig } from '../../selector_manager/config/config';
 import { StorageManagerConfig } from '../../storage_manager/config/config';
 import { UndoManagerConfig } from '../../undo_manager/config';
+import { PatchManagerConfig } from '../../patch_manager/types';
 import { Plugin } from '../../plugin_manager';
 import { TraitManagerConfig } from '../../trait_manager/config/config';
 import { CommandsConfig } from '../../commands/config/config';
@@ -307,6 +308,11 @@ export interface EditorConfig {
   undoManager?: UndoManagerConfig | boolean;
 
   /**
+   * Configurations for Patches manager
+   */
+  patches?: PatchManagerConfig | boolean;
+
+  /**
    * Configurations for Asset Manager.
    */
   assetManager?: AssetManagerConfig;
@@ -486,6 +492,7 @@ const config: () => EditorConfig = () => ({
   },
   i18n: {},
   undoManager: {},
+  patches: {},
   assetManager: {},
   canvas: {},
   layerManager: {},
