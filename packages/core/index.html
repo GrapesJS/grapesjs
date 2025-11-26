@@ -150,10 +150,6 @@
         },
       });
 
-      editor.on('patch:update', ({ patch }) => console.log('patch:update', patch));
-      editor.on('patch:undo', ({ patch }) => console.log('patch:undo', patch));
-      editor.on('patch:redo', ({ patch }) => console.log('patch:redo', patch));
-
       editor.BlockManager.add('testBlock', {
         label: 'Block',
         attributes: { class: 'gjs-fonts gjs-f-b1' },
