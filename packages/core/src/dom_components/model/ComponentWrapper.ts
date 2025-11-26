@@ -1,8 +1,8 @@
-import { isNumber, isString, isUndefined } from 'underscore';
+import { all, isArray, isNumber, isUndefined } from 'underscore';
 import ComponentWithCollectionsState from '../../data_sources/model/ComponentWithCollectionsState';
 import DataResolverListener from '../../data_sources/model/DataResolverListener';
 import { DataVariableProps } from '../../data_sources/model/DataVariable';
-import { DataCollectionStateMap } from '../../data_sources/model/data_collection/types';
+import { DataCollectionStateMap, DataCollectionStateType } from '../../data_sources/model/data_collection/types';
 import { DataCollectionKeys } from '../../data_sources/types';
 import { attrToString } from '../../utils/dom';
 import Component from './Component';
@@ -14,7 +14,7 @@ type ResolverCurrentItemType = string | number;
 
 export default class ComponentWrapper extends ComponentWithCollectionsState<DataVariableProps> {
   dataSourceWatcher?: DataResolverListener;
-  private _resolverCurrentItem?: ResolverCurrentItemType = 0;
+  private _resolverCurrentItem: ResolverCurrentItemType = 0;
   private _isWatchingCollectionStateMap = false;
 
   get defaults() {
@@ -133,6 +133,43 @@ export default class ComponentWrapper extends ComponentWithCollectionsState<Data
     this.resolverCurrentItem = value;
   }
 
+  getCollectionsState() {
+    const collectionId = `${DataCollectionKeys.rootData}`;
+    const { dataResolverPath, resolverCurrentItem } = this;
+    const result = { collectionId };
+    if (!dataResolverPath) return result;
+
+    let prevItem: Record<string, any> | undefined;
+    let currentItem: Record<string, any> | undefined;
+    let nextItem: Record<string, any> | undefined;
+
+    const allItems: Record<string, any> | Record<string, any>[] = this.getDataSourceItems();
+    const allItemsArray = isArray(allItems) ? allItems : Object.values(allItems || {});
+    let currentIndex = resolverCurrentItem;
+
+    if (isNumber(resolverCurrentItem)) {
+      currentItem = allItemsArray[resolverCurrentItem];
+      prevItem = allItemsArray[resolverCurrentItem - 1];
+      nextItem = allItemsArray[resolverCurrentItem + 1];
+    } else {
+      const entries = Object.entries(allItems).map(([id, value]) => ({ id, ...value }));
+      const idx = entries.findIndex((it) => it?.id === resolverCurrentItem);
+      currentIndex = idx;
+      currentItem = allItemsArray[idx];
+      prevItem = allItemsArray[idx - 1];
+      nextItem = allItemsArray[idx + 1];
+    }
+
+    return {
+      ...result,
+      prevItem,
+      nextItem,
+      [DataCollectionStateType.currentItem]: currentItem,
+      [DataCollectionStateType.currentIndex]: currentIndex,
+      [DataCollectionStateType.totalItems]: allItemsArray.length,
+    };
+  }
+
   protected onDataSourceChange() {
     this.onCollectionsStateMapUpdate(this.getCollectionsStateMap());
   }
@@ -156,23 +193,10 @@ export default class ComponentWrapper extends ComponentWithCollectionsState<Data
   }
 
   private getCollectionsStateMap(): DataCollectionStateMap {
-    const { dataResolverPath, resolverCurrentItem, em } = this;
-    const dsm = em.DataSources;
-    if (!dataResolverPath) return {};
-
-    const collectionId = DataCollectionKeys.rootData;
-    const allItems = this.getDataSourceItems() as any;
-    const currentItem = isNumber(resolverCurrentItem)
-      ? allItems[resolverCurrentItem]
-      : isString(resolverCurrentItem)
-        ? dsm.getValue(`${dataResolverPath}.${resolverCurrentItem}`)
-        : allItems;
+    if (!this.dataResolverPath) return {};
 
     return {
-      [collectionId]: {
-        collectionId,
-        currentItem,
-      },
+      [DataCollectionKeys.rootData]: this.getCollectionsState(),
     } as DataCollectionStateMap;
   }
 
