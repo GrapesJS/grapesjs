@@ -86,28 +86,28 @@ export interface DataFieldSchemaBase<T = unknown> {
 }
 
 export interface DataFieldSchemaString extends DataFieldSchemaBase<string> {
-  type: DataFieldPrimitiveType.string;
+  type: `${DataFieldPrimitiveType.string}`;
   enum?: string[];
 }
 
 export interface DataFieldSchemaNumber extends DataFieldSchemaBase<number> {
-  type: DataFieldPrimitiveType.number;
+  type: `${DataFieldPrimitiveType.number}`;
 }
 
 export interface DataFieldSchemaBoolean extends DataFieldSchemaBase<boolean> {
-  type: DataFieldPrimitiveType.boolean;
+  type: `${DataFieldPrimitiveType.boolean}`;
 }
 
 export interface DataFieldSchemaDate extends DataFieldSchemaBase<Date> {
-  type: DataFieldPrimitiveType.date;
+  type: `${DataFieldPrimitiveType.date}`;
 }
 
 export interface DataFieldSchemaJSON extends DataFieldSchemaBase<any> {
-  type: DataFieldPrimitiveType.json;
+  type: `${DataFieldPrimitiveType.json}`;
 }
 
 export interface DataFieldSchemaRelation extends DataFieldSchemaBase {
-  type: DataFieldPrimitiveType.relation;
+  type: `${DataFieldPrimitiveType.relation}`;
   /**
    * The target data source ID
    */

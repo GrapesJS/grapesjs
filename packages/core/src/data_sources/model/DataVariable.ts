@@ -163,24 +163,16 @@ export default class DataVariable extends Model<DataVariableProps> {
     }
 
     if (variableType === 'currentItem') {
-      return (
-        DataVariable.resolveCurrentItem(collectionItem as DataCollectionState, path, collectionId, em) ?? defaultValue
-      );
+      return DataVariable.resolveCurrentItem(collectionItem as DataCollectionState, path) ?? defaultValue;
     }
 
     const state = collectionItem as DataCollectionState;
     return state[variableType] ?? defaultValue;
   }
 
-  private static resolveCurrentItem(
-    collectionItem: DataCollectionState,
-    path: string | undefined,
-    collectionId: string,
-    em: EditorModel,
-  ) {
+  private static resolveCurrentItem(collectionItem: DataCollectionState, path: string | undefined) {
     const currentItem = collectionItem.currentItem;
     if (!currentItem) {
-      em.logError(`Current item is missing for collection: ${collectionId}`);
       return;
     }
 
