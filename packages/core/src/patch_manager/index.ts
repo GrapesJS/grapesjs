@@ -128,7 +128,10 @@ export default class PatchManager extends ItemManagerModule {
     const collection = (component.collection || parent?.components()) as Components | undefined;
     if (!parent || !collection) return;
     const at = typeof opts.at === 'number' ? opts.at : collection.indexOf(component);
-    const path = this.buildPath('component', parent.getId(), ['components', this.getComponentKey(collection, component, at)]);
+    const path = this.buildPath('component', parent.getId(), [
+      'components',
+      this.getComponentKey(collection, component, at),
+    ]);
     const value = this.cloneValue(component.toJSON());
     const patch: JsonPatch = { op: 'add', path, value };
     const inverse: JsonPatch = { op: 'remove', path };
