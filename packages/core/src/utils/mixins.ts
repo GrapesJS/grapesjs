@@ -98,12 +98,10 @@ export const getUiClass = (em: EditorModel, defCls: string) => {
  * Import styles asynchronously
  * @param {String|Array<String>} styles
  */
-const appendStyles = (styles: {}, opts: { unique?: boolean; prepand?: boolean } = {}) => {
+const appendStyles = (styles: string | string[], opts: { unique?: boolean; prepand?: boolean } = {}) => {
   const stls = isArray(styles) ? [...styles] : [styles];
 
-  if (stls.length) {
-    const href = stls.shift();
-
+  for (const href of stls) {
     if (href && (!opts.unique || !document.querySelector(`link[href="${href}"]`))) {
       const { head } = document;
       const link = document.createElement('link');
@@ -116,8 +114,6 @@ const appendStyles = (styles: {}, opts: { unique?: boolean; prepand?: boolean } 
         head.appendChild(link);
       }
     }
-
-    appendStyles(stls);
   }
 };
 
