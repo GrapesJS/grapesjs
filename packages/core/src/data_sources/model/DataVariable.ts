@@ -150,41 +150,13 @@ export default class DataVariable extends Model<DataVariableProps> {
     ctx: DataVariableOptions,
   ) {
     const { collectionId = '', variableType, path, defaultValue = '' } = params;
-    const { em, collectionsStateMap } = ctx;
+    const { collectionsStateMap, em } = ctx;
+    const collectionItemState = collectionsStateMap?.[collectionId] as DataCollectionState | undefined;
 
-    if (!collectionsStateMap) return defaultValue;
+    if (!collectionItemState || !variableType) return defaultValue;
 
-    const collectionItem = collectionsStateMap[collectionId];
-    if (!collectionItem) return defaultValue;
-
-    if (!variableType) {
-      em.logError(`Missing collection variable type for collection: ${collectionId}`);
-      return defaultValue;
-    }
-
-    if (variableType === 'currentItem') {
-      return DataVariable.resolveCurrentItem(collectionItem as DataCollectionState, path) ?? defaultValue;
-    }
-
-    const state = collectionItem as DataCollectionState;
-    return state[variableType] ?? defaultValue;
-  }
-
-  private static resolveCurrentItem(collectionItem: DataCollectionState, path: string | undefined) {
-    const currentItem = collectionItem.currentItem;
-    if (!currentItem) {
-      return;
-    }
-
-    if (currentItem.type === DataVariableType) {
-      const resolvedPath = currentItem.path ? `${currentItem.path}.${path}` : path;
-      return { type: DataVariableType, path: resolvedPath };
-    }
-
-    if (path && !(currentItem as any)[path]) {
-      return;
-    }
-
-    return path ? (currentItem as any)[path] : currentItem;
+    return em.DataSources.getValue(`${variableType}${path ? `.${path}` : ''}`, defaultValue, {
+      context: collectionItemState,
+    });
   }
 }
