@@ -7,6 +7,7 @@ import { isEmptyObj, hasWin } from '../../utils/mixins';
 import Selector, { SelectorProps } from '../../selector_manager/model/Selector';
 import EditorModel from '../../editor/model/Editor';
 import CssRuleView from '../view/CssRuleView';
+import { createId } from '../../utils/mixins';
 
 export interface ToCssOptions {
   important?: boolean | string[];
@@ -17,6 +18,10 @@ export interface ToCssOptions {
 
 /** @private */
 export interface CssRuleProperties extends ObjectHash {
+  /**
+   * Persisted identifier used across collaborative sessions.
+   */
+  id?: string;
   /**
    * Array of selectors
    */
@@ -124,9 +129,26 @@ export default class CssRule extends StyleableModel<CssRuleProperties> {
     this.config = props || {};
     this.opt = opt;
     this.em = opt.em;
+    this.ensureId(props);
     this.ensureSelectors(null, null, {});
     this.setStyle(this.get('style'), { skipWatcherUpdates: true });
     this.on('change', this.__onChange);
+  }
+
+  private ensureId(props?: CssRuleProperties) {
+    const idAttr = (this as any).idAttribute || 'id';
+    const existing = (props && props.id) || (this as any).id || this.get(idAttr);
+    const ruleId = existing || createId();
+
+    if (!this.get(idAttr)) {
+      this.set(idAttr, ruleId, { silent: true });
+    }
+
+    if (!(this as any).id) {
+      (this as any).id = ruleId;
+    }
+
+    return ruleId;
   }
 
   __onChange(rule: CssRule, options: any) {

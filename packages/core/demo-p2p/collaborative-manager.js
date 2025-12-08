@@ -8,16 +8,21 @@ class CollaborativeManager {
       roomId: 'demo-room',
       clientId: this._generateClientId(),
       enable: true,
+      debug: false,
       ...options,
     };
 
     if (!this.options.enable) return;
 
+    this.debug = !!this.options.debug;
     this.ws = null;
     this.peers = new Map(); // peerId -> { pc, dc }
     this.patchSeq = 0;
     this.seenPatches = new Set(); // for loop protection
     this.isApplyingRemote = false;
+
+    this.isSynced = false;
+    this.pendingPatches = []; // queued patches while waiting for init-state
 
     this._connectSignaling();
     this._bindEditorEvents();
@@ -25,6 +30,16 @@ class CollaborativeManager {
 
   _generateClientId() {
     return 'c_' + Math.random().toString(36).slice(2);
+  }
+
+  _isLeader(peerId) {
+    return this.options.clientId < peerId;
+  }
+
+  _log(...args) {
+    if (this.debug) {
+      console.log(...args);
+    }
   }
 
   _connectSignaling() {
@@ -87,23 +102,40 @@ class CollaborativeManager {
     }
   }
 
+  _sendData(dc, message) {
+    if (dc && dc.readyState === 'open') {
+      try {
+        dc.send(JSON.stringify(message));
+      } catch (err) {
+        console.warn('[Collab] Failed to send datachannel message', err);
+      }
+    }
+  }
+
   _createPeerConnection(peerId, isInitiator) {
+    console.log('[Collab] createPeerConnection to', peerId, 'initiator:', isInitiator);
+
     if (this.peers.has(peerId)) return this.peers.get(peerId);
 
     const pc = new RTCPeerConnection({
       iceServers: [{ urls: 'stun:stun.l.google.com:19302' }],
     });
 
-    let dc;
+    // СНАЧАЛА создаём и сохраняем peer
+    const peer = { pc, dc: null };
+    this.peers.set(peerId, peer);
 
     if (isInitiator) {
-      dc = pc.createDataChannel('patches');
+      // инициатор сам создаёт DataChannel
+      const dc = pc.createDataChannel('patches');
+      peer.dc = dc;
       this._setupDataChannel(peerId, dc);
       this._createOffer(peerId, pc);
     } else {
-      // dataChannel будет создан на ondatachannel
+      // принимающая сторона ждёт ondatachannel
       pc.ondatachannel = (event) => {
-        dc = event.channel;
+        const dc = event.channel;
+        peer.dc = dc;
         this._setupDataChannel(peerId, dc);
       };
     }
@@ -125,8 +157,6 @@ class CollaborativeManager {
       }
     };
 
-    const peer = { pc, dc: null };
-    this.peers.set(peerId, peer);
     return peer;
   }
 
@@ -175,11 +205,26 @@ class CollaborativeManager {
   }
 
   _setupDataChannel(peerId, dc) {
-    console.log('[Collab] DataChannel opened with peer', peerId);
-    this.peers.get(peerId).dc = dc;
+    console.log('[Collab] DataChannel created for peer', peerId);
 
     dc.onopen = () => {
       console.log('[Collab] DC open:', peerId);
+
+      // Очень простой выбор "лидера": клиент с минимальным clientId
+      const isLeader = this._isLeader(peerId); // строковое сравнение достаточно для демки
+
+      if (isLeader) {
+        const project = this.editor.getProjectData();
+        const msg = {
+          type: 'init-state',
+          project,
+        };
+        this._log('[Collab] send init-state to', peerId);
+        this._sendData(dc, msg);
+        this._markSynced('leader');
+      } else {
+        this._log('[Collab] waiting for init-state from leader', peerId);
+      }
     };
 
     dc.onclose = () => {
@@ -197,21 +242,57 @@ class CollaborativeManager {
   }
 
   _onDataChannelMessage(peerId, msg) {
+    if (msg.type === 'init-state') {
+      console.log('[Collab] received init-state from', peerId, msg);
+
+      // Полная синхронизация проекта
+      this.editor.loadProjectData(msg.project, { clear: true });
+      this._markSynced('init-state');
+      return;
+    }
+
     if (msg.type === 'patch') {
       const { clientId, patchSeq, patches } = msg;
 
-      // Loop protection: пропускаем свои и уже обработанные
+      console.log('[Collab] got patch from peer', peerId, 'client', clientId, 'seq', patchSeq, patches);
+
       const key = `${clientId}:${patchSeq}`;
       if (clientId === this.options.clientId) return;
       if (this.seenPatches.has(key)) return;
       this.seenPatches.add(key);
 
-      // Применяем патч локально
-      this.applyRemotePatch(patches, { from: clientId, patchSeq });
+      const meta = { from: clientId, patchSeq };
 
-      // И (опционально) ретранслируем дальше другим пирами
+      if (!this.isSynced) {
+        console.log('[Collab] not synced yet, queue patch', meta);
+        this.pendingPatches.push({ patch: patches, meta, sourcePeerId: peerId, raw: msg });
+        return;
+      }
+
+      // patches здесь == один PatchProps
+      this.applyRemotePatch(patches, meta);
       this._rebroadcastPatchFromPeer(peerId, msg);
     }
+  }
+
+  _markSynced(reason) {
+    if (this.isSynced) return;
+    this.isSynced = true;
+    this._log('[Collab] synced', reason, 'pending', this.pendingPatches.length);
+    this._flushPendingPatches();
+  }
+
+  _flushPendingPatches() {
+    if (!this.isSynced || !this.pendingPatches.length) return;
+    const queued = this.pendingPatches.slice();
+    this.pendingPatches = [];
+
+    queued.forEach((item) => {
+      this.applyRemotePatch(item.patch, item.meta);
+      if (item.raw) {
+        this._rebroadcastPatchFromPeer(item.sourcePeerId, item.raw);
+      }
+    });
   }
 
   _rebroadcastPatchFromPeer(sourcePeerId, msg) {
@@ -220,7 +301,7 @@ class CollaborativeManager {
     for (const [peerId, peer] of this.peers.entries()) {
       if (peerId === sourcePeerId) continue;
       if (peer.dc && peer.dc.readyState === 'open') {
-        peer.dc.send(JSON.stringify(msg));
+        this._sendData(peer.dc, msg);
       }
     }
   }
@@ -245,53 +326,75 @@ class CollaborativeManager {
   _bindEditorEvents() {
     const { editor } = this;
 
-    // Здесь предполагаем, что PatchManager триггерит patch:update с {patches}
-    editor.on('patch:update', ({ patches }) => {
-      if (this.isApplyingRemote) return; // не пересылать то, что сами же получили
-      this._broadcastPatch(patches);
-    });
+    const getPatch = (ev) => ev && (ev.patch || ev.patches || ev);
 
-    // По желанию можно прокидывать undo/redo как патчи:
-    editor.on('patch:undo', ({ patch }) => {
+    editor.on('patch:update', (ev) => {
+      const patch = getPatch(ev);
+      console.log('[Collab] local patch:update', patch);
+
+      if (!patch) return;
       if (this.isApplyingRemote) return;
+
       this._broadcastPatch(patch);
     });
 
-    editor.on('patch:redo', ({ patch }) => {
+    editor.on('patch:undo', (ev) => {
+      const patch = getPatch(ev);
+      console.log('[Collab] local patch:undo', patch);
+
+      if (!patch) return;
       if (this.isApplyingRemote) return;
+
+      this._broadcastPatch(patch);
+    });
+
+    editor.on('patch:redo', (ev) => {
+      const patch = getPatch(ev);
+      console.log('[Collab] local patch:redo', patch);
+
+      if (!patch) return;
+      if (this.isApplyingRemote) return;
+
       this._broadcastPatch(patch);
     });
   }
 
-  _broadcastPatch(patches) {
+  _broadcastPatch(patch) {
     this.patchSeq += 1;
     const message = {
       type: 'patch',
       clientId: this.options.clientId,
       patchSeq: this.patchSeq,
-      patches,
+      patches: patch, // поле можно оставить "patches" для совместимости, но внутри это PatchProps
     };
 
-    for (const [, peer] of this.peers.entries()) {
+    console.log('[Collab] broadcast patch', message);
+
+    for (const [peerId, peer] of this.peers.entries()) {
+      console.log('[Collab]   peer', peerId, 'dc state:', peer.dc && peer.dc.readyState);
       if (peer.dc && peer.dc.readyState === 'open') {
-        peer.dc.send(JSON.stringify(message));
+        this._sendData(peer.dc, message);
       }
     }
   }
 
   // === ВАЖНО: адаптируй к своему PatchManager API ===
-  applyRemotePatch(patches, meta = {}) {
+  // Применение удалённого патча через ваш PatchManager
+  applyRemotePatch(patch, meta = {}) {
+    console.log('[Collab] applyRemotePatch', patch, meta);
+
     this.isApplyingRemote = true;
     try {
-      const pm = this.editor.PatchManager || this.editor.PatchModule || this.editor.Patch;
-      if (pm && typeof pm.applyPatches === 'function') {
-        pm.applyPatches(patches, { remote: true, ...meta });
-      } else if (pm && typeof pm.applyPatch === 'function') {
-        pm.applyPatch(patches, { remote: true, ...meta });
-      } else {
-        // fallback: если у тебя есть кастомный API, просто вызови его
-        console.warn('[Collab] No PatchManager.apply* found, implement here');
+      const editor = this.editor;
+      const pm = editor.Patches || (editor.get && editor.get('Patches'));
+
+      if (!pm || typeof pm.apply !== 'function') {
+        console.warn('[Collab] PatchManager not found or has no .apply()', pm);
+        return;
       }
+
+      // patch здесь — это PatchProps, ровно тот формат, который генерит ваш PatchManager
+      pm.apply(patch);
     } finally {
       this.isApplyingRemote = false;
     }
