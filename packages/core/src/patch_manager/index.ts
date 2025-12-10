@@ -2,6 +2,7 @@ import Component from '../dom_components/model/Component';
 import Components from '../dom_components/model/Components';
 import { ComponentsEvents } from '../dom_components/types';
 import CssRule from '../css_composer/model/CssRule';
+import CssRules from '../css_composer/model/CssRules';
 import { ItemManagerModule } from '../abstract/Module';
 import { Collection } from '../common';
 import EditorModel from '../editor/model/Editor';
@@ -16,6 +17,7 @@ export default class PatchManager extends ItemManagerModule {
   isEnabled = false;
   private debug = false;
   private isReady = false;
+  private cssRules?: CssRules;
 
   private history: PatchProps[] = [];
   private index = -1;
@@ -55,6 +57,9 @@ export default class PatchManager extends ItemManagerModule {
 
   private setupTracking() {
     const { em } = this;
+    this.cssRules = em.Css?.getAll?.();
+    this.ensureAllCssRuleIds();
+    this.cssRules?.on('add', this.handleCssRuleAdd);
     this.isReady = !!em.get('readyLoad');
     em.on('change:readyLoad', this.handleReadyLoad);
     em.on(EditorEvents.projectLoad, this.handleProjectLoad);
@@ -65,12 +70,14 @@ export default class PatchManager extends ItemManagerModule {
   private handleReadyLoad = () => {
     if (!this.em.get('readyLoad')) return;
     this.isReady = true;
+    this.ensureAllCssRuleIds();
     this.resetHistory();
     this.em.off('change:readyLoad', this.handleReadyLoad);
   };
 
   private handleProjectLoad = () => {
     this.resetHistory();
+    this.ensureAllCssRuleIds();
   };
 
   handleChange(data: Record<string, any> = {}, opts: Record<string, any> = {}) {
@@ -111,7 +118,8 @@ export default class PatchManager extends ItemManagerModule {
   }
 
   private handleRuleChange(rule: CssRule, changed: Record<string, any>, patches: JsonPatch[], reverse: JsonPatch[]) {
-    const ruleId = (rule as any).id || rule.cid;
+    const ruleId = this.ensureCssRuleId(rule);
+
     Object.keys(changed).forEach((key) => {
       const path = this.buildPath('cssRule', `${ruleId}`, [key]);
       const nextVal = changed[key];
@@ -336,8 +344,19 @@ export default class PatchManager extends ItemManagerModule {
   private applyJsonPatch(p: JsonPatch) {
     const seg = p.path.split('/').filter(Boolean);
     const [objectType, objectId, ...rest] = seg;
-    if (!objectType || !objectId) return;
     const target = this.resolveTarget(objectType, objectId);
+
+    if (this.debug) {
+      console.log('[PatchManager] applyJsonPatch', {
+        p,
+        objectType,
+        objectId,
+        rest,
+        resolved: !!target,
+      });
+    }
+
+    if (!objectType || !objectId) return;
     if (!target) return;
 
     if (rest[0] === 'components' && this.applyComponentsPatch(target, rest.slice(1), p)) {
@@ -446,6 +465,38 @@ export default class PatchManager extends ItemManagerModule {
     }
   }
 
+  private ensureCssRuleId(rule?: CssRule) {
+    if (!rule) return '';
+    const idAttr = (rule as any).idAttribute || 'id';
+    let ruleId = (rule as any).id || (rule as any)[idAttr] || (rule as any).get?.(idAttr);
+
+    if (!ruleId) {
+      ruleId = createId();
+      (rule as any).id = ruleId;
+      typeof (rule as any).set === 'function' && rule.set(idAttr, ruleId, { silent: true });
+    } else if (!(rule as any).id) {
+      (rule as any).id = ruleId;
+    }
+
+    if (this.debug) {
+      console.log('[PatchManager] ensureCssRuleId', ruleId, rule);
+    }
+
+    return ruleId;
+  }
+
+  private handleCssRuleAdd = (rule: CssRule) => {
+    this.ensureCssRuleId(rule);
+  };
+
+  private ensureAllCssRuleIds() {
+    if (!this.cssRules) {
+      this.cssRules = this.em.Css?.getAll?.();
+      this.cssRules?.on('add', this.handleCssRuleAdd);
+    }
+    this.cssRules?.each((rule: CssRule) => this.ensureCssRuleId(rule));
+  }
+
   private isBlockedRootKey(key?: string) {
     if (!key) return false;
     return PatchManager.blockedRootKeys.has(key);
@@ -518,6 +569,7 @@ export default class PatchManager extends ItemManagerModule {
   private handleMove(_target: any, _seg: string[], _p: JsonPatch) {}
 
   destroy(): void {
+    this.cssRules?.off('add', this.handleCssRuleAdd);
     this.em?.off('change:readyLoad', this.handleReadyLoad);
     this.em?.off(EditorEvents.projectLoad, this.handleProjectLoad);
     this.em?.off(ComponentsEvents.add, this.handleComponentAdd);
