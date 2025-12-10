@@ -8,9 +8,18 @@ import { Collection } from '../common';
 import EditorModel from '../editor/model/Editor';
 import { EditorEvents } from '../editor/types';
 import { createId } from '../utils/mixins';
-import type { JsonPatch, PatchManagerConfig, PatchProps } from './types';
+import { enablePatches, produceWithPatches } from 'immer';
+import type {
+  JsonPatch,
+  PatchAdapter,
+  PatchAdapterChange,
+  PatchAdapterEvent,
+  PatchManagerConfig,
+  PatchProps,
+} from './types';
 
 const encodePointer = (segment: string) => segment.replace(/~/g, '~0').replace(/\//g, '~1');
+enablePatches();
 
 export default class PatchManager extends ItemManagerModule {
   storageKey = '';
@@ -26,6 +35,10 @@ export default class PatchManager extends ItemManagerModule {
   private coalesceMs = 0;
   private maxHistory = 500;
   private isApplyingExternal = false;
+  private adapters = new Map<string, PatchAdapter<any>>();
+  private adapterListeners: { adapter: string; target: any; event: string; handler: (...args: any[]) => void }[] = [];
+  private trackingBound = false;
+  private fractionalGen?: (a: string | null, b: string | null) => string;
 
   private internalSetOptions = {
     fromUndo: true,
@@ -44,6 +57,7 @@ export default class PatchManager extends ItemManagerModule {
     const cfg = (this.getConfig() as any) ?? {};
     const normalized = typeof cfg === 'boolean' ? { enable: cfg } : cfg;
     this.init({ enable: true, ...normalized });
+    this.registerDefaultAdapters();
     this.setupTracking();
   }
 
@@ -55,22 +69,99 @@ export default class PatchManager extends ItemManagerModule {
     return this;
   }
 
+  private registerDefaultAdapters() {
+    this.registerAdapter(this.createComponentAdapter());
+    this.registerAdapter(this.createCssRuleAdapter());
+  }
+
+  registerAdapter<T>(adapter: PatchAdapter<T>) {
+    const normalized = this.normalizeAdapter(adapter);
+    this.unbindAdapter(normalized.type);
+    this.adapters.set(normalized.type, normalized);
+
+    if (this.trackingBound) {
+      this.bindAdapter(normalized);
+    }
+
+    return this;
+  }
+
+  private normalizeAdapter<T>(adapter: PatchAdapter<T>): PatchAdapter<T> {
+    if (adapter.blockedKeys && !(adapter.blockedKeys instanceof Set)) {
+      adapter.blockedKeys = new Set(adapter.blockedKeys);
+    }
+    return adapter;
+  }
+
+  private bindAdapters() {
+    if (this.trackingBound) return;
+    this.trackingBound = true;
+    this.adapters.forEach((adapter) => this.bindAdapter(adapter));
+  }
+
+  private bindAdapter(adapter: PatchAdapter<any>) {
+    adapter.events?.forEach((event) => this.bindAdapterEvent(adapter, event));
+    if (this.isReady) {
+      adapter.onReady?.(this);
+    }
+  }
+
+  private bindAdapterEvent(adapter: PatchAdapter<any>, event: PatchAdapterEvent) {
+    const target = event.target ? event.target(this) : this.em;
+    if (!target?.on) return;
+    const listener = (...args: any[]) => {
+      const options = event.getOptions?.(...args) ?? this.extractOptions(args);
+      const skipTracking = !event.skipTrackingCheck && (!this.canTrack() || this.shouldSkipOptions(options));
+      if (skipTracking) return;
+      const result = event.handler({ args, options });
+      if (result?.patches?.length) {
+        this.collect(result.patches, result.inverse || []);
+      }
+    };
+
+    target.on(event.event, listener);
+    this.adapterListeners.push({ adapter: adapter.type, target, event: event.event, handler: listener });
+  }
+
+  private extractOptions(args: any[]) {
+    const last = args[args.length - 1];
+    const beforeLast = args[args.length - 2];
+    if (last && typeof last === 'object') return last;
+    if (beforeLast && typeof beforeLast === 'object') return beforeLast;
+  }
+
+  private unbindAdapter(type: string) {
+    const listeners = this.adapterListeners.filter((item) => item.adapter === type);
+    listeners.forEach(({ target, event, handler }) => target?.off?.(event, handler));
+    this.adapterListeners = this.adapterListeners.filter((item) => item.adapter !== type);
+  }
+
+  private unbindAllAdapters() {
+    this.adapterListeners.forEach(({ target, event, handler }) => target?.off?.(event, handler));
+    this.adapterListeners = [];
+    this.trackingBound = false;
+  }
+
+  private notifyAdaptersReady() {
+    if (!this.isReady) return;
+    this.adapters.forEach((adapter) => adapter.onReady?.(this));
+  }
+
   private setupTracking() {
     const { em } = this;
-    this.cssRules = em.Css?.getAll?.();
-    this.ensureAllCssRuleIds();
-    this.cssRules?.on('add', this.handleCssRuleAdd);
     this.isReady = !!em.get('readyLoad');
+    this.ensureAllCssRuleIds();
+    this.bindAdapters();
+    this.notifyAdaptersReady();
     em.on('change:readyLoad', this.handleReadyLoad);
     em.on(EditorEvents.projectLoad, this.handleProjectLoad);
-    em.on(ComponentsEvents.add, this.handleComponentAdd);
-    em.on(ComponentsEvents.remove, this.handleComponentRemove);
   }
 
   private handleReadyLoad = () => {
     if (!this.em.get('readyLoad')) return;
     this.isReady = true;
     this.ensureAllCssRuleIds();
+    this.notifyAdaptersReady();
     this.resetHistory();
     this.em.off('change:readyLoad', this.handleReadyLoad);
   };
@@ -78,60 +169,62 @@ export default class PatchManager extends ItemManagerModule {
   private handleProjectLoad = () => {
     this.resetHistory();
     this.ensureAllCssRuleIds();
+    this.notifyAdaptersReady();
   };
 
   handleChange(data: Record<string, any> = {}, opts: Record<string, any> = {}) {
     if (!this.canTrack() || this.shouldSkipOptions(opts)) return;
     const patches: JsonPatch[] = [];
     const reverse: JsonPatch[] = [];
-    const component = data.component as Component | undefined;
-    const changed = data.changed as Record<string, any> | undefined;
-    const rule = data.rule as CssRule | undefined;
 
-    if (component && changed) {
-      this.handleComponentChange(component, changed, patches, reverse);
-    } else if (rule && changed) {
-      this.handleRuleChange(rule, changed, patches, reverse);
-    }
+    this.adapters.forEach((adapter) => {
+      const change = this.getChangeFromData(adapter, data);
+      change && this.handleAdapterChange(adapter, change, patches, reverse);
+    });
 
-    if (patches.length) {
-      this.collect(patches, reverse);
-    }
+    patches.length && this.collect(patches, reverse);
   }
 
-  private handleComponentChange(
-    component: Component,
-    changed: Record<string, any>,
+  private getChangeFromData<T>(adapter: PatchAdapter<T>, data: Record<string, any>): PatchAdapterChange<T> | null {
+    if (adapter.getChange) {
+      return adapter.getChange(data);
+    }
+    const { sourceKeys = [] } = adapter;
+    const changed = data.changed as Record<string, any> | undefined;
+    if (!changed) return null;
+
+    for (const key of sourceKeys) {
+      const target = data[key] as T | undefined;
+      if (target) {
+        return { target, changed };
+      }
+    }
+
+    return null;
+  }
+
+  private handleAdapterChange<T>(
+    adapter: PatchAdapter<T>,
+    change: PatchAdapterChange<T>,
     patches: JsonPatch[],
     reverse: JsonPatch[],
   ) {
-    const compId = component.getId();
-    Object.keys(changed).forEach((key) => {
-      if (this.isBlockedRootKey(key)) return;
-      const path = this.buildPath('component', compId, [key]);
-      const nextVal = changed[key];
-      const prevVal = component.previous ? component.previous(key) : undefined;
-      const { patch, inverse } = this.buildPatchPair(path, prevVal, nextVal);
-      patch && patches.push(patch);
-      inverse && reverse.push(inverse);
-    });
-  }
-
-  private handleRuleChange(rule: CssRule, changed: Record<string, any>, patches: JsonPatch[], reverse: JsonPatch[]) {
-    const ruleId = this.ensureCssRuleId(rule);
+    const { target, changed } = change;
+    const id = adapter.getId(target);
+    if (!id) return;
 
     Object.keys(changed).forEach((key) => {
-      const path = this.buildPath('cssRule', `${ruleId}`, [key]);
-      const nextVal = changed[key];
-      const prevVal = rule.previous ? rule.previous(key) : undefined;
-      const { patch, inverse } = this.buildPatchPair(path, prevVal, nextVal);
-      patch && patches.push(patch);
-      inverse && reverse.push(inverse);
+      const filter = adapter.filterChangedKey;
+      if (filter ? !filter(key) : this.isBlockedKey(key, adapter)) return;
+      const nextVal = this.cloneValue(changed[key]);
+      const prevVal = (target as any)?.previous ? (target as any).previous(key) : undefined;
+      const pair = this.buildImmerPatchPair(adapter, `${id}`, key, prevVal, nextVal);
+      patches.push(...pair.patches);
+      reverse.push(...pair.inverse);
     });
   }
 
   private handleComponentAdd = (component: Component, opts: any = {}) => {
-    if (!this.canTrack() || this.shouldSkipOptions(opts)) return;
     const parent = component.parent();
     const collection = (component.collection || parent?.components()) as Components | undefined;
     if (!parent || !collection) return;
@@ -143,11 +236,10 @@ export default class PatchManager extends ItemManagerModule {
     const value = this.cloneValue(component.toJSON());
     const patch: JsonPatch = { op: 'add', path, value };
     const inverse: JsonPatch = { op: 'remove', path };
-    this.collect([patch], [inverse]);
+    return { patches: [patch], inverse: [inverse] };
   };
 
   private handleComponentRemove = (component: Component, opts: any = {}) => {
-    if (!this.canTrack() || this.shouldSkipOptions(opts)) return;
     const collection = (opts.collection || component.prevColl) as Components | undefined;
     const parent = component.parent({ prev: true });
     if (!parent || !collection) return;
@@ -159,8 +251,63 @@ export default class PatchManager extends ItemManagerModule {
     const reverseVal = this.cloneValue(component.toJSON());
     const patch: JsonPatch = { op: 'remove', path };
     const inverse: JsonPatch = { op: 'add', path, value: reverseVal };
-    this.collect([patch], [inverse]);
+    return { patches: [patch], inverse: [inverse] };
   };
+
+  private createComponentAdapter(): PatchAdapter<Component> {
+    return {
+      type: 'component',
+      sourceKeys: ['component'],
+      blockedKeys: PatchManager.blockedRootKeys,
+      getId: (component) => component.getId(),
+      resolve: (em, id) => em.Components?.getById(id),
+      events: [
+        {
+          event: ComponentsEvents.add,
+          getOptions: (...args: any[]) => args[1],
+          handler: ({ args }) => this.handleComponentAdd(args[0] as Component, args[1]),
+        },
+        {
+          event: ComponentsEvents.remove,
+          getOptions: (...args: any[]) => args[1],
+          handler: ({ args }) => this.handleComponentRemove(args[0] as Component, args[1]),
+        },
+      ],
+      applyPatch: (target, path, patch) => {
+        if (path[0] === 'components') {
+          return this.applyComponentsPatch(target, path.slice(1), patch);
+        }
+        return false;
+      },
+    };
+  }
+
+  private createCssRuleAdapter(): PatchAdapter<CssRule> {
+    return {
+      type: 'cssRule',
+      sourceKeys: ['rule'],
+      getChange: (data) => {
+        const rule = data.rule as CssRule | undefined;
+        const changed = data.changed as Record<string, any> | undefined;
+        if (!rule || !changed) return null;
+        this.ensureCssRuleId(rule);
+        return { target: rule, changed };
+      },
+      getId: (rule) => this.ensureCssRuleId(rule),
+      resolve: (em, id) => em.Css?.rules?.get(id) ?? em.Css?.get(id),
+      events: [
+        {
+          event: 'add',
+          target: () => this.getCssRules(),
+          handler: ({ args }) => {
+            this.ensureCssRuleId(args[0] as CssRule);
+          },
+          skipTrackingCheck: true,
+        },
+      ],
+      onReady: () => this.ensureAllCssRuleIds(),
+    };
+  }
 
   private cloneValue(value: any) {
     if (typeof value === 'undefined') return value;
@@ -171,22 +318,29 @@ export default class PatchManager extends ItemManagerModule {
     }
   }
 
-  private buildPatchPair(path: string, prevVal: any, nextVal: any) {
-    const op = this.getOp(prevVal, nextVal);
-    const invOp = this.getOp(nextVal, prevVal);
-    const patch = op ? this.buildPatch(op, path, nextVal) : null;
-    const inverse = invOp ? this.buildPatch(invOp, path, prevVal) : null;
-    return { patch, inverse };
+  private buildImmerPatchPair(adapter: PatchAdapter<any>, id: string, key: string, prevVal: any, nextVal: any) {
+    const base = { value: this.cloneValue(prevVal) };
+    const [, forward, backward] = produceWithPatches(base, (draft) => {
+      (draft as any).value = this.cloneValue(nextVal);
+    });
+
+    return {
+      patches: this.toJsonPatches(adapter, id, key, forward),
+      inverse: this.toJsonPatches(adapter, id, key, backward),
+    };
   }
 
-  private buildPatch(op: JsonPatch['op'], path: string, value: any): JsonPatch {
-    const cloned = this.cloneValue(value);
-    return op === 'remove' ? { op, path } : { op, path, value: cloned };
-  }
-
-  private getOp(prevVal: any, nextVal: any): JsonPatch['op'] | null {
-    if (typeof nextVal === 'undefined') return 'remove';
-    return typeof prevVal === 'undefined' ? 'add' : 'replace';
+  private toJsonPatches(adapter: PatchAdapter<any>, id: string, key: string, list: any[] = []) {
+    return list
+      .map((patch) => {
+        const pathArr: (string | number)[] = Array.isArray(patch.path) ? patch.path : [];
+        const [, ...rest] = pathArr; // drop synthetic "value" root
+        const fullPath = this.buildPath(adapter.type, `${id}`, [key, ...rest]);
+        if (!fullPath) return null;
+        const value = typeof patch.value === 'undefined' ? undefined : this.cloneValue(patch.value);
+        return patch.op === 'remove' ? { op: patch.op, path: fullPath } : { op: patch.op, path: fullPath, value };
+      })
+      .filter(Boolean) as JsonPatch[];
   }
 
   private buildPath(type: string, id: string, segments: (string | number)[] = []) {
@@ -195,15 +349,76 @@ export default class PatchManager extends ItemManagerModule {
   }
 
   private getComponentKey(coll?: Components, cmp?: Component, at?: number) {
+    if (!coll) return '0';
     const getFractional = (coll as any)?.getFractionalKey;
+    const supportsFractional = this.supportsFractionalIndexing(coll);
+
+    if (supportsFractional) {
+      const key = this.buildFractionalKey(coll, typeof at === 'number' ? at : cmp ? coll.indexOf(cmp) : undefined);
+      if (key) return key;
+    }
+
     if (typeof getFractional === 'function' && cmp) {
       return getFractional.call(coll, cmp);
     }
+
     if (typeof at === 'number') {
       return `${at}`;
     }
-    const idx = coll && cmp ? coll.indexOf(cmp) : -1;
+    const idx = cmp ? coll.indexOf(cmp) : -1;
     return `${idx >= 0 ? idx : 0}`;
+  }
+
+  private supportsFractionalIndexing(coll: any) {
+    return (
+      typeof coll?.findByFractionalKey === 'function' ||
+      typeof coll?.setFractionalKey === 'function' ||
+      typeof coll?.getIndexFromFractionalKey === 'function'
+    );
+  }
+
+  private buildFractionalKey(coll: any, at?: number) {
+    const gen = this.getGenerateKeyBetween();
+    if (!gen) return '';
+    const index = typeof at === 'number' ? at : coll?.length || 0;
+    const prev = index > 0 ? coll.at(index - 1) : null;
+    const next = index < coll.length ? coll.at(index) : null;
+    const prevKey = this.getExistingFractionalKey(coll, prev);
+    const nextKey = this.getExistingFractionalKey(coll, next);
+    return gen(prevKey || null, nextKey || null) || '';
+  }
+
+  private getExistingFractionalKey(coll: any, model: any) {
+    if (!model) return null;
+    const getter = coll?.getFractionalKey;
+    const key =
+      (typeof getter === 'function' && getter.call(coll, model)) ||
+      (model as any)?.fractionalKey ||
+      (typeof model?.get === 'function' ? model.get('fractionalKey') : undefined);
+    return key || null;
+  }
+
+  private setFractionalKey(coll: any, model: any, key: string) {
+    if (!key || !model) return;
+    if (typeof coll?.setFractionalKey === 'function') {
+      coll.setFractionalKey(model, key);
+    } else {
+      (model as any).fractionalKey = key;
+      typeof model?.set === 'function' && model.set('fractionalKey', key, this.internalSetOptions);
+    }
+  }
+
+  // Lazy-load fractional-indexing to work in CJS/Jest environments without extra transpilation.
+  private getGenerateKeyBetween() {
+    if (this.fractionalGen) return this.fractionalGen;
+    try {
+      // eslint-disable-next-line @typescript-eslint/no-var-requires
+      const mod = require('fractional-indexing');
+      this.fractionalGen = mod?.generateKeyBetween || mod?.default?.generateKeyBetween || mod?.default;
+    } catch (err) {
+      this.fractionalGen = undefined;
+    }
+    return this.fractionalGen;
   }
 
   private resetHistory() {
@@ -344,7 +559,8 @@ export default class PatchManager extends ItemManagerModule {
   private applyJsonPatch(p: JsonPatch) {
     const seg = p.path.split('/').filter(Boolean);
     const [objectType, objectId, ...rest] = seg;
-    const target = this.resolveTarget(objectType, objectId);
+    const adapter = objectType ? this.adapters.get(objectType) : null;
+    const target = objectType && objectId && adapter ? adapter.resolve(this.em, objectId) : null;
 
     if (this.debug) {
       console.log('[PatchManager] applyJsonPatch', {
@@ -352,24 +568,24 @@ export default class PatchManager extends ItemManagerModule {
         objectType,
         objectId,
         rest,
+        adapter: adapter?.type,
         resolved: !!target,
       });
     }
 
-    if (!objectType || !objectId) return;
-    if (!target) return;
+    if (!objectType || !objectId || !adapter || !target) return;
 
-    if (rest[0] === 'components' && this.applyComponentsPatch(target, rest.slice(1), p)) {
+    if (adapter.applyPatch && adapter.applyPatch(target, rest, p)) {
       return;
     }
 
     switch (p.op) {
       case 'add':
       case 'replace':
-        this.setByPath(target, rest, p.value);
+        this.setByPath(target, rest, p.value, adapter);
         break;
       case 'remove':
-        this.deleteByPath(target, rest);
+        this.deleteByPath(target, rest, adapter);
         break;
       case 'move':
         this.handleMove(target, seg, p);
@@ -398,7 +614,7 @@ export default class PatchManager extends ItemManagerModule {
         if (patch.value) {
           const added = coll.add(patch.value as any, opts);
           const list = Array.isArray(added) ? added : [added];
-          list.forEach((m) => coll.setFractionalKey?.(m, key));
+          list.forEach((m) => this.setFractionalKey(coll, m, key));
         }
         return true;
       }
@@ -416,8 +632,11 @@ export default class PatchManager extends ItemManagerModule {
 
   private findComponentByKey(coll: any, key: string) {
     if (!coll) return null;
-    if (typeof coll.findByFractionalKey === 'function') {
+    if (typeof coll.findByFractionalKey === 'function' && isNaN(Number(key))) {
       return coll.findByFractionalKey(key);
+    }
+    if (isNaN(Number(key))) {
+      return coll.find((m: any) => this.getExistingFractionalKey(coll, m) === key) || null;
     }
     const idx = Number(key);
     return Number.isNaN(idx) ? null : coll.at(idx);
@@ -428,7 +647,9 @@ export default class PatchManager extends ItemManagerModule {
       return coll.getIndexFromFractionalKey(key);
     }
     const idx = Number(key);
-    return Number.isNaN(idx) ? coll.length : idx;
+    if (!Number.isNaN(idx)) return idx;
+    const model = this.findComponentByKey(coll, key);
+    return model ? coll.indexOf(model) : coll.length;
   }
 
   private applyComponentsMove(coll: any, key: string, patch: JsonPatch) {
@@ -449,20 +670,13 @@ export default class PatchManager extends ItemManagerModule {
     const at = this.resolveComponentIndex(coll, key);
     const added = coll.add(model, { ...this.internalSetOptions, at });
     const list = Array.isArray(added) ? added : [added];
-    list.forEach((m) => coll.setFractionalKey?.(m, key));
+    list.forEach((m) => this.setFractionalKey(coll, m, key));
     return true;
   }
 
   private resolveTarget(type: string, id: string): any {
-    const { em } = this;
-    switch (type) {
-      case 'component':
-        return em.Components?.getById(id);
-      case 'cssRule':
-        return em.Css?.rules?.get(id) ?? em.Css?.get(id);
-      default:
-        return null;
-    }
+    const adapter = this.adapters.get(type);
+    return adapter ? adapter.resolve(this.em, id) : null;
   }
 
   private ensureCssRuleId(rule?: CssRule) {
@@ -485,27 +699,27 @@ export default class PatchManager extends ItemManagerModule {
     return ruleId;
   }
 
-  private handleCssRuleAdd = (rule: CssRule) => {
-    this.ensureCssRuleId(rule);
-  };
-
-  private ensureAllCssRuleIds() {
+  private getCssRules() {
     if (!this.cssRules) {
       this.cssRules = this.em.Css?.getAll?.();
-      this.cssRules?.on('add', this.handleCssRuleAdd);
     }
-    this.cssRules?.each((rule: CssRule) => this.ensureCssRuleId(rule));
+    return this.cssRules;
   }
 
-  private isBlockedRootKey(key?: string) {
+  private ensureAllCssRuleIds() {
+    this.getCssRules()?.each((rule: CssRule) => this.ensureCssRuleId(rule));
+  }
+
+  private isBlockedKey(key?: string, adapter?: PatchAdapter<any>) {
     if (!key) return false;
-    return PatchManager.blockedRootKeys.has(key);
+    const blocked = adapter?.blockedKeys as Set<string> | undefined;
+    return !!blocked?.has(key);
   }
 
-  private setByPath(target: any, path: string[], value: any) {
+  private setByPath(target: any, path: string[], value: any, adapter?: PatchAdapter<any>) {
     if (!target || !path.length) return;
     const rootKey = path[0];
-    if (this.isBlockedRootKey(rootKey)) return;
+    if (this.isBlockedKey(rootKey, adapter)) return;
 
     if (typeof target.set === 'function') {
       if (path.length === 1) {
@@ -548,10 +762,10 @@ export default class PatchManager extends ItemManagerModule {
     ref[path[path.length - 1]] = value;
   }
 
-  private deleteByPath(target: any, path: string[]) {
+  private deleteByPath(target: any, path: string[], adapter?: PatchAdapter<any>) {
     if (!target || !path.length) return;
     const rootKey = path[0];
-    if (this.isBlockedRootKey(rootKey)) return;
+    if (this.isBlockedKey(rootKey, adapter)) return;
 
     if (typeof target.unset === 'function' && path.length === 1) {
       target.unset(rootKey, this.internalSetOptions);
@@ -569,11 +783,9 @@ export default class PatchManager extends ItemManagerModule {
   private handleMove(_target: any, _seg: string[], _p: JsonPatch) {}
 
   destroy(): void {
-    this.cssRules?.off('add', this.handleCssRuleAdd);
+    this.unbindAllAdapters();
     this.em?.off('change:readyLoad', this.handleReadyLoad);
     this.em?.off(EditorEvents.projectLoad, this.handleProjectLoad);
-    this.em?.off(ComponentsEvents.add, this.handleComponentAdd);
-    this.em?.off(ComponentsEvents.remove, this.handleComponentRemove);
     this.resetHistory();
     this.isApplyingExternal = false;
     super.__destroy?.();

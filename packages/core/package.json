@@ -35,7 +35,9 @@
     "backbone-undo": "0.2.6",
     "codemirror": "5.63.0",
     "codemirror-formatting": "1.0.0",
+    "fractional-indexing": "^3.2.0",
     "html-entities": "~1.4.0",
+    "immer": "^10.2.0",
     "promise-polyfill": "8.3.0",
     "underscore": "1.13.1"
   },

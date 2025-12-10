@@ -160,6 +160,13 @@ export type {
   ExpressionProps,
 } from './data_sources/model/conditional_variables/DataCondition';
 export type { default as PatchManager } from './patch_manager';
-export type { PatchProps, PatchManagerConfig, JsonPatch } from './patch_manager/types';
+export type {
+  PatchProps,
+  PatchManagerConfig,
+  JsonPatch,
+  PatchAdapter,
+  PatchAdapterEvent,
+  PatchAdapterChange,
+} from './patch_manager/types';
 
 export default grapesjs;
