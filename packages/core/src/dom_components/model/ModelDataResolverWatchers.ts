@@ -175,7 +175,7 @@ export class ModelDataResolverWatchers<T extends StyleableModelProperties> {
     const keys = this.propertyWatcher.getValuesResolvingFromCollections();
     const attributesKeys = this.attributeWatcher.getValuesResolvingFromCollections();
 
-    const combinedKeys = ['locked', 'layerable', keyDataValues, ...keys];
+    const combinedKeys = ['locked', 'layerable', ...keys];
     const haveOverridenAttributes = Object.keys(attributesKeys).length;
     if (haveOverridenAttributes) combinedKeys.push('attributes');
 
