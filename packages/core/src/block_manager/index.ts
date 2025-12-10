@@ -36,7 +36,7 @@ import Block, { BlockProperties } from './model/Block';
 import Blocks from './model/Blocks';
 import Categories from '../abstract/ModuleCategories';
 import Category, { getItemsByCategory } from '../abstract/ModuleCategory';
-import { BlocksByCategory, BlocksEvents } from './types';
+import { BlocksByCategory, BlocksCustomData, BlocksEvents } from './types';
 import BlocksView from './view/BlocksView';
 
 export type BlockEvent = `${BlocksEvents}`;
@@ -90,7 +90,7 @@ export default class BlockManager extends ItemManagerModule<BlockManagerConfig, 
     this.em.trigger(this.events.custom, this.__customData());
   }
 
-  __customData() {
+  __customData(): BlocksCustomData {
     const bhv = this.__getBehaviour();
     return {
       bm: this as BlockManager,
