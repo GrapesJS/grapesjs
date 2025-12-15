@@ -1,4 +1,6 @@
 import Component from '../dom_components/model/Component';
+import DataSource from '../data_sources/model/DataSource';
+import DataRecord from '../data_sources/model/DataRecord';
 import Components from '../dom_components/model/Components';
 import { ComponentsEvents } from '../dom_components/types';
 import CssRule from '../css_composer/model/CssRule';
@@ -9,6 +11,8 @@ import EditorModel from '../editor/model/Editor';
 import { EditorEvents } from '../editor/types';
 import { createId } from '../utils/mixins';
 import { enablePatches, produceWithPatches } from 'immer';
+import Asset from '../asset_manager/model/Asset';
+import Page from '../pages/model/Page';
 import type {
   JsonPatch,
   PatchAdapter,
@@ -39,6 +43,7 @@ export default class PatchManager extends ItemManagerModule {
   private adapterListeners: { adapter: string; target: any; event: string; handler: (...args: any[]) => void }[] = [];
   private trackingBound = false;
   private fractionalGen?: (a: string | null, b: string | null) => string;
+  private dataRecordAdapter?: PatchAdapter<DataRecord>;
 
   private internalSetOptions = {
     fromUndo: true,
@@ -72,6 +77,11 @@ export default class PatchManager extends ItemManagerModule {
   private registerDefaultAdapters() {
     this.registerAdapter(this.createComponentAdapter());
     this.registerAdapter(this.createCssRuleAdapter());
+    this.dataRecordAdapter = this.createDataRecordAdapter();
+    this.registerAdapter(this.dataRecordAdapter);
+    this.registerAdapter(this.createDataSourceAdapter());
+    this.registerAdapter(this.createAssetAdapter());
+    this.registerAdapter(this.createPageAdapter());
   }
 
   registerAdapter<T>(adapter: PatchAdapter<T>) {
@@ -309,6 +319,95 @@ export default class PatchManager extends ItemManagerModule {
     };
   }
 
+  private createDataRecordAdapter(): PatchAdapter<DataRecord> {
+    return {
+      type: 'dataRecord',
+      getId: (record) => this.buildDataRecordId(record),
+      resolve: (em, id) => {
+        const [dsId, recId] = id.split('::');
+        const ds = em.DataSources?.get(dsId);
+        return ds?.records?.get(recId) || null;
+      },
+    };
+  }
+
+  private createDataSourceAdapter(): PatchAdapter<DataSource> {
+    return {
+      type: 'dataSource',
+      sourceKeys: ['dataSource'],
+      getId: (ds) => `${ds.id || ds.cid}`,
+      resolve: (em, id) => em.DataSources?.get(id),
+      events: [
+        {
+          event: 'add',
+          target: () => this.getDataSources(),
+          handler: ({ args }) => this.handleDataSourceAdd(args[0] as DataSource),
+        },
+        {
+          event: 'remove',
+          target: () => this.getDataSources(),
+          handler: ({ args }) => this.handleDataSourceRemove(args[0] as DataSource),
+        },
+        {
+          event: 'change',
+          target: () => this.getDataSources(),
+          handler: ({ args }) => this.handleGenericModelChange(args[0] as DataSource, 'dataSource'),
+        },
+      ],
+      onReady: () => this.bindAllDataSourceRecords(),
+    };
+  }
+
+  private createAssetAdapter(): PatchAdapter<Asset> {
+    return {
+      type: 'asset',
+      getId: (asset) => (asset.get ? asset.get('src') : (asset as any).src),
+      resolve: (em, id) => em.Assets?.get(id),
+      events: [
+        {
+          event: 'add',
+          target: () => this.getAssets(),
+          handler: ({ args }) => this.buildAddRemovePatch('asset', args[0] as Asset, 'add'),
+        },
+        {
+          event: 'remove',
+          target: () => this.getAssets(),
+          handler: ({ args }) => this.buildAddRemovePatch('asset', args[0] as Asset, 'remove'),
+        },
+        {
+          event: 'change',
+          target: () => this.getAssets(),
+          handler: ({ args }) => this.handleGenericModelChange(args[0] as Asset, 'asset'),
+        },
+      ],
+    };
+  }
+
+  private createPageAdapter(): PatchAdapter<Page> {
+    return {
+      type: 'page',
+      getId: (page) => `${(page as any).id || page.get('id') || page.cid}`,
+      resolve: (em, id) => em.Pages?.get(id),
+      events: [
+        {
+          event: 'add',
+          target: () => this.getPages(),
+          handler: ({ args }) => this.buildAddRemovePatch('page', args[0] as Page, 'add'),
+        },
+        {
+          event: 'remove',
+          target: () => this.getPages(),
+          handler: ({ args }) => this.buildAddRemovePatch('page', args[0] as Page, 'remove'),
+        },
+        {
+          event: 'change',
+          target: () => this.getPages(),
+          handler: ({ args }) => this.handleGenericModelChange(args[0] as Page, 'page'),
+        },
+      ],
+    };
+  }
+
   private cloneValue(value: any) {
     if (typeof value === 'undefined') return value;
     try {
@@ -341,6 +440,37 @@ export default class PatchManager extends ItemManagerModule {
         return patch.op === 'remove' ? { op: patch.op, path: fullPath } : { op: patch.op, path: fullPath, value };
       })
       .filter(Boolean) as JsonPatch[];
+  }
+
+  private buildAddRemovePatch(type: string, model: any, op: 'add' | 'remove') {
+    if (!model) return;
+    const adapter = this.adapters.get(type);
+    if (!adapter) return;
+    const id = adapter.getId(model);
+    if (!id) return;
+    const path = this.buildPath(type, `${id}`);
+    const value = this.cloneValue(model.toJSON?.() || model);
+    const patch: JsonPatch = op === 'add' ? { op: 'add', path, value } : { op: 'remove', path };
+    const inverse: JsonPatch =
+      op === 'add' ? { op: 'remove', path } : { op: 'add', path, value: this.cloneValue(model.toJSON?.() || model) };
+    return { patches: [patch], inverse: [inverse] };
+  }
+
+  private handleGenericModelChange(model: any, adapterType: string) {
+    const adapter = this.adapters.get(adapterType);
+    if (!adapter) return;
+    const changed = typeof model.changedAttributes === 'function' ? model.changedAttributes() : null;
+    if (!changed || !Object.keys(changed).length) return;
+    const patches: JsonPatch[] = [];
+    const inverse: JsonPatch[] = [];
+    this.handleAdapterChange(adapter, { target: model, changed }, patches, inverse);
+    return { patches, inverse };
+  }
+
+  private buildDataRecordId(record: DataRecord) {
+    const dsId = (record as any).dataSource?.id || (record as any).dataSource?.cid || 'ds';
+    const recId = record.id || (record as any).cid;
+    return `${dsId}::${recId}`;
   }
 
   private buildPath(type: string, id: string, segments: (string | number)[] = []) {
@@ -407,6 +537,67 @@ export default class PatchManager extends ItemManagerModule {
       typeof model?.set === 'function' && model.set('fractionalKey', key, this.internalSetOptions);
     }
   }
+
+  private getDataSources() {
+    return this.em.DataSources?.all || this.em.DataSources?.getAll?.();
+  }
+
+  private getAssets() {
+    return this.em.Assets?.getAll?.();
+  }
+
+  private getPages() {
+    return this.em.Pages?.getAll?.();
+  }
+
+  private bindAllDataSourceRecords() {
+    const dss = this.getDataSources();
+    if (!dss) return;
+    dss.each((ds: DataSource) => this.bindDataSourceRecords(ds));
+    if (dss.on) {
+      dss.on('add', this.bindDataSourceRecords);
+      this.adapterListeners.push({ adapter: 'dataRecord', target: dss, event: 'add', handler: this.bindDataSourceRecords });
+    }
+  }
+
+  private bindDataSourceRecords = (ds: DataSource) => {
+    if (!ds?.records) return;
+    const recs = ds.records;
+    const bind = (event: string, handler: (...args: any[]) => void) => {
+      recs.on(event, handler);
+      this.adapterListeners.push({ adapter: 'dataRecord', target: recs, event, handler });
+    };
+    bind('add', (record: DataRecord) => {
+      const patch = this.buildAddRemovePatch('dataRecord', record, 'add');
+      patch && this.collect(patch.patches, patch.inverse || []);
+    });
+    bind('remove', (record: DataRecord) => {
+      const patch = this.buildAddRemovePatch('dataRecord', record, 'remove');
+      patch && this.collect(patch.patches, patch.inverse || []);
+    });
+    bind('change', (record: DataRecord) => {
+      const res = this.handleGenericModelChange(record, 'dataRecord');
+      res && this.collect(res.patches, res.inverse || []);
+    });
+  };
+
+  private unbindDataSourceRecords(ds: DataSource) {
+    if (!ds?.records || !ds.records.off) return;
+    const recs = ds.records;
+    const listeners = this.adapterListeners.filter((item) => item.target === recs);
+    listeners.forEach(({ event, handler }) => recs.off(event, handler));
+    this.adapterListeners = this.adapterListeners.filter((item) => item.target !== recs);
+  }
+
+  private handleDataSourceAdd = (ds: DataSource) => {
+    this.bindDataSourceRecords(ds);
+    return this.buildAddRemovePatch('dataSource', ds, 'add');
+  };
+
+  private handleDataSourceRemove = (ds: DataSource) => {
+    this.unbindDataSourceRecords(ds);
+    return this.buildAddRemovePatch('dataSource', ds, 'remove');
+  };
 
   // Lazy-load fractional-indexing to work in CJS/Jest environments without extra transpilation.
   private getGenerateKeyBetween() {
