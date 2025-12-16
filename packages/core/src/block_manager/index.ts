@@ -39,8 +39,6 @@ import Category, { getItemsByCategory } from '../abstract/ModuleCategory';
 import { BlocksByCategory, BlocksCustomData, BlocksEvents } from './types';
 import BlocksView from './view/BlocksView';
 
-export type BlockEvent = `${BlocksEvents}`;
-
 export default class BlockManager extends ItemManagerModule<BlockManagerConfig, Blocks> {
   blocks: Blocks;
   blocksVisible: Blocks;

@@ -1,6 +1,5 @@
 import { AssetEvent, AssetsEventCallback } from '../asset_manager/types';
-import { BlockEvent } from '../block_manager';
-import { BlocksEventCallback } from '../block_manager/types';
+import { BlockEvent, BlocksEventCallback } from '../block_manager/types';
 import { CanvasEvent } from '../canvas';
 import { CommandEvent } from '../commands';
 import { LiteralUnion } from '../common';
