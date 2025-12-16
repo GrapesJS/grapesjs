@@ -1,4 +1,4 @@
-import { AssetEvent } from '../asset_manager/types';
+import { AssetEvent, AssetsEventCallback } from '../asset_manager/types';
 import { BlockEvent } from '../block_manager';
 import { BlocksEventCallback } from '../block_manager/types';
 import { CanvasEvent } from '../canvas';
@@ -37,7 +37,7 @@ export type EditorConfigType = EditorConfig & { pStylePrefix?: string };
 
 export type EditorModelParam<T extends keyof EditorModel, N extends number> = Parameters<EditorModel[T]>[N];
 
-export interface EditorEventCallbacks extends BlocksEventCallback, DataSourcesEventCallback {
+export interface EditorEventCallbacks extends AssetsEventCallback, BlocksEventCallback, DataSourcesEventCallback {
   [key: string]: any[];
 }
 
