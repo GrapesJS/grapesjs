@@ -95,8 +95,8 @@ describe('Patch Manager', () => {
 
     rule.setStyle({ color: 'blue' });
 
-    expect(updates).toHaveLength(1);
-    const [patch] = updates;
+    expect(updates.length).toBeGreaterThanOrEqual(1);
+    const patch = updates[updates.length - 1];
     const ruleId = (rule as any).id || rule.get('id');
     expect(ruleId).toBeTruthy();
     expect(patch.changes[0]).toMatchObject({

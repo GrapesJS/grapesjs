@@ -13,6 +13,7 @@ import { createId } from '../utils/mixins';
 import { enablePatches, produceWithPatches } from 'immer';
 import Asset from '../asset_manager/model/Asset';
 import Page from '../pages/model/Page';
+import Selector from '../selector_manager/model/Selector';
 import type {
   JsonPatch,
   PatchAdapter,
@@ -44,6 +45,7 @@ export default class PatchManager extends ItemManagerModule {
   private trackingBound = false;
   private fractionalGen?: (a: string | null, b: string | null) => string;
   private dataRecordAdapter?: PatchAdapter<DataRecord>;
+  private cssRulesBound = false;
 
   private internalSetOptions = {
     fromUndo: true,
@@ -82,6 +84,7 @@ export default class PatchManager extends ItemManagerModule {
     this.registerAdapter(this.createDataSourceAdapter());
     this.registerAdapter(this.createAssetAdapter());
     this.registerAdapter(this.createPageAdapter());
+    this.registerAdapter(this.createSelectorAdapter());
   }
 
   registerAdapter<T>(adapter: PatchAdapter<T>) {
@@ -309,10 +312,17 @@ export default class PatchManager extends ItemManagerModule {
         {
           event: 'add',
           target: () => this.getCssRules(),
-          handler: ({ args }) => {
-            this.ensureCssRuleId(args[0] as CssRule);
-          },
-          skipTrackingCheck: true,
+          handler: ({ args }) => this.handleCssRuleAdd(args[0] as CssRule),
+        },
+        {
+          event: 'remove',
+          target: () => this.getCssRules(),
+          handler: ({ args }) => this.buildAddRemovePatch('cssRule', args[0] as CssRule, 'remove'),
+        },
+        {
+          event: 'change',
+          target: () => this.getCssRules(),
+          handler: ({ args }) => this.handleGenericModelChange(args[0] as CssRule, 'cssRule'),
         },
       ],
       onReady: () => this.ensureAllCssRuleIds(),
@@ -367,12 +377,12 @@ export default class PatchManager extends ItemManagerModule {
         {
           event: 'add',
           target: () => this.getAssets(),
-          handler: ({ args }) => this.buildAddRemovePatch('asset', args[0] as Asset, 'add'),
+          handler: ({ args }) => this.handleAddRemoveCollect('asset', args[0] as Asset, 'add'),
         },
         {
           event: 'remove',
           target: () => this.getAssets(),
-          handler: ({ args }) => this.buildAddRemovePatch('asset', args[0] as Asset, 'remove'),
+          handler: ({ args }) => this.handleAddRemoveCollect('asset', args[0] as Asset, 'remove'),
         },
         {
           event: 'change',
@@ -392,17 +402,42 @@ export default class PatchManager extends ItemManagerModule {
         {
           event: 'add',
           target: () => this.getPages(),
-          handler: ({ args }) => this.buildAddRemovePatch('page', args[0] as Page, 'add'),
+          handler: ({ args }) => this.handleAddRemoveCollect('page', args[0] as Page, 'add'),
         },
         {
           event: 'remove',
           target: () => this.getPages(),
-          handler: ({ args }) => this.buildAddRemovePatch('page', args[0] as Page, 'remove'),
+          handler: ({ args }) => this.handleAddRemoveCollect('page', args[0] as Page, 'remove'),
         },
         {
           event: 'change',
           target: () => this.getPages(),
           handler: ({ args }) => this.handleGenericModelChange(args[0] as Page, 'page'),
+        },
+      ],
+    };
+  }
+
+  private createSelectorAdapter(): PatchAdapter<Selector> {
+    return {
+      type: 'selector',
+      getId: (sel) => (sel as any).id || (sel as any).get?.('id') || (sel as any).getFullName?.() || sel.cid,
+      resolve: (em, id) => em.Selectors?.get(id),
+      events: [
+        {
+          event: 'add',
+          target: () => this.getSelectors(),
+          handler: ({ args }) => this.handleAddRemoveCollect('selector', args[0] as Selector, 'add'),
+        },
+        {
+          event: 'remove',
+          target: () => this.getSelectors(),
+          handler: ({ args }) => this.handleAddRemoveCollect('selector', args[0] as Selector, 'remove'),
+        },
+        {
+          event: 'change',
+          target: () => this.getSelectors(),
+          handler: ({ args }) => this.handleGenericModelChange(args[0] as Selector, 'selector'),
         },
       ],
     };
@@ -456,6 +491,12 @@ export default class PatchManager extends ItemManagerModule {
     return { patches: [patch], inverse: [inverse] };
   }
 
+  private handleAddRemoveCollect(type: string, model: any, op: 'add' | 'remove') {
+    const res = this.buildAddRemovePatch(type, model, op);
+    res && this.collect(res.patches, res.inverse || []);
+    return res;
+  }
+
   private handleGenericModelChange(model: any, adapterType: string) {
     const adapter = this.adapters.get(adapterType);
     if (!adapter) return;
@@ -484,6 +525,8 @@ export default class PatchManager extends ItemManagerModule {
     const supportsFractional = this.supportsFractionalIndexing(coll);
 
     if (supportsFractional) {
+      const existing = this.getExistingFractionalKey(coll, cmp);
+      if (existing) return existing;
       const key = this.buildFractionalKey(coll, typeof at === 'number' ? at : cmp ? coll.indexOf(cmp) : undefined);
       if (key) return key;
     }
@@ -550,13 +593,22 @@ export default class PatchManager extends ItemManagerModule {
     return this.em.Pages?.getAll?.();
   }
 
+  private getSelectors() {
+    return this.em.Selectors?.getAll?.();
+  }
+
   private bindAllDataSourceRecords() {
     const dss = this.getDataSources();
     if (!dss) return;
     dss.each((ds: DataSource) => this.bindDataSourceRecords(ds));
     if (dss.on) {
       dss.on('add', this.bindDataSourceRecords);
-      this.adapterListeners.push({ adapter: 'dataRecord', target: dss, event: 'add', handler: this.bindDataSourceRecords });
+      this.adapterListeners.push({
+        adapter: 'dataRecord',
+        target: dss,
+        event: 'add',
+        handler: this.bindDataSourceRecords,
+      });
     }
   }
 
@@ -823,6 +875,8 @@ export default class PatchManager extends ItemManagerModule {
 
   private findComponentByKey(coll: any, key: string) {
     if (!coll) return null;
+    const byId = coll.getById?.(key) || coll.get?.(key);
+    if (byId) return byId;
     if (typeof coll.findByFractionalKey === 'function' && isNaN(Number(key))) {
       return coll.findByFractionalKey(key);
     }
@@ -853,15 +907,19 @@ export default class PatchManager extends ItemManagerModule {
     const fromColl = this.getComponentsCollection(fromTarget);
     if (!fromColl) return false;
 
+    return this.applyComponentsMoveWithKeys(fromColl, fromKey, coll, key);
+  }
+
+  private applyComponentsMoveWithKeys(fromColl: any, fromKey: string, toColl: any, toKey: string) {
     const model = this.findComponentByKey(fromColl, fromKey);
     if (!model) return false;
 
     fromColl.remove(model, { ...this.internalSetOptions, temporary: true });
 
-    const at = this.resolveComponentIndex(coll, key);
-    const added = coll.add(model, { ...this.internalSetOptions, at });
+    const at = this.resolveComponentIndex(toColl, toKey);
+    const added = toColl.add(model, { ...this.internalSetOptions, at });
     const list = Array.isArray(added) ? added : [added];
-    list.forEach((m) => this.setFractionalKey(coll, m, key));
+    list.forEach((m) => this.setFractionalKey(toColl, m, toKey));
     return true;
   }
 
@@ -893,6 +951,10 @@ export default class PatchManager extends ItemManagerModule {
   private getCssRules() {
     if (!this.cssRules) {
       this.cssRules = this.em.Css?.getAll?.();
+      if (this.cssRules && !this.cssRulesBound) {
+        this.cssRules.on('add', this.handleCssRuleAdd);
+        this.cssRulesBound = true;
+      }
     }
     return this.cssRules;
   }
@@ -900,6 +962,12 @@ export default class PatchManager extends ItemManagerModule {
   private ensureAllCssRuleIds() {
     this.getCssRules()?.each((rule: CssRule) => this.ensureCssRuleId(rule));
   }
+
+  private handleCssRuleAdd = (rule: CssRule) => {
+    this.ensureCssRuleId(rule);
+    const res = this.buildAddRemovePatch('cssRule', rule, 'add');
+    res && this.collect(res.patches, res.inverse || []);
+  };
 
   private isBlockedKey(key?: string, adapter?: PatchAdapter<any>) {
     if (!key) return false;
@@ -971,7 +1039,18 @@ export default class PatchManager extends ItemManagerModule {
     delete ref[path[path.length - 1]];
   }
 
-  private handleMove(_target: any, _seg: string[], _p: JsonPatch) {}
+  private handleMove(target: any, seg: string[], p: JsonPatch) {
+    const [fromType, fromId, fromLabel, fromKey] = (p.from || '').split('/').filter(Boolean);
+    const [, , toLabel, toKey] = seg;
+
+    if (fromLabel === 'components' && toLabel === 'components') {
+      const toColl = this.getComponentsCollection(target);
+      const fromTarget = this.resolveTarget(fromType, fromId);
+      const fromColl = this.getComponentsCollection(fromTarget);
+      if (!toColl || !fromColl) return;
+      this.applyComponentsMoveWithKeys(fromColl, fromKey, toColl, toKey);
+    }
+  }
 
   destroy(): void {
     this.unbindAllAdapters();
