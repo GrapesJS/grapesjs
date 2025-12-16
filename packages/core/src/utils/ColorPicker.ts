@@ -1818,10 +1818,10 @@ export default function ($, undefined?: any) {
   // Returns an 8 character hex
   function rgbaToHex(r, g, b, a) {
     var hex = [
-      pad2(convertDecimalToHex(a)),
       pad2(mathRound(r).toString(16)),
       pad2(mathRound(g).toString(16)),
       pad2(mathRound(b).toString(16)),
+      pad2(convertDecimalToHex(a)),
     ];
 
     return hex.join('');
@@ -2406,10 +2406,10 @@ export default function ($, undefined?: any) {
     }
     if ((match = matchers.hex8.exec(color))) {
       return {
-        a: convertHexToDecimal(match[1]),
-        r: parseIntFromHex(match[2]),
-        g: parseIntFromHex(match[3]),
-        b: parseIntFromHex(match[4]),
+        r: parseIntFromHex(match[1]),
+        g: parseIntFromHex(match[2]),
+        b: parseIntFromHex(match[3]),
+        a: convertHexToDecimal(match[4]),
         format: named ? 'name' : 'hex8',
       };
     }
