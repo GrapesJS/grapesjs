@@ -8,6 +8,7 @@ import Selector, { SelectorProps } from '../../selector_manager/model/Selector';
 import EditorModel from '../../editor/model/Editor';
 import CssRuleView from '../view/CssRuleView';
 import { createId } from '../../utils/mixins';
+import { ensureUid } from '../../utils/uid';
 
 export interface ToCssOptions {
   important?: boolean | string[];
@@ -19,7 +20,12 @@ export interface ToCssOptions {
 /** @private */
 export interface CssRuleProperties extends ObjectHash {
   /**
+   * Stable unique identifier used across collaborative sessions.
+   */
+  uid?: string;
+  /**
    * Persisted identifier used across collaborative sessions.
+   * @deprecated Use `uid` instead.
    */
   id?: string;
   /**
@@ -126,6 +132,7 @@ export default class CssRule extends StyleableModel<CssRuleProperties> {
 
   constructor(props: CssRuleProperties, opt: any = {}) {
     super(props, { em: opt.em });
+    ensureUid(this, 'uid', 'css');
     this.config = props || {};
     this.opt = opt;
     this.em = opt.em;
@@ -135,9 +142,14 @@ export default class CssRule extends StyleableModel<CssRuleProperties> {
     this.on('change', this.__onChange);
   }
 
+  getUid(): string {
+    return ensureUid(this, 'uid', 'css');
+  }
+
   private ensureId(props?: CssRuleProperties) {
     const idAttr = (this as any).idAttribute || 'id';
-    const existing = (props && props.id) || (this as any).id || this.get(idAttr);
+    const uid = this.getUid();
+    const existing = (props && (props.id || (props as any).uid)) || (this as any).id || this.get(idAttr) || uid;
     const ruleId = existing || createId();
 
     if (!this.get(idAttr)) {
@@ -160,7 +172,11 @@ export default class CssRule extends StyleableModel<CssRuleProperties> {
   clone(): typeof this {
     const selectors = this.get('selectors')!.map((s) => s.clone() as Selector);
 
-    return super.clone({ selectors });
+    const cloned = super.clone({ selectors }) as this;
+    const newUid = `css-${createId()}`;
+    cloned.set('uid', newUid, { silent: true });
+    cloned.set('id', newUid, { silent: true });
+    return cloned;
   }
 
   ensureSelectors(m: any, c: any, opts: any) {

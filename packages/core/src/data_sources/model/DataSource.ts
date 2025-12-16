@@ -52,6 +52,7 @@ import { DEF_DATA_FIELD_ID } from '../utils';
 import DataRecord from './DataRecord';
 import DataRecords from './DataRecords';
 import DataSources from './DataSources';
+import { ensureUid } from '../../utils/uid';
 
 interface DataSourceOptions extends CombinedModelConstructorOptions<{ em: EditorModel }, DataSource> {}
 export default class DataSource<DRProps extends DataRecordProps = DataRecordProps> extends Model<
@@ -91,6 +92,7 @@ export default class DataSource<DRProps extends DataRecordProps = DataRecordProp
       } as unknown as DataSourceType<DRProps>,
       opts,
     );
+    ensureUid(this, 'uid', 'ds');
     const { records, transformers } = props;
     this.transformers = transformers || ({} as DataSourceTransformers);
 
@@ -130,6 +132,10 @@ export default class DataSource<DRProps extends DataRecordProps = DataRecordProp
    */
   get em() {
     return (this.collection as unknown as DataSources).em;
+  }
+
+  getUid() {
+    return ensureUid(this, 'uid', 'ds');
   }
 
   /**

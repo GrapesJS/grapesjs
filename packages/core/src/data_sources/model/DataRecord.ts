@@ -30,12 +30,14 @@ import DataRecords from './DataRecords';
 import DataSource from './DataSource';
 import EditorModel from '../../editor/model/Editor';
 import { _StringKey } from 'backbone';
+import { ensureUid } from '../../utils/uid';
 
 export default class DataRecord<T extends DataRecordProps = DataRecordProps> extends Model<T> {
   public mutable: boolean;
 
   constructor(props: T, opts = {}) {
     super(props, opts);
+    ensureUid(this, 'uid', 'dr');
     this.mutable = props.mutable ?? true;
     this.on('change', this.handleChange);
   }
@@ -54,6 +56,10 @@ export default class DataRecord<T extends DataRecordProps = DataRecordProps> ext
 
   get index(): number {
     return this.cl.indexOf(this);
+  }
+
+  getUid() {
+    return ensureUid(this, 'uid', 'dr');
   }
 
   /**

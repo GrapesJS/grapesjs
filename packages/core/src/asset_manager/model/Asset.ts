@@ -1,5 +1,6 @@
 import { result } from 'underscore';
 import { Model } from '../../common';
+import { ensureUid } from '../../utils/uid';
 
 /**
  * @property {String} type Asset type, eg. `'image'`.
@@ -12,11 +13,23 @@ export default class Asset extends Model {
     return result(this.prototype, 'defaults');
   }
 
+  initialize() {
+    ensureUid(this, 'uid', 'asset');
+  }
+
   defaults() {
     return {
       type: '',
       src: '',
     };
+  }
+
+  /**
+   * Get stable unique identifier for the asset.
+   * @returns {String}
+   */
+  getUid() {
+    return ensureUid(this, 'uid', 'asset');
   }
 
   /**

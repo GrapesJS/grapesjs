@@ -167,6 +167,8 @@ export type {
   PatchAdapter,
   PatchAdapterEvent,
   PatchAdapterChange,
+  PatchAdapterEventContext,
+  PatchAdapterEventResult,
 } from './patch_manager/types';
 
 export default grapesjs;

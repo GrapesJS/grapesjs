@@ -6,6 +6,7 @@ import ComponentWrapper from '../../dom_components/model/ComponentWrapper';
 import EditorModel from '../../editor/model/Editor';
 import { CssRuleJSON } from '../../css_composer/model/CssRule';
 import { ComponentDefinition } from '../../dom_components/model/types';
+import { ensureUid } from '../../utils/uid';
 
 /** @private */
 export interface PageProperties {
@@ -13,6 +14,10 @@ export interface PageProperties {
    * Panel id.
    */
   id?: string;
+  /**
+   * Stable unique identifier for the page.
+   */
+  uid?: string;
 
   /**
    * Page name.
@@ -49,6 +54,7 @@ export default class Page extends Model<PagePropertiesDefined> {
 
   constructor(props: any, opts: { em?: EditorModel; config?: PageManagerConfig } = {}) {
     super(props, opts);
+    ensureUid(this, 'uid', 'page');
     const { em } = opts;
     const defFrame: any = {};
     this.em = em!;
@@ -71,6 +77,14 @@ export default class Page extends Model<PagePropertiesDefined> {
 
   getFrames() {
     return this.get('frames')!;
+  }
+
+  /**
+   * Get stable page uid
+   * @returns {String}
+   */
+  getUid() {
+    return ensureUid(this, 'uid', 'page');
   }
 
   /**

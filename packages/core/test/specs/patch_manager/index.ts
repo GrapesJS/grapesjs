@@ -28,26 +28,28 @@ describe('Patch Manager', () => {
     editor.on('patch:update', ({ patch }) => updates.push(patch));
 
     const cmp = wrapper.append({ tagName: 'div', content: 'first' })[0];
+    const wrapperUid = wrapper.get('uid');
 
     expect(patches.canTrack()).toBe(true);
     expect(updates).toHaveLength(1);
     expect(updates[0].changes[0]).toMatchObject({
       op: 'add',
-      path: `/component/${wrapper.getId()}/components/0`,
+      path: `/component/${wrapperUid}/components/0`,
     });
 
     cmp.set('content', 'second');
+    const cmpUid = cmp.get('uid');
     expect(updates).toHaveLength(2);
 
     const changePatch = updates[1];
     expect(changePatch.changes[0]).toMatchObject({
       op: 'replace',
-      path: `/component/${cmp.getId()}/content`,
+      path: `/component/${cmpUid}/content`,
       value: 'second',
     });
     expect(changePatch.reverseChanges[0]).toMatchObject({
       op: 'replace',
-      path: `/component/${cmp.getId()}/content`,
+      path: `/component/${cmpUid}/content`,
       value: 'first',
     });
 
@@ -64,7 +66,7 @@ describe('Patch Manager', () => {
     editor.on('patch:update', ({ patch }) => updates.push(patch));
     editor.on('patch:applied:external', ({ patch }) => applied.push(patch));
 
-    const wrapperId = wrapper.getId();
+    const wrapperId = wrapper.get('uid') || wrapper.getId();
     const externalPatch: PatchProps = {
       id: 'ext',
       ts: Date.now(),
@@ -92,13 +94,13 @@ describe('Patch Manager', () => {
 
     const rule = editor.Css.addRules('.test { color: red; }')[0];
     updates.length = 0;
+    const ruleUid = rule.get('uid');
 
     rule.setStyle({ color: 'blue' });
 
     expect(updates.length).toBeGreaterThanOrEqual(1);
     const patch = updates[updates.length - 1];
-    const ruleId = (rule as any).id || rule.get('id');
-    expect(ruleId).toBeTruthy();
+    const ruleId = ruleUid || (rule as any).id || rule.get('id');
     expect(patch.changes[0]).toMatchObject({
       op: 'replace',
       path: `/cssRule/${ruleId}/style`,
@@ -125,7 +127,7 @@ describe('Patch Manager', () => {
     const adapter: PatchAdapter<Model> = {
       type: 'custom',
       sourceKeys: ['custom'],
-      getId: (model) => model.get('id') as string,
+      getId: (model: Model) => model.get('id') as string,
       resolve: (_em: EditorModel, id: string) => (id === custom.get('id') ? custom : null),
     };
 

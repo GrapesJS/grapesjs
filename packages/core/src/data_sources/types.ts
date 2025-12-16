@@ -31,6 +31,10 @@ export interface DataRecordProps extends ObjectAny {
    * Record id.
    */
   id: string;
+  /**
+   * Stable unique identifier for collaborative features.
+   */
+  uid?: string;
 
   /**
    * Specifies if the record is mutable. Defaults to `true`.
@@ -50,6 +54,10 @@ interface BaseDataSource {
    * DataSource id.
    */
   id: string;
+  /**
+   * Stable unique identifier used for patch tracking.
+   */
+  uid?: string;
 
   /**
    * DataSource validation and transformation factories.

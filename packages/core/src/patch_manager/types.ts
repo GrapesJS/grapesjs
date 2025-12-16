@@ -22,10 +22,16 @@ export interface PatchManagerConfig {
   debug?: boolean;
 }
 
-export interface PatchAdapterChange<T = any> {
-  target: T;
-  changed: Record<string, any>;
-}
+export type PatchObjectType =
+  | 'component'
+  | 'cssRule'
+  | 'dataSource'
+  | 'dataRecord'
+  | 'asset'
+  | 'page'
+  | 'selector';
+
+export type PatchObjectMap = Partial<Record<PatchObjectType, Record<string, any>>>;
 
 export interface PatchAdapterEventContext {
   args: any[];
@@ -33,27 +39,31 @@ export interface PatchAdapterEventContext {
 }
 
 export interface PatchAdapterEventResult {
-  patches?: JsonPatch[];
+  patches: JsonPatch[];
   inverse?: JsonPatch[];
 }
 
 export interface PatchAdapterEvent {
   event: string;
-  handler: (context: PatchAdapterEventContext) => PatchAdapterEventResult | void;
+  target?: (pm: any) => any;
+  handler: (ctx: PatchAdapterEventContext) => PatchAdapterEventResult | void;
   getOptions?: (...args: any[]) => Record<string, any> | undefined;
   skipTrackingCheck?: boolean;
-  target?: (manager: any) => any;
 }
 
-export interface PatchAdapter<T = any> {
+export interface PatchAdapterChange<T> {
+  target: T;
+  changed: Record<string, any>;
+}
+
+export interface PatchAdapter<T> {
   type: string;
   sourceKeys?: string[];
-  getChange?: (data: Record<string, any>) => PatchAdapterChange<T> | null;
-  getId: (target: T) => string | undefined;
-  resolve: (em: any, id: string) => T | undefined | null;
-  filterChangedKey?: (key: string) => boolean;
-  events?: PatchAdapterEvent[];
-  applyPatch?: (target: T, path: string[], patch: JsonPatch) => boolean | void;
-  onReady?: (manager: any) => void;
   blockedKeys?: Set<string> | string[];
+  getId: (model: T) => string | undefined;
+  resolve?: (em: any, id: string) => T | null | undefined;
+  filterChangedKey?: (key: string) => boolean;
+  getChange?: (data: Record<string, any>) => PatchAdapterChange<T> | null;
+  events?: PatchAdapterEvent[];
+  onReady?: (manager: any) => void;
 }

@@ -39,6 +39,7 @@ import {
   shallowDiff,
   toLowerCase,
 } from '../../utils/mixins';
+import { ensureUid } from '../../utils/uid';
 import { DomComponentsConfig } from '../config/config';
 import { ActionLabelComponents, ComponentsEvents } from '../types';
 import ComponentView from '../view/ComponentView';
@@ -289,6 +290,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
   constructor(props: ComponentProperties = {}, opt: ComponentOptions) {
     const em = opt.em;
     super(props, opt);
+    ensureUid(this, 'uid', 'cmp');
 
     bindAll(this, '__upSymbProps', '__upSymbCls', '__upSymbComps', 'syncOnComponentChange');
 
@@ -1390,6 +1392,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
     const em = this.em;
     const attr = this.dataResolverWatchers.getProps(this.attributes);
     const opts = { ...this.opt };
+    delete (attr as any).uid;
     const id = this.getId();
     const cssc = em?.Css;
     // @ts-ignore
@@ -1711,6 +1714,10 @@ export default class Component extends StyleableModel<ComponentProperties> {
     });
 
     return obj;
+  }
+
+  getUid(): string {
+    return ensureUid(this, 'uid', 'cmp');
   }
 
   /**

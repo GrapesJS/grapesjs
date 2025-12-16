@@ -10,16 +10,19 @@ import { Collection } from '../common';
 import EditorModel from '../editor/model/Editor';
 import { EditorEvents } from '../editor/types';
 import { createId } from '../utils/mixins';
+import { ensureUid, getUid } from '../utils/uid';
 import { enablePatches, produceWithPatches } from 'immer';
 import Asset from '../asset_manager/model/Asset';
 import Page from '../pages/model/Page';
 import Selector from '../selector_manager/model/Selector';
 import type {
   JsonPatch,
-  PatchAdapter,
-  PatchAdapterChange,
-  PatchAdapterEvent,
   PatchManagerConfig,
+  PatchObjectMap,
+  PatchObjectType,
+  PatchAdapter,
+  PatchAdapterEvent,
+  PatchAdapterChange,
   PatchProps,
 } from './types';
 
@@ -40,19 +43,31 @@ export default class PatchManager extends ItemManagerModule {
   private coalesceMs = 0;
   private maxHistory = 500;
   private isApplyingExternal = false;
-  private adapters = new Map<string, PatchAdapter<any>>();
-  private adapterListeners: { adapter: string; target: any; event: string; handler: (...args: any[]) => void }[] = [];
+  private objects: PatchObjectMap = {};
+  private listeners: { target: any; event: string; handler: (...args: any[]) => void }[] = [];
   private trackingBound = false;
+  private adaptersBound = false;
   private fractionalGen?: (a: string | null, b: string | null) => string;
-  private dataRecordAdapter?: PatchAdapter<DataRecord>;
   private cssRulesBound = false;
+  private objectPrefixes: Record<PatchObjectType, string> = {
+    component: 'cmp',
+    cssRule: 'css',
+    dataSource: 'ds',
+    dataRecord: 'dr',
+    asset: 'ast',
+    page: 'page',
+    selector: 'sel',
+  };
 
-  private internalSetOptions = {
+  private internalSetOptions: any = {
     fromUndo: true,
     noUndo: true,
     avoidStore: true,
     _skipPatches: true,
   };
+
+  private adapters = new Map<string, PatchAdapter<any>>();
+  private adapterListeners: { adapter: string; target: any; event: string; handler: (...args: any[]) => void }[] = [];
 
   private static blockedRootKeys = new Set<string>(['traits', '__data_values', 'docEl', 'head', 'toolbar']);
 
@@ -64,8 +79,8 @@ export default class PatchManager extends ItemManagerModule {
     const cfg = (this.getConfig() as any) ?? {};
     const normalized = typeof cfg === 'boolean' ? { enable: cfg } : cfg;
     this.init({ enable: true, ...normalized });
-    this.registerDefaultAdapters();
     this.setupTracking();
+    this.bindAdapters();
   }
 
   init(cfg: PatchManagerConfig = {}) {
@@ -76,15 +91,51 @@ export default class PatchManager extends ItemManagerModule {
     return this;
   }
 
-  private registerDefaultAdapters() {
-    this.registerAdapter(this.createComponentAdapter());
-    this.registerAdapter(this.createCssRuleAdapter());
-    this.dataRecordAdapter = this.createDataRecordAdapter();
-    this.registerAdapter(this.dataRecordAdapter);
-    this.registerAdapter(this.createDataSourceAdapter());
-    this.registerAdapter(this.createAssetAdapter());
-    this.registerAdapter(this.createPageAdapter());
-    this.registerAdapter(this.createSelectorAdapter());
+  private refreshObjects() {
+    this.objects = {};
+    this.trackExistingComponents();
+    this.trackExistingCssRules();
+    this.trackExistingDataSources();
+    this.trackExistingAssets();
+    this.trackExistingPages();
+    this.trackExistingSelectors();
+    this.bindAdapters();
+  }
+
+  private trackExistingComponents() {
+    this.trackComponentTree(this.em.Components?.getWrapper?.());
+  }
+
+  private trackExistingCssRules() {
+    this.getCssRules()?.each((rule: CssRule) => {
+      this.ensureCssRuleId(rule);
+      this.trackObject('cssRule', rule);
+    });
+  }
+
+  private trackExistingDataSources() {
+    const dss = this.getDataSources();
+    dss?.each((ds: DataSource) => {
+      this.trackObject('dataSource', ds);
+      ds.records?.each((rec: DataRecord) => this.trackObject('dataRecord', rec));
+    });
+  }
+
+  private trackExistingAssets() {
+    this.getAssets()?.each((asset: Asset) => this.trackObject('asset', asset));
+  }
+
+  private trackExistingPages() {
+    const pages = this.getPagesCollection();
+    if (pages?.each) {
+      pages.each((page: Page) => this.trackObject('page', page));
+    } else {
+      (this.getPagesArray() || []).forEach((page: Page) => this.trackObject('page', page));
+    }
+  }
+
+  private trackExistingSelectors() {
+    this.getSelectors()?.each((sel: Selector) => this.trackObject('selector', sel));
   }
 
   registerAdapter<T>(adapter: PatchAdapter<T>) {
@@ -92,7 +143,7 @@ export default class PatchManager extends ItemManagerModule {
     this.unbindAdapter(normalized.type);
     this.adapters.set(normalized.type, normalized);
 
-    if (this.trackingBound) {
+    if (this.adaptersBound) {
       this.bindAdapter(normalized);
     }
 
@@ -107,8 +158,8 @@ export default class PatchManager extends ItemManagerModule {
   }
 
   private bindAdapters() {
-    if (this.trackingBound) return;
-    this.trackingBound = true;
+    if (this.adaptersBound) return;
+    this.adaptersBound = true;
     this.adapters.forEach((adapter) => this.bindAdapter(adapter));
   }
 
@@ -152,20 +203,95 @@ export default class PatchManager extends ItemManagerModule {
   private unbindAllAdapters() {
     this.adapterListeners.forEach(({ target, event, handler }) => target?.off?.(event, handler));
     this.adapterListeners = [];
-    this.trackingBound = false;
+    this.adaptersBound = false;
   }
 
-  private notifyAdaptersReady() {
-    if (!this.isReady) return;
-    this.adapters.forEach((adapter) => adapter.onReady?.(this));
+  private trackObject(type: PatchObjectType, target: any) {
+    if (!target) return '';
+    let uid = '';
+    if (type === 'dataRecord') {
+      const ds = (target as any).dataSource;
+      ds && this.trackObject('dataSource', ds);
+      uid = this.getDataRecordCompositeId(target as DataRecord);
+    } else {
+      const prefix = this.objectPrefixes[type] || '';
+      uid = ensureUid(target, 'uid', prefix);
+    }
+    this.objects[type] = this.objects[type] || {};
+    this.objects[type]![uid] = target;
+    return uid;
+  }
+
+  private getObjectId(type: PatchObjectType, target: any) {
+    return type === 'dataRecord' ? this.buildDataRecordId(target as DataRecord) : this.trackObject(type, target);
+  }
+
+  private getDataRecordCompositeId(record: DataRecord) {
+    const ds = (record as any).dataSource;
+    const dsUid = (ds && (getUid(ds) || (ds as any).id || (ds as any).cid || this.objectPrefixes.dataSource)) || 'ds';
+    const recUid = getUid(record) || ensureUid(record, 'uid', this.objectPrefixes.dataRecord);
+    return `${dsUid || 'ds'}::${recUid}`;
+  }
+
+  private untrackObject(type: PatchObjectType, target: any) {
+    const uid =
+      type === 'dataRecord'
+        ? typeof target === 'string'
+          ? target
+          : this.getDataRecordCompositeId(target as DataRecord)
+        : typeof target === 'string'
+          ? target
+          : getUid(target);
+    if (!uid || !this.objects[type]) return;
+    delete this.objects[type]![uid];
+  }
+
+  private getTracked(type: PatchObjectType, uid: string) {
+    return this.objects[type]?.[uid];
+  }
+
+  private bindTracking() {
+    if (this.trackingBound) return;
+    this.trackingBound = true;
+    this.bindListener(this.em, ComponentsEvents.add, (...args: any[]) => {
+      const opts = args[1] || {};
+      if (this.shouldSkipOptions(opts)) return;
+      const res = this.handleComponentAdd(args[0] as Component, opts);
+      this.canTrack() && res && this.collect(res.patches, res.inverse || []);
+    });
+    this.bindListener(this.em, ComponentsEvents.remove, (...args: any[]) => {
+      const opts = args[1] || {};
+      if (this.shouldSkipOptions(opts)) return;
+      const res = this.handleComponentRemove(args[0] as Component, opts);
+      this.canTrack() && res && this.collect(res.patches, res.inverse || []);
+    });
+    this.bindCssRules();
+    this.bindDataSources();
+    this.bindAssets();
+    this.bindPagesCollection();
+    this.bindSelectorsCollection();
+  }
+
+  private bindListener(target: any, event: string, handler: (...args: any[]) => void) {
+    if (!target?.on) return;
+    target.on(event, handler);
+    this.listeners.push({ target, event, handler });
+  }
+
+  private unbindAllListeners() {
+    this.listeners.forEach(({ target, event, handler }) => target?.off?.(event, handler));
+    this.listeners = [];
+    this.trackingBound = false;
+    this.cssRulesBound = false;
   }
 
   private setupTracking() {
     const { em } = this;
     this.isReady = !!em.get('readyLoad');
     this.ensureAllCssRuleIds();
+    this.refreshObjects();
+    this.bindTracking();
     this.bindAdapters();
-    this.notifyAdaptersReady();
     em.on('change:readyLoad', this.handleReadyLoad);
     em.on(EditorEvents.projectLoad, this.handleProjectLoad);
   }
@@ -173,29 +299,62 @@ export default class PatchManager extends ItemManagerModule {
   private handleReadyLoad = () => {
     if (!this.em.get('readyLoad')) return;
     this.isReady = true;
+    this.unbindAllListeners();
+    this.unbindAllAdapters();
+    this.cssRules = undefined;
     this.ensureAllCssRuleIds();
-    this.notifyAdaptersReady();
+    this.refreshObjects();
+    this.bindTracking();
+    this.bindAdapters();
     this.resetHistory();
     this.em.off('change:readyLoad', this.handleReadyLoad);
   };
 
   private handleProjectLoad = () => {
     this.resetHistory();
+    this.unbindAllListeners();
+    this.unbindAllAdapters();
+    this.cssRules = undefined;
     this.ensureAllCssRuleIds();
-    this.notifyAdaptersReady();
+    this.refreshObjects();
+    this.bindTracking();
+    this.bindAdapters();
   };
 
   handleChange(data: Record<string, any> = {}, opts: Record<string, any> = {}) {
-    if (!this.canTrack() || this.shouldSkipOptions(opts)) return;
-    const patches: JsonPatch[] = [];
-    const reverse: JsonPatch[] = [];
+    if (this.shouldSkipOptions(opts)) return;
+    const ctx = this.resolveChange(data);
+    const canTrack = this.canTrack();
 
+    if (ctx) {
+      const { type, target, changed, blockedKeys } = ctx;
+      const uid = this.getObjectId(type, target);
+      if (uid && changed && Object.keys(changed).length && canTrack) {
+        const patches: JsonPatch[] = [];
+        const reverse: JsonPatch[] = [];
+
+        Object.keys(changed).forEach((key) => {
+          if (blockedKeys?.has(key)) return;
+          const nextVal = this.cloneValue(changed[key]);
+          const prevVal = this.getPreviousValue(target, key);
+          const pair = this.buildImmerPatchPair(type, `${uid}`, key, prevVal, nextVal);
+          patches.push(...pair.patches);
+          reverse.push(...pair.inverse);
+        });
+
+        patches.length && this.collect(patches, reverse);
+      }
+    }
+
+    if (!canTrack) return;
+
+    const adapterPatches: JsonPatch[] = [];
+    const adapterInverse: JsonPatch[] = [];
     this.adapters.forEach((adapter) => {
       const change = this.getChangeFromData(adapter, data);
-      change && this.handleAdapterChange(adapter, change, patches, reverse);
+      change && this.handleAdapterChange(adapter, change, adapterPatches, adapterInverse);
     });
-
-    patches.length && this.collect(patches, reverse);
+    adapterPatches.length && this.collect(adapterPatches, adapterInverse);
   }
 
   private getChangeFromData<T>(adapter: PatchAdapter<T>, data: Record<string, any>): PatchAdapterChange<T> | null {
@@ -228,13 +387,47 @@ export default class PatchManager extends ItemManagerModule {
 
     Object.keys(changed).forEach((key) => {
       const filter = adapter.filterChangedKey;
-      if (filter ? !filter(key) : this.isBlockedKey(key, adapter)) return;
+      if (filter ? !filter(key) : this.isBlockedKey(key, adapter.type)) return;
       const nextVal = this.cloneValue(changed[key]);
       const prevVal = (target as any)?.previous ? (target as any).previous(key) : undefined;
-      const pair = this.buildImmerPatchPair(adapter, `${id}`, key, prevVal, nextVal);
+      const pair = this.buildImmerPatchPair(adapter.type, `${id}`, key, prevVal, nextVal);
       patches.push(...pair.patches);
       reverse.push(...pair.inverse);
     });
+  }
+
+  private resolveChange(data: Record<string, any>) {
+    const changed = (data.changed as Record<string, any>) || undefined;
+    const map: { key: string; type: PatchObjectType; blocked?: Set<string> }[] = [
+      { key: 'component', type: 'component', blocked: PatchManager.blockedRootKeys },
+      { key: 'rule', type: 'cssRule' },
+      { key: 'dataRecord', type: 'dataRecord' },
+      { key: 'dataSource', type: 'dataSource' },
+      { key: 'page', type: 'page' },
+      { key: 'selector', type: 'selector' },
+      { key: 'asset', type: 'asset' },
+    ];
+
+    for (const item of map) {
+      const target = data[item.key];
+      if (target) {
+        if (item.type === 'cssRule') {
+          this.ensureCssRuleId(target as CssRule);
+        }
+        return {
+          type: item.type,
+          target,
+          changed: changed || (typeof target.changedAttributes === 'function' ? target.changedAttributes() : null),
+          blockedKeys: item.blocked,
+        };
+      }
+    }
+
+    return null;
+  }
+
+  private getPreviousValue(target: any, key: string) {
+    return (typeof target?.previous === 'function' ? target.previous(key) : undefined) ?? undefined;
   }
 
   private handleComponentAdd = (component: Component, opts: any = {}) => {
@@ -242,11 +435,10 @@ export default class PatchManager extends ItemManagerModule {
     const collection = (component.collection || parent?.components()) as Components | undefined;
     if (!parent || !collection) return;
     const at = typeof opts.at === 'number' ? opts.at : collection.indexOf(component);
-    const path = this.buildPath('component', parent.getId(), [
-      'components',
-      this.getComponentKey(collection, component, at),
-    ]);
-    const value = this.cloneValue(component.toJSON());
+    const parentId = this.trackObject('component', parent);
+    this.trackComponentTree(component);
+    const path = this.buildPath('component', parentId, ['components', this.getComponentKey(collection, component, at)]);
+    const value = this.serializeValue('component', component);
     const patch: JsonPatch = { op: 'add', path, value };
     const inverse: JsonPatch = { op: 'remove', path };
     return { patches: [patch], inverse: [inverse] };
@@ -257,191 +449,17 @@ export default class PatchManager extends ItemManagerModule {
     const parent = component.parent({ prev: true });
     if (!parent || !collection) return;
     const index = typeof opts.index === 'number' ? opts.index : collection.indexOf(component);
-    const path = this.buildPath('component', parent.getId(), [
+    const parentId = this.trackObject('component', parent);
+    const path = this.buildPath('component', parentId, [
       'components',
       this.getComponentKey(collection, component, index),
     ]);
-    const reverseVal = this.cloneValue(component.toJSON());
+    const reverseVal = this.serializeValue('component', component);
     const patch: JsonPatch = { op: 'remove', path };
     const inverse: JsonPatch = { op: 'add', path, value: reverseVal };
+    this.untrackComponentTree(component);
     return { patches: [patch], inverse: [inverse] };
   };
-
-  private createComponentAdapter(): PatchAdapter<Component> {
-    return {
-      type: 'component',
-      sourceKeys: ['component'],
-      blockedKeys: PatchManager.blockedRootKeys,
-      getId: (component) => component.getId(),
-      resolve: (em, id) => em.Components?.getById(id),
-      events: [
-        {
-          event: ComponentsEvents.add,
-          getOptions: (...args: any[]) => args[1],
-          handler: ({ args }) => this.handleComponentAdd(args[0] as Component, args[1]),
-        },
-        {
-          event: ComponentsEvents.remove,
-          getOptions: (...args: any[]) => args[1],
-          handler: ({ args }) => this.handleComponentRemove(args[0] as Component, args[1]),
-        },
-      ],
-      applyPatch: (target, path, patch) => {
-        if (path[0] === 'components') {
-          return this.applyComponentsPatch(target, path.slice(1), patch);
-        }
-        return false;
-      },
-    };
-  }
-
-  private createCssRuleAdapter(): PatchAdapter<CssRule> {
-    return {
-      type: 'cssRule',
-      sourceKeys: ['rule'],
-      getChange: (data) => {
-        const rule = data.rule as CssRule | undefined;
-        const changed = data.changed as Record<string, any> | undefined;
-        if (!rule || !changed) return null;
-        this.ensureCssRuleId(rule);
-        return { target: rule, changed };
-      },
-      getId: (rule) => this.ensureCssRuleId(rule),
-      resolve: (em, id) => em.Css?.rules?.get(id) ?? em.Css?.get(id),
-      events: [
-        {
-          event: 'add',
-          target: () => this.getCssRules(),
-          handler: ({ args }) => this.handleCssRuleAdd(args[0] as CssRule),
-        },
-        {
-          event: 'remove',
-          target: () => this.getCssRules(),
-          handler: ({ args }) => this.buildAddRemovePatch('cssRule', args[0] as CssRule, 'remove'),
-        },
-        {
-          event: 'change',
-          target: () => this.getCssRules(),
-          handler: ({ args }) => this.handleGenericModelChange(args[0] as CssRule, 'cssRule'),
-        },
-      ],
-      onReady: () => this.ensureAllCssRuleIds(),
-    };
-  }
-
-  private createDataRecordAdapter(): PatchAdapter<DataRecord> {
-    return {
-      type: 'dataRecord',
-      getId: (record) => this.buildDataRecordId(record),
-      resolve: (em, id) => {
-        const [dsId, recId] = id.split('::');
-        const ds = em.DataSources?.get(dsId);
-        return ds?.records?.get(recId) || null;
-      },
-    };
-  }
-
-  private createDataSourceAdapter(): PatchAdapter<DataSource> {
-    return {
-      type: 'dataSource',
-      sourceKeys: ['dataSource'],
-      getId: (ds) => `${ds.id || ds.cid}`,
-      resolve: (em, id) => em.DataSources?.get(id),
-      events: [
-        {
-          event: 'add',
-          target: () => this.getDataSources(),
-          handler: ({ args }) => this.handleDataSourceAdd(args[0] as DataSource),
-        },
-        {
-          event: 'remove',
-          target: () => this.getDataSources(),
-          handler: ({ args }) => this.handleDataSourceRemove(args[0] as DataSource),
-        },
-        {
-          event: 'change',
-          target: () => this.getDataSources(),
-          handler: ({ args }) => this.handleGenericModelChange(args[0] as DataSource, 'dataSource'),
-        },
-      ],
-      onReady: () => this.bindAllDataSourceRecords(),
-    };
-  }
-
-  private createAssetAdapter(): PatchAdapter<Asset> {
-    return {
-      type: 'asset',
-      getId: (asset) => (asset.get ? asset.get('src') : (asset as any).src),
-      resolve: (em, id) => em.Assets?.get(id),
-      events: [
-        {
-          event: 'add',
-          target: () => this.getAssets(),
-          handler: ({ args }) => this.handleAddRemoveCollect('asset', args[0] as Asset, 'add'),
-        },
-        {
-          event: 'remove',
-          target: () => this.getAssets(),
-          handler: ({ args }) => this.handleAddRemoveCollect('asset', args[0] as Asset, 'remove'),
-        },
-        {
-          event: 'change',
-          target: () => this.getAssets(),
-          handler: ({ args }) => this.handleGenericModelChange(args[0] as Asset, 'asset'),
-        },
-      ],
-    };
-  }
-
-  private createPageAdapter(): PatchAdapter<Page> {
-    return {
-      type: 'page',
-      getId: (page) => `${(page as any).id || page.get('id') || page.cid}`,
-      resolve: (em, id) => em.Pages?.get(id),
-      events: [
-        {
-          event: 'add',
-          target: () => this.getPages(),
-          handler: ({ args }) => this.handleAddRemoveCollect('page', args[0] as Page, 'add'),
-        },
-        {
-          event: 'remove',
-          target: () => this.getPages(),
-          handler: ({ args }) => this.handleAddRemoveCollect('page', args[0] as Page, 'remove'),
-        },
-        {
-          event: 'change',
-          target: () => this.getPages(),
-          handler: ({ args }) => this.handleGenericModelChange(args[0] as Page, 'page'),
-        },
-      ],
-    };
-  }
-
-  private createSelectorAdapter(): PatchAdapter<Selector> {
-    return {
-      type: 'selector',
-      getId: (sel) => (sel as any).id || (sel as any).get?.('id') || (sel as any).getFullName?.() || sel.cid,
-      resolve: (em, id) => em.Selectors?.get(id),
-      events: [
-        {
-          event: 'add',
-          target: () => this.getSelectors(),
-          handler: ({ args }) => this.handleAddRemoveCollect('selector', args[0] as Selector, 'add'),
-        },
-        {
-          event: 'remove',
-          target: () => this.getSelectors(),
-          handler: ({ args }) => this.handleAddRemoveCollect('selector', args[0] as Selector, 'remove'),
-        },
-        {
-          event: 'change',
-          target: () => this.getSelectors(),
-          handler: ({ args }) => this.handleGenericModelChange(args[0] as Selector, 'selector'),
-        },
-      ],
-    };
-  }
 
   private cloneValue(value: any) {
     if (typeof value === 'undefined') return value;
@@ -452,24 +470,24 @@ export default class PatchManager extends ItemManagerModule {
     }
   }
 
-  private buildImmerPatchPair(adapter: PatchAdapter<any>, id: string, key: string, prevVal: any, nextVal: any) {
+  private buildImmerPatchPair(type: string, id: string, key: string, prevVal: any, nextVal: any) {
     const base = { value: this.cloneValue(prevVal) };
     const [, forward, backward] = produceWithPatches(base, (draft) => {
       (draft as any).value = this.cloneValue(nextVal);
     });
 
     return {
-      patches: this.toJsonPatches(adapter, id, key, forward),
-      inverse: this.toJsonPatches(adapter, id, key, backward),
+      patches: this.toJsonPatches(type, id, key, forward),
+      inverse: this.toJsonPatches(type, id, key, backward),
     };
   }
 
-  private toJsonPatches(adapter: PatchAdapter<any>, id: string, key: string, list: any[] = []) {
+  private toJsonPatches(type: string, id: string, key: string, list: any[] = []) {
     return list
       .map((patch) => {
         const pathArr: (string | number)[] = Array.isArray(patch.path) ? patch.path : [];
         const [, ...rest] = pathArr; // drop synthetic "value" root
-        const fullPath = this.buildPath(adapter.type, `${id}`, [key, ...rest]);
+        const fullPath = this.buildPath(type, `${id}`, [key, ...rest]);
         if (!fullPath) return null;
         const value = typeof patch.value === 'undefined' ? undefined : this.cloneValue(patch.value);
         return patch.op === 'remove' ? { op: patch.op, path: fullPath } : { op: patch.op, path: fullPath, value };
@@ -477,41 +495,111 @@ export default class PatchManager extends ItemManagerModule {
       .filter(Boolean) as JsonPatch[];
   }
 
-  private buildAddRemovePatch(type: string, model: any, op: 'add' | 'remove') {
+  private serializeValue(type: PatchObjectType, model: any) {
+    if (!model) return model;
+    switch (type) {
+      case 'component':
+        return this.serializeComponent(model as Component);
+      default:
+        return this.cloneValue(model.toJSON?.() || model);
+    }
+  }
+
+  private serializeComponent(component: Component) {
+    const json = this.cloneValue(component.toJSON?.() || component);
+    if (json && typeof json === 'object') {
+      json.uid = json.uid || this.trackObject('component', component);
+      const compsMap = this.buildComponentsMap(component);
+      const classesMap = this.buildClassesMap(component);
+      compsMap && (json.componentsMap = compsMap);
+      classesMap && (json.classesMap = classesMap);
+    }
+    return json;
+  }
+
+  private buildComponentsMap(component: Component) {
+    const coll = this.getComponentsCollection(component);
+    if (!coll) return;
+    const map: Record<string, string> = {};
+    coll.each((child: Component, index: number) => {
+      const key = this.getComponentKey(coll, child, index);
+      const uid = this.trackObject('component', child);
+      key && uid && this.setFractionalKey(coll, child, key);
+      key && uid && (map[key] = uid);
+    });
+    return map;
+  }
+
+  private buildClassesMap(component: Component) {
+    const classes = component.get('classes') as any;
+    if (!classes?.each) return;
+    const map: Record<string, string> = {};
+    classes.each((cls: Selector, index: number) => {
+      const key = this.getComponentKey(classes, cls as any, index);
+      const uid = this.trackObject('selector', cls);
+      key && uid && this.setFractionalKey(classes, cls, key);
+      key && uid && (map[key] = uid);
+    });
+    return map;
+  }
+
+  private trackComponentTree(component?: Component | null) {
+    if (!component) return;
+    this.trackObject('component', component);
+    this.getComponentsCollection(component)?.each((child: Component) => this.trackComponentTree(child));
+  }
+
+  private untrackComponentTree(component?: Component | null) {
+    if (!component) return;
+    this.untrackObject('component', component);
+    this.getComponentsCollection(component)?.each((child: Component) => this.untrackComponentTree(child));
+  }
+
+  private buildAddRemovePatch(type: PatchObjectType, model: any, op: 'add' | 'remove') {
     if (!model) return;
-    const adapter = this.adapters.get(type);
-    if (!adapter) return;
-    const id = adapter.getId(model);
+    const id = this.getObjectId(type, model);
     if (!id) return;
     const path = this.buildPath(type, `${id}`);
-    const value = this.cloneValue(model.toJSON?.() || model);
+    const value = this.serializeValue(type, model);
     const patch: JsonPatch = op === 'add' ? { op: 'add', path, value } : { op: 'remove', path };
     const inverse: JsonPatch =
-      op === 'add' ? { op: 'remove', path } : { op: 'add', path, value: this.cloneValue(model.toJSON?.() || model) };
+      op === 'add' ? { op: 'remove', path } : { op: 'add', path, value: this.serializeValue(type, model) };
+    op === 'remove' && this.untrackObject(type, model);
     return { patches: [patch], inverse: [inverse] };
   }
 
-  private handleAddRemoveCollect(type: string, model: any, op: 'add' | 'remove') {
+  private handleAddRemoveCollect(type: PatchObjectType, model: any, op: 'add' | 'remove') {
     const res = this.buildAddRemovePatch(type, model, op);
     res && this.collect(res.patches, res.inverse || []);
     return res;
   }
 
-  private handleGenericModelChange(model: any, adapterType: string) {
-    const adapter = this.adapters.get(adapterType);
-    if (!adapter) return;
+  private handleGenericModelChange(model: any, adapterType: PatchObjectType, blockedKeys?: Set<string>) {
+    if (!this.canTrack()) {
+      this.getObjectId(adapterType, model);
+      return;
+    }
     const changed = typeof model.changedAttributes === 'function' ? model.changedAttributes() : null;
     if (!changed || !Object.keys(changed).length) return;
+    const uid = this.getObjectId(adapterType, model);
     const patches: JsonPatch[] = [];
     const inverse: JsonPatch[] = [];
-    this.handleAdapterChange(adapter, { target: model, changed }, patches, inverse);
+    Object.keys(changed).forEach((key) => {
+      if (blockedKeys?.has(key)) return;
+      const nextVal = this.cloneValue(changed[key]);
+      const prevVal = this.getPreviousValue(model, key);
+      const pair = this.buildImmerPatchPair(adapterType, `${uid}`, key, prevVal, nextVal);
+      patches.push(...pair.patches);
+      inverse.push(...pair.inverse);
+    });
+    if (!patches.length && !inverse.length) return;
     return { patches, inverse };
   }
 
   private buildDataRecordId(record: DataRecord) {
-    const dsId = (record as any).dataSource?.id || (record as any).dataSource?.cid || 'ds';
-    const recId = record.id || (record as any).cid;
-    return `${dsId}::${recId}`;
+    const ds = (record as any).dataSource;
+    ds && this.trackObject('dataSource', ds);
+    return this.getDataRecordCompositeId(record);
   }
 
   private buildPath(type: string, id: string, segments: (string | number)[] = []) {
@@ -590,64 +678,170 @@ export default class PatchManager extends ItemManagerModule {
   }
 
   private getPages() {
-    return this.em.Pages?.getAll?.();
+    return this.getPagesCollection();
+  }
+
+  private getPagesCollection() {
+    return (this.em.Pages as any)?.pages || (this.em.Pages as any)?.all || null;
+  }
+
+  private getPagesArray() {
+    const coll = this.getPagesCollection();
+    if (coll?.models) return coll.models as Page[];
+    const getAll = (this.em.Pages as any)?.getAll;
+    return typeof getAll === 'function' ? getAll.call(this.em.Pages) : [];
   }
 
   private getSelectors() {
     return this.em.Selectors?.getAll?.();
   }
 
+  private bindCssRules() {
+    const rules = this.getCssRules();
+    if (!rules || this.cssRulesBound) return;
+    this.cssRulesBound = true;
+    this.bindListener(rules, 'add', (rule: CssRule, _c: any, opts: any) => {
+      if (this.shouldSkipOptions(opts)) return;
+      this.handleCssRuleAdd(rule);
+    });
+    this.bindListener(rules, 'remove', (rule: CssRule, _c: any, opts: any) => {
+      if (this.shouldSkipOptions(opts)) return;
+      const res = this.buildAddRemovePatch('cssRule', rule, 'remove');
+      this.canTrack() && res && this.collect(res.patches, res.inverse || []);
+    });
+    this.bindListener(rules, 'change', (rule: CssRule, opts: any) => {
+      if (this.shouldSkipOptions(opts)) return;
+      const res = this.handleGenericModelChange(rule, 'cssRule');
+      this.canTrack() && res && this.collect(res.patches, res.inverse || []);
+    });
+  }
+
+  private bindAssets() {
+    const assets = this.getAssets();
+    if (!assets) return;
+    this.bindListener(assets, 'add', (asset: Asset, _c: any, opts: any) => {
+      if (this.shouldSkipOptions(opts)) return;
+      this.handleAddRemoveCollect('asset', asset, 'add');
+    });
+    this.bindListener(assets, 'remove', (asset: Asset, _c: any, opts: any) => {
+      if (this.shouldSkipOptions(opts)) return;
+      this.handleAddRemoveCollect('asset', asset, 'remove');
+    });
+    this.bindListener(assets, 'change', (asset: Asset, opts: any) => {
+      if (this.shouldSkipOptions(opts)) return;
+      const res = this.handleGenericModelChange(asset, 'asset');
+      this.canTrack() && res && this.collect(res.patches, res.inverse || []);
+    });
+  }
+
+  private bindPagesCollection() {
+    const pages = this.getPagesCollection();
+    if (!pages) return;
+    this.bindListener(pages, 'add', (page: Page, _c: any, opts: any) => {
+      if (this.shouldSkipOptions(opts)) return;
+      this.handleAddRemoveCollect('page', page, 'add');
+    });
+    this.bindListener(pages, 'remove', (page: Page, _c: any, opts: any) => {
+      if (this.shouldSkipOptions(opts)) return;
+      this.handleAddRemoveCollect('page', page, 'remove');
+    });
+    this.bindListener(pages, 'change', (page: Page, opts: any) => {
+      if (this.shouldSkipOptions(opts)) return;
+      const res = this.handleGenericModelChange(page, 'page');
+      this.canTrack() && res && this.collect(res.patches, res.inverse || []);
+    });
+  }
+
+  private bindSelectorsCollection() {
+    const selectors = this.getSelectors();
+    if (!selectors) return;
+    this.bindListener(selectors, 'add', (selector: Selector, _c: any, opts: any) => {
+      if (this.shouldSkipOptions(opts)) return;
+      this.handleAddRemoveCollect('selector', selector, 'add');
+    });
+    this.bindListener(selectors, 'remove', (selector: Selector, _c: any, opts: any) => {
+      if (this.shouldSkipOptions(opts)) return;
+      this.handleAddRemoveCollect('selector', selector, 'remove');
+    });
+    this.bindListener(selectors, 'change', (selector: Selector, opts: any) => {
+      if (this.shouldSkipOptions(opts)) return;
+      const res = this.handleGenericModelChange(selector, 'selector');
+      this.canTrack() && res && this.collect(res.patches, res.inverse || []);
+    });
+  }
+
+  private bindDataSources() {
+    const dss = this.getDataSources();
+    if (!dss) return;
+    this.bindListener(dss, 'add', (ds: DataSource, _c: any, opts: any) => {
+      if (this.shouldSkipOptions(opts)) return;
+      const res = this.handleDataSourceAdd(ds);
+      this.canTrack() && res && this.collect(res.patches, res.inverse || []);
+    });
+    this.bindListener(dss, 'remove', (ds: DataSource, _c: any, opts: any) => {
+      if (this.shouldSkipOptions(opts)) return;
+      const res = this.handleDataSourceRemove(ds);
+      this.canTrack() && res && this.collect(res.patches, res.inverse || []);
+    });
+    this.bindListener(dss, 'change', (ds: DataSource, opts: any) => {
+      if (this.shouldSkipOptions(opts)) return;
+      const res = this.handleGenericModelChange(ds, 'dataSource');
+      this.canTrack() && res && this.collect(res.patches, res.inverse || []);
+    });
+    this.bindAllDataSourceRecords();
+  }
+
   private bindAllDataSourceRecords() {
     const dss = this.getDataSources();
     if (!dss) return;
     dss.each((ds: DataSource) => this.bindDataSourceRecords(ds));
-    if (dss.on) {
-      dss.on('add', this.bindDataSourceRecords);
-      this.adapterListeners.push({
-        adapter: 'dataRecord',
-        target: dss,
-        event: 'add',
-        handler: this.bindDataSourceRecords,
-      });
-    }
   }
 
   private bindDataSourceRecords = (ds: DataSource) => {
     if (!ds?.records) return;
     const recs = ds.records;
-    const bind = (event: string, handler: (...args: any[]) => void) => {
-      recs.on(event, handler);
-      this.adapterListeners.push({ adapter: 'dataRecord', target: recs, event, handler });
-    };
-    bind('add', (record: DataRecord) => {
+    recs.each((record: DataRecord) => this.trackObject('dataRecord', record));
+    this.bindListener(recs, 'add', (record: DataRecord, _c: any, opts: any) => {
+      if (this.shouldSkipOptions(opts)) return;
+      this.trackObject('dataRecord', record);
       const patch = this.buildAddRemovePatch('dataRecord', record, 'add');
-      patch && this.collect(patch.patches, patch.inverse || []);
+      this.canTrack() && patch && this.collect(patch.patches, patch.inverse || []);
     });
-    bind('remove', (record: DataRecord) => {
+    this.bindListener(recs, 'remove', (record: DataRecord, _c: any, opts: any) => {
+      if (this.shouldSkipOptions(opts)) return;
       const patch = this.buildAddRemovePatch('dataRecord', record, 'remove');
-      patch && this.collect(patch.patches, patch.inverse || []);
+      this.canTrack() && patch && this.collect(patch.patches, patch.inverse || []);
     });
-    bind('change', (record: DataRecord) => {
+    this.bindListener(recs, 'change', (record: DataRecord, opts: any) => {
+      if (this.shouldSkipOptions(opts)) return;
       const res = this.handleGenericModelChange(record, 'dataRecord');
-      res && this.collect(res.patches, res.inverse || []);
+      this.canTrack() && res && this.collect(res.patches, res.inverse || []);
     });
   };
 
   private unbindDataSourceRecords(ds: DataSource) {
-    if (!ds?.records || !ds.records.off) return;
-    const recs = ds.records;
-    const listeners = this.adapterListeners.filter((item) => item.target === recs);
-    listeners.forEach(({ event, handler }) => recs.off(event, handler));
-    this.adapterListeners = this.adapterListeners.filter((item) => item.target !== recs);
+    const recs = ds?.records;
+    if (!recs?.off) return;
+    const remaining: { target: any; event: string; handler: (...args: any[]) => void }[] = [];
+    this.listeners.forEach((item) => {
+      if (item.target === recs) {
+        recs.off(item.event, item.handler);
+      } else {
+        remaining.push(item);
+      }
+    });
+    this.listeners = remaining;
   }
 
   private handleDataSourceAdd = (ds: DataSource) => {
+    this.trackObject('dataSource', ds);
     this.bindDataSourceRecords(ds);
     return this.buildAddRemovePatch('dataSource', ds, 'add');
   };
 
   private handleDataSourceRemove = (ds: DataSource) => {
     this.unbindDataSourceRecords(ds);
+    ds.records?.each((rec: DataRecord) => this.untrackObject('dataRecord', rec));
     return this.buildAddRemovePatch('dataSource', ds, 'remove');
   };
 
@@ -802,8 +996,8 @@ export default class PatchManager extends ItemManagerModule {
   private applyJsonPatch(p: JsonPatch) {
     const seg = p.path.split('/').filter(Boolean);
     const [objectType, objectId, ...rest] = seg;
-    const adapter = objectType ? this.adapters.get(objectType) : null;
-    const target = objectType && objectId && adapter ? adapter.resolve(this.em, objectId) : null;
+    const type = objectType;
+    const target = objectType && objectId ? this.resolveTarget(type, objectId) : null;
 
     if (this.debug) {
       console.log('[PatchManager] applyJsonPatch', {
@@ -811,28 +1005,195 @@ export default class PatchManager extends ItemManagerModule {
         objectType,
         objectId,
         rest,
-        adapter: adapter?.type,
         resolved: !!target,
       });
     }
 
-    if (!objectType || !objectId || !adapter || !target) return;
+    if (!type || !objectId) return;
 
-    if (adapter.applyPatch && adapter.applyPatch(target, rest, p)) {
+    if (this.isKnownType(type) && !rest.length && this.applyRootPatch(type as PatchObjectType, objectId, p)) {
       return;
+    }
+
+    if (!target) return;
+
+    if (type === 'component' && rest[0] === 'components') {
+      if (this.applyComponentsPatch(target, rest.slice(1), p)) {
+        return;
+      }
     }
 
     switch (p.op) {
       case 'add':
       case 'replace':
-        this.setByPath(target, rest, p.value, adapter);
+        this.setByPath(target, rest, p.value, type);
         break;
       case 'remove':
-        this.deleteByPath(target, rest, adapter);
+        this.deleteByPath(target, rest, type);
         break;
       case 'move':
         this.handleMove(target, seg, p);
         break;
+    }
+  }
+
+  private applyRootPatch(type: PatchObjectType, objectId: string, patch: JsonPatch) {
+    switch (type) {
+      case 'asset':
+        return this.applyCollectionRootPatch(type, objectId, this.getAssets(), patch);
+      case 'page':
+        return this.applyCollectionRootPatch(type, objectId, this.getPagesCollection(), patch);
+      case 'selector':
+        return this.applyCollectionRootPatch(type, objectId, this.getSelectors(), patch);
+      case 'cssRule':
+        return this.applyCssRuleRootPatch(objectId, patch);
+      case 'dataSource':
+        return this.applyDataSourceRootPatch(objectId, patch);
+      case 'dataRecord':
+        return this.applyDataRecordRootPatch(objectId, patch);
+      default:
+        return false;
+    }
+  }
+
+  private applyCollectionRootPatch(type: PatchObjectType, objectId: string, coll: any, patch: JsonPatch) {
+    if (!coll) return false;
+    switch (patch.op) {
+      case 'add': {
+        if (!patch.value) return false;
+        const value = { ...(patch.value as any), uid: objectId };
+        const added = coll.add(value as any, this.internalSetOptions);
+        const model = Array.isArray(added) ? added[0] : added;
+        model && this.trackObject(type, model);
+        return true;
+      }
+      case 'remove': {
+        const model =
+          this.getTracked(type, objectId) ||
+          coll.get?.(objectId) ||
+          coll.find?.((m: any) => getUid(m) === objectId || (m as any).id === objectId);
+        model && coll.remove(model, { ...this.internalSetOptions });
+        this.untrackObject(type, objectId);
+        return !!model;
+      }
+      case 'replace': {
+        const model = this.resolveTarget(type, objectId);
+        if (!model) return false;
+        if (patch.value && typeof patch.value === 'object' && typeof (model as any).set === 'function') {
+          (model as any).set(patch.value, this.internalSetOptions);
+        }
+        return true;
+      }
+      default:
+        return false;
+    }
+  }
+
+  private applyCssRuleRootPatch(objectId: string, patch: JsonPatch) {
+    const rules = this.getCssRules();
+    if (!rules) return false;
+    switch (patch.op) {
+      case 'add': {
+        if (!patch.value) return false;
+        const value = { ...(patch.value as any), uid: objectId };
+        const added = rules.add(value as any, this.internalSetOptions);
+        const rule = Array.isArray(added) ? added[0] : added;
+        rule && this.ensureCssRuleId(rule);
+        rule && this.trackObject('cssRule', rule);
+        return true;
+      }
+      case 'remove': {
+        const rule = this.resolveTarget('cssRule', objectId) as CssRule | null;
+        rule && rules.remove(rule, { ...this.internalSetOptions });
+        this.untrackObject('cssRule', objectId);
+        return !!rule;
+      }
+      case 'replace': {
+        const rule = this.resolveTarget('cssRule', objectId) as CssRule | null;
+        if (!rule) return false;
+        if (patch.value && typeof patch.value === 'object' && typeof (rule as any).set === 'function') {
+          (rule as any).set(patch.value, this.internalSetOptions);
+        }
+        return true;
+      }
+      default:
+        return false;
+    }
+  }
+
+  private applyDataSourceRootPatch(objectId: string, patch: JsonPatch) {
+    const dss = this.getDataSources();
+    if (!dss) return false;
+    switch (patch.op) {
+      case 'add': {
+        if (!patch.value) return false;
+        const value = { ...(patch.value as any), uid: objectId };
+        const added = dss.add(value as any, this.internalSetOptions);
+        const ds = Array.isArray(added) ? added[0] : added;
+        if (ds) {
+          this.trackObject('dataSource', ds);
+          this.bindDataSourceRecords(ds);
+        }
+        return true;
+      }
+      case 'remove': {
+        const ds = this.resolveTarget('dataSource', objectId) as DataSource | null;
+        if (!ds) return false;
+        this.unbindDataSourceRecords(ds);
+        ds.records?.each((rec: DataRecord) => this.untrackObject('dataRecord', rec));
+        dss.remove(ds, { ...this.internalSetOptions });
+        this.untrackObject('dataSource', objectId);
+        return true;
+      }
+      case 'replace': {
+        const ds = this.resolveTarget('dataSource', objectId) as DataSource | null;
+        if (!ds) return false;
+        if (patch.value && typeof patch.value === 'object' && typeof (ds as any).set === 'function') {
+          (ds as any).set(patch.value, this.internalSetOptions);
+        }
+        return true;
+      }
+      default:
+        return false;
+    }
+  }
+
+  private applyDataRecordRootPatch(objectId: string, patch: JsonPatch) {
+    const [dsId, recId] = objectId.split('::');
+    const ds = this.resolveTarget('dataSource', dsId) as DataSource;
+    const recs = ds?.records;
+    if (!recs) return false;
+
+    switch (patch.op) {
+      case 'add': {
+        if (!patch.value) return false;
+        const value = { ...(patch.value as any), uid: recId };
+        const added = recs.add(value as any, this.internalSetOptions);
+        const record = Array.isArray(added) ? added[0] : added;
+        record && this.trackObject('dataRecord', record);
+        return true;
+      }
+      case 'remove': {
+        const record =
+          this.getTracked('dataRecord', recId) ||
+          recs.get(recId) ||
+          recs.find(
+            (rec: DataRecord) => getUid(rec) === recId || (rec as any).id === recId || (rec as any).cid === recId,
+          );
+        record && recs.remove(record, { ...this.internalSetOptions });
+        this.untrackObject('dataRecord', recId);
+        return !!record;
+      }
+      case 'replace': {
+        const record = this.resolveTarget('dataRecord', objectId) as DataRecord | null;
+        if (!record) return false;
+        if (patch.value && typeof patch.value === 'object' && typeof (record as any).set === 'function') {
+          (record as any).set(patch.value, this.internalSetOptions);
+        }
+        return true;
+      }
+      default:
+        return false;
     }
   }
 
@@ -845,6 +1206,7 @@ export default class PatchManager extends ItemManagerModule {
     switch (patch.op) {
       case 'remove': {
         const model = this.findComponentByKey(coll, key);
+        model && this.untrackComponentTree(model);
         model && coll.remove(model, { ...this.internalSetOptions });
         return true;
       }
@@ -853,11 +1215,15 @@ export default class PatchManager extends ItemManagerModule {
         const index = this.resolveComponentIndex(coll, key);
         const opts = { ...this.internalSetOptions, at: index };
         const existing = this.findComponentByKey(coll, key);
+        existing && this.untrackComponentTree(existing);
         existing && coll.remove(existing, opts);
         if (patch.value) {
           const added = coll.add(patch.value as any, opts);
           const list = Array.isArray(added) ? added : [added];
-          list.forEach((m) => this.setFractionalKey(coll, m, key));
+          list.forEach((m) => {
+            this.setFractionalKey(coll, m, key);
+            this.trackComponentTree(m);
+          });
         }
         return true;
       }
@@ -924,14 +1290,87 @@ export default class PatchManager extends ItemManagerModule {
   }
 
   private resolveTarget(type: string, id: string): any {
-    const adapter = this.adapters.get(type);
-    return adapter ? adapter.resolve(this.em, id) : null;
+    const tracked = this.getTracked(type as PatchObjectType, id);
+    if (tracked) return tracked;
+    const found = this.findTargetFallback(type, id);
+    if (found && this.isKnownType(type)) {
+      this.trackObject(type as PatchObjectType, found);
+    }
+    return found;
+  }
+
+  private isKnownType(type: string): type is PatchObjectType {
+    return (this.objectPrefixes as any)[type];
+  }
+
+  private findTargetFallback(type: string, id: string): any {
+    if (!this.isKnownType(type)) {
+      const adapter = this.adapters.get(type);
+      return adapter?.resolve?.(this.em, id);
+    }
+    switch (type) {
+      case 'component':
+        return this.findComponentByUid(this.em.Components?.getWrapper?.(), id);
+      case 'cssRule':
+        return (
+          this.getCssRules()?.get(id) ||
+          this.getCssRules()?.find((rule: CssRule) => getUid(rule) === id || (rule as any).id === id)
+        );
+      case 'dataSource':
+        return (
+          this.getDataSources()?.get(id) ||
+          this.getDataSources()?.find((ds: DataSource) => getUid(ds) === id || (ds as any).id === id)
+        );
+      case 'dataRecord': {
+        const [dsId, recId] = id.split('::');
+        const ds = this.resolveTarget('dataSource', dsId) as DataSource;
+        const recs = ds?.records;
+        return (
+          recs?.get(recId) ||
+          recs?.find(
+            (rec: DataRecord) => getUid(rec) === recId || (rec as any).id === recId || (rec as any).cid === recId,
+          )
+        );
+      }
+      case 'asset':
+        return (
+          this.getAssets()?.get(id) ||
+          this.getAssets()?.find(
+            (asset: Asset) => getUid(asset) === id || (asset as any).get?.('src') === id || (asset as any).src === id,
+          )
+        );
+      case 'page':
+        return (
+          this.getPagesCollection()?.get?.(id) ||
+          this.getPagesArray()?.find((page: Page) => getUid(page) === id || (page as any).id === id)
+        );
+      case 'selector':
+        return (
+          this.getSelectors()?.get(id) ||
+          this.getSelectors()?.find((selector: Selector) => getUid(selector) === id || (selector as any).id === id)
+        );
+      default:
+        return null;
+    }
+  }
+
+  private findComponentByUid(cmp?: Component | null, uid?: string): Component | null {
+    if (!cmp || !uid) return null;
+    if (getUid(cmp) === uid) return cmp;
+    const coll = this.getComponentsCollection(cmp);
+    for (let i = 0; i < (coll?.length || 0); i++) {
+      const child = coll?.at(i);
+      const found = this.findComponentByUid(child, uid);
+      if (found) return found;
+    }
+    return null;
   }
 
   private ensureCssRuleId(rule?: CssRule) {
     if (!rule) return '';
+    const uid = ensureUid(rule, 'uid', this.objectPrefixes.cssRule);
     const idAttr = (rule as any).idAttribute || 'id';
-    let ruleId = (rule as any).id || (rule as any)[idAttr] || (rule as any).get?.(idAttr);
+    let ruleId = (rule as any).id || (rule as any)[idAttr] || (rule as any).get?.(idAttr) || uid;
 
     if (!ruleId) {
       ruleId = createId();
@@ -940,6 +1379,8 @@ export default class PatchManager extends ItemManagerModule {
     } else if (!(rule as any).id) {
       (rule as any).id = ruleId;
     }
+
+    this.trackObject('cssRule', rule);
 
     if (this.debug) {
       console.log('[PatchManager] ensureCssRuleId', ruleId, rule);
@@ -951,10 +1392,6 @@ export default class PatchManager extends ItemManagerModule {
   private getCssRules() {
     if (!this.cssRules) {
       this.cssRules = this.em.Css?.getAll?.();
-      if (this.cssRules && !this.cssRulesBound) {
-        this.cssRules.on('add', this.handleCssRuleAdd);
-        this.cssRulesBound = true;
-      }
     }
     return this.cssRules;
   }
@@ -969,16 +1406,18 @@ export default class PatchManager extends ItemManagerModule {
     res && this.collect(res.patches, res.inverse || []);
   };
 
-  private isBlockedKey(key?: string, adapter?: PatchAdapter<any>) {
+  private isBlockedKey(key?: string, type?: string) {
     if (!key) return false;
-    const blocked = adapter?.blockedKeys as Set<string> | undefined;
-    return !!blocked?.has(key);
+    if (type === 'component') {
+      return PatchManager.blockedRootKeys.has(key);
+    }
+    return false;
   }
 
-  private setByPath(target: any, path: string[], value: any, adapter?: PatchAdapter<any>) {
+  private setByPath(target: any, path: string[], value: any, type?: string) {
     if (!target || !path.length) return;
     const rootKey = path[0];
-    if (this.isBlockedKey(rootKey, adapter)) return;
+    if (this.isBlockedKey(rootKey, type)) return;
 
     if (typeof target.set === 'function') {
       if (path.length === 1) {
@@ -1021,10 +1460,10 @@ export default class PatchManager extends ItemManagerModule {
     ref[path[path.length - 1]] = value;
   }
 
-  private deleteByPath(target: any, path: string[], adapter?: PatchAdapter<any>) {
+  private deleteByPath(target: any, path: string[], type?: string) {
     if (!target || !path.length) return;
     const rootKey = path[0];
-    if (this.isBlockedKey(rootKey, adapter)) return;
+    if (this.isBlockedKey(rootKey, type)) return;
 
     if (typeof target.unset === 'function' && path.length === 1) {
       target.unset(rootKey, this.internalSetOptions);
@@ -1053,11 +1492,13 @@ export default class PatchManager extends ItemManagerModule {
   }
 
   destroy(): void {
+    this.unbindAllListeners();
     this.unbindAllAdapters();
     this.em?.off('change:readyLoad', this.handleReadyLoad);
     this.em?.off(EditorEvents.projectLoad, this.handleProjectLoad);
     this.resetHistory();
     this.isApplyingExternal = false;
+    this.objects = {};
     super.__destroy?.();
   }
 

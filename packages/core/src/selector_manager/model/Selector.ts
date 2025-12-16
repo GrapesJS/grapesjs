@@ -1,6 +1,7 @@
 import { result, forEach, keys } from 'underscore';
 import { Model } from '../../common';
 import EditorModel from '../../editor/model/Editor';
+import { ensureUid } from '../../utils/uid';
 import { SelectorManagerConfig } from '../config/config';
 
 const TYPE_CLASS = 1;
@@ -8,6 +9,7 @@ const TYPE_ID = 2;
 
 export interface SelectorProps {
   name: string;
+  uid?: string;
   label?: string;
   type?: number;
   active?: boolean;
@@ -57,6 +59,7 @@ export default class Selector extends Model<SelectorPropsCustom> {
    */
   constructor(props: SelectorPropsCustom, opts: SelectorOptions = {}) {
     super(props, opts);
+    ensureUid(this, 'uid', 'sel');
     const { config = {} } = opts;
     const name = this.get('name');
     const label = this.get('label');
@@ -72,6 +75,10 @@ export default class Selector extends Model<SelectorPropsCustom> {
     const nameEsc = escapeName ? escapeName(namePreEsc) : Selector.escapeName(namePreEsc);
     this.set('name', nameEsc);
     this.em = opts.em;
+  }
+
+  getUid(): string {
+    return ensureUid(this, 'uid', 'sel');
   }
 
   isId() {

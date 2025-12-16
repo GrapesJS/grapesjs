@@ -93,6 +93,10 @@ export interface ComponentProperties {
    */
   type?: string;
   /**
+   * Stable unique identifier for collaborative/patched operations.
+   */
+  uid?: string;
+  /**
    * HTML tag of the component, eg. `span`. Default: `div`
    * @default 'div'
    */
