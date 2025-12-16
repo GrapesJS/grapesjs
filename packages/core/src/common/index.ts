@@ -105,3 +105,9 @@ export const DEFAULT_BOXRECT: BoxRect = {
 };
 
 export type PrevToNewIdMap = Record<string, string>;
+
+export type EventCallbackAdd<M> = [M, AddOptions];
+export type EventCallbackUpdate<M> = [M, AddOptions];
+export type EventCallbackRemove<M> = [M, RemoveOptions];
+export type EventCallbackRemoveBefore<M> = [M, RemoveFn: () => void, RemoveOptions];
+export type EventCallbackAll<E, M> = [{ event: E; model?: M; options: ObjectAny }];

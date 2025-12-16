@@ -1,6 +1,13 @@
 import BlockManager from '.';
 import Category, { CategoryProperties, ItemsByCategory } from '../abstract/ModuleCategory';
-import { AddOptions, Model, ObjectAny, RemoveOptions } from '../common';
+import {
+  AddOptions,
+  EventCallbackAdd,
+  EventCallbackAll,
+  EventCallbackRemove,
+  EventCallbackRemoveBefore,
+  EventCallbackUpdate,
+} from '../common';
 import Component from '../dom_components/model/Component';
 import Block from './model/Block';
 
@@ -92,16 +99,16 @@ export enum BlocksEvents {
 /**{END_EVENTS}*/
 
 export interface BlocksEventCallback {
-  [BlocksEvents.add]: [Block, AddOptions];
-  [BlocksEvents.remove]: [Block, RemoveOptions];
-  [BlocksEvents.removeBefore]: [Block, () => void, RemoveOptions];
-  [BlocksEvents.update]: [Block, AddOptions];
+  [BlocksEvents.add]: EventCallbackAdd<Block>;
+  [BlocksEvents.remove]: EventCallbackRemove<Block>;
+  [BlocksEvents.removeBefore]: EventCallbackRemoveBefore<Block>;
+  [BlocksEvents.update]: EventCallbackUpdate<Block>;
   [BlocksEvents.dragStart]: [Block, DragEvent?];
   [BlocksEvents.drag]: [Block, DragEvent?];
   [BlocksEvents.dragEnd]: [Component | undefined, Block];
   [BlocksEvents.categoryUpdate]: [{ category: Category; changes: Partial<CategoryProperties>; options: AddOptions }];
   [BlocksEvents.custom]: [BlocksCustomData];
-  [BlocksEvents.all]: [{ event: BlockEvent; model?: Model; options: ObjectAny }];
+  [BlocksEvents.all]: EventCallbackAll<BlockEvent, Block>;
 }
 
 // need this to avoid the TS documentation generator to break
