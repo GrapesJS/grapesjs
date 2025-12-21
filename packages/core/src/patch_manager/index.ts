@@ -13,7 +13,6 @@ export type PatchProps = {
   id: string;
   changes: PatchChangeProps[];
   reverseChanges: PatchChangeProps[];
-  meta?: Record<string, any>;
 };
 
 export type PatchApplyOptions = {
@@ -40,6 +39,12 @@ export const PatchManagerEvents = {
 } as const;
 
 type InternalPatch = PatchProps & { recordable: boolean };
+
+const createPatchId = () => {
+  // Prefer UUID when available, fallback to legacy id generator
+  const randomUUID = typeof crypto !== 'undefined' && (crypto as any).randomUUID;
+  return typeof randomUUID === 'function' ? randomUUID.call(crypto) : createId();
+};
 
 export default class PatchManager {
   isEnabled: boolean;
@@ -113,12 +118,13 @@ export default class PatchManager {
     this.emit(PatchManagerEvents.update, patch);
   }
 
-  apply(patch: PatchProps, opts: { external?: boolean; addToHistory?: boolean } = {}): void {
+  apply(patch: PatchProps, opts: { external?: boolean } = {}): void {
     if (!this.isEnabled) return;
 
     const { external = false } = opts;
-    const addToHistory = opts.addToHistory ?? !external;
+    const addToHistory = !external;
 
+    this.finalizeCurrentPatch();
     this.applyChanges(patch.changes, { external, direction: 'forward' });
 
     if (addToHistory) {
@@ -155,14 +161,6 @@ export default class PatchManager {
     return patch;
   }
 
-  getHistory(): PatchProps[] {
-    return this.history.slice();
-  }
-
-  getRedoStack(): PatchProps[] {
-    return this.redoStack.slice();
-  }
-
   private applyChanges(changes: PatchChangeProps[], options: PatchApplyOptions = {}) {
     if (!changes.length || !this.applyHandler) return;
 
@@ -188,7 +186,7 @@ export default class PatchManager {
 
   private createPatch(): InternalPatch {
     return {
-      id: createId(),
+      id: createPatchId(),
       changes: [],
       reverseChanges: [],
       recordable: true,
