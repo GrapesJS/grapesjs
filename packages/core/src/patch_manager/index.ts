@@ -2,11 +2,13 @@ import { createId } from '../utils/mixins';
 
 export type PatchOp = 'add' | 'remove' | 'replace' | 'move' | 'copy' | 'test';
 
+export type PatchPath = Array<string | number>;
+
 export type PatchChangeProps = {
   op: PatchOp;
-  path: string;
+  path: PatchPath;
   value?: any;
-  from?: string;
+  from?: PatchPath;
 };
 
 export type PatchProps = {
