@@ -238,6 +238,9 @@ importers:
       html-entities:
         specifier: ~1.4.0
         version: 1.4.0
+      immer:
+        specifier: ^10.1.1
+        version: 10.2.0
       promise-polyfill:
         specifier: 8.3.0
         version: 8.3.0
@@ -4730,6 +4733,9 @@ packages:
 
   immediate@3.3.0:
     resolution: {integrity: sha512-HR7EVodfFUdQCTIeySw+WDRFJlPcLOJbXfwwZ7Oom6tjsvZ3bOkCDJHehQC3nxJrv7+f9XecwazynjU8e4Vw3Q==}
+
+  immer@10.2.0:
+    resolution: {integrity: sha512-d/+XTN3zfODyjr89gM3mPq1WNX2B8pYsu7eORitdwyA2sBubnTl3laYlBk4sXY5FUa5qTZGBDPJICVbvqzjlbw==}
 
   immutable@4.3.7:
     resolution: {integrity: sha512-1hqclzwYwjRDFLjcFxOM5AYkkG0rpFPpr1RLPMEuGczoS7YA8gLhy8SWXYRAA/XwfEHpfo3cw5JGioS32fnMRw==}
@@ -14437,6 +14443,8 @@ snapshots:
   ignore@5.3.2: {}
 
   immediate@3.3.0: {}
+
+  immer@10.2.0: {}
 
   immutable@4.3.7: {}
 
