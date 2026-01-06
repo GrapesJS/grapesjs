@@ -61,7 +61,7 @@ const SINGLE_AT_RULE_NAMES = SINGLE_AT_RULE_TYPES.map((n) => AT_RULE_NAMES[n]);
  * console.log(res);
  * // { result: [['test1'], ['test1', 'test2']], add: ['.test2 .test3'] }
  */
-const parseSelector = (str = '') => {
+export const parseSelector = (str = '') => {
   const add: string[] = [];
   const result: string[][] = [];
   const sels = str.split(',');
