@@ -63,6 +63,12 @@ describe('ParserCss', () => {
       var result = [['test4', 'test5:hover']];
       expect(parseSelector(str).result).toEqual(result);
     });
+
+    test('Parse selectors with complex state', () => {
+      var str = '.test1. test2, .test2>test3, .test4.test5:hover:not(.active.some-class)';
+      var result = [['test4', 'test5:hover:not(.active.some-class)']];
+      expect(parseSelector(str).result).toEqual(result);
+    });
   });
 
   test('Parse simple rule', () => {
