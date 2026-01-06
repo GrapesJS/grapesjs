@@ -1350,9 +1350,12 @@ export default function ($, undefined?: any) {
       RsRGB = rgb.r / 255;
       GsRGB = rgb.g / 255;
       BsRGB = rgb.b / 255;
-      if (RsRGB <= 0.03928) R = RsRGB / 12.92;else R = Math.pow((RsRGB + 0.055) / 1.055, 2.4);
-      if (GsRGB <= 0.03928) G = GsRGB / 12.92;else G = Math.pow((GsRGB + 0.055) / 1.055, 2.4);
-      if (BsRGB <= 0.03928) B = BsRGB / 12.92;else B = Math.pow((BsRGB + 0.055) / 1.055, 2.4);
+      if (RsRGB <= 0.03928) R = RsRGB / 12.92;
+      else R = Math.pow((RsRGB + 0.055) / 1.055, 2.4);
+      if (GsRGB <= 0.03928) G = GsRGB / 12.92;
+      else G = Math.pow((GsRGB + 0.055) / 1.055, 2.4);
+      if (BsRGB <= 0.03928) B = BsRGB / 12.92;
+      else B = Math.pow((BsRGB + 0.055) / 1.055, 2.4);
       return 0.2126 * R + 0.7152 * G + 0.0722 * B;
     },
     setAlpha: function (value) {
@@ -2032,7 +2035,9 @@ export default function ($, undefined?: any) {
   tinycolor.readability = function (color1, color2) {
     var c1 = tinycolor(color1);
     var c2 = tinycolor(color2);
-    return (Math.max(c1.getLuminance(), c2.getLuminance()) + 0.05) / (Math.min(c1.getLuminance(), c2.getLuminance()) + 0.05);
+    return (
+      (Math.max(c1.getLuminance(), c2.getLuminance()) + 0.05) / (Math.min(c1.getLuminance(), c2.getLuminance()) + 0.05)
+    );
   };
 
   // `isReadable`
@@ -2051,14 +2056,14 @@ export default function ($, undefined?: any) {
     out = false;
     wcag2Parms = validateWCAG2Parms(wcag2);
     switch (wcag2Parms.level + wcag2Parms.size) {
-      case "AAsmall":
-      case "AAAlarge":
+      case 'AAsmall':
+      case 'AAAlarge':
         out = readability >= 4.5;
         break;
-      case "AAlarge":
+      case 'AAlarge':
         out = readability >= 3;
         break;
-      case "AAAsmall":
+      case 'AAAsmall':
         out = readability >= 7;
         break;
     }
@@ -2090,14 +2095,17 @@ export default function ($, undefined?: any) {
         bestColor = tinycolor(colorList[i]);
       }
     }
-    if (tinycolor.isReadable(baseColor, bestColor, {
-      level: level,
-      size: size
-    }) || !includeFallbackColors) {
+    if (
+      tinycolor.isReadable(baseColor, bestColor, {
+        level: level,
+        size: size,
+      }) ||
+      !includeFallbackColors
+    ) {
       return bestColor;
     } else {
       args.includeFallbackColors = false;
-      return tinycolor.mostReadable(baseColor, ["#fff", "#000"], args);
+      return tinycolor.mostReadable(baseColor, ['#fff', '#000'], args);
     }
   };
 
@@ -2460,7 +2468,7 @@ export default function ($, undefined?: any) {
     var level, size;
     parms = parms || {
       level: 'AA',
-      size: 'small'
+      size: 'small',
     };
     level = (parms.level || 'AA').toUpperCase();
     size = (parms.size || 'small').toLowerCase();
@@ -2472,7 +2480,7 @@ export default function ($, undefined?: any) {
     }
     return {
       level: level,
-      size: size
+      size: size,
     };
   }
 
