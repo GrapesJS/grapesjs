@@ -206,7 +206,7 @@ const ParserHtml = (em?: EditorModel, config: ParserConfig & { returnArray?: boo
       const nodesLen = nodes.length;
       let model = this.detectNode(node, opts);
 
-      if (!model.tagName) {
+      if (!model.tagName && model.tagName !== '') {
         const tag = node.tagName || '';
         const ns = node.namespaceURI || '';
         model.tagName = tag && ns === 'http://www.w3.org/1999/xhtml' ? tag.toLowerCase() : tag;
