@@ -72,11 +72,9 @@ export const parseSelector = (str = '') => {
   // Can also accept SINGLE ID selectors, eg. `#myid`, `#myid:hover`
   // Composed are not valid: `#myid.some-class`, `#myid.some-class:hover
 
-  const checkForClass =
-    /^(\.[\w\-]+)+((:{1,2}[\w\-]+)(\([^)]*\))?)*$/;
+  const checkForClass = /^(\.[\w\-]+)+((:{1,2}[\w\-]+)(\([^)]*\))?)*$/;
 
-  const checkForId =
-    /^#[\w\-]+((:{1,2}[\w\-]+)(\([^)]*\))?)*$/;
+  const checkForId = /^#[\w\-]+((:{1,2}[\w\-]+)(\([^)]*\))?)*$/;
 
   for (let i = 0; i < sels.length; i++) {
     const sel = sels[i].trim();
