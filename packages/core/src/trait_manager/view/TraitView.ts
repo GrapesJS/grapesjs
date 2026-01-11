@@ -83,11 +83,11 @@ export default class TraitView extends View<Trait> {
     this.removed();
   }
 
-  init() {}
-  removed() {}
-  onRender(props: ReturnType<TraitView['getClbOpts']>) {}
-  onUpdate(props: ReturnType<TraitView['getClbOpts']>) {}
-  onEvent(props: ReturnType<TraitView['getClbOpts']> & { event: Event }) {}
+  init() { }
+  removed() { }
+  onRender(props: ReturnType<TraitView['getClbOpts']>) { }
+  onUpdate(props: ReturnType<TraitView['getClbOpts']>) { }
+  onEvent(props: ReturnType<TraitView['getClbOpts']> & { event: Event }) { }
 
   /**
    * Fires when the input is changed
@@ -261,23 +261,32 @@ export default class TraitView extends View<Trait> {
   }
 
   render() {
-    const { $el, pfx, ppfx, model } = this;
-    const { type, id } = model.attributes;
+    const { $el, pfx, ppfx, model , config } = this;
+    const { type, id  } = model.attributes;
+    const {iconAdd } = config;
     const hasLabel = this.hasLabel && this.hasLabel();
     const cls = `${pfx}trait`;
     delete this.$input;
     let tmpl = `<div class="${cls} ${cls}--${type}">
       ${hasLabel ? `<div class="${ppfx}label-wrp" data-label></div>` : ''}
       <div class="${ppfx}field-wrp ${ppfx}field-wrp--${type}" data-input>
-        ${
-          this.templateInput
-            ? isFunction(this.templateInput)
-              ? this.templateInput(this.getClbOpts())
-              : this.templateInput
-            : ''
-        }
+        ${this.templateInput
+        ? isFunction(this.templateInput)
+          ? this.templateInput(this.getClbOpts())
+          : this.templateInput
+        : ''
+      }
       </div>
-    </div>`;
+    </div>
+    <div class="${ppfx}-btn-wrp--${type}">
+    <div id="${ppfx}tags-field" class="${ppfx}field">
+        <div id="${ppfx}tags-c" data-selectors></div>
+        <input id="${ppfx}new" data-input />
+        <span id="${ppfx}add-tag" class="${ppfx}tags-btn ${ppfx}tags-btn__add" data-add> $${iconAdd} </span>
+       
+      </div>
+    </div>
+    `;
     $el.empty().append(tmpl);
     hasLabel && this.renderLabel();
     this.renderField();
