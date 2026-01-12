@@ -36,7 +36,14 @@ import { DataCollectionStateType } from './model/data_collection/types';
 import DataRecord from './model/DataRecord';
 import DataSource from './model/DataSource';
 import DataSources from './model/DataSources';
-import { DataCollectionKeys, DataComponentTypes, DataRecordProps, DataSourceProps, DataSourcesEvents } from './types';
+import {
+  DataCollectionKeys,
+  DataComponentTypes,
+  DataFieldPrimitiveType,
+  DataRecordProps,
+  DataSourceProps,
+  DataSourcesEvents,
+} from './types';
 
 export default class DataSourceManager extends ItemManagerModule<DataSourcesConfig & ModuleConfig, DataSources> {
   storageKey = 'dataSources';
@@ -44,6 +51,7 @@ export default class DataSourceManager extends ItemManagerModule<DataSourcesConf
   dataComponentTypes = DataComponentTypes;
   dataCollectionKeys = DataCollectionKeys;
   dataCollectionStateTypes = DataCollectionStateType;
+  dataFieldPrimitiveType = DataFieldPrimitiveType;
   dataOperationTypes = {
     any: AnyTypeOperation,
     boolean: BooleanOperation,

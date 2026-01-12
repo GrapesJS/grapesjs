@@ -72,6 +72,11 @@ import {
 export interface IComponent extends ExtractMethods<Component> {}
 export interface SetAttrOptions extends SetOptions, UpdateStyleOptions, DataWatchersOptions {}
 export interface ComponentSetOptions extends SetOptions, DataWatchersOptions {}
+export interface CheckIdOptions {
+  keepIds?: string[];
+  idMap?: PrevToNewIdMap;
+  updatedIds?: Record<string, ComponentDefinitionDefined[]>;
+}
 
 const escapeRegExp = (str: string) => {
   return str.replace(/[|\\{}()[\]^$+*?.]/g, '\\$&');
@@ -316,7 +321,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
     };
     const attrs = this.dataResolverWatchers.getValueOrResolver('attributes', defaultAttrs);
     this.setAttributes(attrs);
-    this.ccid = Component.createId(this, opt);
+    this.ccid = Component.createId(this, opt as any);
     this.preInit();
     this.initClasses();
     this.initComponents();
@@ -2062,34 +2067,69 @@ export default class Component extends StyleableModel<ComponentProperties> {
 
   static ensureInList(model: Component) {
     const list = Component.getList(model);
-    const id = model.getId();
+    const propId = model.id as string | undefined;
+    const id = propId || model.getId();
     const current = list[id];
 
     if (!current) {
-      // Insert in list
       list[id] = model;
     } else if (current !== model) {
-      // Create new ID
+      const keepIdsCrossPages = model.em?.Components.config.keepAttributeIdsCrossPages;
+      const currentPage = current.page;
+      const modelPage = model.page;
+      const samePage = !!currentPage && !!modelPage && currentPage === modelPage;
       const nextId = Component.getIncrementId(id, list);
-      model.setId(nextId);
+
+      if (samePage || !keepIdsCrossPages) {
+        model.setId(nextId);
+      } else {
+        model.set({ id: nextId });
+      }
+
       list[nextId] = model;
     }
 
     model.components().forEach((i) => Component.ensureInList(i));
   }
 
-  static createId(model: Component, opts: any = {}) {
+  static createId(model: Component, opts: CheckIdOptions = {}) {
     const list = Component.getList(model);
+    const keepIdsCrossPages = model.em?.Components.config.keepAttributeIdsCrossPages;
     const { idMap = {} } = opts;
-    let { id } = model.get('attributes')!;
-    let nextId;
+    const attrs = model.get('attributes') || {};
+    const attrId = attrs.id as string | undefined;
+    const propId = model.id as string | undefined;
+    const currentId = propId ?? attrId;
+    let nextId: string;
 
-    if (id) {
-      nextId = Component.getIncrementId(id, list, opts);
-      model.setId(nextId);
-      if (id !== nextId) idMap[id] = nextId;
+    if (propId) {
+      nextId = Component.getIncrementId(propId, list, opts);
+      if (nextId !== propId) {
+        model.set({ id: nextId });
+      }
+    } else if (attrId) {
+      const existing = list[attrId] as Component | undefined;
+
+      if (!existing || existing === model) {
+        nextId = attrId;
+      } else {
+        const existingPage = existing.page;
+        const newPage = model.page;
+        const samePage = !!existingPage && !!newPage && existingPage === newPage;
+        nextId = Component.getIncrementId(attrId, list, opts);
+
+        if (samePage || !keepIdsCrossPages) {
+          model.setId(nextId);
+        } else {
+          model.set({ id: nextId });
+        }
+      }
     } else {
       nextId = Component.getNewId(list);
+    }
+
+    if (!!currentId && currentId !== nextId) {
+      idMap[currentId] = nextId;
     }
 
     list[nextId] = model;
@@ -2098,7 +2138,6 @@ export default class Component extends StyleableModel<ComponentProperties> {
 
   static getNewId(list: ObjectAny) {
     const count = Object.keys(list).length;
-    // Testing 1000000 components with `+ 2` returns 0 collisions
     const ilen = count.toString().length + 2;
     const uid = (Math.random() + 1.1).toString(36).slice(-ilen);
     let newId = `i${uid}`;
@@ -2126,20 +2165,14 @@ export default class Component extends StyleableModel<ComponentProperties> {
   }
 
   static getList(model: Component) {
-    const { em } = model;
-    const dm = em?.Components;
-    return dm?.componentsById ?? {};
+    return model.em?.Components?.componentsById ?? {};
   }
 
   static checkId(
     components: ComponentDefinitionDefined | ComponentDefinitionDefined[],
     styles: CssRuleJSON[] = [],
     list: ObjectAny = {},
-    opts: {
-      keepIds?: string[];
-      idMap?: PrevToNewIdMap;
-      updatedIds?: Record<string, ComponentDefinitionDefined[]>;
-    } = {},
+    opts: CheckIdOptions = {},
   ) {
     opts.updatedIds = opts.updatedIds || {};
     const comps = isArray(components) ? components : [components];
