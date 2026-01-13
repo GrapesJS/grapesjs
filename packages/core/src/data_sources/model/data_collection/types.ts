@@ -9,7 +9,9 @@ export type DataCollectionDataSource = DataVariableProps;
 export enum DataCollectionStateType {
   currentIndex = 'currentIndex',
   startIndex = 'startIndex',
+  prevItem = 'prevItem',
   currentItem = 'currentItem',
+  nextItem = 'nextItem',
   currentKey = 'currentKey',
   endIndex = 'endIndex',
   collectionId = 'collectionId',
@@ -20,7 +22,9 @@ export enum DataCollectionStateType {
 export interface DataCollectionState {
   [DataCollectionStateType.currentIndex]: number;
   [DataCollectionStateType.startIndex]: number;
+  [DataCollectionStateType.prevItem]?: DataVariableProps;
   [DataCollectionStateType.currentItem]: DataVariableProps;
+  [DataCollectionStateType.nextItem]?: DataVariableProps;
   [DataCollectionStateType.currentKey]: string | number;
   [DataCollectionStateType.endIndex]: number;
   [DataCollectionStateType.collectionId]: string;

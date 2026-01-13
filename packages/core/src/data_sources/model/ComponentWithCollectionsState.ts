@@ -82,7 +82,7 @@ export default class ComponentWithCollectionsState<DataResolverType> extends Com
     this.onCollectionsStateMapUpdate(this.collectionsStateMap);
   }
 
-  protected getDataSourceItems(): DataSourceRecords {
+  getDataSourceItems(): DataSourceRecords {
     const { dataSourceProps } = this;
     if (!dataSourceProps) return [];
 

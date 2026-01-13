@@ -60,6 +60,14 @@ export interface DomComponentsConfig {
    * work properly (eg. Web Components).
    */
   useFrameDoc?: boolean;
+
+  /**
+   * Experimental!
+   * By default, the editor ensures unique attribute IDs for all components inside the project, no matter of the page.
+   * With this option enabled, the editor will keep same attributes IDs for components across different pages.
+   * This allows multiple components cross pages (eg. <footer id="footer"/>) to share the same ID (eg. to keep the same styling).
+   */
+  keepAttributeIdsCrossPages?: boolean;
 }
 
 const config: () => DomComponentsConfig = () => ({

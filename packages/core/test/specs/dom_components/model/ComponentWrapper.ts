@@ -137,10 +137,10 @@ describe('ComponentWrapper', () => {
 
     test('wrapper should handle objects as collection state', () => {
       wrapper.setDataResolver(createDataResolver('contentDataSource.productsById.data'));
-      wrapper.setResolverCurrentItem('product1');
+      wrapper.setResolverCurrentItem('product2');
       const child = appendChildWithTitle('title');
 
-      expect(child.get('title')).toBe(productsById.product1.title);
+      expect(child.get('title')).toBe(productsById.product2.title);
     });
 
     test('wrapper should handle default data source records', () => {
