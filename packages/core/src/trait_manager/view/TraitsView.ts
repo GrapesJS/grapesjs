@@ -1,5 +1,6 @@
 import TraitManager from '..';
 import CategoryView from '../../abstract/ModuleCategoryView';
+import Component from '../../dom_components/model/Component';
 import DomainViews from '../../domain_abstract/view/DomainViews';
 import EditorModel from '../../editor/model/Editor';
 import Trait from '../model/Trait';
@@ -16,6 +17,7 @@ interface TraitsViewProps {
 
 const ATTR_CATEGORIES = 'data-categories';
 const ATTR_NO_CATEGORIES = 'data-no-categories';
+const CUSTOM_TRAIT_VALIDATION_REGEX_DEFAULT = new RegExp('^data-[a-z][a-z0-9-]*$');
 
 export default class TraitsView extends DomainViews {
   reuseView = true;
@@ -32,6 +34,55 @@ export default class TraitsView extends DomainViews {
   rendered?: boolean;
   itemsView: TraitManager['types'];
   collection: Traits;
+
+  events() {
+    return {
+      'click [data-add-trait]': 'handleAddTrait',
+      'keyup [data-add-trait-input]': 'handleInputKeyup',
+    };
+  }
+
+  handleAddTrait() {
+    const input = this.el.querySelector('[data-add-trait-input]') as HTMLInputElement;
+    const name = input.value.trim();
+
+    if (name) {
+      const component = this.validateTraitName(name);
+      if (!component) {
+        return;
+      }
+
+      const attributes = component.getAttributes();
+      if (attributes[name]) {
+        return;
+      }
+      component.addTrait([name]);
+      component.addAttributes({ [name]: '' });
+
+      input.value = '';
+    }
+  }
+
+  handleInputKeyup(e: KeyboardEvent) {
+    if (e.key === 'Enter') {
+      this.handleAddTrait();
+    }
+  }
+
+  validateTraitName(name: string): Component | undefined {
+    const component = this.em.getSelected();
+    if (component) {
+      const attributes = component.getAttributes();
+      if (attributes[name]) {
+        return undefined;
+      }
+      if (this.config.customTraitValidationRegex) {
+        return this.config.customTraitValidationRegex.test(name) ? component : undefined;
+      }
+      return CUSTOM_TRAIT_VALIDATION_REGEX_DEFAULT.test(name) ? component : undefined;
+    }
+    return undefined;
+  }
 
   constructor(props: TraitsViewProps, itemsView: TraitManager['types']) {
     super(props);
@@ -61,7 +112,14 @@ export default class TraitsView extends DomainViews {
     const { ppfx, em } = this;
     const comp = em.getSelected();
     this.el.className = `${this.traitContClass}s ${ppfx}one-bg ${ppfx}two-color`;
+    if (this.collection) {
+      this.stopListening(this.collection);
+    }
     this.collection = comp?.traits || new Traits([], { em });
+    const collection = this.collection;
+    this.listenTo(collection, 'add', (model) => this.add(model));
+    this.listenTo(collection, 'reset', this.render);
+    this.listenTo(collection, 'remove', this.render);
     this.render();
   }
 
@@ -125,14 +183,24 @@ export default class TraitsView extends DomainViews {
   }
 
   render() {
-    const { el, ppfx, catsClass, traitContClass, classNoCat } = this;
+    const { el, ppfx, catsClass, traitContClass, classNoCat, config } = this;
     const frag = document.createDocumentFragment();
     delete this.catsEl;
     delete this.traitsEl;
     this.renderedCategories = new Map();
+    const iconAdd = (config as any).iconAdd || '+';
+
     el.innerHTML = `
       <div class="${catsClass}" ${ATTR_CATEGORIES}></div>
       <div class="${classNoCat} ${traitContClass}" ${ATTR_NO_CATEGORIES}></div>
+      <div class="${ppfx}traits-footer" style="padding: 10px; display: flex; align-items: center; gap: 5px;">
+      <div class="${ppfx}field">
+        <input  placeholder="Attribute name" data-add-trait-input style="flex-grow: 1;"/>
+        </div>
+        <button class="${ppfx}btn-prim" data-add-trait>
+          ${iconAdd}
+        </button>
+      </div>
     `;
 
     this.collection.forEach((model) => this.add(model, frag));

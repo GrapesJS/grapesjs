@@ -1,5 +1,6 @@
 import Trait from '../../../../src/trait_manager/model/Trait';
 import TraitView from '../../../../src/trait_manager/view/TraitView';
+import TraitsView from '../../../../src/trait_manager/view/TraitsView';
 import Component from '../../../../src/dom_components/model/Component';
 import EditorModel from '../../../../src/editor/model/Editor';
 import Editor from '../../../../src/editor';
@@ -68,5 +69,46 @@ describe('TraitView', () => {
     const eq2 = { [modelName]: 'test2' };
     expect(target1.get('attributes')).toEqual(eq1);
     expect(target2.get('attributes')).toEqual(eq2);
+  });
+});
+
+describe('TraitsView', () => {
+  let em: EditorModel;
+  let traitsView: TraitsView;
+  let component: Component;
+
+  beforeEach(() => {
+    em = new Editor().getModel();
+    component = new Component({}, { em, config: em.Components.config });
+    em.setSelected(component);
+  });
+
+  test('validateTraitName with default regex', () => {
+    traitsView = new TraitsView({
+      collection: [],
+      editor: em,
+      config: em.Traits.getConfig(),
+    }, {});
+
+    expect(traitsView.validateTraitName('data-test')).toBeTruthy();
+    expect(traitsView.validateTraitName('invalid name')).toBeFalsy();
+  });
+
+  test('validateTraitName with custom regex', () => {
+    const config = { ...em.Traits.getConfig(), customTraitValidationRegex: /^[a-z]+$/ };
+    traitsView = new TraitsView({
+      collection: [],
+      editor: em,
+      config,
+    }, {});
+
+    expect(traitsView.validateTraitName('abc')).toBeTruthy();
+    expect(traitsView.validateTraitName('abc1')).toBeFalsy();
+  });
+
+  test('validateTraitName returns undefined if attribute exists', () => {
+    component.addAttributes({ 'data-test': 'value' });
+    traitsView = new TraitsView({ collection: [], editor: em, config: em.Traits.getConfig() }, {});
+    expect(traitsView.validateTraitName('data-test')).toBeUndefined();
   });
 });

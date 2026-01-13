@@ -20,6 +20,8 @@ export interface TraitManagerConfig {
   custom?: boolean;
 
   optionsTarget?: Record<string, any>[];
+
+  customTraitValidationRegex?: RegExp;
 }
 
 const config: () => TraitManagerConfig = () => ({
