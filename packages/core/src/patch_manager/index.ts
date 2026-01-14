@@ -126,7 +126,10 @@ export default class PatchManager {
     const { external = false } = opts;
     const addToHistory = !external;
 
-    this.finalizeCurrentPatch();
+    if (addToHistory) {
+      this.finalizeCurrentPatch();
+    }
+
     this.applyChanges(patch.changes, { external, direction: 'forward' });
 
     if (addToHistory) {
@@ -152,6 +155,8 @@ export default class PatchManager {
 
   redo(): PatchProps | undefined {
     if (!this.isEnabled) return;
+
+    this.finalizeCurrentPatch();
 
     const patch = this.redoStack.pop();
     if (!patch) return;
