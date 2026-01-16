@@ -1,8 +1,9 @@
 import { isString } from 'underscore';
-import { Collection, Model } from '../common';
+import { Model } from '../common';
 import Categories from './ModuleCategories';
 import Category, { CategoryProperties } from './ModuleCategory';
 import { isObject } from '../utils/mixins';
+import CollectionWithPatches from '../patch_manager/CollectionWithPatches';
 
 interface ModelWithCategoryProps {
   category?: string | CategoryProperties;
@@ -10,7 +11,7 @@ interface ModelWithCategoryProps {
 
 const CATEGORY_KEY = 'category';
 
-export abstract class CollectionWithCategories<T extends Model<ModelWithCategoryProps>> extends Collection<T> {
+export abstract class CollectionWithCategories<T extends Model<ModelWithCategoryProps>> extends CollectionWithPatches<T> {
   abstract getCategories(): Categories;
 
   initCategory(model: T) {

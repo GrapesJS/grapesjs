@@ -1,5 +1,5 @@
 import { filter } from 'underscore';
-import { Collection } from '../../common';
+import CollectionWithPatches from '../../patch_manager/CollectionWithPatches';
 import Selector from './Selector';
 
 const combine = (tail: string[], curr: string): string[] => {
@@ -16,7 +16,13 @@ export interface FullNameOptions {
   array?: boolean;
 }
 
-export default class Selectors extends Collection<Selector> {
+export default class Selectors extends CollectionWithPatches<Selector> {
+  patchObjectType = 'selectors';
+
+  constructor(models?: any, opts: any = {}) {
+    super(models, { ...opts, patchObjectType: 'selectors', collectionId: opts.collectionId } as any);
+  }
+
   modelId(attr: any) {
     return `${attr.name}_${attr.type || Selector.TYPE_CLASS}`;
   }

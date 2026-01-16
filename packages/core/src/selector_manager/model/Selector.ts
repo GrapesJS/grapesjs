@@ -2,6 +2,7 @@ import { result, forEach, keys } from 'underscore';
 import { Model } from '../../common';
 import EditorModel from '../../editor/model/Editor';
 import { SelectorManagerConfig } from '../config/config';
+import ModelWithPatches from 'patch_manager/ModelWithPatches';
 
 const TYPE_CLASS = 1;
 const TYPE_ID = 2;
@@ -33,7 +34,8 @@ export interface SelectorOptions {
  * @property {Boolean} [private=false] If true, it can't be seen by the Style Manager, but it will be rendered in the canvas and in export code.
  * @property {Boolean} [protected=false] If true, it can't be removed from the attached component.
  */
-export default class Selector extends Model<SelectorPropsCustom> {
+export default class Selector extends ModelWithPatches<SelectorPropsCustom> {
+  patchObjectType = 'selector';
   defaults() {
     return {
       name: '',

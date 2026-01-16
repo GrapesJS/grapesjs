@@ -364,7 +364,13 @@ export default class ComponentManager extends ItemManagerModule<DomComponentsCon
    * @private
    */
   constructor(em: EditorModel) {
-    super(em, 'DomComponents', new Components(undefined, { em }), ComponentsEvents, defConfig());
+    super(
+      em,
+      'DomComponents',
+      new Components(undefined, { em, collectionId: 'root' }),
+      ComponentsEvents,
+      defConfig(),
+    );
     const { config } = this;
     this.symbols = new Symbols([], { em, config, domc: this });
 

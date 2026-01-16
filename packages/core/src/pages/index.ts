@@ -73,7 +73,7 @@ export default class PageManager extends ItemManagerModule<PageManagerConfig, Pa
    * @param {Object} config Configurations
    */
   constructor(em: EditorModel) {
-    super(em, 'PageManager', new Pages([], em), PagesEvents);
+    super(em, 'PageManager', new Pages([], { em } as any), PagesEvents);
     bindAll(this, '_onPageChange');
     const model = new ModuleModel(this, { _undo: true });
     this.model = model;

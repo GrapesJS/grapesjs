@@ -1,4 +1,5 @@
-import { createId } from '../utils/mixins';
+import { createId, serialize } from '../utils/mixins';
+import { applyPatches } from 'immer';
 
 export type PatchOp = 'add' | 'remove' | 'replace' | 'move' | 'copy' | 'test';
 
@@ -58,11 +59,65 @@ export default class PatchManager {
   private updateDepth = 0;
   private finalizeScheduled = false;
   private suppressTracking = false;
+  private trackedModels: Record<string, Record<string, any>> = {};
+  private trackedCollections: Record<string, Record<string, any>> = {};
 
   constructor(options: PatchManagerOptions = {}) {
     this.isEnabled = !!options.enabled;
     this.emitter = options.emitter;
     this.applyHandler = options.applyPatch;
+  }
+
+  trackModel(model: any): void {
+    if (!model) return;
+    const type = model.patchObjectType;
+    const idFromGetId = typeof model.getId === 'function' ? model.getId() : undefined;
+    const hasGetId = typeof idFromGetId === 'string' ? idFromGetId !== '' : typeof idFromGetId === 'number';
+    const id = hasGetId ? idFromGetId : model.id ?? model.get?.('id') ?? model.cid;
+    if (!type || id == null) return;
+    const idStr = String(id);
+    this.trackedModels[type] = this.trackedModels[type] || {};
+    this.trackedModels[type][idStr] = model;
+  }
+
+  untrackModel(model: any): void {
+    if (!model) return;
+    const type = model.patchObjectType;
+    const idFromGetId = typeof model.getId === 'function' ? model.getId() : undefined;
+    const hasGetId = typeof idFromGetId === 'string' ? idFromGetId !== '' : typeof idFromGetId === 'number';
+    const id = hasGetId ? idFromGetId : model.id ?? model.get?.('id') ?? model.cid;
+    if (!type || id == null) return;
+    const idStr = String(id);
+    this.trackedModels[type] && delete this.trackedModels[type][idStr];
+  }
+
+  trackCollection(collection: any): void {
+    if (!collection) return;
+    const type = collection.patchObjectType;
+    const idFromGetter =
+      typeof collection.getPatchCollectionId === 'function' ? collection.getPatchCollectionId() : undefined;
+    const hasGetterId = typeof idFromGetter === 'string' ? idFromGetter !== '' : typeof idFromGetter === 'number';
+    const id = hasGetterId
+      ? idFromGetter
+      : collection.collectionId ?? collection.id ?? collection.get?.('id') ?? collection.cid;
+    if (!type || id == null) return;
+    const idStr = String(id);
+    this.trackedCollections[type] = this.trackedCollections[type] || {};
+    this.trackedCollections[type][idStr] = collection;
+  }
+
+  untrackCollection(collection: any): void {
+    if (!collection) return;
+    const type = collection.patchObjectType;
+    const idFromGetter =
+      typeof collection.getPatchCollectionId === 'function' ? collection.getPatchCollectionId() : undefined;
+    const hasGetterId = typeof idFromGetter === 'string' ? idFromGetter !== '' : typeof idFromGetter === 'number';
+    const id = hasGetterId
+      ? idFromGetter
+      : collection.collectionId ?? collection.id ?? collection.get?.('id') ?? collection.cid;
+    if (!type || id == null) return;
+    const idStr = String(id);
+    this.trackedCollections[type] && delete this.trackedCollections[type][idStr];
   }
 
   createOrGetCurrentPatch(): PatchProps {
@@ -169,10 +224,73 @@ export default class PatchManager {
   }
 
   private applyChanges(changes: PatchChangeProps[], options: PatchApplyOptions = {}) {
-    if (!changes.length || !this.applyHandler) return;
+    if (!changes.length) return;
 
     this.withSuppressedTracking(() => {
-      this.applyHandler?.(changes, options);
+      if (this.applyHandler) {
+        this.applyHandler(changes, options);
+      } else {
+        this.applyTrackedChanges(changes);
+      }
+    });
+  }
+
+  private applyTrackedChanges(changes: PatchChangeProps[]) {
+    const modelGroups = new Map<string, { type: string; id: string; patches: PatchChangeProps[] }>();
+
+    changes.forEach((change) => {
+      const path = change.path || [];
+      if (path.length < 3) return;
+      const type = String(path[0]);
+      const targetId = String(path[1]);
+      const scope = String(path[2]);
+
+      if (scope === 'attributes') {
+        const groupKey = `${type}::${targetId}`;
+        const group = modelGroups.get(groupKey) || { type, id: targetId, patches: [] };
+        group.patches.push(change);
+        modelGroups.set(groupKey, group);
+        return;
+      }
+
+      if (scope === 'order') {
+        const modelId = path[3] != null ? String(path[3]) : '';
+        const coll = this.trackedCollections[type]?.[targetId];
+        if (coll && typeof coll.applyOrderKeyPatch === 'function') {
+          coll.applyOrderKeyPatch(modelId, change.op, change.value);
+        }
+      }
+    });
+
+    modelGroups.forEach(({ type, id, patches }) => {
+      const model = this.trackedModels[type]?.[id];
+      if (!model || typeof model.set !== 'function') return;
+
+      const current = serialize(model.attributes || {});
+      const localPatches = patches.map((p) => ({
+        ...p,
+        path: (p.path || []).slice(3),
+        ...(p.from ? { from: (p.from || []).slice(3) } : {}),
+      })) as any;
+
+      const next = applyPatches(current, localPatches);
+      const toSet: any = {};
+      const toUnset: string[] = [];
+
+      Object.keys(next).forEach((key) => {
+        if (current[key] !== next[key]) {
+          toSet[key] = next[key];
+        }
+      });
+
+      Object.keys(current).forEach((key) => {
+        if (!(key in next)) {
+          toUnset.push(key);
+        }
+      });
+
+      Object.keys(toSet).length && model.set(toSet);
+      toUnset.forEach((key) => model.unset?.(key));
     });
   }
 
@@ -226,3 +344,4 @@ export default class PatchManager {
     this.emitter?.trigger?.(event, payload);
   }
 }
+export { default as CollectionWithPatches } from './CollectionWithPatches';

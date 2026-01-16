@@ -50,12 +50,34 @@ export default class ModelWithPatches<T extends ObjectHash = any, S = SetOptions
   em?: EditorModel;
   patchObjectType?: string;
 
+  constructor(attributes?: T, options: any = {}) {
+    super(attributes as any, options);
+    options?.em && (this.em = options.em);
+
+    Promise.resolve().then(() => {
+      const pm = (this.em as any)?.Patches as PatchManager | undefined;
+      if (pm?.isEnabled && this.patchObjectType) {
+        pm.trackModel(this as any);
+      }
+    });
+  }
+
   protected get patchManager(): PatchManager | undefined {
     const pm = (this.em as any)?.Patches as PatchManager | undefined;
-    return pm?.isEnabled && this.patchObjectType ? pm : undefined;
+    if (pm?.isEnabled && this.patchObjectType) {
+      pm.trackModel(this as any);
+      return pm;
+    }
+    return undefined;
   }
 
   protected getPatchObjectId(): string | number | undefined {
+    const withGetId = this as any;
+    if (typeof withGetId.getId === 'function') {
+      const stableId = withGetId.getId();
+      const valid = typeof stableId === 'string' ? stableId !== '' : typeof stableId === 'number';
+      if (valid) return stableId;
+    }
     const id = (this as any).id ?? (this as any).get?.('id');
     return id ?? (this as any).cid;
   }

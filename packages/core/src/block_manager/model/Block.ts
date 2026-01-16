@@ -1,4 +1,4 @@
-import { Model } from '../../common';
+import ModelWithPatches from 'patch_manager/ModelWithPatches';
 import { isFunction } from 'underscore';
 import Editor from '../../editor';
 import Category, { CategoryProperties } from '../../abstract/ModuleCategory';
@@ -74,7 +74,8 @@ export interface BlockProperties extends DraggableContent {
  *
  * @module docsjs.Block
  */
-export default class Block extends Model<BlockProperties> {
+export default class Block extends ModelWithPatches<BlockProperties> {
+  patchObjectType = 'block';
   defaults() {
     return {
       label: '',

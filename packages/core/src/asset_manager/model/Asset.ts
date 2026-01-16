@@ -1,5 +1,5 @@
 import { result } from 'underscore';
-import { Model } from '../../common';
+import ModelWithPatches from 'patch_manager/ModelWithPatches';
 
 /**
  * @property {String} type Asset type, eg. `'image'`.
@@ -7,7 +7,8 @@ import { Model } from '../../common';
  *
  * @module docsjs.Asset
  */
-export default class Asset extends Model {
+export default class Asset extends ModelWithPatches {
+  patchObjectType = 'asset';
   static getDefaults() {
     return result(this.prototype, 'defaults');
   }

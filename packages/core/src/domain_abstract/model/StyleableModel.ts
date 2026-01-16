@@ -1,5 +1,5 @@
 import { isArray, isObject, isString, keys } from 'underscore';
-import { Model, ObjectAny, ObjectHash, SetOptions } from '../../common';
+import { ObjectAny, ObjectHash, SetOptions } from '../../common';
 import ParserHtml from '../../parser/model/ParserHtml';
 import Selectors from '../../selector_manager/model/Selectors';
 import { shallowDiff } from '../../utils/mixins';
@@ -13,6 +13,7 @@ import { DataCollectionStateMap } from '../../data_sources/model/data_collection
 import { DataWatchersOptions } from '../../dom_components/model/ModelResolverWatcher';
 import { DataResolverProps } from '../../data_sources/types';
 import { _StringKey } from 'backbone';
+import ModelWithPatches from 'patch_manager/ModelWithPatches';
 
 export type StyleProps = Record<string, string | string[] | DataResolverProps>;
 
@@ -44,7 +45,7 @@ type WithDataResolvers<T> = {
   [P in keyof T]?: T[P] | DataResolverProps;
 };
 
-export default class StyleableModel<T extends StyleableModelProperties = any> extends Model<T, UpdateStyleOptions> {
+export default class StyleableModel<T extends StyleableModelProperties = any> extends ModelWithPatches<T, UpdateStyleOptions> {
   em?: EditorModel;
   views: StyleableView[] = [];
   dataResolverWatchers: ModelDataResolverWatchers<T>;

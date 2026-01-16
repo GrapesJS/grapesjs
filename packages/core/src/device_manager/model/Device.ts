@@ -1,4 +1,4 @@
-import { Model } from '../../common';
+import ModelWithPatches from 'patch_manager/ModelWithPatches';
 
 /** @private */
 export interface DeviceProperties {
@@ -43,7 +43,8 @@ export interface DeviceProperties {
  * @property {String} [widthMedia=''] The width which will be used in media queries, If empty the width will be used
  * @property {Number} [priority=null] Setup the order of media queries
  */
-export default class Device extends Model<DeviceProperties> {
+export default class Device extends ModelWithPatches<DeviceProperties> {
+  patchObjectType = 'device';
   defaults() {
     return {
       name: '',

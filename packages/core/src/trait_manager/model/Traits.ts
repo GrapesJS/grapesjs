@@ -14,9 +14,10 @@ export default class Traits extends CollectionWithCategories<Trait> {
   target!: Component;
   tf: TraitFactory;
   categories = new Categories();
+  patchObjectType = 'traits';
 
-  constructor(coll: TraitProperties[], options: { em: EditorModel }) {
-    super(coll);
+  constructor(coll: TraitProperties[], options: { em: EditorModel; collectionId?: string }) {
+    super(coll, { ...options, patchObjectType: 'traits', collectionId: options.collectionId || 'global' } as any);
     const { em } = options;
     this.em = em;
     this.categories = new Categories([], {
@@ -55,6 +56,8 @@ export default class Traits extends CollectionWithCategories<Trait> {
 
   setTarget(target: Component) {
     this.target = target;
+    const id = (typeof (target as any).getId === 'function' && (target as any).getId()) || target.cid;
+    id && this.setCollectionId(id);
     this.models.forEach((trait) => trait.setTarget(target));
   }
 

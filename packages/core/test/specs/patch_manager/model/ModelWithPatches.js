@@ -89,4 +89,37 @@ describe('ModelWithPatches', () => {
     expect(model.get('foo')).toBe('applied');
     expect(events).toHaveLength(0);
   });
+
+  test('apply(external) updates tracked model without custom applyPatch', async () => {
+    const events = [];
+    const pm = new PatchManager({
+      enabled: true,
+      emitter: {
+        trigger: (event, payload) => events.push({ event, payload }),
+      },
+    });
+
+    class TrackedModel extends ModelWithPatches {
+      patchObjectType = 'model';
+    }
+
+    const model = new TrackedModel({ id: 'model-4', foo: 'bar' }, { em: { Patches: pm } });
+
+    expect(model.patchObjectType).toBe('model');
+    expect(model.id || model.get('id')).toBe('model-4');
+
+    pm.trackModel(model);
+
+    pm.apply(
+      {
+        id: 'patch-4',
+        changes: [{ op: 'replace', path: ['model', 'model-4', 'attributes', 'foo'], value: 'baz' }],
+        reverseChanges: [{ op: 'replace', path: ['model', 'model-4', 'attributes', 'foo'], value: 'bar' }],
+      },
+      { external: true },
+    );
+
+    expect(model.get('foo')).toBe('baz');
+    expect(events).toHaveLength(0);
+  });
 });

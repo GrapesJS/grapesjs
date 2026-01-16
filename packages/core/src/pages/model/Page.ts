@@ -6,6 +6,7 @@ import ComponentWrapper from '../../dom_components/model/ComponentWrapper';
 import EditorModel from '../../editor/model/Editor';
 import { CssRuleJSON } from '../../css_composer/model/CssRule';
 import { ComponentDefinition } from '../../dom_components/model/types';
+import ModelWithPatches from 'patch_manager/ModelWithPatches';
 
 /** @private */
 export interface PageProperties {
@@ -37,7 +38,8 @@ export interface PagePropertiesDefined extends Pick<PageProperties, 'id' | 'name
   [key: string]: unknown;
 }
 
-export default class Page extends Model<PagePropertiesDefined> {
+export default class Page extends ModelWithPatches<PagePropertiesDefined> {
+  patchObjectType = 'page';
   defaults() {
     return {
       name: '',

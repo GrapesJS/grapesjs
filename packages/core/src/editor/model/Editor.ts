@@ -46,6 +46,7 @@ import DataSourceManager from '../../data_sources';
 import { ComponentsEvents } from '../../dom_components/types';
 import { InitEditorConfig } from '../..';
 import { EditorEvents, SelectComponentOptions } from '../types';
+import PatchManager from '../../patch_manager';
 
 Backbone.$ = $;
 
@@ -178,6 +179,10 @@ export default class EditorModel extends Model {
     return this.get('UndoManager');
   }
 
+  get Patches(): PatchManager {
+    return this.get('Patches');
+  }
+
   get RichTextEditor(): RichTextEditorModule {
     return this.get('RichTextEditor');
   }
@@ -252,6 +257,13 @@ export default class EditorModel extends Model {
     this.set('storables', []);
     this.set('selected', new Selected());
     this.set('dmode', config.dragMode);
+    this.set(
+      'Patches',
+      new PatchManager({
+        enabled: !!config.patches?.enable,
+        emitter: this,
+      }),
+    );
     const { el, log } = config;
     const toLog = log === true ? keys(logs) : isArray(log) ? log : [];
     bindAll(this, 'initBaseColorPicker');

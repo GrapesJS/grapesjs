@@ -1,10 +1,11 @@
 import { isEmpty, isArray, isString, isFunction, each, includes, extend, flatten, keys } from 'underscore';
 import Component, { SetAttrOptions } from './Component';
-import { AddOptions, Collection } from '../../common';
+import { AddOptions } from '../../common';
 import { DomComponentsConfig } from '../config/config';
 import EditorModel from '../../editor/model/Editor';
 import ComponentManager from '..';
 import CssRule from '../../css_composer/model/CssRule';
+import CollectionWithPatches from '../../patch_manager/CollectionWithPatches';
 
 import {
   ComponentAdd,
@@ -114,6 +115,7 @@ export interface ComponentsOptions {
   em: EditorModel;
   config?: DomComponentsConfig;
   domc?: ComponentManager;
+  collectionId?: string;
 }
 
 interface AddComponentOptions extends AddOptions {
@@ -121,7 +123,7 @@ interface AddComponentOptions extends AddOptions {
   keepIds?: string[];
 }
 
-export default class Components extends Collection</**
+export default class Components extends CollectionWithPatches</**
  * Keep this format to avoid errors in TS bundler */
 /** @ts-ignore */
 Component> {
@@ -132,7 +134,7 @@ Component> {
   parent?: Component;
 
   constructor(models: any, opt: ComponentsOptions) {
-    super(models, opt);
+    super(models, { ...opt, patchObjectType: 'components', collectionId: opt.collectionId });
     this.opt = opt;
     this.listenTo(this, 'add', this.onAdd);
     this.listenTo(this, 'remove', this.removeChildren);

@@ -1,10 +1,14 @@
-import { Collection, RemoveOptions } from '../../common';
+import { RemoveOptions } from '../../common';
 import EditorModel from '../../editor/model/Editor';
 import Page from './Page';
+import CollectionWithPatches from '../../patch_manager/CollectionWithPatches';
 
-export default class Pages extends Collection<Page> {
-  constructor(models: any, em: EditorModel) {
-    super(models);
+export default class Pages extends CollectionWithPatches<Page> {
+  patchObjectType = 'pages';
+
+  constructor(models: any, opts: { em: EditorModel; collectionId?: string }) {
+    const { em } = opts;
+    super(models, { ...opts, patchObjectType: 'pages', collectionId: opts.collectionId || 'global' } as any);
     this.on('reset', this.onReset);
     this.on('remove', this.onRemove);
 

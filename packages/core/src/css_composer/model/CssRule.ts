@@ -97,6 +97,7 @@ const { CSS } = hasWin() ? window : {};
  * [Component]: component.html
  */
 export default class CssRule extends StyleableModel<CssRuleProperties> {
+  patchObjectType = 'css-rule';
   config: CssRuleProperties;
   em?: EditorModel;
   opt: any;

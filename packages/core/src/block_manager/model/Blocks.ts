@@ -4,9 +4,10 @@ import Block from './Block';
 
 export default class Blocks extends CollectionWithCategories<Block> {
   em: EditorModel;
+  patchObjectType = 'blocks';
 
   constructor(coll: any[], options: { em: EditorModel }) {
-    super(coll);
+    super(coll, { ...options, patchObjectType: 'blocks', collectionId: 'global' } as any);
     this.em = options.em;
     this.on('add', this.handleAdd);
   }

@@ -158,6 +158,7 @@ type GetComponentStyleOpts = GetStyleOpts & {
  * @module docsjs.Component
  */
 export default class Component extends StyleableModel<ComponentProperties> {
+  patchObjectType = 'component';
   /**
    * @private
    * @ts-ignore */
@@ -1018,6 +1019,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
     // is not visible
     const comps = new Components([], this.opt);
     comps.parent = this;
+    comps.setCollectionId(this.getId() || this.cid);
     const components = this.get('components');
     const addChild = !this.opt.avoidChildren;
     this.set('components', comps);
