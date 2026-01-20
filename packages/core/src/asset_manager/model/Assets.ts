@@ -4,7 +4,7 @@ import AssetImage from './AssetImage';
 import AssetImageView from '../view/AssetImageView';
 import TypeableCollection from '../../domain_abstract/model/TypeableCollection';
 
-export default class Assets extends CollectionWithPatches<Asset> {
+export class Assets extends CollectionWithPatches<Asset> {
   constructor(models?: any, options?: any) {
     super(models, options);
   }
@@ -39,3 +39,5 @@ Assets.prototype.types = [
     },
   },
 ];
+
+export default Assets;
