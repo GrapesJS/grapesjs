@@ -106,14 +106,9 @@ export default class SelectorManager extends ItemManagerModule<SelectorManagerCo
    */
 
   constructor(em: EditorModel) {
-    super(
-      em,
-      'SelectorManager',
-      new Selectors([], { em, collectionId: 'all' } as any),
-      SelectorEvents,
-      defConfig(),
-      { skipListen: true },
-    );
+    super(em, 'SelectorManager', new Selectors([], { em, collectionId: 'all' } as any), SelectorEvents, defConfig(), {
+      skipListen: true,
+    });
     bindAll(this, '__updateSelectedByComponents');
     const { config, events } = this;
     const ppfx = config.pStylePrefix;

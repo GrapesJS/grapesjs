@@ -11,7 +11,9 @@ interface ModelWithCategoryProps {
 
 const CATEGORY_KEY = 'category';
 
-export abstract class CollectionWithCategories<T extends Model<ModelWithCategoryProps>> extends CollectionWithPatches<T> {
+export abstract class CollectionWithCategories<
+  T extends Model<ModelWithCategoryProps>,
+> extends CollectionWithPatches<T> {
   abstract getCategories(): Categories;
 
   initCategory(model: T) {

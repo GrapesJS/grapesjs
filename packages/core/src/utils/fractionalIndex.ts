@@ -218,9 +218,5 @@ export function generateNKeysBetween(
   }
   const mid = Math.floor(n / 2);
   const c = generateKeyBetween(a, b, digits);
-  return [
-    ...generateNKeysBetween(a, c, mid, digits),
-    c,
-    ...generateNKeysBetween(c, b, n - mid - 1, digits),
-  ];
+  return [...generateNKeysBetween(a, c, mid, digits), c, ...generateNKeysBetween(c, b, n - mid - 1, digits)];
 }

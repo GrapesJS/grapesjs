@@ -170,8 +170,14 @@ describe('CollectionWithPatches', () => {
     await Promise.resolve();
     pm.trackCollection(coll2);
 
-    const patch1b = { ...patch1, changes: [{ ...patch1.changes[0], path: ['test-collection', 'root-2', 'order', 'c'] }] };
-    const patch2b = { ...patch2, changes: [{ ...patch2.changes[0], path: ['test-collection', 'root-2', 'order', 'd'] }] };
+    const patch1b = {
+      ...patch1,
+      changes: [{ ...patch1.changes[0], path: ['test-collection', 'root-2', 'order', 'c'] }],
+    };
+    const patch2b = {
+      ...patch2,
+      changes: [{ ...patch2.changes[0], path: ['test-collection', 'root-2', 'order', 'd'] }],
+    };
     pm.apply(patch2b, { external: true });
     pm.apply(patch1b, { external: true });
 
