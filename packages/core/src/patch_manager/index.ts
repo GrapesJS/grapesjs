@@ -73,7 +73,7 @@ export default class PatchManager {
     const type = model.patchObjectType;
     const idFromGetId = typeof model.getId === 'function' ? model.getId() : undefined;
     const hasGetId = typeof idFromGetId === 'string' ? idFromGetId !== '' : typeof idFromGetId === 'number';
-    const id = hasGetId ? idFromGetId : model.id ?? model.get?.('id') ?? model.cid;
+    const id = hasGetId ? idFromGetId : (model.id ?? model.get?.('id') ?? model.cid);
     if (!type || id == null) return;
     const idStr = String(id);
     this.trackedModels[type] = this.trackedModels[type] || {};
@@ -85,7 +85,7 @@ export default class PatchManager {
     const type = model.patchObjectType;
     const idFromGetId = typeof model.getId === 'function' ? model.getId() : undefined;
     const hasGetId = typeof idFromGetId === 'string' ? idFromGetId !== '' : typeof idFromGetId === 'number';
-    const id = hasGetId ? idFromGetId : model.id ?? model.get?.('id') ?? model.cid;
+    const id = hasGetId ? idFromGetId : (model.id ?? model.get?.('id') ?? model.cid);
     if (!type || id == null) return;
     const idStr = String(id);
     this.trackedModels[type] && delete this.trackedModels[type][idStr];
@@ -99,7 +99,7 @@ export default class PatchManager {
     const hasGetterId = typeof idFromGetter === 'string' ? idFromGetter !== '' : typeof idFromGetter === 'number';
     const id = hasGetterId
       ? idFromGetter
-      : collection.collectionId ?? collection.id ?? collection.get?.('id') ?? collection.cid;
+      : (collection.collectionId ?? collection.id ?? collection.get?.('id') ?? collection.cid);
     if (!type || id == null) return;
     const idStr = String(id);
     this.trackedCollections[type] = this.trackedCollections[type] || {};
@@ -114,7 +114,7 @@ export default class PatchManager {
     const hasGetterId = typeof idFromGetter === 'string' ? idFromGetter !== '' : typeof idFromGetter === 'number';
     const id = hasGetterId
       ? idFromGetter
-      : collection.collectionId ?? collection.id ?? collection.get?.('id') ?? collection.cid;
+      : (collection.collectionId ?? collection.id ?? collection.get?.('id') ?? collection.cid);
     if (!type || id == null) return;
     const idStr = String(id);
     this.trackedCollections[type] && delete this.trackedCollections[type][idStr];

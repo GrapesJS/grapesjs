@@ -4,9 +4,24 @@ import AssetImage from './AssetImage';
 import AssetImageView from '../view/AssetImageView';
 import TypeableCollection from '../../domain_abstract/model/TypeableCollection';
 
-const TypeableCollectionExt = CollectionWithPatches.extend(TypeableCollection);
+export default class Assets extends CollectionWithPatches<Asset> {
+  constructor(models?: any, options?: any) {
+    super(models, options);
+  }
+}
 
-export default class Assets extends TypeableCollectionExt<Asset> {}
+export interface Assets {
+  types: any[];
+  target?: any;
+  onSelect?: any;
+  getTypes(): any[];
+  getType(id: string): any;
+  getBaseType(): any;
+  recognizeType(value: any): any;
+  addType(id: string, definition: any): void;
+}
+
+Object.assign(Assets.prototype, TypeableCollection);
 
 Assets.prototype.types = [
   {

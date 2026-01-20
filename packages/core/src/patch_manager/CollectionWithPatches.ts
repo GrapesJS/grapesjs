@@ -32,10 +32,11 @@ export default class CollectionWithPatches<T extends Model = Model> extends Coll
   private isResetting = false;
 
   constructor(models?: any, options: CollectionWithPatchesOptions = {}) {
-    super(models, options);
-    this.em = options.em;
-    this.collectionId = options.collectionId;
-    this.patchObjectType = options.patchObjectType;
+    const nextOptions = { ...options };
+    super(models, nextOptions);
+    this.em = nextOptions.em;
+    this.collectionId = nextOptions.collectionId;
+    this.patchObjectType = nextOptions.patchObjectType;
     this.on('sort', this.handleSort, this);
     this.rebuildFractionalMap(false);
 
@@ -48,16 +49,6 @@ export default class CollectionWithPatches<T extends Model = Model> extends Coll
     });
   }
 
-  // Ensure models created via collection.add/reset get a reference to `em`.
-  // This is critical for patch tracking and for apply(external) routing.
-  // @ts-ignore
-  _prepareModel(attrs: any, options: any) {
-    const nextOptions = options ? { ...options } : {};
-    this.em && nextOptions.em == null && (nextOptions.em = this.em);
-    // @ts-ignore
-    return Collection.prototype._prepareModel.call(this, attrs, nextOptions);
-  }
-
   get patchManager(): PatchManager | undefined {
     return this.em?.Patches;
   }
@@ -66,14 +57,18 @@ export default class CollectionWithPatches<T extends Model = Model> extends Coll
     this.collectionId = id;
   }
 
-  add(models: any, options?: CollectionWithPatchesOptions) {
-    const result = super.add(models, options);
+  add(model: T | {}, options?: CollectionWithPatchesOptions): T;
+  add(models: Array<T | {}>, options?: CollectionWithPatchesOptions): T[];
+  add(models: any, options?: CollectionWithPatchesOptions): any {
+    const result = super.add(models, this.withEmOptions(options) as any);
     !this.isResetting && this.assignKeysForMissingModels();
-    return result;
+    return result as any;
   }
 
-  remove(...args: any[]) {
-    const removed = super.remove(...args);
+  remove(model: T | {}, options?: any): T;
+  remove(models: Array<T | {}>, options?: any): T[];
+  remove(models: any, options?: any): any {
+    const removed = super.remove(models, options as any);
     const removedModels = Array.isArray(removed) ? removed : removed ? [removed] : [];
     removedModels.forEach((model) => {
       const id = this.getModelId(model as any);
@@ -100,7 +95,7 @@ export default class CollectionWithPatches<T extends Model = Model> extends Coll
   reset(models?: any, options?: CollectionWithPatchesOptions) {
     this.isResetting = true;
     try {
-      const result = super.reset(models, options);
+      const result = super.reset(models, this.withEmOptions(options) as any);
       this.fractionalMap = {};
       this.pendingRemovals = {};
       this.rebuildFractionalMap();
@@ -116,7 +111,15 @@ export default class CollectionWithPatches<T extends Model = Model> extends Coll
   }
 
   protected getPatchCollectionId(): string | undefined {
-    return this.collectionId || this.cid;
+    return this.collectionId || (this as any).cid;
+  }
+
+  protected withEmOptions(options?: CollectionWithPatchesOptions) {
+    const nextOptions = options ? { ...options } : {};
+    if (this.em && nextOptions.em == null) {
+      nextOptions.em = this.em;
+    }
+    return nextOptions;
   }
 
   protected rebuildFractionalMap(record: boolean = true) {
@@ -262,7 +265,7 @@ export default class CollectionWithPatches<T extends Model = Model> extends Coll
     if (op === 'remove') {
       delete this.fractionalMap[id];
       const model = this.getModelByPatchId(id);
-      model && Collection.prototype.remove.call(this, model);
+      model && Collection.prototype.remove.call(this, model as any);
       return;
     }
 

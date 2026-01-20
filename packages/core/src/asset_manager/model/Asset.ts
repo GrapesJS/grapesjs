@@ -1,5 +1,5 @@
 import { result } from 'underscore';
-import ModelWithPatches from 'patch_manager/ModelWithPatches';
+import ModelWithPatches from '../../patch_manager/ModelWithPatches';
 
 /**
  * @property {String} type Asset type, eg. `'image'`.

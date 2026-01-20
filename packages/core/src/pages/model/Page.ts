@@ -6,7 +6,7 @@ import ComponentWrapper from '../../dom_components/model/ComponentWrapper';
 import EditorModel from '../../editor/model/Editor';
 import { CssRuleJSON } from '../../css_composer/model/CssRule';
 import { ComponentDefinition } from '../../dom_components/model/types';
-import ModelWithPatches from 'patch_manager/ModelWithPatches';
+import ModelWithPatches from '../../patch_manager/ModelWithPatches';
 
 /** @private */
 export interface PageProperties {

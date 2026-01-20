@@ -1,4 +1,4 @@
-import ModelWithPatches from 'patch_manager/ModelWithPatches';
+import ModelWithPatches from '../../patch_manager/ModelWithPatches';
 
 /** @private */
 export interface DeviceProperties {

@@ -2,7 +2,7 @@ import { result, forEach, keys } from 'underscore';
 import { Model } from '../../common';
 import EditorModel from '../../editor/model/Editor';
 import { SelectorManagerConfig } from '../config/config';
-import ModelWithPatches from 'patch_manager/ModelWithPatches';
+import ModelWithPatches from '../../patch_manager/ModelWithPatches';
 
 const TYPE_CLASS = 1;
 const TYPE_ID = 2;

@@ -49,7 +49,7 @@ export default {
       am.__trgCustom();
     } else {
       if (!this.rendered || types) {
-        let assets: Asset[] = am.getAll().filter((i: Asset) => i);
+        let assets: Asset[] = am.getAll().filter((i: Asset) => !!i);
 
         if (types && types.length) {
           assets = assets.filter((a) => types.indexOf(a.get('type')) !== -1);

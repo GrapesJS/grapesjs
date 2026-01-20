@@ -1,4 +1,4 @@
-import ModelWithPatches from 'patch_manager/ModelWithPatches';
+import ModelWithPatches from '../../patch_manager/ModelWithPatches';
 import { isFunction } from 'underscore';
 import Editor from '../../editor';
 import Category, { CategoryProperties } from '../../abstract/ModuleCategory';

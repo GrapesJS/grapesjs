@@ -7,7 +7,7 @@ import { isDef } from '../../utils/mixins';
 import TraitsEvents, { TraitGetValueOptions, TraitOption, TraitProperties, TraitSetValueOptions } from '../types';
 import TraitView from '../view/TraitView';
 import Traits from './Traits';
-import ModelWithPatches from 'patch_manager/ModelWithPatches';
+import ModelWithPatches from '../../patch_manager/ModelWithPatches';
 
 /**
  * @property {String} id Trait id, eg. `my-trait-id`.
