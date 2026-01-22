@@ -56,6 +56,16 @@ const createStableUid = () => {
   return typeof randomUUID === 'function' ? randomUUID.call(crypto) : createId();
 };
 
+const stripUid = <T extends ObjectHash>(attrs: Partial<T>): Partial<T> => {
+  const attrsAny = attrs as any;
+  if (attrsAny && typeof attrsAny === 'object' && 'uid' in attrsAny) {
+    const { uid: _uid, ...rest } = attrsAny;
+    return rest as Partial<T>;
+  }
+
+  return attrs;
+};
+
 export default class ModelWithPatches<T extends ObjectHash = any, S = SetOptions, E = any> extends Model<T, S, E> {
   em?: EditorModel;
   patchObjectType?: string;
@@ -80,41 +90,42 @@ export default class ModelWithPatches<T extends ObjectHash = any, S = SetOptions
 
     const existingUid = this.get('uid' as any) as string | number | undefined;
     const hasExistingUid = isValidPatchUid(existingUid);
-    const incomingUid = (rawAttrs as any).uid;
 
     // UID is immutable: ignore any attempt to change/unset it via public `set`
-    const attrs = hasExistingUid && 'uid' in (rawAttrs as any) ? (({ uid: _uid, ...rest }) => rest)(rawAttrs as any) : rawAttrs;
+    const immutableAttrs = hasExistingUid ? stripUid(rawAttrs) : rawAttrs;
 
     const pm = this.patchManager;
 
     if (!pm) {
-      return super.set(attrs as any, opts as any);
+      return super.set(immutableAttrs as any, opts as any);
     }
 
-    const uid = hasExistingUid ? existingUid : isValidPatchUid(incomingUid) ? incomingUid : pm.createId();
+    // Never accept UID mutations via public `set` while tracking patches
+    const attrsNoUid = stripUid(immutableAttrs);
 
-    // Ensure UID exists before taking snapshots to avoid recording it inside patches
+    const beforeState = serialize(this.attributes || {}) as any;
+    const stateUid = beforeState.uid;
+    const uid = isValidPatchUid(stateUid) ? stateUid : hasExistingUid ? existingUid : pm.createId();
+    beforeState.uid = uid;
+
+    // Ensure UID exists before applying changes, but do not record it in patches
     if (!hasExistingUid && isValidPatchUid(uid)) {
-      super.set({ uid } as any, { silent: true });
+      super.set({ uid } as any, { silent: true } as any);
     }
 
-    // Never track UID mutations via patches
-    const attrsNoUid = 'uid' in (attrs as any) ? (({ uid: _uid, ...rest }) => rest)(attrs as any) : attrs;
-
-    const objectId = this.getPatchObjectId();
-
-    if (!isValidPatchUid(objectId)) {
+    if (!isValidPatchUid(uid)) {
       return super.set(attrsNoUid as any, opts as any);
     }
-    const beforeState = serialize(this.attributes || {});
+
     const result = super.set(attrsNoUid as any, opts as any);
     const afterState = serialize(this.attributes || {});
+    (afterState as any).uid = uid;
     const [, patches, inversePatches] = produceWithPatches<any>(beforeState, (draft: any) => {
       syncDraftToState(draft, afterState);
     });
 
     if (patches.length || inversePatches.length) {
-      const prefix: PatchPath = [this.patchObjectType as string, objectId, 'attributes'];
+      const prefix: PatchPath = [this.patchObjectType as string, uid, 'attributes'];
       const activePatch = pm.createOrGetCurrentPatch();
       activePatch.changes.push(...normalizePatchPaths(patches, prefix));
       activePatch.reverseChanges.push(...normalizePatchPaths(inversePatches, prefix));
