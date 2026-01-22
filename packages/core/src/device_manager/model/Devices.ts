@@ -1,11 +1,9 @@
-import CollectionWithPatches from '../../patch_manager/CollectionWithPatches';
+import { Collection } from '../../common';
 import Device from './Device';
 
-export default class Devices extends CollectionWithPatches<Device> {
-  patchObjectType = 'devices';
-
+export default class Devices extends Collection<Device> {
   constructor(models?: any, opts: any = {}) {
-    super(models, { ...opts, patchObjectType: 'devices', collectionId: opts.collectionId || 'global' } as any);
+    super(models, opts);
   }
 }
 

@@ -14,10 +14,9 @@ export default class Traits extends CollectionWithCategories<Trait> {
   target!: Component;
   tf: TraitFactory;
   categories = new Categories();
-  patchObjectType = 'traits';
 
   constructor(coll: TraitProperties[], options: { em: EditorModel; collectionId?: string }) {
-    super(coll, { ...options, patchObjectType: 'traits', collectionId: options.collectionId || 'global' } as any);
+    super(coll, options as any);
     const { em } = options;
     this.em = em;
     this.categories = new Categories([], {

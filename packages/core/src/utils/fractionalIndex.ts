@@ -1,5 +1,5 @@
-// License: CC0 (no rights reserved).
-// See https://github.com/rocicorp/fractional-indexing
+// Based on rocicorp/fractional-indexing (CC0)
+// https://github.com/rocicorp/fractional-indexing
 
 export const BASE_62_DIGITS = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
 

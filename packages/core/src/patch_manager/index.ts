@@ -49,6 +49,11 @@ const createPatchId = () => {
   return typeof randomUUID === 'function' ? randomUUID.call(crypto) : createId();
 };
 
+const isValidPatchUid = (uid: any): uid is string | number => {
+  if (typeof uid === 'string') return uid !== '';
+  return typeof uid === 'number';
+};
+
 export default class PatchManager {
   isEnabled: boolean;
   private emitter?: PatchEventEmitter;
@@ -71,10 +76,9 @@ export default class PatchManager {
   trackModel(model: any): void {
     if (!model) return;
     const type = model.patchObjectType;
-    const idFromGetId = typeof model.getId === 'function' ? model.getId() : undefined;
-    const hasGetId = typeof idFromGetId === 'string' ? idFromGetId !== '' : typeof idFromGetId === 'number';
-    const id = hasGetId ? idFromGetId : (model.id ?? model.get?.('id') ?? model.cid);
-    if (!type || id == null) return;
+    const id =
+      typeof model.getPatchObjectId === 'function' ? model.getPatchObjectId() : (model.get?.('uid') ?? model.uid);
+    if (!type || !isValidPatchUid(id)) return;
     const idStr = String(id);
     this.trackedModels[type] = this.trackedModels[type] || {};
     this.trackedModels[type][idStr] = model;
@@ -83,10 +87,9 @@ export default class PatchManager {
   untrackModel(model: any): void {
     if (!model) return;
     const type = model.patchObjectType;
-    const idFromGetId = typeof model.getId === 'function' ? model.getId() : undefined;
-    const hasGetId = typeof idFromGetId === 'string' ? idFromGetId !== '' : typeof idFromGetId === 'number';
-    const id = hasGetId ? idFromGetId : (model.id ?? model.get?.('id') ?? model.cid);
-    if (!type || id == null) return;
+    const id =
+      typeof model.getPatchObjectId === 'function' ? model.getPatchObjectId() : (model.get?.('uid') ?? model.uid);
+    if (!type || !isValidPatchUid(id)) return;
     const idStr = String(id);
     this.trackedModels[type] && delete this.trackedModels[type][idStr];
   }
@@ -94,13 +97,9 @@ export default class PatchManager {
   trackCollection(collection: any): void {
     if (!collection) return;
     const type = collection.patchObjectType;
-    const idFromGetter =
-      typeof collection.getPatchCollectionId === 'function' ? collection.getPatchCollectionId() : undefined;
-    const hasGetterId = typeof idFromGetter === 'string' ? idFromGetter !== '' : typeof idFromGetter === 'number';
-    const id = hasGetterId
-      ? idFromGetter
-      : (collection.collectionId ?? collection.id ?? collection.get?.('id') ?? collection.cid);
-    if (!type || id == null) return;
+    const id =
+      typeof collection.getPatchCollectionId === 'function' ? collection.getPatchCollectionId() : collection.collectionId;
+    if (!type || !isValidPatchUid(id)) return;
     const idStr = String(id);
     this.trackedCollections[type] = this.trackedCollections[type] || {};
     this.trackedCollections[type][idStr] = collection;
@@ -109,15 +108,15 @@ export default class PatchManager {
   untrackCollection(collection: any): void {
     if (!collection) return;
     const type = collection.patchObjectType;
-    const idFromGetter =
-      typeof collection.getPatchCollectionId === 'function' ? collection.getPatchCollectionId() : undefined;
-    const hasGetterId = typeof idFromGetter === 'string' ? idFromGetter !== '' : typeof idFromGetter === 'number';
-    const id = hasGetterId
-      ? idFromGetter
-      : (collection.collectionId ?? collection.id ?? collection.get?.('id') ?? collection.cid);
-    if (!type || id == null) return;
+    const id =
+      typeof collection.getPatchCollectionId === 'function' ? collection.getPatchCollectionId() : collection.collectionId;
+    if (!type || !isValidPatchUid(id)) return;
     const idStr = String(id);
     this.trackedCollections[type] && delete this.trackedCollections[type][idStr];
+  }
+
+  createId(): string {
+    return createPatchId();
   }
 
   createOrGetCurrentPatch(): PatchProps {
@@ -294,7 +293,7 @@ export default class PatchManager {
     });
   }
 
-  private withSuppressedTracking<T>(cb: () => T): T {
+  withSuppressedTracking<T>(cb: () => T): T {
     const prevSuppress = this.suppressTracking;
     this.suppressTracking = true;
 
@@ -344,4 +343,6 @@ export default class PatchManager {
     this.emitter?.trigger?.(event, payload);
   }
 }
+
 export { default as CollectionWithPatches } from './CollectionWithPatches';
+export { PatchObjectsRegistry, createRegistryApplyPatchHandler, type PatchUid } from './registry';

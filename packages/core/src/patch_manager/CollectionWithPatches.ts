@@ -1,5 +1,5 @@
 import { generateNKeysBetween } from '../utils/fractionalIndex';
-import { Collection, Model, AddOptions } from '../common';
+import { AddOptions, Collection, Model } from '../common';
 import EditorModel from '../editor/model/Editor';
 import PatchManager, { PatchChangeProps, PatchPath } from './index';
 
@@ -7,6 +7,7 @@ export interface CollectionWithPatchesOptions extends AddOptions {
   em?: EditorModel;
   collectionId?: string;
   patchObjectType?: string;
+  trackOrder?: boolean;
 }
 
 export type FractionalEntry<T extends Model = Model> = {
@@ -30,6 +31,7 @@ export default class CollectionWithPatches<T extends Model = Model> extends Coll
   private pendingRemovals: Record<string, PendingRemoval> = {};
   private suppressSortRebuild = false;
   private isResetting = false;
+  private trackOrder = true;
 
   constructor(models?: any, options: CollectionWithPatchesOptions = {}) {
     const nextOptions = { ...options };
@@ -37,20 +39,26 @@ export default class CollectionWithPatches<T extends Model = Model> extends Coll
     this.em = nextOptions.em;
     this.collectionId = nextOptions.collectionId;
     this.patchObjectType = nextOptions.patchObjectType;
-    this.on('sort', this.handleSort, this);
-    this.rebuildFractionalMap(false);
+    this.trackOrder = nextOptions.trackOrder !== false;
+
+    if (this.trackOrder) {
+      this.on('sort', this.handleSort, this);
+      this.rebuildFractionalMap(false);
+    }
 
     // Ensure tracking/registry works for apply(external) in enabled mode.
     Promise.resolve().then(() => {
       const pm = this.patchManager;
-      if (pm?.isEnabled) {
+      const id = this.getPatchCollectionId();
+      if (pm?.isEnabled && this.patchObjectType && id != null) {
         pm.trackCollection?.(this as any);
       }
     });
   }
 
   get patchManager(): PatchManager | undefined {
-    return this.em?.Patches;
+    const pm = (this.em as any)?.Patches as PatchManager | undefined;
+    return pm?.isEnabled && this.patchObjectType ? pm : undefined;
   }
 
   setCollectionId(id: string) {
@@ -61,7 +69,7 @@ export default class CollectionWithPatches<T extends Model = Model> extends Coll
   add(models: Array<T | {}>, options?: CollectionWithPatchesOptions): T[];
   add(models: any, options?: CollectionWithPatchesOptions): any {
     const result = super.add(models, this.withEmOptions(options) as any);
-    !this.isResetting && this.assignKeysForMissingModels();
+    this.trackOrder && !this.isResetting && this.assignKeysForMissingModels();
     return result as any;
   }
 
@@ -69,6 +77,8 @@ export default class CollectionWithPatches<T extends Model = Model> extends Coll
   remove(models: Array<T | {}>, options?: any): T[];
   remove(models: any, options?: any): any {
     const removed = super.remove(models, options as any);
+    if (!this.trackOrder) return removed;
+
     const removedModels = Array.isArray(removed) ? removed : removed ? [removed] : [];
     removedModels.forEach((model) => {
       const id = this.getModelId(model as any);
@@ -96,9 +106,11 @@ export default class CollectionWithPatches<T extends Model = Model> extends Coll
     this.isResetting = true;
     try {
       const result = super.reset(models, this.withEmOptions(options) as any);
-      this.fractionalMap = {};
-      this.pendingRemovals = {};
-      this.rebuildFractionalMap();
+      if (this.trackOrder) {
+        this.fractionalMap = {};
+        this.pendingRemovals = {};
+        this.rebuildFractionalMap();
+      }
       return result;
     } finally {
       this.isResetting = false;
@@ -106,12 +118,13 @@ export default class CollectionWithPatches<T extends Model = Model> extends Coll
   }
 
   protected handleSort(_collection?: any, options: any = {}) {
+    if (!this.trackOrder) return;
     if (this.suppressSortRebuild || options?.fromPatches) return;
     this.rebuildFractionalMap();
   }
 
   protected getPatchCollectionId(): string | undefined {
-    return this.collectionId || (this as any).cid;
+    return this.collectionId;
   }
 
   protected withEmOptions(options?: CollectionWithPatchesOptions) {
@@ -123,6 +136,7 @@ export default class CollectionWithPatches<T extends Model = Model> extends Coll
   }
 
   protected rebuildFractionalMap(record: boolean = true) {
+    if (!this.trackOrder) return;
     const ids = this.models.map((model) => this.getModelId(model)).filter(Boolean);
     const keys = ids.length ? generateNKeysBetween(null, null, ids.length) : [];
     const prevMap = { ...this.fractionalMap };
@@ -148,6 +162,7 @@ export default class CollectionWithPatches<T extends Model = Model> extends Coll
   }
 
   protected assignKeysForMissingModels() {
+    if (!this.trackOrder) return;
     let idx = 0;
     const models = this.models;
 

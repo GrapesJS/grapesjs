@@ -1,13 +1,12 @@
 import { isString, isUndefined } from 'underscore';
 import Category from '../../abstract/ModuleCategory';
-import { LocaleOptions, SetOptions } from '../../common';
+import { LocaleOptions, SetOptions, Model } from '../../common';
 import Component from '../../dom_components/model/Component';
 import EditorModel from '../../editor/model/Editor';
 import { isDef } from '../../utils/mixins';
 import TraitsEvents, { TraitGetValueOptions, TraitOption, TraitProperties, TraitSetValueOptions } from '../types';
 import TraitView from '../view/TraitView';
 import Traits from './Traits';
-import ModelWithPatches from '../../patch_manager/ModelWithPatches';
 
 /**
  * @property {String} id Trait id, eg. `my-trait-id`.
@@ -22,8 +21,7 @@ import ModelWithPatches from '../../patch_manager/ModelWithPatches';
  * @module docsjs.Trait
  *
  */
-export default class Trait extends ModelWithPatches<TraitProperties> {
-  patchObjectType = 'trait';
+export default class Trait extends Model<TraitProperties> {
   target!: Component;
   em: EditorModel;
   view?: TraitView;
