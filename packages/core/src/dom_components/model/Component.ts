@@ -1,4 +1,5 @@
 import { Model, ModelDestroyOptions } from 'backbone';
+import PatchManager, { type PatchPath } from '../../patch_manager';
 import {
   bindAll,
   forEach,
@@ -158,6 +159,22 @@ type GetComponentStyleOpts = GetStyleOpts & {
  * @module docsjs.Component
  */
 export default class Component extends StyleableModel<ComponentProperties> {
+  patchObjectType = 'components';
+
+  protected getPatchExcludedPaths(): PatchPath[] {
+    return [
+      ['toolbar'],
+      ['traits'],
+      ['status'],
+      ['open'],
+      ['delegate'],
+      ['_undoexc'],
+      ['dataResolverWatchers'],
+      ['attributes', 'class'],
+      // Structural changes are tracked via `componentsOrder`
+      ['components'],
+    ];
+  }
   /**
    * @private
    * @ts-ignore */
@@ -292,75 +309,84 @@ export default class Component extends StyleableModel<ComponentProperties> {
 
     bindAll(this, '__upSymbProps', '__upSymbCls', '__upSymbComps', 'syncOnComponentChange');
 
-    // Propagate properties from parent if indicated
-    const parent = this.parent();
-    const parentAttr = parent?.attributes;
-    const propagate = this.get('propagate');
-    propagate && this.set('propagate', isArray(propagate) ? propagate : [propagate]);
+    const pm = em && ((em as any).Patches as PatchManager | undefined);
+    const init = () => {
+      // Propagate properties from parent if indicated
+      const parent = this.parent();
+      const parentAttr = parent?.attributes;
+      const propagate = this.get('propagate');
+      propagate && this.set('propagate', isArray(propagate) ? propagate : [propagate]);
 
-    if (parentAttr && parentAttr.propagate && !propagate) {
-      const newAttr: Partial<ComponentProperties> = {};
-      const toPropagate = parentAttr.propagate;
-      toPropagate.forEach((prop) => (newAttr[prop] = parent.get(prop as string)));
-      newAttr.propagate = toPropagate;
-      this.set({ ...newAttr, ...props });
-    }
-
-    // Check void elements
-    if (opt && opt.config && opt.config.voidElements!.indexOf(this.get('tagName')!) >= 0) {
-      this.set('void', true);
-    }
-
-    opt.em = em;
-    this.opt = opt;
-    this.em = em!;
-    this.config = opt.config || {};
-    const defaultAttrs = {
-      ...(result(this, 'defaults').attributes || {}),
-      ...(this.get('attributes') || {}),
-    };
-    const attrs = this.dataResolverWatchers.getValueOrResolver('attributes', defaultAttrs);
-    this.setAttributes(attrs);
-    this.ccid = Component.createId(this, opt as any);
-    this.preInit();
-    this.initClasses();
-    this.initComponents();
-    this.initTraits();
-    this.initToolbar();
-    this.initScriptProps();
-    this.listenTo(this, 'change:script', this.scriptUpdated);
-    this.listenTo(this, 'change:tagName', this.tagUpdated);
-    this.listenTo(this, 'change:attributes', this.attrUpdated);
-    this.listenTo(this, 'change:attributes:id', this._idUpdated);
-    this.on('change:toolbar', this.__emitUpdateTlb);
-    this.on('change', this.__onChange);
-    this.on(keyUpdateInside, this.__propToParent);
-    this.set('status', '');
-    this.views = [];
-
-    // Register global updates for collection properties
-    ['classes', 'traits', 'components'].forEach((name) => {
-      const events = `add remove reset ${name !== 'components' ? 'change' : ''}`;
-      this.listenTo(this.get(name), events.trim(), (...args) => this.emitUpdate(name, ...args));
-    });
-
-    if (!opt.temporary) {
-      // Add component styles
-      const cssc = em && em.Css;
-      const { styles, type } = this.attributes;
-      if (styles && cssc) {
-        cssc.addCollection(styles, { avoidUpdateStyle: true }, { group: `cmp:${type}` });
+      if (parentAttr && parentAttr.propagate && !propagate) {
+        const newAttr: Partial<ComponentProperties> = {};
+        const toPropagate = parentAttr.propagate;
+        toPropagate.forEach((prop) => (newAttr[prop] = parent.get(prop as string)));
+        newAttr.propagate = toPropagate;
+        this.set({ ...newAttr, ...props });
       }
 
-      this._moveInlineStyleToRule();
-      this.__postAdd();
-      this.init();
-      isSymbol(this) && initSymbol(this);
-      em?.trigger(ComponentsEvents.create, this, opt);
-    }
+      // Check void elements
+      if (opt && opt.config && opt.config.voidElements!.indexOf(this.get('tagName')!) >= 0) {
+        this.set('void', true);
+      }
 
-    if (avoidInline(em)) {
-      this.dataResolverWatchers.disableStyles();
+      opt.em = em;
+      this.opt = opt;
+      this.em = em!;
+      this.config = opt.config || {};
+      const defaultAttrs = {
+        ...(result(this, 'defaults').attributes || {}),
+        ...(this.get('attributes') || {}),
+      };
+      const attrs = this.dataResolverWatchers.getValueOrResolver('attributes', defaultAttrs);
+      this.setAttributes(attrs);
+      this.ccid = Component.createId(this, opt as any);
+      this.preInit();
+      this.initClasses();
+      this.initComponents();
+      this.initTraits();
+      this.initToolbar();
+      this.initScriptProps();
+      this.listenTo(this, 'change:script', this.scriptUpdated);
+      this.listenTo(this, 'change:tagName', this.tagUpdated);
+      this.listenTo(this, 'change:attributes', this.attrUpdated);
+      this.listenTo(this, 'change:attributes:id', this._idUpdated);
+      this.on('change:toolbar', this.__emitUpdateTlb);
+      this.on('change', this.__onChange);
+      this.on(keyUpdateInside, this.__propToParent);
+      this.set('status', '');
+      this.views = [];
+
+      // Register global updates for collection properties
+      ['classes', 'traits', 'components'].forEach((name) => {
+        const events = `add remove reset ${name !== 'components' ? 'change' : ''}`;
+        this.listenTo(this.get(name), events.trim(), (...args) => this.emitUpdate(name, ...args));
+      });
+
+      if (!opt.temporary) {
+        // Add component styles
+        const cssc = em && em.Css;
+        const { styles, type } = this.attributes;
+        if (styles && cssc) {
+          cssc.addCollection(styles, { avoidUpdateStyle: true }, { group: `cmp:${type}` });
+        }
+
+        this._moveInlineStyleToRule();
+        this.__postAdd();
+        this.init();
+        isSymbol(this) && initSymbol(this);
+        em?.trigger(ComponentsEvents.create, this, opt);
+      }
+
+      if (avoidInline(em)) {
+        this.dataResolverWatchers.disableStyles();
+      }
+    };
+
+    if (pm?.isEnabled) {
+      pm.withSuppressedTracking(init);
+    } else {
+      init();
     }
   }
 
@@ -1017,7 +1043,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
     // Have to add components after the init, otherwise the parent
     // is not visible
     const comps = new Components([], this.opt);
-    comps.parent = this;
+    comps.setParent(this);
     const components = this.get('components');
     const addChild = !this.opt.avoidChildren;
     this.set('components', comps);

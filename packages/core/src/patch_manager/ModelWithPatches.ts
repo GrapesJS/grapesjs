@@ -35,6 +35,39 @@ const normalizePatchPaths = (patches: PatchChangeProps[], prefix: PatchPath): Pa
   }));
 
 const syncDraftToState = (draft: any, target: any) => {
+  const isObject = (value: any): value is Record<string, any> =>
+    value != null && typeof value === 'object' && !Array.isArray(value);
+
+  if (Array.isArray(draft) && Array.isArray(target)) {
+    if (draft.length > target.length) {
+      draft.splice(target.length, draft.length - target.length);
+    }
+
+    for (let i = 0; i < target.length; i++) {
+      const draftValue = draft[i];
+      const targetValue = target[i];
+
+      if (Array.isArray(draftValue) && Array.isArray(targetValue)) {
+        syncDraftToState(draftValue, targetValue);
+      } else if (isObject(draftValue) && isObject(targetValue)) {
+        syncDraftToState(draftValue, targetValue);
+      } else if (draftValue !== targetValue) {
+        draft[i] = targetValue;
+      }
+    }
+
+    // Add new entries (after syncing shared indexes).
+    for (let i = draft.length; i < target.length; i++) {
+      draft.push(target[i]);
+    }
+
+    return;
+  }
+
+  if (!isObject(draft) || !isObject(target)) {
+    return;
+  }
+
   Object.keys(draft).forEach((key) => {
     if (!(key in target)) {
       delete draft[key];
@@ -42,7 +75,16 @@ const syncDraftToState = (draft: any, target: any) => {
   });
 
   Object.keys(target).forEach((key) => {
-    draft[key] = target[key];
+    const draftValue = draft[key];
+    const targetValue = target[key];
+
+    if (Array.isArray(draftValue) && Array.isArray(targetValue)) {
+      syncDraftToState(draftValue, targetValue);
+    } else if (isObject(draftValue) && isObject(targetValue)) {
+      syncDraftToState(draftValue, targetValue);
+    } else if (draftValue !== targetValue) {
+      draft[key] = targetValue;
+    }
   });
 };
 
@@ -66,9 +108,28 @@ const stripUid = <T extends ObjectHash>(attrs: Partial<T>): Partial<T> => {
   return attrs;
 };
 
+const isPatchPathExcluded = (path: PatchPath, exclusions: PatchPath[]) =>
+  exclusions.some((excludedPath) =>
+    excludedPath.every((excludedSeg, index) => path[index] === excludedSeg),
+  );
+
+const filterExcludedPatches = (patches: PatchChangeProps[], exclusions: PatchPath[]) => {
+  if (!exclusions.length || !patches.length) return patches;
+  return patches.filter((patch) => {
+    const { path, from } = patch;
+    if (isPatchPathExcluded(path, exclusions)) return false;
+    if (from && isPatchPathExcluded(from, exclusions)) return false;
+    return true;
+  });
+};
+
 export default class ModelWithPatches<T extends ObjectHash = any, S = SetOptions, E = any> extends Model<T, S, E> {
   em?: EditorModel;
   patchObjectType?: string;
+
+  protected getPatchExcludedPaths(): PatchPath[] {
+    return [];
+  }
 
   protected get patchManager(): PatchManager | undefined {
     const pm = (this.em as any)?.Patches as PatchManager | undefined;
@@ -124,11 +185,16 @@ export default class ModelWithPatches<T extends ObjectHash = any, S = SetOptions
       syncDraftToState(draft, afterState);
     });
 
-    if (patches.length || inversePatches.length) {
+    const excludedPaths = this.getPatchExcludedPaths();
+    const nextPatches = filterExcludedPatches(patches, excludedPaths);
+    const nextInversePatches = filterExcludedPatches(inversePatches, excludedPaths);
+
+    if (nextPatches.length || nextInversePatches.length) {
       const prefix: PatchPath = [this.patchObjectType as string, uid, 'attributes'];
       const activePatch = pm.createOrGetCurrentPatch();
-      activePatch.changes.push(...normalizePatchPaths(patches, prefix));
-      activePatch.reverseChanges.push(...normalizePatchPaths(inversePatches, prefix));
+      activePatch.changes.push(...normalizePatchPaths(nextPatches, prefix));
+      // Reverse changes should be applied in reverse order.
+      activePatch.reverseChanges.unshift(...normalizePatchPaths(nextInversePatches, prefix));
     }
 
     return result;

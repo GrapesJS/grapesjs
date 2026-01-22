@@ -1,10 +1,13 @@
 import { isEmpty, isArray, isString, isFunction, each, includes, extend, flatten, keys } from 'underscore';
 import Component, { SetAttrOptions } from './Component';
-import { AddOptions, Collection } from '../../common';
+import { AddOptions } from '../../common';
 import { DomComponentsConfig } from '../config/config';
 import EditorModel from '../../editor/model/Editor';
 import ComponentManager from '..';
 import CssRule from '../../css_composer/model/CssRule';
+import CollectionWithPatches from '../../patch_manager/CollectionWithPatches';
+import { generateKeyBetween, generateNKeysBetween } from '../../utils/fractionalIndex';
+import { serialize } from '../../utils/mixins';
 
 import {
   ComponentAdd,
@@ -121,7 +124,23 @@ interface AddComponentOptions extends AddOptions {
   keepIds?: string[];
 }
 
-export default class Components extends Collection</**
+const isValidPatchUid = (uid: any): uid is string | number => {
+  if (typeof uid === 'string') return uid !== '';
+  return typeof uid === 'number';
+};
+
+const isOrderMap = (value: any): value is Record<string, any> =>
+  value != null && typeof value === 'object' && !Array.isArray(value);
+
+const getOrderKeyByUid = (orderMap: Record<string, any>, uid: string | number) => {
+  const entries = Object.entries(orderMap);
+  const match = entries.find(([, value]) => value === uid);
+  return match ? match[0] : undefined;
+};
+
+const TEMP_MOVE_FLAG = '__patchTempMove';
+
+export default class Components extends CollectionWithPatches</**
  * Keep this format to avoid errors in TS bundler */
 /** @ts-ignore */
 Component> {
@@ -132,11 +151,13 @@ Component> {
   parent?: Component;
 
   constructor(models: any, opt: ComponentsOptions) {
-    super(models, opt);
+    super(models, { ...opt, em: opt.em, patchObjectType: 'components' });
     this.opt = opt;
     this.listenTo(this, 'add', this.onAdd);
+    this.listenTo(this, 'remove', this.handlePatchRemove);
     this.listenTo(this, 'remove', this.removeChildren);
     this.listenTo(this, 'reset', this.resetChildren);
+    this.listenTo(this, 'add', this.handlePatchAdd);
     const { em, config } = opt;
     this.config = config;
     this.em = em;
@@ -145,6 +166,165 @@ Component> {
 
   get events() {
     return this.domc?.events!;
+  }
+
+  setParent(parent: Component) {
+    this.parent = parent;
+    this.stopListening(parent, 'change:componentsOrder', this.handleComponentsOrderChange);
+    this.listenTo(parent, 'change:componentsOrder', this.handleComponentsOrderChange);
+    this.patchManager && this.ensureParentOrderMap();
+  }
+
+  protected handleComponentsOrderChange(_model: Component, value: any, opts: any = {}) {
+    if (opts.fromComponents) return;
+    if (!isOrderMap(value)) return;
+
+    const ordered = Object.entries(value)
+      .sort(([a], [b]) => a.localeCompare(b))
+      .map(([, uid]) => uid);
+
+    const byUid = new Map<string | number, Component>();
+    this.models.forEach((model) => {
+      const uid = (model as any).get?.('uid');
+      if (isValidPatchUid(uid)) {
+        byUid.set(uid, model);
+      }
+    });
+
+    const nextModels: Component[] = [];
+    ordered.forEach((uid) => {
+      const model = byUid.get(uid);
+      model && nextModels.push(model);
+    });
+
+    // Append leftovers (eg. models without uid/order entry) keeping current order.
+    const included = new Set(nextModels.map((m) => m.cid));
+    this.models.forEach((model) => {
+      if (!included.has(model.cid)) {
+        nextModels.push(model);
+      }
+    });
+
+    if (!nextModels.length) return;
+
+    this.models.splice(0, this.models.length, ...nextModels);
+    this.trigger('sort', this, { fromPatches: true });
+  }
+
+  protected ensureModelUid(model: Component): string | number | undefined {
+    const uid = (model as any).get?.('uid');
+    if (isValidPatchUid(uid)) return uid;
+    const pm = this.patchManager;
+    if (!pm) return;
+    (model as any).set?.({}, { silent: true });
+    const nextUid = (model as any).get?.('uid');
+    return isValidPatchUid(nextUid) ? nextUid : undefined;
+  }
+
+  protected ensureParentOrderMap(excludeUid?: string | number): Record<string, any> {
+    const parent = this.parent;
+    if (!parent) return {};
+
+    const current = parent.get('componentsOrder');
+    if (isOrderMap(current)) return current;
+
+    if (!this.patchManager) return {};
+    const models = this.models.filter((model) => {
+      const uid = this.ensureModelUid(model);
+      return uid !== excludeUid;
+    });
+
+    const uids = models.map((model) => this.ensureModelUid(model)).filter(isValidPatchUid);
+    const keys = generateNKeysBetween(null, null, uids.length);
+    const map: Record<string, any> = {};
+    uids.forEach((uid, index) => {
+      map[keys[index]] = uid;
+    });
+
+    // Initialize without recording a patch (it's a derived structure).
+    (parent as any).attributes.componentsOrder = map;
+    return map;
+  }
+
+  protected handlePatchAdd(model: Component, _collection: any, opts: any = {}) {
+    const pm = this.patchManager;
+    const parent = this.parent;
+    if (!pm || !parent) return;
+
+    const uid = this.ensureModelUid(model);
+    const parentUid = this.ensureModelUid(parent as any);
+    if (!isValidPatchUid(uid) || !isValidPatchUid(parentUid)) return;
+
+    const isTempMove = !!(model as any)[TEMP_MOVE_FLAG];
+    if (isTempMove) {
+      delete (model as any)[TEMP_MOVE_FLAG];
+    }
+
+    if (!isTempMove && !opts.fromUndo) {
+      const patch = pm.createOrGetCurrentPatch();
+      const attrPrefix = [this.patchObjectType as string, uid, 'attributes'];
+      const isAttrPatch = (p: any) => {
+        const { path, from } = p || {};
+        const startsWith = (value?: any[]) => attrPrefix.every((seg, index) => value?.[index] === seg);
+        return startsWith(path) || startsWith(from);
+      };
+      patch.changes = patch.changes.filter((p: any) => !isAttrPatch(p));
+      patch.reverseChanges = patch.reverseChanges.filter((p: any) => !isAttrPatch(p));
+      patch.changes.push({
+        op: 'add',
+        path: [this.patchObjectType as string, uid],
+        value: { attributes: serialize(model.toJSON()) },
+      });
+      patch.reverseChanges.unshift({ op: 'remove', path: [this.patchObjectType as string, uid] });
+    }
+
+    const baseMap = this.ensureParentOrderMap(uid);
+    const cleanMap = Object.fromEntries(Object.entries(baseMap).filter(([, value]) => value !== uid));
+
+    const index = this.indexOf(model);
+    const prevModel = index > 0 ? this.at(index - 1) : undefined;
+    const nextModel = index < this.length - 1 ? this.at(index + 1) : undefined;
+    const prevUid = prevModel ? this.ensureModelUid(prevModel) : undefined;
+    const nextUid = nextModel ? this.ensureModelUid(nextModel) : undefined;
+    const prevKey = prevUid != null ? getOrderKeyByUid(cleanMap, prevUid) : undefined;
+    const nextKey = nextUid != null ? getOrderKeyByUid(cleanMap, nextUid) : undefined;
+
+    const newKey = generateKeyBetween(prevKey ?? null, nextKey ?? null);
+    const nextMap = { ...cleanMap, [newKey]: uid };
+    parent.set('componentsOrder', nextMap, { ...opts, fromComponents: true });
+  }
+
+  protected handlePatchRemove(model: Component, _collection: any, opts: any = {}) {
+    const pm = this.patchManager;
+    const parent = this.parent;
+    if (!pm || !parent) return;
+
+    const uid = this.ensureModelUid(model);
+    const parentUid = this.ensureModelUid(parent as any);
+    if (!isValidPatchUid(uid) || !isValidPatchUid(parentUid)) return;
+
+    if (opts.temporary) {
+      (model as any)[TEMP_MOVE_FLAG] = true;
+    }
+
+    const currentMap = this.ensureParentOrderMap();
+    const orderKey = isOrderMap(currentMap) ? getOrderKeyByUid(currentMap, uid) : undefined;
+
+    if (orderKey) {
+      const { [orderKey]: _removed, ...rest } = currentMap;
+      parent.set('componentsOrder', rest, { ...opts, fromComponents: true });
+    }
+
+    const isTemp = opts.temporary || opts.fromUndo;
+    if (isTemp) return;
+
+    const patch = pm.createOrGetCurrentPatch();
+    patch.changes.push({ op: 'remove', path: [this.patchObjectType as string, uid] });
+    patch.reverseChanges.unshift({
+      op: 'add',
+      path: [this.patchObjectType as string, uid],
+      value: { attributes: serialize(model.toJSON()) },
+    });
   }
 
   resetChildren(models: Components, opts: { previousModels?: Component[]; keepIds?: string[] } = {}) {

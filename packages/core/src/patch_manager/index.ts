@@ -180,7 +180,7 @@ export default class PatchManager {
     });
   }
 
-  private withSuppressedTracking<T>(cb: () => T): T {
+  withSuppressedTracking<T>(cb: () => T): T {
     const prevSuppress = this.suppressTracking;
     this.suppressTracking = true;
 
