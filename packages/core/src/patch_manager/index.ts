@@ -65,6 +65,10 @@ export default class PatchManager {
     this.applyHandler = options.applyPatch;
   }
 
+  createId(): string {
+    return createPatchId();
+  }
+
   createOrGetCurrentPatch(): PatchProps {
     if (!this.shouldRecord()) {
       return this.createVoidPatch();
@@ -226,3 +230,5 @@ export default class PatchManager {
     this.emitter?.trigger?.(event, payload);
   }
 }
+
+export { PatchObjectsRegistry, createRegistryApplyPatchHandler, type PatchUid } from './registry';
