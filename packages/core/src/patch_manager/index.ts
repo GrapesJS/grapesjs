@@ -98,7 +98,9 @@ export default class PatchManager {
     if (!collection) return;
     const type = collection.patchObjectType;
     const id =
-      typeof collection.getPatchCollectionId === 'function' ? collection.getPatchCollectionId() : collection.collectionId;
+      typeof collection.getPatchCollectionId === 'function'
+        ? collection.getPatchCollectionId()
+        : collection.collectionId;
     if (!type || !isValidPatchUid(id)) return;
     const idStr = String(id);
     this.trackedCollections[type] = this.trackedCollections[type] || {};
@@ -109,7 +111,9 @@ export default class PatchManager {
     if (!collection) return;
     const type = collection.patchObjectType;
     const id =
-      typeof collection.getPatchCollectionId === 'function' ? collection.getPatchCollectionId() : collection.collectionId;
+      typeof collection.getPatchCollectionId === 'function'
+        ? collection.getPatchCollectionId()
+        : collection.collectionId;
     if (!type || !isValidPatchUid(id)) return;
     const idStr = String(id);
     this.trackedCollections[type] && delete this.trackedCollections[type][idStr];
