@@ -30,4 +30,3 @@ describe('PatchObjectsRegistry', () => {
     expect(model.get('foo')).toBe('baz');
   });
 });
-
