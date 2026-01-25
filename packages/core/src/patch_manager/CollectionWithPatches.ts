@@ -36,4 +36,3 @@ export default class CollectionWithPatches<T extends Model = Model> extends Coll
     return !(opts as any)?.temporary;
   }
 }
-
