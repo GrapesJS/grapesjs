@@ -55,7 +55,10 @@ const createStableUid = () => {
   return typeof randomUUID === 'function' ? randomUUID.call(crypto) : createId();
 };
 
-export default class StyleableModel<T extends StyleableModelProperties = any> extends ModelWithPatches<T, UpdateStyleOptions> {
+export default class StyleableModel<T extends StyleableModelProperties = any> extends ModelWithPatches<
+  T,
+  UpdateStyleOptions
+> {
   em?: EditorModel;
   views: StyleableView[] = [];
   dataResolverWatchers: ModelDataResolverWatchers<T>;

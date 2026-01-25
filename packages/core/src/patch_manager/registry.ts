@@ -88,4 +88,3 @@ export const createRegistryApplyPatchHandler = (registry: PatchObjectsRegistry):
     });
   };
 };
-

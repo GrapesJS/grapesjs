@@ -109,9 +109,7 @@ const stripUid = <T extends ObjectHash>(attrs: Partial<T>): Partial<T> => {
 };
 
 const isPatchPathExcluded = (path: PatchPath, exclusions: PatchPath[]) =>
-  exclusions.some((excludedPath) =>
-    excludedPath.every((excludedSeg, index) => path[index] === excludedSeg),
-  );
+  exclusions.some((excludedPath) => excludedPath.every((excludedSeg, index) => path[index] === excludedSeg));
 
 const filterExcludedPatches = (patches: PatchChangeProps[], exclusions: PatchPath[]) => {
   if (!exclusions.length || !patches.length) return patches;
