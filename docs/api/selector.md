@@ -2,7 +2,7 @@
 
 ## Selector
 
-
+**Extends ModelWithPatches**
 
 ### Properties
 

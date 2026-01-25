@@ -63,7 +63,13 @@ export default class AssetManager extends ItemManagerModule<AssetManagerConfig, 
    */
   constructor(em: EditorModel) {
     // @ts-ignore
-    super(em, 'AssetManager', new Assets([], em), AssetsEvents, defConfig());
+    super(
+      em,
+      'AssetManager',
+      new Assets([], { em, patchObjectType: 'assets', collectionId: 'global' } as any),
+      AssetsEvents,
+      defConfig(),
+    );
     const { all, config } = this;
     // @ts-ignore
     this.assetsVis = new Assets([]);

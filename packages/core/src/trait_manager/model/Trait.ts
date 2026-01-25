@@ -1,6 +1,6 @@
 import { isString, isUndefined } from 'underscore';
 import Category from '../../abstract/ModuleCategory';
-import { LocaleOptions, Model, SetOptions } from '../../common';
+import { LocaleOptions, SetOptions, Model } from '../../common';
 import Component from '../../dom_components/model/Component';
 import EditorModel from '../../editor/model/Editor';
 import { isDef } from '../../utils/mixins';

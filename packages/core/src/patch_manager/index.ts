@@ -1,0 +1,352 @@
+import { createId, serialize } from '../utils/mixins';
+import { applyPatches } from 'immer';
+
+export type PatchOp = 'add' | 'remove' | 'replace' | 'move' | 'copy' | 'test';
+
+export type PatchPath = Array<string | number>;
+
+export type PatchChangeProps = {
+  op: PatchOp;
+  path: PatchPath;
+  value?: any;
+  from?: PatchPath;
+};
+
+export type PatchProps = {
+  id: string;
+  changes: PatchChangeProps[];
+  reverseChanges: PatchChangeProps[];
+};
+
+export type PatchApplyOptions = {
+  external?: boolean;
+  direction?: 'forward' | 'backward';
+};
+
+export type PatchApplyHandler = (changes: PatchChangeProps[], options?: PatchApplyOptions) => void;
+
+export type PatchEventEmitter = {
+  trigger: (event: string, payload?: any) => void;
+};
+
+export type PatchManagerOptions = {
+  enabled?: boolean;
+  emitter?: PatchEventEmitter;
+  applyPatch?: PatchApplyHandler;
+};
+
+export const PatchManagerEvents = {
+  update: 'patch:update',
+  undo: 'patch:undo',
+  redo: 'patch:redo',
+} as const;
+
+type InternalPatch = PatchProps & { recordable: boolean };
+
+const createPatchId = () => {
+  // Prefer UUID when available, fallback to legacy id generator
+  const randomUUID = typeof crypto !== 'undefined' && (crypto as any).randomUUID;
+  return typeof randomUUID === 'function' ? randomUUID.call(crypto) : createId();
+};
+
+const isValidPatchUid = (uid: any): uid is string | number => {
+  if (typeof uid === 'string') return uid !== '';
+  return typeof uid === 'number';
+};
+
+export default class PatchManager {
+  isEnabled: boolean;
+  private emitter?: PatchEventEmitter;
+  private applyHandler?: PatchApplyHandler;
+  private history: PatchProps[] = [];
+  private redoStack: PatchProps[] = [];
+  private activePatch?: InternalPatch;
+  private updateDepth = 0;
+  private finalizeScheduled = false;
+  private suppressTracking = false;
+  private trackedModels: Record<string, Record<string, any>> = {};
+  private trackedCollections: Record<string, Record<string, any>> = {};
+
+  constructor(options: PatchManagerOptions = {}) {
+    this.isEnabled = !!options.enabled;
+    this.emitter = options.emitter;
+    this.applyHandler = options.applyPatch;
+  }
+
+  trackModel(model: any): void {
+    if (!model) return;
+    const type = model.patchObjectType;
+    const id =
+      typeof model.getPatchObjectId === 'function' ? model.getPatchObjectId() : (model.get?.('uid') ?? model.uid);
+    if (!type || !isValidPatchUid(id)) return;
+    const idStr = String(id);
+    this.trackedModels[type] = this.trackedModels[type] || {};
+    this.trackedModels[type][idStr] = model;
+  }
+
+  untrackModel(model: any): void {
+    if (!model) return;
+    const type = model.patchObjectType;
+    const id =
+      typeof model.getPatchObjectId === 'function' ? model.getPatchObjectId() : (model.get?.('uid') ?? model.uid);
+    if (!type || !isValidPatchUid(id)) return;
+    const idStr = String(id);
+    this.trackedModels[type] && delete this.trackedModels[type][idStr];
+  }
+
+  trackCollection(collection: any): void {
+    if (!collection) return;
+    const type = collection.patchObjectType;
+    const id =
+      typeof collection.getPatchCollectionId === 'function'
+        ? collection.getPatchCollectionId()
+        : collection.collectionId;
+    if (!type || !isValidPatchUid(id)) return;
+    const idStr = String(id);
+    this.trackedCollections[type] = this.trackedCollections[type] || {};
+    this.trackedCollections[type][idStr] = collection;
+  }
+
+  untrackCollection(collection: any): void {
+    if (!collection) return;
+    const type = collection.patchObjectType;
+    const id =
+      typeof collection.getPatchCollectionId === 'function'
+        ? collection.getPatchCollectionId()
+        : collection.collectionId;
+    if (!type || !isValidPatchUid(id)) return;
+    const idStr = String(id);
+    this.trackedCollections[type] && delete this.trackedCollections[type][idStr];
+  }
+
+  createId(): string {
+    return createPatchId();
+  }
+
+  createOrGetCurrentPatch(): PatchProps {
+    if (!this.shouldRecord()) {
+      return this.createVoidPatch();
+    }
+
+    if (!this.activePatch) {
+      this.activePatch = this.createPatch();
+
+      if (!this.updateDepth) {
+        this.scheduleFinalize();
+      }
+    }
+
+    return this.activePatch;
+  }
+
+  finalizeCurrentPatch(): void {
+    const patch = this.activePatch;
+    this.activePatch = undefined;
+    this.finalizeScheduled = false;
+
+    if (!patch || !patch.recordable) return;
+    if (!patch.changes.length && !patch.reverseChanges.length) return;
+
+    this.add(patch);
+  }
+
+  update(cb: () => void): void {
+    if (!this.isEnabled) {
+      cb();
+      return;
+    }
+
+    this.updateDepth++;
+    this.createOrGetCurrentPatch();
+
+    try {
+      cb();
+    } finally {
+      this.updateDepth--;
+
+      if (this.updateDepth === 0) {
+        this.finalizeCurrentPatch();
+      }
+    }
+  }
+
+  add(patch: PatchProps): void {
+    if (!this.shouldRecord()) return;
+
+    this.history.push(patch);
+    this.redoStack = [];
+    this.emit(PatchManagerEvents.update, patch);
+  }
+
+  apply(patch: PatchProps, opts: { external?: boolean } = {}): void {
+    if (!this.isEnabled) return;
+
+    const { external = false } = opts;
+    const addToHistory = !external;
+
+    if (addToHistory) {
+      this.finalizeCurrentPatch();
+    }
+
+    this.applyChanges(patch.changes, { external, direction: 'forward' });
+
+    if (addToHistory) {
+      this.history.push(patch);
+      this.redoStack = [];
+      this.emit(PatchManagerEvents.update, patch);
+    }
+  }
+
+  undo(): PatchProps | undefined {
+    if (!this.isEnabled) return;
+
+    this.finalizeCurrentPatch();
+    const patch = this.history.pop();
+    if (!patch) return;
+
+    this.applyChanges(patch.reverseChanges, { direction: 'backward' });
+    this.redoStack.push(patch);
+    this.emit(PatchManagerEvents.undo, patch);
+
+    return patch;
+  }
+
+  redo(): PatchProps | undefined {
+    if (!this.isEnabled) return;
+
+    this.finalizeCurrentPatch();
+
+    const patch = this.redoStack.pop();
+    if (!patch) return;
+
+    this.applyChanges(patch.changes, { direction: 'forward' });
+    this.history.push(patch);
+    this.emit(PatchManagerEvents.redo, patch);
+
+    return patch;
+  }
+
+  private applyChanges(changes: PatchChangeProps[], options: PatchApplyOptions = {}) {
+    if (!changes.length) return;
+
+    this.withSuppressedTracking(() => {
+      if (this.applyHandler) {
+        this.applyHandler(changes, options);
+      } else {
+        this.applyTrackedChanges(changes);
+      }
+    });
+  }
+
+  private applyTrackedChanges(changes: PatchChangeProps[]) {
+    const modelGroups = new Map<string, { type: string; id: string; patches: PatchChangeProps[] }>();
+
+    changes.forEach((change) => {
+      const path = change.path || [];
+      if (path.length < 3) return;
+      const type = String(path[0]);
+      const targetId = String(path[1]);
+      const scope = String(path[2]);
+
+      if (scope === 'attributes') {
+        const groupKey = `${type}::${targetId}`;
+        const group = modelGroups.get(groupKey) || { type, id: targetId, patches: [] };
+        group.patches.push(change);
+        modelGroups.set(groupKey, group);
+        return;
+      }
+
+      if (scope === 'order') {
+        const modelId = path[3] != null ? String(path[3]) : '';
+        const coll = this.trackedCollections[type]?.[targetId];
+        if (coll && typeof coll.applyOrderKeyPatch === 'function') {
+          coll.applyOrderKeyPatch(modelId, change.op, change.value);
+        }
+      }
+    });
+
+    modelGroups.forEach(({ type, id, patches }) => {
+      const model = this.trackedModels[type]?.[id];
+      if (!model || typeof model.set !== 'function') return;
+
+      const current = serialize(model.attributes || {});
+      const localPatches = patches.map((p) => ({
+        ...p,
+        path: (p.path || []).slice(3),
+        ...(p.from ? { from: (p.from || []).slice(3) } : {}),
+      })) as any;
+
+      const next = applyPatches(current, localPatches);
+      const toSet: any = {};
+      const toUnset: string[] = [];
+
+      Object.keys(next).forEach((key) => {
+        if (current[key] !== next[key]) {
+          toSet[key] = next[key];
+        }
+      });
+
+      Object.keys(current).forEach((key) => {
+        if (!(key in next)) {
+          toUnset.push(key);
+        }
+      });
+
+      Object.keys(toSet).length && model.set(toSet);
+      toUnset.forEach((key) => model.unset?.(key));
+    });
+  }
+
+  withSuppressedTracking<T>(cb: () => T): T {
+    const prevSuppress = this.suppressTracking;
+    this.suppressTracking = true;
+
+    try {
+      return cb();
+    } finally {
+      this.suppressTracking = prevSuppress;
+    }
+  }
+
+  private shouldRecord() {
+    return this.isEnabled && !this.suppressTracking;
+  }
+
+  private createPatch(): InternalPatch {
+    return {
+      id: createPatchId(),
+      changes: [],
+      reverseChanges: [],
+      recordable: true,
+    };
+  }
+
+  private createVoidPatch(): InternalPatch {
+    return {
+      id: '',
+      changes: [],
+      reverseChanges: [],
+      recordable: false,
+    };
+  }
+
+  private scheduleFinalize() {
+    if (this.updateDepth || this.finalizeScheduled) return;
+    this.finalizeScheduled = true;
+
+    Promise.resolve().then(() => {
+      this.finalizeScheduled = false;
+
+      if (!this.updateDepth) {
+        this.finalizeCurrentPatch();
+      }
+    });
+  }
+
+  private emit(event: string, payload: PatchProps): void {
+    this.emitter?.trigger?.(event, payload);
+  }
+}
+
+export { default as CollectionWithPatches } from './CollectionWithPatches';
+export { PatchObjectsRegistry, createRegistryApplyPatchHandler, type PatchUid } from './registry';

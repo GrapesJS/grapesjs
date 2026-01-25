@@ -1,14 +1,15 @@
-import { Collection } from '../../common';
+import CollectionWithPatches from '../../patch_manager/CollectionWithPatches';
 import EditorModel from '../../editor/model/Editor';
 import CssRule, { CssRuleProperties } from './CssRule';
 
-export default class CssRules extends Collection<CssRule> {
+export default class CssRules extends CollectionWithPatches<CssRule> {
   editor: EditorModel;
 
   constructor(props: any, opt: any) {
-    super(props);
+    const em: EditorModel = opt?.em || opt?.editor;
+    super(props, { ...opt, em, patchObjectType: 'css-rules', collectionId: opt?.collectionId || 'global' });
     // Inject editor
-    this.editor = opt?.em;
+    this.editor = em;
 
     // This will put the listener post CssComposer.postLoad
     setTimeout(() => {
@@ -18,7 +19,7 @@ export default class CssRules extends Collection<CssRule> {
   }
 
   toJSON(opts?: any) {
-    const result = Collection.prototype.toJSON.call(this, opts);
+    const result = CollectionWithPatches.prototype.toJSON.call(this, opts);
     return result.filter((rule: CssRuleProperties) => rule.style && !rule.shallow);
   }
 
@@ -38,7 +39,7 @@ export default class CssRules extends Collection<CssRule> {
       models = this.editor.get('Parser').parseCss(models);
     }
     opt.em = this.editor;
-    return Collection.prototype.add.apply(this, [models, opt]);
+    return CollectionWithPatches.prototype.add.apply(this, [models, opt]);
   }
 }
 

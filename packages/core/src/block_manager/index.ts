@@ -61,7 +61,7 @@ export default class BlockManager extends ItemManagerModule<BlockManagerConfig, 
   constructor(em: EditorModel) {
     super(em, 'BlockManager', new Blocks([], { em }), BlocksEvents, defConfig());
     this.blocks = this.all;
-    this.blocksVisible = new Blocks(this.blocks.models, { em });
+    this.blocksVisible = new Blocks(this.blocks.models, { em, collectionId: 'visible' } as any);
     this.categories = new Categories([], { em, events: { update: BlocksEvents.categoryUpdate } });
     this.__onAllEvent = debounce(() => this.__trgCustom(), 0);
 
@@ -335,7 +335,7 @@ export default class BlockManager extends ItemManagerModule<BlockManagerConfig, 
     const toRender = blocks || this.getAll().models;
 
     if (opts.external) {
-      const collection = new Blocks(toRender, { em });
+      const collection = new Blocks(toRender, { em, collectionId: 'render' } as any);
       return new BlocksView({ collection, categories }, { em, ...config, ...opts }).render().el;
     }
 

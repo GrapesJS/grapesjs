@@ -85,6 +85,8 @@ editor.on('asset:custom', ({ container, assets, ... }) => { ... });
 editor.on('asset', ({ event, model, ... }) => { ... });
 ```
 
+* AssetsEventCallback
+
 ## Methods
 
 *   [open][2]

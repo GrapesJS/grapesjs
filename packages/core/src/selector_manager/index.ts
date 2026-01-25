@@ -106,14 +106,16 @@ export default class SelectorManager extends ItemManagerModule<SelectorManagerCo
    */
 
   constructor(em: EditorModel) {
-    super(em, 'SelectorManager', new Selectors([]), SelectorEvents, defConfig(), { skipListen: true });
+    super(em, 'SelectorManager', new Selectors([], { em, collectionId: 'all' } as any), SelectorEvents, defConfig(), {
+      skipListen: true,
+    });
     bindAll(this, '__updateSelectedByComponents');
     const { config, events } = this;
     const ppfx = config.pStylePrefix;
     if (ppfx) config.stylePrefix = ppfx + config.stylePrefix;
 
-    this.all = new Selectors(config.selectors);
-    this.selected = new Selectors([], { em, config });
+    this.all = new Selectors(config.selectors, { em, config, collectionId: 'all' } as any);
+    this.selected = new Selectors([], { em, config, collectionId: 'selected' } as any);
     this.states = new Collection<State>(
       config.states!.map((state: any) => new State(state)),
       { model: State },

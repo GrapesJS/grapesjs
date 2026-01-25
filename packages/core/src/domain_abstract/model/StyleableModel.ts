@@ -1,8 +1,8 @@
 import { isArray, isObject, isString, keys } from 'underscore';
-import { Model, ObjectAny, ObjectHash, SetOptions } from '../../common';
+import { ObjectAny, ObjectHash, SetOptions } from '../../common';
 import ParserHtml from '../../parser/model/ParserHtml';
 import Selectors from '../../selector_manager/model/Selectors';
-import { shallowDiff } from '../../utils/mixins';
+import { createId, shallowDiff } from '../../utils/mixins';
 import EditorModel from '../../editor/model/Editor';
 import CssRuleView from '../../css_composer/view/CssRuleView';
 import ComponentView from '../../dom_components/view/ComponentView';
@@ -13,6 +13,7 @@ import { DataCollectionStateMap } from '../../data_sources/model/data_collection
 import { DataWatchersOptions } from '../../dom_components/model/ModelResolverWatcher';
 import { DataResolverProps } from '../../data_sources/types';
 import { _StringKey } from 'backbone';
+import ModelWithPatches from '../../patch_manager/ModelWithPatches';
 
 export type StyleProps = Record<string, string | string[] | DataResolverProps>;
 
@@ -44,7 +45,20 @@ type WithDataResolvers<T> = {
   [P in keyof T]?: T[P] | DataResolverProps;
 };
 
-export default class StyleableModel<T extends StyleableModelProperties = any> extends Model<T, UpdateStyleOptions> {
+const isValidPatchUid = (uid: any): uid is string | number => {
+  if (typeof uid === 'string') return uid !== '';
+  return typeof uid === 'number';
+};
+
+const createStableUid = () => {
+  const randomUUID = typeof crypto !== 'undefined' && (crypto as any).randomUUID;
+  return typeof randomUUID === 'function' ? randomUUID.call(crypto) : createId();
+};
+
+export default class StyleableModel<T extends StyleableModelProperties = any> extends ModelWithPatches<
+  T,
+  UpdateStyleOptions
+> {
   em?: EditorModel;
   views: StyleableView[] = [];
   dataResolverWatchers: ModelDataResolverWatchers<T>;
@@ -311,6 +325,11 @@ export default class StyleableModel<T extends StyleableModelProperties = any> ex
     const props = this.dataResolverWatchers.getProps(this.attributes);
     const mergedProps = { ...props, ...attributes };
     const mergedOpts = { ...this.opt, ...opts };
+
+    const uid = (mergedProps as any).uid;
+    if (isValidPatchUid(uid)) {
+      (mergedProps as any).uid = createStableUid();
+    }
 
     const ClassConstructor = this.constructor as new (attributes: any, opts?: any) => typeof this;
 

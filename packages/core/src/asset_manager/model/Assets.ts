@@ -1,13 +1,25 @@
-import { Collection } from '../../common';
+import CollectionWithPatches from '../../patch_manager/CollectionWithPatches';
 import Asset from './Asset';
 import AssetImage from './AssetImage';
 import AssetImageView from '../view/AssetImageView';
 import TypeableCollection from '../../domain_abstract/model/TypeableCollection';
 
-const TypeableCollectionExt = Collection.extend(TypeableCollection);
+export class Assets extends CollectionWithPatches<Asset> {
+  types: any[] | undefined;
+  target?: any;
+  onSelect?: any;
+  getTypes!: () => any[];
+  getType!: (id: string) => any;
+  getBaseType!: () => any;
+  recognizeType!: (value: any) => any;
+  addType!: (id: string, definition: any) => void;
 
-export default class Assets extends TypeableCollectionExt<Asset> {}
+  constructor(models?: any, options?: any) {
+    super(models, options);
+  }
+}
 
+Object.assign(Assets.prototype, TypeableCollection);
 Assets.prototype.types = [
   {
     id: 'image',
@@ -24,3 +36,5 @@ Assets.prototype.types = [
     },
   },
 ];
+
+export default Assets;

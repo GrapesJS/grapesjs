@@ -12,8 +12,9 @@ import { SelectorEvent } from '../selector_manager';
 import { StyleManagerEvent } from '../style_manager';
 import { EditorConfig } from './config/config';
 import EditorModel from './model/Editor';
+import { PatchProps } from '../patch_manager';
 
-type GeneralEvent = 'canvasScroll' | 'undo' | 'redo' | 'load' | 'update';
+type GeneralEvent = 'canvasScroll' | 'undo' | 'redo' | 'load' | 'update' | 'patch:update' | 'patch:undo' | 'patch:redo';
 
 type EditorBuiltInEvents =
   | DataSourceEvent
@@ -37,6 +38,9 @@ export type EditorConfigType = EditorConfig & { pStylePrefix?: string };
 export type EditorModelParam<T extends keyof EditorModel, N extends number> = Parameters<EditorModel[T]>[N];
 
 export interface EditorEventCallbacks extends AssetsEventCallback, BlocksEventCallback, DataSourcesEventCallback {
+  'patch:update': [PatchProps];
+  'patch:undo': [PatchProps];
+  'patch:redo': [PatchProps];
   [key: string]: any[];
 }
 
@@ -67,6 +71,27 @@ export enum EditorEvents {
    * editor.on('redo', () => { ... });
    */
   redo = 'redo',
+
+  /**
+   * @event `patch:update` Patch finalized.
+   * @example
+   * editor.on('patch:update', (patch) => { ... });
+   */
+  patchUpdate = 'patch:update',
+
+  /**
+   * @event `patch:undo` Patch undo executed.
+   * @example
+   * editor.on('patch:undo', (patch) => { ... });
+   */
+  patchUndo = 'patch:undo',
+
+  /**
+   * @event `patch:redo` Patch redo executed.
+   * @example
+   * editor.on('patch:redo', (patch) => { ... });
+   */
+  patchRedo = 'patch:redo',
 
   /**
    * @event `load` Editor is loaded. At this stage, the project is loaded in the editor and elements in the canvas are rendered.

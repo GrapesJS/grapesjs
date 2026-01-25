@@ -113,6 +113,18 @@ const ds = dsm.get('my_data_source_id');
 
 Returns **[DataSource]** Data source.
 
+## getAll
+
+Return all data sources.
+
+### Examples
+
+```javascript
+const ds = dsm.getAll();
+```
+
+Returns **[Array][8]<[DataSource]>**&#x20;
+
 ## getValue
 
 Get value from data sources by path.
@@ -121,6 +133,7 @@ Get value from data sources by path.
 
 *   `path` **[String][7]** Path to value.
 *   `defValue` **any** Default value if the path is not found.
+*   `opts` **{context: Record<[string][7], any>?}?**&#x20;
 
 Returns **any** const value = dsm.getValue('ds\_id.record\_id.propName', 'defaultValue');
 
@@ -139,7 +152,7 @@ Set value in data sources by path.
 dsm.setValue('ds_id.record_id.propName', 'new value');
 ```
 
-Returns **[Boolean][8]** Returns true if the value was set successfully
+Returns **[Boolean][9]** Returns true if the value was set successfully
 
 ## remove
 
@@ -183,7 +196,7 @@ data record, and optional property path.
 
 Store data sources to a JSON object.
 
-Returns **[Array][9]** Stored data sources.
+Returns **[Array][8]** Stored data sources.
 
 ## load
 
@@ -209,6 +222,6 @@ Returns **[Object][6]** Loaded data sources.
 
 [7]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
 
-[8]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean
+[8]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array
 
-[9]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array
+[9]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean

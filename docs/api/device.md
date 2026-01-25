@@ -2,7 +2,7 @@
 
 ## Device
 
-
+**Extends ModelWithPatches**
 
 ### Properties
 

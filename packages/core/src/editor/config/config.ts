@@ -307,6 +307,17 @@ export interface EditorConfig {
   undoManager?: UndoManagerConfig | boolean;
 
   /**
+   * Patch manager options (experimental).
+   */
+  patches?: {
+    /**
+     * Enable patch tracking.
+     * @default false
+     */
+    enable?: boolean;
+  };
+
+  /**
    * Configurations for Asset Manager.
    */
   assetManager?: AssetManagerConfig;
@@ -486,6 +497,9 @@ const config: () => EditorConfig = () => ({
   },
   i18n: {},
   undoManager: {},
+  patches: {
+    enable: false,
+  },
   assetManager: {},
   canvas: {},
   layerManager: {},

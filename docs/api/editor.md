@@ -30,6 +30,24 @@ editor.on('undo', () => { ... });
 editor.on('redo', () => { ... });
 ```
 
+* `patch:update` Patch finalized.
+
+```javascript
+editor.on('patch:update', (patch) => { ... });
+```
+
+* `patch:undo` Patch undo executed.
+
+```javascript
+editor.on('patch:undo', (patch) => { ... });
+```
+
+* `patch:redo` Patch redo executed.
+
+```javascript
+editor.on('patch:redo', (patch) => { ... });
+```
+
 * `load` Editor is loaded. At this stage, the project is loaded in the editor and elements in the canvas are rendered.
 
 ```javascript
