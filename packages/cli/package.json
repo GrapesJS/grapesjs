@@ -43,7 +43,7 @@
     "rimraf": "^4.1.2",
     "spdx-license-list": "^6.6.0",
     "terser-webpack-plugin": "^5.3.14",
-    "webpack": "5.94.0",
+    "webpack": "5.104.1",
     "webpack-cli": "5.1.4",
     "webpack-dev-server": "5.1.0",
     "yargs": "^17.6.2"
