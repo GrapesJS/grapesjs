@@ -1,5 +1,6 @@
 import { ObjectAny } from '../../common';
 import { isDef, isEmptyObj, toLowerCase } from '../../utils/mixins';
+import { ComponentsEvents } from '../types';
 import ComponentImage from './ComponentImage';
 import { ComponentOptions, ComponentProperties } from './types';
 
@@ -90,7 +91,7 @@ export default class ComponentVideo extends ComponentImage {
     this.set({ tagName }, { silent: true }); // avoid break in view
     // @ts-ignore
     this.set({ traits });
-    em.get('ready') && em.trigger('component:toggled');
+    em.get('ready') && em.trigger(ComponentsEvents.toggled);
   }
 
   /**

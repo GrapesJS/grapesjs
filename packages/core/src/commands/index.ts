@@ -39,7 +39,8 @@ import { isFunction, includes } from 'underscore';
 import CommandAbstract, { Command, CommandOptions, CommandObject, CommandFunction } from './view/CommandAbstract';
 import defConfig, { CommandsConfig } from './config/config';
 import { Module } from '../abstract';
-import Component, { eventDrag } from '../dom_components/model/Component';
+import Component from '../dom_components/model/Component';
+import { ComponentsEvents } from '../dom_components/types';
 import type Editor from '../editor/model/Editor';
 import type { ObjectAny } from '../common';
 import CommandsEvents from './types';
@@ -74,9 +75,9 @@ const commandsDef = [
 
 const defComOptions = { preserveSelected: 1 };
 
-export const getOnComponentDragStart = (em: Editor) => (data: any) => em.trigger(`${eventDrag}:start`, data);
+export const getOnComponentDragStart = (em: Editor) => (data: any) => em.trigger(ComponentsEvents.dragStart, data);
 
-export const getOnComponentDrag = (em: Editor) => (data: any) => em.trigger(eventDrag, data);
+export const getOnComponentDrag = (em: Editor) => (data: any) => em.trigger(ComponentsEvents.drag, data);
 
 export const getOnComponentDragEnd =
   (em: Editor, targets: Component[], opts: { altMode?: boolean } = {}) =>
@@ -86,7 +87,7 @@ export const getOnComponentDragEnd =
       em.setSelected(targets);
       targets[0].emitUpdate();
     });
-    em.trigger(`${eventDrag}:end`, data);
+    em.trigger(ComponentsEvents.dragEnd, data);
 
     // Defer selectComponent in order to prevent canvas "freeze" #2692
     setTimeout(() => em.runDefault(defComOptions));

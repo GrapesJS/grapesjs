@@ -284,7 +284,7 @@ export default class EditorModel extends Model {
     toLog.forEach((e) => this.listenLog(e as keyof typeof logs));
 
     // Deprecations
-    [{ from: 'change:selectedComponent', to: 'component:toggled' }].forEach((event) => {
+    [{ from: 'change:selectedComponent', to: ComponentsEvents.toggled }].forEach((event) => {
       const eventFrom = event.from;
       const eventTo = event.to;
       this.listenTo(this, eventFrom, (...args) => {

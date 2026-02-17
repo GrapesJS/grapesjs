@@ -1,5 +1,6 @@
 import { CommandObject } from './CommandAbstract';
 import { $ } from '../../common';
+import { ComponentsEvents } from '../../dom_components/types';
 
 export default {
   run(editor, sender) {
@@ -40,7 +41,7 @@ export default {
       panelC?.set('appendContent', this.$cn.get(0)).trigger('change:appendContent');
 
       this.target = editor.getModel();
-      this.listenTo(this.target, 'component:toggled', this.toggleTm);
+      this.listenTo(this.target, ComponentsEvents.toggled, this.toggleTm);
     }
 
     this.toggleTm();

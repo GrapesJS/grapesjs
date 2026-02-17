@@ -1,5 +1,22 @@
-import { AddOptions, OptionAsDocument, WithHTMLParserOptions } from '../common';
-import Component from './model/Component';
+import type {
+  AddOptions,
+  EventCallbackAdd,
+  EventCallbackRemoveBefore,
+  ObjectAny,
+  OptionAsDocument,
+  WithHTMLParserOptions,
+} from '../common';
+import type {
+  ComponentResizeEventEndProps,
+  ComponentResizeEventMoveProps,
+  ComponentResizeEventStartProps,
+  ComponentResizeEventUpdateProps,
+} from '../commands/view/Resize';
+import type { StyleProps } from '../domain_abstract/model/StyleableModel';
+import type Component from './model/Component';
+import type { ResetFromStringOptions } from './model/Components';
+import type { ComponentOptions, ComponentStackItem } from './model/types';
+import type ComponentView from './view/ComponentView';
 
 export enum ActionLabelComponents {
   remove = 'component:remove',
@@ -38,6 +55,7 @@ export enum ComponentsEvents {
   remove = 'component:remove',
   removeBefore = 'component:remove:before',
   removed = 'component:removed',
+  clone = 'component:clone',
 
   /**
    * @event `component:create` Component created.
@@ -52,6 +70,7 @@ export enum ComponentsEvents {
    * editor.on('component:update', (component) => { ... });
    */
   update = 'component:update',
+  updateProperty = 'component:update:',
   updateInside = 'component:update-inside',
 
   /**
@@ -69,6 +88,14 @@ export enum ComponentsEvents {
    */
   select = 'component:select',
   selectBefore = 'component:select:before',
+  selected = 'component:selected',
+  deselected = 'component:deselected',
+  toggled = 'component:toggled',
+  typeAdd = 'component:type:add',
+  typeUpdate = 'component:type:update',
+  dragStart = 'component:drag:start',
+  drag = 'component:drag',
+  dragEnd = 'component:drag:end',
 
   /**
    * @event `component:mount` Component is mounted in the canvas.
@@ -105,6 +132,7 @@ export enum ComponentsEvents {
    * editor.on('component:input', (component) => { ... });
    */
   input = 'component:input',
+  content = 'component:content',
 
   /**
    * @event `component:resize` Component resized. This event is triggered when the component is resized in the canvas.
@@ -214,3 +242,134 @@ export enum ComponentsEvents {
    */
   symbol = 'symbol',
 }
+
+type ComponentEventStatic = Exclude<
+  `${ComponentsEvents}`,
+  `${ComponentsEvents.updateProperty}` | `${ComponentsEvents.styleUpdateProperty}`
+>;
+
+type SymbolMainEvent =
+  | ComponentsEvents.symbolMainAdd
+  | ComponentsEvents.symbolMainUpdate
+  | ComponentsEvents.symbolMainUpdateDeep
+  | ComponentsEvents.symbolMainRemove;
+
+type SymbolInstanceEvent = ComponentsEvents.symbolInstanceAdd | ComponentsEvents.symbolInstanceRemove;
+
+export type ComponentEvent =
+  | ComponentEventStatic
+  | `${ComponentsEvents.updateProperty}${string}`
+  | `${ComponentsEvents.styleUpdateProperty}${string}`;
+
+export interface ComponentScriptEventData {
+  component: Component;
+  view: ComponentView;
+  el: HTMLElement;
+}
+
+export interface ComponentStyleUpdateEventData {
+  style: StyleProps;
+}
+
+export interface ComponentUpdateEventData {
+  component: Component;
+  changed: ObjectAny;
+  options: ObjectAny;
+}
+
+export interface ComponentTypeEventData extends Partial<Omit<ComponentStackItem, 'id'>> {
+  id: string;
+  [key: string]: any;
+}
+
+export interface ComponentDragEventData {
+  target?: Component;
+  parent?: Component;
+  index?: number;
+  cancelled?: boolean;
+  [key: string]: unknown;
+}
+
+export interface ComponentResizeEventEndData {
+  type: 'end';
+  component: Component;
+  el: HTMLElement;
+}
+
+export type ComponentResizeEventData =
+  | ({ type: 'start' } & ComponentResizeEventStartProps)
+  | ({ type: 'move' } & ComponentResizeEventMoveProps)
+  | ComponentResizeEventEndData;
+
+export interface ComponentResizeInitEventData {
+  component: Component;
+  hasCustomResize: boolean;
+  resizable: Component['resizable'];
+}
+
+export interface ComponentRemovedEventData {
+  removeOptions: ObjectAny;
+}
+
+export interface SymbolEventData {
+  component: Component;
+  changed?: ObjectAny;
+  options?: ObjectAny;
+}
+
+export interface SymbolMainEventData extends SymbolEventData {
+  event: SymbolMainEvent;
+}
+
+export interface SymbolInstanceEventData extends SymbolEventData {
+  event: SymbolInstanceEvent;
+}
+
+export interface ComponentsEventCallback {
+  [ComponentsEvents.add]: EventCallbackAdd<Component>;
+  [ComponentsEvents.remove]: [Component];
+  [ComponentsEvents.removeBefore]: EventCallbackRemoveBefore<Component>;
+  [ComponentsEvents.removed]: [Component, ComponentRemovedEventData | undefined];
+  [ComponentsEvents.clone]: [Component];
+  [ComponentsEvents.create]: [Component, ComponentOptions];
+  [ComponentsEvents.update]: [Component, ...any[]];
+  [ComponentsEvents.updateInside]: [ComponentUpdateEventData];
+  [ComponentsEvents.styleUpdate]: [Component, ComponentStyleUpdateEventData];
+  [ComponentsEvents.select]: [Component, ObjectAny];
+  [ComponentsEvents.selectBefore]: [Component, ObjectAny];
+  [ComponentsEvents.selected]: [Component, ObjectAny];
+  [ComponentsEvents.deselected]: [Component, ObjectAny];
+  [ComponentsEvents.toggled]: [Component?, ObjectAny?];
+  [ComponentsEvents.typeAdd]: [ComponentTypeEventData];
+  [ComponentsEvents.typeUpdate]: [ComponentTypeEventData];
+  [ComponentsEvents.dragStart]: [ComponentDragEventData];
+  [ComponentsEvents.drag]: [ComponentDragEventData];
+  [ComponentsEvents.dragEnd]: [ComponentDragEventData];
+  [ComponentsEvents.mount]: [Component];
+  [ComponentsEvents.scriptMount]: [ComponentScriptEventData];
+  [ComponentsEvents.scriptMountBefore]: [ComponentScriptEventData];
+  [ComponentsEvents.scriptUnmount]: [ComponentScriptEventData];
+  [ComponentsEvents.render]: [ComponentScriptEventData];
+  [ComponentsEvents.input]: [Component];
+  [ComponentsEvents.content]: [Component | undefined, ResetFromStringOptions, string];
+  [ComponentsEvents.resize]: [ComponentResizeEventData];
+  [ComponentsEvents.resizeStart]: [ComponentResizeEventStartProps | ComponentResizeEventMoveProps];
+  [ComponentsEvents.resizeMove]: [ComponentResizeEventMoveProps];
+  [ComponentsEvents.resizeEnd]: [ComponentResizeEventEndProps];
+  [ComponentsEvents.resizeUpdate]: [ComponentResizeEventUpdateProps];
+  [ComponentsEvents.resizeInit]: [ComponentResizeInitEventData];
+  [ComponentsEvents.symbolMainAdd]: [SymbolEventData];
+  [ComponentsEvents.symbolMainUpdate]: [ComponentUpdateEventData];
+  [ComponentsEvents.symbolMainUpdateDeep]: [ComponentUpdateEventData];
+  [ComponentsEvents.symbolMainRemove]: [SymbolEventData];
+  [ComponentsEvents.symbolMain]: [SymbolMainEventData];
+  [ComponentsEvents.symbolInstanceAdd]: [SymbolEventData];
+  [ComponentsEvents.symbolInstanceRemove]: [SymbolEventData];
+  [ComponentsEvents.symbolInstance]: [SymbolInstanceEventData];
+  [ComponentsEvents.symbol]: [];
+  [key: `${ComponentsEvents.updateProperty}${string}`]: [Component, ...any[]];
+  [key: `${ComponentsEvents.styleUpdateProperty}${string}`]: [Component, ComponentStyleUpdateEventData];
+}
+
+// need this to avoid the TS documentation generator to break
+export default ComponentsEvents;

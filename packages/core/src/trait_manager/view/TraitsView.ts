@@ -1,5 +1,6 @@
 import TraitManager from '..';
 import CategoryView from '../../abstract/ModuleCategoryView';
+import { ComponentsEvents } from '../../dom_components/types';
 import DomainViews from '../../domain_abstract/view/DomainViews';
 import EditorModel from '../../editor/model/Editor';
 import Trait from '../model/Trait';
@@ -49,7 +50,7 @@ export default class TraitsView extends DomainViews {
     this.classNoCat = `${ppfx}traits-empty-c`;
     this.catsClass = `${ppfx}trait-categories`;
     this.collection = new Traits([], { em });
-    this.listenTo(em, 'component:toggled', this.updatedCollection);
+    this.listenTo(em, ComponentsEvents.toggled, this.updatedCollection);
     this.updatedCollection();
   }
 

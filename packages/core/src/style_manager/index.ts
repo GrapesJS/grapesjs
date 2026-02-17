@@ -114,11 +114,11 @@ export default class StyleManager extends ItemManagerModule<
 
     // Triggers for the selection refresh and properties
     const eventCmpUpdate = ComponentsEvents.update;
-    const ev = `component:toggled ${eventCmpUpdate}:classes change:state change:device frame:resized selector:type`;
+    const ev = `${ComponentsEvents.toggled} ${eventCmpUpdate}:classes change:state change:device frame:resized selector:type`;
     this.upAll = debounce(() => this.__upSel(), 0);
     model.listenTo(em, ev, this.upAll as any);
     // Clear state target on any component selection change, without debounce (#4208)
-    model.listenTo(em, 'component:toggled', this.__clearStateTarget);
+    model.listenTo(em, ComponentsEvents.toggled, this.__clearStateTarget);
 
     // Triggers only for properties (avoid selection refresh)
     const upProps = debounce(() => {

@@ -86,7 +86,7 @@ export default class ClassTagsView extends View<Selector> {
     this.checkSync = debounce(this.checkSync.bind(this), 0);
     const eventCmpUpdate = ComponentsEvents.update;
     const evClsUp = `${eventCmpUpdate}:classes`;
-    const toList = `component:toggled ${evClsUp}`;
+    const toList = `${ComponentsEvents.toggled} ${evClsUp}`;
     const toListCls = `${evClsUp} ${eventCmpUpdate}:attributes:id change:state`;
     this.listenTo(em, toList, this.componentChanged);
     this.listenTo(em, 'styleManager:update', this.componentChanged);
@@ -126,7 +126,7 @@ export default class ClassTagsView extends View<Selector> {
     });
 
     style && rule.addStyle(style);
-    em.trigger('component:toggled');
+    em.trigger(ComponentsEvents.toggled);
     em.trigger('component:sync-style', {
       component: target,
       selectors,

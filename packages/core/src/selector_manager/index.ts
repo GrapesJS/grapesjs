@@ -127,8 +127,8 @@ export default class SelectorManager extends ItemManagerModule<SelectorManagerCo
     em.on('change:state', (m, value) => em.trigger(events.state, value));
     this.model.on('change:cFirst', (m, value) => em.trigger('selector:type', value));
     const eventCmpUpdateCls = `${ComponentsEvents.update}:classes`;
-    em.on(`component:toggled ${eventCmpUpdateCls}`, this.__updateSelectedByComponents);
-    const listenTo = `component:toggled ${eventCmpUpdateCls} change:device styleManager:update selector:state selector:type style:target`;
+    em.on(`${ComponentsEvents.toggled} ${eventCmpUpdateCls}`, this.__updateSelectedByComponents);
+    const listenTo = `${ComponentsEvents.toggled} ${eventCmpUpdateCls} change:device styleManager:update selector:state selector:type style:target`;
     this.model.listenTo(em, listenTo, () => this.__update());
   }
 

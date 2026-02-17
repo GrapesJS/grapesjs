@@ -84,7 +84,7 @@ const escapeRegExp = (str: string) => {
 
 export const avoidInline = (em: EditorModel) => !!em?.getConfig().avoidInlineStyle;
 
-export const eventDrag = 'component:drag';
+export const eventDrag = ComponentsEvents.drag;
 export const keySymbols = '__symbols';
 export const keySymbol = '__symbol';
 export const keySymbolOvrd = '__symbol_ovrd';
@@ -1048,7 +1048,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
     const resolvedAttributes = this.dataResolverWatchers.getValueOrResolver('attributes', attrs);
     traits.length && this.setAttributes(resolvedAttributes);
     this.on(event, this.initTraits);
-    changed && em && em.trigger('component:toggled');
+    changed && em && em.trigger(ComponentsEvents.toggled);
     return this;
   }
 
@@ -1310,7 +1310,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
   updateTrait(id: string, props: Partial<TraitProperties>) {
     const trait = this.getTrait(id);
     trait && trait.set(props);
-    this.em?.trigger('component:toggled');
+    this.em?.trigger(ComponentsEvents.toggled);
     return this;
   }
 
@@ -1341,7 +1341,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
     const toRemove = ids.map((id) => this.getTrait(id));
     const { traits } = this;
     const removed = toRemove.length ? traits.remove(toRemove) : [];
-    this.em?.trigger('component:toggled');
+    this.em?.trigger(ComponentsEvents.toggled);
     return isArray(removed) ? removed : [removed];
   }
 
@@ -1361,7 +1361,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
   addTrait(trait: Parameters<Traits['add']>[0], opts: AddOptions = {}) {
     this.__loadTraits();
     const added = this.traits.add(trait, opts);
-    this.em?.trigger('component:toggled');
+    this.em?.trigger(ComponentsEvents.toggled);
     return isArray(added) ? added : [added];
   }
 
@@ -1467,7 +1467,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
       }
     }
 
-    const event = 'component:clone';
+    const event = ComponentsEvents.clone;
     em && em.trigger(event, cloned);
     this.trigger(event, cloned);
 

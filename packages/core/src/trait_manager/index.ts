@@ -32,6 +32,7 @@ import { bindAll, debounce } from 'underscore';
 import { Module } from '../abstract';
 import { Model } from '../common';
 import Component from '../dom_components/model/Component';
+import { ComponentsEvents } from '../dom_components/types';
 import EditorModel from '../editor/model/Editor';
 import defConfig from './config/config';
 import {
@@ -89,7 +90,7 @@ export default class TraitManager extends Module<TraitManagerConfigModule> {
 
     const upAll = debounce(() => this.__upSel(), 0);
     const update = debounce(() => this.__onUp(), 0);
-    state.listenTo(em, 'component:toggled', upAll);
+    state.listenTo(em, ComponentsEvents.toggled, upAll);
     state.listenTo(em, events.value, update);
     state.on('change:traits', this.__onSelect);
 

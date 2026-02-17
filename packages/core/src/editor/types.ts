@@ -5,7 +5,7 @@ import { CanvasEvent, CanvasEventCallback } from '../canvas/types';
 import { CommandEvent, CommandsEventCallback } from '../commands/types';
 import { DataSourceEvent, DataSourcesEventCallback } from '../data_sources/types';
 import { DeviceEvent, DevicesEventCallback } from '../device_manager/types';
-import { ComponentEvent } from '../dom_components';
+import { ComponentEvent, ComponentsEventCallback } from '../dom_components/types';
 import { I18nEvent, I18nEventCallback } from '../i18n/types';
 import { KeymapEvent, KeymapsEventCallback } from '../keymaps/types';
 import { ModalEvent, ModalEventCallback } from '../modal_dialog/types';
@@ -56,6 +56,7 @@ export interface EditorEventCallbacks
     CommandsEventCallback,
     DataSourcesEventCallback,
     DevicesEventCallback,
+    ComponentsEventCallback,
     I18nEventCallback,
     KeymapsEventCallback,
     LayerEventCallback,

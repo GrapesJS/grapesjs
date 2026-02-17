@@ -168,7 +168,7 @@ Component> {
     Components.cloneCssRules(em, fromDefOpts.visitedCmps);
 
     this.reset(newCmps, opts as any);
-    em?.trigger('component:content', parent, opts, input);
+    em?.trigger(ComponentsEvents.content, parent, opts, input);
     (parent as ComponentText).__checkInnerChilds?.();
   }
 

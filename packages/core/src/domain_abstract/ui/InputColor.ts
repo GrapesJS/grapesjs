@@ -1,4 +1,5 @@
 import { isUndefined } from 'underscore';
+import { ComponentsEvents } from '../../dom_components/types';
 import ColorPicker from '../../utils/ColorPicker';
 import $ from '../../utils/cash-dom';
 import Input from './Input';
@@ -166,7 +167,7 @@ export default class InputColor extends Input {
       });
 
       if (em && em.on!) {
-        this.listenTo(em, 'component:selected', () => {
+        this.listenTo(em, ComponentsEvents.selected, () => {
           this.movedColor && handleChange(this.movedColor);
           changed = true;
           this.movedColor = '';

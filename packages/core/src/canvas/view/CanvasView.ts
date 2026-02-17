@@ -98,7 +98,7 @@ export default class CanvasView extends ModuleView<Canvas> {
     this.clsUnscale = `${pfx}unscale`;
     this._initFrames();
     this.listenTo(em, events.refresh, this.clearOff);
-    this.listenTo(em, 'component:selected', this.checkSelected);
+    this.listenTo(em, ComponentsEvents.selected, this.checkSelected);
     this.listenTo(em, `${events.coords} ${events.zoom}`, this.updateFrames);
     this.listenTo(model, 'change:frames', this._onFramesUpdate);
     this.toggleListeners(true);
