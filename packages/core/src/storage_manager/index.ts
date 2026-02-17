@@ -47,13 +47,10 @@ import LocalStorage from './model/LocalStorage';
 import RemoteStorage from './model/RemoteStorage';
 import EditorModel from '../editor/model/Editor';
 import IStorage, { StorageOptions, ProjectData } from './model/IStorage';
-import StorageEvents from './types';
+import StorageEvents, { StorageEventType } from './types';
 
 export type { StorageOptions, ProjectData } from './model/IStorage';
-
-export type StorageEvent = `${StorageEvents}`;
-
-type StorageEventType = 'store' | 'load';
+export type { StorageEvent, StorageEventCallback, StorageEventType } from './types';
 
 const STORAGE_LOCAL = 'local';
 const STORAGE_REMOTE = 'remote';

@@ -1,3 +1,7 @@
+import { ProjectData } from './model/IStorage';
+
+export type StorageEventType = 'store' | 'load';
+
 /**{START_EVENTS}*/
 export enum StorageEvents {
   /**
@@ -111,6 +115,25 @@ export enum StorageEvents {
   errorLoad = 'storage:error:load',
 }
 /**{END_EVENTS}*/
+
+export type StorageEvent = `${StorageEvents}`;
+
+export interface StorageEventCallback {
+  [StorageEvents.start]: [StorageEventType, ProjectData | undefined];
+  [StorageEvents.startStore]: [ProjectData];
+  [StorageEvents.startLoad]: [ProjectData | undefined];
+  [StorageEvents.load]: [ProjectData, unknown];
+  [StorageEvents.store]: [ProjectData, unknown];
+  [StorageEvents.after]: [];
+  [StorageEvents.afterStore]: [ProjectData, unknown];
+  [StorageEvents.afterLoad]: [ProjectData, unknown];
+  [StorageEvents.end]: [StorageEventType, unknown, unknown?];
+  [StorageEvents.endStore]: [unknown, unknown?];
+  [StorageEvents.endLoad]: [unknown, unknown?];
+  [StorageEvents.error]: [unknown, StorageEventType];
+  [StorageEvents.errorStore]: [unknown];
+  [StorageEvents.errorLoad]: [unknown];
+}
 
 // need this to avoid the TS documentation generator to break
 export default StorageEvents;
