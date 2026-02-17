@@ -1,5 +1,6 @@
 import { bindAll, debounce, isElement } from 'underscore';
 import { CanvasSpotBuiltInTypes } from '../../canvas/model/CanvasSpot';
+import { CanvasEvents } from '../../canvas/types';
 import Component from '../../dom_components/model/Component';
 import Toolbar from '../../dom_components/model/Toolbar';
 import { ComponentsEvents } from '../../dom_components/types';
@@ -98,7 +99,7 @@ export default {
     em[method](`${ComponentsEvents.resize} styleable:change ${ComponentsEvents.input}`, this.updateGlobalPos, this);
     em[method](`${eventCmpUpdate}:toolbar`, this._upToolbar, this);
     em[method]('frame:updated', this.onFrameUpdated, this);
-    em[method]('canvas:updateTools', this.onFrameUpdated, this);
+    em[method](CanvasEvents.updateTools, this.onFrameUpdated, this);
     em[method](em.Canvas.events.refresh, this.updateAttached, this);
     em.Canvas.getFrames().forEach((frame) => {
       const { view } = frame;
@@ -596,7 +597,7 @@ export default {
   }, 0),
 
   _trgToolUp(type: string, opts = {}) {
-    this.em.trigger('canvas:tools:update', {
+    this.em.trigger(CanvasEvents.toolsUpdate, {
       type,
       ...opts,
     });

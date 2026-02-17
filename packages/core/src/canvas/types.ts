@@ -1,4 +1,10 @@
-import { SetOptions } from '../common';
+import type Component from '../dom_components/model/Component';
+import type Dragger from '../utils/Dragger';
+import type { DraggableContent } from '../utils/sorter/types';
+import type CanvasSpot from './model/CanvasSpot';
+import type Frame from './model/Frame';
+import type FrameView from './view/FrameView';
+import { ObjectAny, SetOptions } from '../common';
 
 export interface ToScreenOption {
   toScreen?: boolean;
@@ -24,20 +30,40 @@ export interface SetZoomOptions extends SetOptions {
   from?: string;
 }
 
+export interface CanvasDragDataResult {
+  content: DraggableContent['content'];
+  setContent: (content: DraggableContent['content']) => void;
+}
+
+export interface CanvasSpotEventProps {
+  spot: CanvasSpot;
+}
+
+export interface CanvasFrameEventProps {
+  el: HTMLIFrameElement;
+  model: Frame;
+  view: FrameView;
+  window: Window;
+}
+
+export interface CanvasToolsUpdateEventProps extends ObjectAny {
+  type: string;
+}
+
 /**{START_EVENTS}*/
 export enum CanvasEvents {
   /**
-   * @event `canvas:dragenter` Something is dragged inside the canvas, `DataTransfer` instance passed as an argument.
+   * @event `canvas:dragenter` Something is dragged inside the canvas. `DataTransfer` instance and dragged content are passed as arguments.
    */
   dragEnter = 'canvas:dragenter',
 
   /**
-   * @event `canvas:dragover` Something is dragging on the canvas, `DataTransfer` instance passed as an argument.
+   * @event `canvas:dragover` Something is dragging on the canvas. Triggering event is passed as an argument.
    */
   dragOver = 'canvas:dragover',
 
   /**
-   * @event `canvas:dragend` When a drag operation is ended, `DataTransfer` instance passed as an argument.
+   * @event `canvas:dragend` When a drag operation is ended, triggering event is passed as an argument.
    */
   dragEnd = 'canvas:dragend',
 
@@ -124,6 +150,32 @@ export enum CanvasEvents {
   refresh = 'canvas:refresh',
 
   /**
+   * @event `canvas:update` Canvas was updated.
+   */
+  update = 'canvas:update',
+  updateTools = 'canvas:updateTools',
+
+  /**
+   * @event `canvas:tools:update` Canvas tools were updated.
+   */
+  toolsUpdate = 'canvas:tools:update',
+
+  /**
+   * @event `canvas:move:start` Canvas move started.
+   */
+  moveStart = 'canvas:move:start',
+
+  /**
+   * @event `canvas:move` Canvas is moving.
+   */
+  move = 'canvas:move',
+
+  /**
+   * @event `canvas:move:end` Canvas move ended.
+   */
+  moveEnd = 'canvas:move:end',
+
+  /**
    * @event `canvas:frame:load` Frame loaded in canvas. The event is triggered right after iframe's `onload`.
    * @example
    * editor.on('canvas:frame:load', ({ window }) => {
@@ -160,6 +212,34 @@ export enum CanvasEvents {
   frameUnload = 'canvas:frame:unload',
 }
 /**{END_EVENTS}*/
+
+export type CanvasEvent = `${CanvasEvents}`;
+
+export interface CanvasEventCallback {
+  [CanvasEvents.dragEnter]: [DataTransfer | null | undefined, NonNullable<DraggableContent['content']>];
+  [CanvasEvents.dragOver]: [Event];
+  [CanvasEvents.dragEnd]: [Event | undefined];
+  [CanvasEvents.dragData]: [DataTransfer | null | undefined, CanvasDragDataResult];
+  [CanvasEvents.drop]: [DataTransfer | null | undefined, Component | Component[]];
+  [CanvasEvents.spot]: [];
+  [CanvasEvents.spotAdd]: [CanvasSpotEventProps];
+  [CanvasEvents.spotUpdate]: [CanvasSpotEventProps];
+  [CanvasEvents.spotRemove]: [CanvasSpotEventProps];
+  [CanvasEvents.coords]: [];
+  [CanvasEvents.zoom]: [{ options: SetZoomOptions }];
+  [CanvasEvents.pointer]: [];
+  [CanvasEvents.refresh]: [CanvasRefreshOptions];
+  [CanvasEvents.update]: [Event | { options: SetZoomOptions } | undefined];
+  [CanvasEvents.updateTools]: [];
+  [CanvasEvents.toolsUpdate]: [CanvasToolsUpdateEventProps];
+  [CanvasEvents.moveStart]: [Dragger];
+  [CanvasEvents.move]: [Dragger];
+  [CanvasEvents.moveEnd]: [Dragger];
+  [CanvasEvents.frameLoad]: [CanvasFrameEventProps];
+  [CanvasEvents.frameLoadHead]: [CanvasFrameEventProps];
+  [CanvasEvents.frameLoadBody]: [CanvasFrameEventProps];
+  [CanvasEvents.frameUnload]: [{ frame: Frame }];
+}
 
 // need this to avoid the TS documentation generator to break
 export default CanvasEvents;

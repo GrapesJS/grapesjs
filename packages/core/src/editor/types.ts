@@ -1,8 +1,8 @@
 import { AssetEvent, AssetsEventCallback } from '../asset_manager/types';
 import { BlockEvent, BlocksEventCallback } from '../block_manager/types';
-import { CanvasEvent } from '../canvas';
 import { CommandEvent } from '../commands';
 import { LiteralUnion } from '../common';
+import { CanvasEvent, CanvasEventCallback } from '../canvas/types';
 import { DataSourceEvent, DataSourcesEventCallback } from '../data_sources/types';
 import { ComponentEvent } from '../dom_components';
 import { KeymapEvent } from '../keymaps';
@@ -36,7 +36,12 @@ export type EditorConfigType = EditorConfig & { pStylePrefix?: string };
 
 export type EditorModelParam<T extends keyof EditorModel, N extends number> = Parameters<EditorModel[T]>[N];
 
-export interface EditorEventCallbacks extends AssetsEventCallback, BlocksEventCallback, DataSourcesEventCallback {
+export interface EditorEventCallbacks
+  extends AssetsEventCallback,
+    BlocksEventCallback,
+    CanvasEventCallback,
+    DataSourcesEventCallback
+{
   [key: string]: any[];
 }
 

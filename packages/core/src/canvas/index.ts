@@ -911,7 +911,7 @@ export default class CanvasModule extends Module<CanvasConfig> {
 
     if (opts.spots || opts.all) {
       this.refreshSpots();
-      em.trigger('canvas:updateTools'); // this should be deprecated
+      em.trigger(CanvasEvents.updateTools); // this should be deprecated
     }
 
     em.set('canvasOffset', this.getOffset()); // this should be deprecated

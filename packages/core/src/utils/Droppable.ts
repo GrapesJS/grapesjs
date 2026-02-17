@@ -1,5 +1,6 @@
 import { bindAll, indexOf } from 'underscore';
 import CanvasModule from '../canvas';
+import CanvasEvents from '../canvas/types';
 import { ObjectStrings } from '../common';
 import Component from '../dom_components/model/Component';
 import EditorModel from '../editor/model/Editor';
@@ -94,7 +95,7 @@ export default class Droppable {
     this.counter = 0;
     dragStop && dragStop(cancel || !this.over);
     this.__customTglEff(false);
-    em.trigger('canvas:dragend', ev);
+    em.trigger(CanvasEvents.dragEnd, ev);
   }
 
   handleDragLeave(ev: Event) {
@@ -204,7 +205,7 @@ export default class Droppable {
     }
 
     this.dragStop = dragStop;
-    em.trigger('canvas:dragenter', dt, content);
+    em.trigger(CanvasEvents.dragEnter, dt, content);
   }
 
   handleDragEnd(model: any, dt: any) {
@@ -212,7 +213,7 @@ export default class Droppable {
     this.over = false;
     if (model) {
       em.set('dragResult', model);
-      em.trigger('canvas:drop', dt, model);
+      em.trigger(CanvasEvents.drop, dt, model);
     }
     em.runDefault({ preserveSelected: 1 });
   }
@@ -223,7 +224,7 @@ export default class Droppable {
    */
   handleDragOver(ev: Event) {
     ev.preventDefault();
-    this.em.trigger('canvas:dragover', ev);
+    this.em.trigger(CanvasEvents.dragOver, ev);
   }
 
   /**
@@ -286,7 +287,7 @@ export default class Droppable {
         result.content = content;
       },
     };
-    em.trigger('canvas:dragdata', dt, result);
+    em.trigger(CanvasEvents.dragData, dt, result);
     return result;
   }
 }

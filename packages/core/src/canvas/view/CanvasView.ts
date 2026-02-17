@@ -16,7 +16,7 @@ import {
 import { getComponentView, getElement, getUiClass } from '../../utils/mixins';
 import Canvas from '../model/Canvas';
 import Frame from '../model/Frame';
-import { GetBoxRectOptions, ToWorldOption } from '../types';
+import { CanvasEvents, GetBoxRectOptions, ToWorldOption } from '../types';
 import FrameView from './FrameView';
 import FramesView from './FramesView';
 import { ComponentsEvents } from '../../dom_components/types';
@@ -242,7 +242,7 @@ export default class CanvasView extends ModuleView<Canvas> {
     this.updateFramesArea();
     this.clearOff();
     toolsWrpEl.style.display = 'none';
-    em.trigger('canvas:update', ev);
+    em.trigger(CanvasEvents.update, ev);
     clearTimeout(this.timerZoom);
     this.timerZoom = setTimeout(() => {
       em.stopDefault(defOpts);

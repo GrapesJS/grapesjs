@@ -1,4 +1,5 @@
 import { keys, bindAll, each, isUndefined, debounce } from 'underscore';
+import { CanvasEvents } from '../../canvas/types';
 import Dragger, { DraggerOptions } from '../../utils/Dragger';
 import type { CommandObject } from './CommandAbstract';
 import type Editor from '../../editor';
@@ -115,7 +116,7 @@ export default {
       this.elGuideInfoContentY = elInfoY.querySelector(`.${pfx}guide-info__content`) ?? undefined;
 
       em.on(
-        'canvas:update frame:scroll',
+        `${CanvasEvents.update} frame:scroll`,
         debounce(() => {
           this.updateGuides();
           opts.debug && this.guides?.forEach((item) => this.renderGuide(item));

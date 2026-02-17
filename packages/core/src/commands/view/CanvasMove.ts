@@ -1,4 +1,5 @@
 import { bindAll } from 'underscore';
+import { CanvasEvents } from '../../canvas/types';
 import Dragger from '../../utils/Dragger';
 import { getKeyChar, off, on } from '../../utils/dom';
 import { CommandObject } from './CommandAbstract';
@@ -47,13 +48,13 @@ export default {
           canvasModel.set({ x, y });
         },
         onStart(ev, dragger) {
-          em.trigger('canvas:move:start', dragger);
+          em.trigger(CanvasEvents.moveStart, dragger);
         },
         onDrag(ev, dragger) {
-          em.trigger('canvas:move', dragger);
+          em.trigger(CanvasEvents.move, dragger);
         },
         onEnd(ev, dragger) {
-          em.trigger('canvas:move:end', dragger);
+          em.trigger(CanvasEvents.moveEnd, dragger);
         },
       });
       this.dragger = dragger;
