@@ -40,8 +40,7 @@ import defConfig, { ModalConfig } from './config/config';
 import ModalM from './model/Modal';
 import { ModalEvents } from './types';
 import ModalView from './view/ModalView';
-
-export type ModalEvent = `${ModalEvents}`;
+export type { ModalEvent } from './types';
 
 export default class ModalModule extends Module<ModalConfig> {
   modal?: ModalView;

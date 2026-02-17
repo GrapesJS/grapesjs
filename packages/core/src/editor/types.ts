@@ -8,7 +8,7 @@ import { DeviceEvent, DevicesEventCallback } from '../device_manager/types';
 import { ComponentEvent } from '../dom_components';
 import { I18nEvent, I18nEventCallback } from '../i18n/types';
 import { KeymapEvent, KeymapsEventCallback } from '../keymaps/types';
-import { ModalEvent } from '../modal_dialog';
+import { ModalEvent, ModalEventCallback } from '../modal_dialog/types';
 import { RichTextEditorEvent } from '../rich_text_editor';
 import { SelectorEvent } from '../selector_manager';
 import { StyleManagerEvent } from '../style_manager';
@@ -48,7 +48,8 @@ export interface EditorEventCallbacks
     DataSourcesEventCallback,
     DevicesEventCallback,
     I18nEventCallback,
-    KeymapsEventCallback
+    KeymapsEventCallback,
+    ModalEventCallback
 {
   [key: string]: any[];
 }

@@ -1,3 +1,5 @@
+import { ObjectAny } from '../common';
+
 /**{START_EVENTS}*/
 export enum ModalEvents {
   /**
@@ -22,6 +24,22 @@ export enum ModalEvents {
   all = 'modal',
 }
 /**{END_EVENTS}*/
+
+export type ModalEvent = `${ModalEvents}`;
+
+export interface ModalEventData {
+  open: boolean;
+  attributes: ObjectAny;
+  title: Node;
+  content: Node;
+  close: () => void;
+}
+
+export interface ModalEventCallback {
+  [ModalEvents.open]: [];
+  [ModalEvents.close]: [];
+  [ModalEvents.all]: [ModalEventData];
+}
 
 // need this to avoid the TS documentation generator to break
 export default ModalEvents;
