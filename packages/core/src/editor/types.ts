@@ -13,7 +13,7 @@ import { LayerEvent, LayerEventCallback } from '../navigator/types';
 import { PageEvent, PagesEventCallback } from '../pages/types';
 import { ParserEvent, ParserEventCallback } from '../parser/types';
 import { RichTextEditorEvent, RichTextEditorEventCallback } from '../rich_text_editor';
-import { SelectorEvent } from '../selector_manager';
+import { SelectorEvent, SelectorEventCallback } from '../selector_manager/types';
 import { StyleManagerEvent } from '../style_manager';
 import { EditorConfig } from './config/config';
 import EditorModel from './model/Editor';
@@ -59,7 +59,8 @@ export interface EditorEventCallbacks
     ModalEventCallback,
     PagesEventCallback,
     ParserEventCallback,
-    RichTextEditorEventCallback
+    RichTextEditorEventCallback,
+    SelectorEventCallback
 {
   [key: string]: any[];
 }

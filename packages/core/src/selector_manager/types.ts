@@ -1,3 +1,16 @@
+import {
+  Collection,
+  EventCallbackAdd,
+  EventCallbackAll,
+  EventCallbackRemove,
+  EventCallbackRemoveBefore,
+  EventCallbackUpdate,
+  ObjectAny,
+} from '../common';
+import Selector from './model/Selector';
+import Selectors from './model/Selectors';
+import State from './model/State';
+
 /**{START_EVENTS}*/
 export enum SelectorEvents {
   /**
@@ -51,7 +64,31 @@ export enum SelectorEvents {
 }
 /**{END_EVENTS}*/
 
+export type SelectorEvent = `${SelectorEvents}`;
+
 export type SelectorStringObject = string | { name?: string; label?: string; type?: number };
+
+export type SelectorStateEventData = State | Collection<State> | string;
+
+export interface SelectorStateEventOptions extends ObjectAny {
+  event?: string;
+}
+
+export interface SelectorCustomEventData {
+  states: State[];
+  selected: Selector[];
+  container: HTMLElement | undefined;
+}
+
+export interface SelectorEventCallback {
+  [SelectorEvents.add]: EventCallbackAdd<Selector>;
+  [SelectorEvents.remove]: EventCallbackRemove<Selector>;
+  [SelectorEvents.removeBefore]: EventCallbackRemoveBefore<Selector | undefined>;
+  [SelectorEvents.update]: EventCallbackUpdate<Selector>;
+  [SelectorEvents.state]: [SelectorStateEventData, SelectorStateEventOptions?];
+  [SelectorEvents.custom]: [SelectorCustomEventData];
+  [SelectorEvents.all]: EventCallbackAll<SelectorEvent, Selector | Selectors>;
+}
 
 // need this to avoid the TS documentation generator to break
 export default SelectorEvents;
