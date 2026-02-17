@@ -6,6 +6,7 @@ import { CommandEvent, CommandsEventCallback } from '../commands/types';
 import { DataSourceEvent, DataSourcesEventCallback } from '../data_sources/types';
 import { DeviceEvent, DevicesEventCallback } from '../device_manager/types';
 import { ComponentEvent } from '../dom_components';
+import { I18nEvent, I18nEventCallback } from '../i18n/types';
 import { KeymapEvent } from '../keymaps';
 import { ModalEvent } from '../modal_dialog';
 import { RichTextEditorEvent } from '../rich_text_editor';
@@ -19,6 +20,7 @@ type GeneralEvent = 'canvasScroll' | 'undo' | 'redo' | 'load' | 'update';
 type EditorBuiltInEvents =
   | DataSourceEvent
   | DeviceEvent
+  | I18nEvent
   | ComponentEvent
   | BlockEvent
   | AssetEvent
@@ -44,7 +46,8 @@ export interface EditorEventCallbacks
     CanvasEventCallback,
     CommandsEventCallback,
     DataSourcesEventCallback,
-    DevicesEventCallback
+    DevicesEventCallback,
+    I18nEventCallback
 {
   [key: string]: any[];
 }

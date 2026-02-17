@@ -27,5 +27,13 @@ export enum I18nEvents {
 }
 /**{END_EVENTS}*/
 
+export type I18nEvent = `${I18nEvents}`;
+
+export interface I18nEventCallback {
+  [I18nEvents.add]: [Messages];
+  [I18nEvents.update]: [Messages];
+  [I18nEvents.locale]: [{ value: string; valuePrev: string | undefined }];
+}
+
 // need this to avoid the TS documentation generator to break
 export default I18nEvents;
