@@ -5,6 +5,7 @@ import ComponentView from '../../dom_components/view/ComponentView';
 import EditorModel from '../../editor/model/Editor';
 import { isEnterKey, isEscKey } from '../../utils/dom';
 import LayerManager from '../index';
+import { LayerEvents } from '../types';
 import ItemsView from './ItemsView';
 import { getOnComponentDrag, getOnComponentDragEnd, getOnComponentDragStart } from '../../commands';
 import Sorter from '../../utils/sorter/Sorter';
@@ -450,6 +451,6 @@ export default class ItemView extends View {
     const { onRender } = config;
     const opt = { component: model, el };
     onRender.bind(this)(opt);
-    this.em.trigger('layer:render', opt);
+    this.em.trigger(LayerEvents.render, opt);
   }
 }

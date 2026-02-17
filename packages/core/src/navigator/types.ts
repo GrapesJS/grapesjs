@@ -1,3 +1,4 @@
+import { ObjectAny } from '../common';
 import Component from '../dom_components/model/Component';
 
 export interface LayerData {
@@ -32,8 +33,34 @@ export enum LayerEvents {
    * editor.on('layer:custom', ({ container, root }) => { ... });
    */
   custom = 'layer:custom',
+
+  /**
+   * @event `layer:render` Component layer rendered. Object with component and rendered layer element is passed as an argument.
+   * @example
+   * editor.on('layer:render', ({ component, el }) => { ... });
+   */
+  render = 'layer:render',
 }
 /**{END_EVENTS}*/
+
+export type LayerEvent = `${LayerEvents}`;
+
+export interface LayerCustomEventData {
+  container: HTMLElement | undefined;
+  root: Component;
+}
+
+export interface LayerRenderEventData {
+  component: Component;
+  el: HTMLElement;
+}
+
+export interface LayerEventCallback {
+  [LayerEvents.root]: [Component];
+  [LayerEvents.component]: [Component, ObjectAny?];
+  [LayerEvents.custom]: [LayerCustomEventData];
+  [LayerEvents.render]: [LayerRenderEventData];
+}
 
 // need this to avoid the TS documentation generator to break
 export default LayerEvents;

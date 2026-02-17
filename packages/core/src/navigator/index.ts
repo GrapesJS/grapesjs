@@ -47,8 +47,7 @@ import { hasWin, isComponent, isDef } from '../utils/mixins';
 import defConfig, { LayerManagerConfig } from './config/config';
 import { LayerData, LayerEvents } from './types';
 import View from './view/ItemView';
-
-export type LayerEvent = `${LayerEvents}`;
+export type { LayerEvent } from './types';
 
 const styleOpts = { mediaText: '' };
 
