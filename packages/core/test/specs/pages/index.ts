@@ -197,7 +197,7 @@ describe('Managing pages', () => {
 
   test('Abort add page', () => {
     em.on(pm.events.addBefore, (p, c, opts) => {
-      opts.abort = 1;
+      opts.abort = true;
     });
     pm.add({});
     expect(pm.getAll().length).toBe(1);
@@ -205,7 +205,7 @@ describe('Managing pages', () => {
 
   test('Abort add page and complete', () => {
     em.on(pm.events.addBefore, (p, complete, opts) => {
-      opts.abort = 1;
+      opts.abort = true;
       complete();
     });
     pm.add({});
@@ -223,7 +223,7 @@ describe('Managing pages', () => {
 
   test('Abort remove page', () => {
     em.on(pm.events.removeBefore, (p, c, opts) => {
-      opts.abort = 1;
+      (opts as any).abort = true;
     });
     const page = pm.add({})!;
     pm.remove(`${page.id}`);
@@ -232,7 +232,7 @@ describe('Managing pages', () => {
 
   test('Abort remove page and complete', () => {
     em.on(pm.events.removeBefore, (p, complete, opts) => {
-      opts.abort = 1;
+      (opts as any).abort = true;
       complete();
     });
     const page = pm.add({})!;

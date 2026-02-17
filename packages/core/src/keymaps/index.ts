@@ -117,7 +117,9 @@ export default class KeymapsModule extends Module<KeymapsConfig & { name?: strin
           opts.prevent && canvas.getCanvasView()?.preventDefault(e);
           isFunction(handlerRes) ? handlerRes(editor, 0, opt) : cmd.runCommand(handlerRes, opt);
           const args = [id, h.shortcut, e];
+          // @ts-ignore
           em.trigger(events.emit, ...args);
+          // @ts-ignore
           em.trigger(`${events.emitId}${id}`, ...args);
         }
       },

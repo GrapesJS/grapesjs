@@ -40,7 +40,7 @@ import { ProjectData } from '../storage_manager';
 import defConfig, { AssetManagerConfig } from './config/config';
 import Asset from './model/Asset';
 import Assets from './model/Assets';
-import AssetsEvents, { AssetAddInput, AssetOpenOptions, AssetProps } from './types';
+import AssetsEvents, { AssetAddInput, AssetOpenOptions, AssetProps, AssetsCustomData } from './types';
 import AssetsView from './view/AssetsView';
 import FileUploaderView from './view/FileUploader';
 
@@ -381,7 +381,7 @@ export default class AssetManager extends ItemManagerModule<AssetManagerConfig, 
     this.em.trigger(this.events.custom, this.__customData());
   }
 
-  __customData() {
+  __customData(): AssetsCustomData {
     const bhv = this.__getBehaviour();
     return {
       am: this as AssetManager,
@@ -391,7 +391,7 @@ export default class AssetManager extends ItemManagerModule<AssetManagerConfig, 
       container: bhv.container,
       close: () => this.close(),
       remove: (asset: string | Asset, opts?: Record<string, any>) => this.remove(asset, opts),
-      select: (asset: Asset, complete: boolean) => {
+      select: (asset: Asset, complete?: boolean) => {
         const res = this.add(asset);
         isFunction(bhv.select) && bhv.select(res, complete);
       },

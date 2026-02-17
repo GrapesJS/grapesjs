@@ -50,7 +50,7 @@ export default class Symbols extends Components {
     const { em, events } = this;
     const eventType = isInstance ? events.symbolInstance : events.symbolMain;
     em.trigger(event, props);
-    em.trigger(eventType, { ...props, event });
+    em.trigger(eventType, { ...props, event } as any);
     this.refreshDbn();
   }
 }

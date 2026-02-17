@@ -46,6 +46,7 @@ import DataSourceManager from '../../data_sources';
 import { ComponentsEvents } from '../../dom_components/types';
 import { InitEditorConfig } from '../..';
 import { EditorEvents, SelectComponentOptions } from '../types';
+import type { EditorEvent, EditorEventCallbacks, EditorEventHandler } from '../types';
 
 Backbone.$ = $;
 
@@ -242,6 +243,25 @@ export default class EditorModel extends Model {
     return this.get('DataSources');
   }
 
+  on<E extends EditorEvent>(event: E, callback: EditorEventHandler<E>, context?: any) {
+    return super.on(event, callback, context);
+  }
+
+  once<E extends EditorEvent>(event: E, callback: EditorEventHandler<E>, context?: any) {
+    return super.once(event, callback, context);
+  }
+
+  off<E extends EditorEvent>(event?: E, callback?: EditorEventHandler<E>, context?: any) {
+    return super.off(event, callback, context);
+  }
+
+  trigger<E extends EditorEvent>(
+    event: E,
+    ...args: E extends keyof EditorEventCallbacks ? EditorEventCallbacks[E] : any[]
+  ) {
+    return super.trigger(event, ...args);
+  }
+
   constructor(conf: EditorConfig = {}) {
     super();
     this._config = conf;
@@ -288,7 +308,7 @@ export default class EditorModel extends Model {
       const eventFrom = event.from;
       const eventTo = event.to;
       this.listenTo(this, eventFrom, (...args) => {
-        this.trigger(eventTo, ...args);
+        this.trigger(eventTo, ...(args as any));
         this.logWarning(`The event '${eventFrom}' is deprecated, replace it with '${eventTo}'`);
       });
     });

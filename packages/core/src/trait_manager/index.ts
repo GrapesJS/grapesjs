@@ -227,7 +227,7 @@ export default class TraitManager extends Module<TraitManagerConfigModule> {
   __onSelect() {
     const { em, events, state } = this;
     const { component, traits } = state.attributes;
-    em.trigger(events.select, { component, traits });
+    em.trigger(events.select, { component, traits: traits as Trait[] });
   }
 
   __trgCustom(opts: TraitCustomData = {}) {

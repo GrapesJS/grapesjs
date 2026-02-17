@@ -96,7 +96,7 @@ export default class ParserModule extends Module<ParserConfig & { name?: string 
   __emitEvent(event: string, data: ObjectAny) {
     const { em, events } = this;
     em.trigger(event, data);
-    em.trigger(events.all, { event, ...data });
+    em.trigger(events.all, { event, ...data } as any);
   }
 
   destroy() {}

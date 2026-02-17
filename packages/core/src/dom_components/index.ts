@@ -618,7 +618,7 @@ export default class ComponentManager extends ItemManagerModule<DomComponentsCon
     }
 
     const event = compType ? ComponentsEvents.typeUpdate : ComponentsEvents.typeAdd;
-    em?.trigger(event, compType || methods);
+    em?.trigger(event, (compType || methods) as any);
 
     return this;
   }
@@ -670,9 +670,7 @@ export default class ComponentManager extends ItemManagerModule<DomComponentsCon
       component.set({
         status: 'selected',
       });
-      [ComponentsEvents.selected, ComponentsEvents.toggled].forEach((event) =>
-        this.em.trigger(event, component, opts),
-      );
+      [ComponentsEvents.selected, ComponentsEvents.toggled].forEach((event) => this.em.trigger(event, component, opts));
     }
   }
 

@@ -11,7 +11,7 @@ import { append, appendVNodes, createCustomEvent, createEl, motionsEv, off, on }
 import { hasDnd, setViewEl } from '../../utils/mixins';
 import Canvas from '../model/Canvas';
 import Frame from '../model/Frame';
-import CanvasEvents from '../types';
+import CanvasEvents, { CanvasFrameEventProps } from '../types';
 import FrameWrapView from './FrameWrapView';
 
 export default class FrameView extends ModuleView<Frame, HTMLIFrameElement> {
@@ -252,7 +252,7 @@ export default class FrameView extends ModuleView<Frame, HTMLIFrameElement> {
   renderScripts() {
     const { el, model, em } = this;
     const evLoad = 'frame:load';
-    const evOpts: ObjectAny = { el, model, view: this };
+    const evOpts = { el, model, view: this } as unknown as CanvasFrameEventProps;
     const canvas = this.getCanvasModel();
     const appendScript = (scripts: any[]) => {
       if (scripts.length > 0) {

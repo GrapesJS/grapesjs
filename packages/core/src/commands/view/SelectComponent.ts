@@ -3,7 +3,7 @@ import { CanvasSpotBuiltInTypes } from '../../canvas/model/CanvasSpot';
 import { CanvasEvents } from '../../canvas/types';
 import Component from '../../dom_components/model/Component';
 import Toolbar from '../../dom_components/model/Toolbar';
-import { ComponentsEvents } from '../../dom_components/types';
+import { ComponentResizeInitEventData, ComponentsEvents } from '../../dom_components/types';
 import ToolbarView from '../../dom_components/view/ToolbarView';
 import { isDoc, isTaggableNode, isVisible, off, on } from '../../utils/dom';
 import { getComponentModel, getComponentView, hasWin, isObject } from '../../utils/mixins';
@@ -404,7 +404,7 @@ export default {
       component,
       hasCustomResize,
       resizable,
-    };
+    } as ComponentResizeInitEventData;
 
     component && em.trigger(ComponentsEvents.resizeInit, initEventOpts);
     const resizableResult = initEventOpts.resizable;
