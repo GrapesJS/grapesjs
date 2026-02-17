@@ -1,5 +1,6 @@
 import { isArray, contains } from 'underscore';
 import Component from '../../dom_components/model/Component';
+import { ComponentsEvents } from '../../dom_components/types';
 import { CommandObject } from './CommandAbstract';
 import Editor from '../../editor';
 
@@ -33,7 +34,7 @@ export default {
         }
 
         added = isArray(added) ? added : [added];
-        added.forEach((add) => ed.trigger('component:paste', add));
+        added.forEach((add) => ed.trigger(ComponentsEvents.paste, add));
       });
 
       lastSelected.emitUpdate();

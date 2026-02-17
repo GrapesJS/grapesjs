@@ -1,6 +1,6 @@
 import { AssetEvent, AssetsEventCallback } from '../asset_manager/types';
 import { BlockEvent, BlocksEventCallback } from '../block_manager/types';
-import { LiteralUnion } from '../common';
+import type { LiteralUnion, ObjectAny } from '../common';
 import { CanvasEvent, CanvasEventCallback } from '../canvas/types';
 import { CommandEvent, CommandsEventCallback } from '../commands/types';
 import { DataSourceEvent, DataSourcesEventCallback } from '../data_sources/types';
@@ -14,15 +14,23 @@ import { PageEvent, PagesEventCallback } from '../pages/types';
 import { ParserEvent, ParserEventCallback } from '../parser/types';
 import { RichTextEditorEvent, RichTextEditorEventCallback } from '../rich_text_editor';
 import { SelectorEvent, SelectorEventCallback } from '../selector_manager/types';
+import type { ProjectData } from '../storage_manager';
 import { StorageEvent, StorageEventCallback } from '../storage_manager/types';
 import { StyleManagerEvent, StyleManagerEventCallback } from '../style_manager/types';
 import { TraitEvent, TraitEventCallback } from '../trait_manager/types';
 import { EditorConfig } from './config/config';
-import EditorModel from './model/Editor';
+import type EditorModel from './model/Editor';
+import type { EditorLoadOptions } from './model/Editor';
 
-type GeneralEvent = 'canvasScroll' | 'undo' | 'redo' | 'load' | 'update';
+type EditorLogEvent = `${EditorEvents.log}:${string}` | `${EditorEvents.log}-${string}` | `${EditorEvents.log}-${string}:${string}`;
+
+type EditorCoreEvent =
+  | `${EditorEvents}`
+  | EditorLogEvent
+  | 'canvasScroll';
 
 type EditorBuiltInEvents =
+  | EditorCoreEvent
   | DataSourceEvent
   | DeviceEvent
   | I18nEvent
@@ -40,8 +48,7 @@ type EditorBuiltInEvents =
   | RichTextEditorEvent
   | TraitEvent
   | ModalEvent
-  | CommandEvent
-  | GeneralEvent;
+  | CommandEvent;
 
 export type EditorEvent = LiteralUnion<EditorBuiltInEvents, string>;
 
@@ -49,8 +56,47 @@ export type EditorConfigType = EditorConfig & { pStylePrefix?: string };
 
 export type EditorModelParam<T extends keyof EditorModel, N extends number> = Parameters<EditorModel[T]>[N];
 
+export interface EditorProjectEventData {
+  project: ProjectData;
+  options: EditorLoadOptions;
+  initial: boolean;
+}
+
+export interface EditorProjectLoadEventData extends EditorProjectEventData {
+  loaded: boolean;
+}
+
+export interface EditorProjectGetEventData {
+  project: ProjectData;
+}
+
+export interface EditorLogEventOptions extends ObjectAny {
+  ns?: string;
+  level?: string;
+}
+
+export interface EditorEventCoreCallbacks {
+  [EditorEvents.update]: [];
+  [EditorEvents.updateBefore]: [Record<string, any>];
+  [EditorEvents.undo]: [];
+  [EditorEvents.redo]: [];
+  [EditorEvents.load]: [EditorModel['Editor']];
+  [EditorEvents.projectLoad]: [EditorProjectLoadEventData];
+  [EditorEvents.projectLoaded]: [EditorProjectEventData];
+  [EditorEvents.projectGet]: [EditorProjectGetEventData];
+  [EditorEvents.log]: [string, EditorLogEventOptions];
+  [EditorEvents.telemetryInit]: [];
+  [EditorEvents.destroy]: [];
+  [EditorEvents.destroyed]: [];
+  [key: `log:${string}`]: [string, EditorLogEventOptions];
+  [key: `log-${string}`]: [string, EditorLogEventOptions];
+  [key: `log-${string}:${string}`]: [string, EditorLogEventOptions];
+  'canvasScroll': [];
+}
+
 export interface EditorEventCallbacks
-  extends AssetsEventCallback,
+  extends EditorEventCoreCallbacks,
+    AssetsEventCallback,
     BlocksEventCallback,
     CanvasEventCallback,
     CommandsEventCallback,

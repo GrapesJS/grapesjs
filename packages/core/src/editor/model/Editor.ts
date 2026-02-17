@@ -492,8 +492,8 @@ export default class EditorModel extends Model {
    * */
   componentHovered(editor: any, component: any, options: any) {
     const prev = this.previous('componentHovered');
-    prev && this.trigger('component:unhovered', prev, options);
-    component && this.trigger('component:hovered', component, options);
+    prev && this.trigger(ComponentsEvents.unhovered, prev, options);
+    component && this.trigger(ComponentsEvents.hovered, component, options);
   }
 
   /**
@@ -711,9 +711,8 @@ export default class EditorModel extends Model {
       return upHovered();
     }
 
-    const ev = 'component:hover';
     opts.forceChange && upHovered();
-    this.trigger(`${ev}:before`, cmp, opts);
+    this.trigger(ComponentsEvents.hoverBefore, cmp, opts);
 
     // Check for valid hoverable
     if (!cmp.get('hoverable')) {
@@ -728,7 +727,7 @@ export default class EditorModel extends Model {
 
     if (!opts.abort) {
       upHovered(cmp, opts);
-      this.trigger(ev, cmp, opts);
+      this.trigger(ComponentsEvents.hover, cmp, opts);
     }
   }
 

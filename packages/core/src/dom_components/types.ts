@@ -6,6 +6,7 @@ import type {
   OptionAsDocument,
   WithHTMLParserOptions,
 } from '../common';
+import type CssRule from '../css_composer/model/CssRule';
 import type {
   ComponentResizeEventEndProps,
   ComponentResizeEventMoveProps,
@@ -13,6 +14,7 @@ import type {
   ComponentResizeEventUpdateProps,
 } from '../commands/view/Resize';
 import type { StyleProps } from '../domain_abstract/model/StyleableModel';
+import type Selector from '../selector_manager/model/Selector';
 import type Component from './model/Component';
 import type { ResetFromStringOptions } from './model/Components';
 import type { ComponentOptions, ComponentStackItem } from './model/types';
@@ -91,6 +93,12 @@ export enum ComponentsEvents {
   selected = 'component:selected',
   deselected = 'component:deselected',
   toggled = 'component:toggled',
+  hover = 'component:hover',
+  hoverBefore = 'component:hover:before',
+  hovered = 'component:hovered',
+  unhovered = 'component:unhovered',
+  paste = 'component:paste',
+  syncStyle = 'component:sync-style',
   typeAdd = 'component:type:add',
   typeUpdate = 'component:type:update',
   dragStart = 'component:drag:start',
@@ -311,6 +319,15 @@ export interface ComponentRemovedEventData {
   removeOptions: ObjectAny;
 }
 
+export interface ComponentSyncStyleEventData {
+  component: Component | undefined;
+  selectors: Selector[];
+  mediaText: string;
+  rule: CssRule;
+  ruleComponents: CssRule[];
+  state: string;
+}
+
 export interface SymbolEventData {
   component: Component;
   changed?: ObjectAny;
@@ -340,6 +357,12 @@ export interface ComponentsEventCallback {
   [ComponentsEvents.selected]: [Component, ObjectAny];
   [ComponentsEvents.deselected]: [Component, ObjectAny];
   [ComponentsEvents.toggled]: [Component?, ObjectAny?];
+  [ComponentsEvents.hover]: [Component | undefined, ObjectAny];
+  [ComponentsEvents.hoverBefore]: [Component, ObjectAny];
+  [ComponentsEvents.hovered]: [Component, ObjectAny];
+  [ComponentsEvents.unhovered]: [Component, ObjectAny];
+  [ComponentsEvents.paste]: [Component];
+  [ComponentsEvents.syncStyle]: [ComponentSyncStyleEventData];
   [ComponentsEvents.typeAdd]: [ComponentTypeEventData];
   [ComponentsEvents.typeUpdate]: [ComponentTypeEventData];
   [ComponentsEvents.dragStart]: [ComponentDragEventData];

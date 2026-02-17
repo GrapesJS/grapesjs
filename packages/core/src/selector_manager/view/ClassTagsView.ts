@@ -127,7 +127,7 @@ export default class ClassTagsView extends View<Selector> {
 
     style && rule.addStyle(style);
     em.trigger(ComponentsEvents.toggled);
-    em.trigger('component:sync-style', {
+    em.trigger(ComponentsEvents.syncStyle, {
       component: target,
       selectors,
       mediaText,
