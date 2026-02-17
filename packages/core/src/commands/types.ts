@@ -78,5 +78,42 @@ export enum CommandsEvents {
 }
 /**{END_EVENTS}*/
 
+export type CommandEventOptions = Record<string, any>;
+
+export interface CommandEventBeforeData {
+  options: CommandEventOptions;
+}
+
+export interface CommandEventData {
+  id: string | number;
+  result: any;
+  options: CommandEventOptions;
+}
+
+export interface CommandCallEventData extends CommandEventData {
+  type: 'run' | 'stop';
+}
+
+export type CommandEvent =
+  | `${CommandsEvents.run}`
+  | `${CommandsEvents.stop}`
+  | `${CommandsEvents.call}`
+  | `${CommandsEvents.runCommand}${string}`
+  | `${CommandsEvents.runBeforeCommand}${string}`
+  | `${CommandsEvents.abort}${string}`
+  | `${CommandsEvents.stopCommand}${string}`
+  | `${CommandsEvents.stopBeforeCommand}${string}`
+  | `${CommandsEvents.callCommand}${string}`;
+
+export interface CommandsEventCallback {
+  [CommandsEvents.run]: [CommandEventData];
+  [CommandsEvents.stop]: [CommandEventData];
+  [CommandsEvents.call]: [CommandCallEventData];
+  [key: `${CommandsEvents.runCommand}${string}`]: [CommandEventData | CommandEventBeforeData];
+  [key: `${CommandsEvents.abort}${string}`]: [CommandEventBeforeData];
+  [key: `${CommandsEvents.stopCommand}${string}`]: [CommandEventData | CommandEventBeforeData];
+  [key: `${CommandsEvents.callCommand}${string}`]: [CommandCallEventData];
+}
+
 // need this to avoid the TS documentation generator to break
 export default CommandsEvents;

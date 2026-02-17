@@ -12,7 +12,7 @@
  *
  * ```js
  * // Listen to events
- * editor.on('run', () => { ... });
+ * editor.on('command:run', () => { ... });
  *
  * // Use the API
  * const commands = editor.Commands;
@@ -43,8 +43,7 @@ import Component, { eventDrag } from '../dom_components/model/Component';
 import type Editor from '../editor/model/Editor';
 import type { ObjectAny } from '../common';
 import CommandsEvents from './types';
-
-export type CommandEvent = 'run' | 'stop' | `run:${string}` | `stop:${string}` | `abort:${string}`;
+export type { CommandEvent } from './types';
 
 const commandsDef = [
   ['preview', 'Preview', 'preview'],

@@ -1,8 +1,8 @@
 import { AssetEvent, AssetsEventCallback } from '../asset_manager/types';
 import { BlockEvent, BlocksEventCallback } from '../block_manager/types';
-import { CommandEvent } from '../commands';
 import { LiteralUnion } from '../common';
 import { CanvasEvent, CanvasEventCallback } from '../canvas/types';
+import { CommandEvent, CommandsEventCallback } from '../commands/types';
 import { DataSourceEvent, DataSourcesEventCallback } from '../data_sources/types';
 import { ComponentEvent } from '../dom_components';
 import { KeymapEvent } from '../keymaps';
@@ -40,6 +40,7 @@ export interface EditorEventCallbacks
   extends AssetsEventCallback,
     BlocksEventCallback,
     CanvasEventCallback,
+    CommandsEventCallback,
     DataSourcesEventCallback
 {
   [key: string]: any[];

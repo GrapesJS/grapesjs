@@ -2,7 +2,7 @@ import CanvasModule from '../../canvas';
 import { Model, ObjectAny } from '../../common';
 import Editor from '../../editor';
 import EditorModel from '../../editor/model/Editor';
-import CommandsEvents from '../types';
+import CommandsEvents, { type CommandCallEventData, type CommandEventData } from '../types';
 
 interface ICommand<O extends ObjectAny = any> {
   run?: CommandAbstract<O>['run'];
@@ -120,8 +120,8 @@ export default class CommandAbstract<O extends ObjectAny = any> extends Model {
 
     const sender = options.sender || editor;
     const result = this.run(editor, sender, options);
-    const data = { id, result, options };
-    const dataCall = { ...data, type: 'run' };
+    const data: CommandEventData = { id, result, options };
+    const dataCall: CommandCallEventData = { ...data, type: 'run' };
 
     if (!this.noStop) {
       editor.Commands.active[id] = result;
@@ -146,8 +146,8 @@ export default class CommandAbstract<O extends ObjectAny = any> extends Model {
     const sender = options.sender || editor;
     editor.trigger(`${CommandsEvents.stopBeforeCommand}${id}`, { options });
     const result = this.stop(editor, sender, options);
-    const data = { id, result, options };
-    const dataCall = { ...data, type: 'stop' };
+    const data: CommandEventData = { id, result, options };
+    const dataCall: CommandCallEventData = { ...data, type: 'stop' };
     delete editor.Commands.active[id];
     editor.trigger(`${CommandsEvents.stopCommand}${id}`, data);
     editor.trigger(`${CommandsEvents.callCommand}${id}`, dataCall);
