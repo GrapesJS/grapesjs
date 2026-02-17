@@ -1,3 +1,7 @@
+import { ObjectAny } from '../common';
+import { CssRuleJSON } from '../css_composer/model/CssRule';
+import { HTMLParseResult, HTMLParserOptions, ParsedCssRule } from './config/config';
+
 /**{START_EVENTS}*/
 export enum ParserEvents {
   /**
@@ -45,6 +49,17 @@ export enum ParserEvents {
   all = 'parse',
 }
 /**{END_EVENTS}*/
+
+export type ParserEvent = `${ParserEvents}`;
+
+export interface ParserEventCallback {
+  [ParserEvents.htmlBefore]: [{ input: string }];
+  [ParserEvents.htmlRoot]: [{ input: string; root: HTMLElement }];
+  [ParserEvents.html]: [{ input: string; output: HTMLParseResult; options: HTMLParserOptions }];
+  [ParserEvents.cssBefore]: [{ input: string }];
+  [ParserEvents.css]: [{ input: string; output: CssRuleJSON[]; nodes: Array<CssRuleJSON | ParsedCssRule>; error: unknown }];
+  [ParserEvents.all]: [{ event: ParserEvent; input: string } & ObjectAny];
+}
 
 // need this to avoid the TS documentation generator to break
 export default ParserEvents;
