@@ -1,3 +1,5 @@
+import { Keymap } from './config';
+
 /**{START_EVENTS}*/
 export enum KeymapsEvents {
   /**
@@ -23,6 +25,19 @@ export enum KeymapsEvents {
   emitId = 'keymap:emit:',
 }
 /**{END_EVENTS}*/
+
+export type KeymapEvent =
+  | `${KeymapsEvents.add}`
+  | `${KeymapsEvents.remove}`
+  | `${KeymapsEvents.emit}`
+  | `${KeymapsEvents.emitId}${string}`;
+
+export interface KeymapsEventCallback {
+  [KeymapsEvents.add]: [Keymap];
+  [KeymapsEvents.remove]: [Keymap];
+  [KeymapsEvents.emit]: [Keymap['id'], string, Event];
+  [key: `${KeymapsEvents.emitId}${string}`]: [Keymap['id'], string, Event];
+}
 
 // need this to avoid the TS documentation generator to break
 export default KeymapsEvents;

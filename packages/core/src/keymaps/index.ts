@@ -41,8 +41,7 @@ import keymaster from '../utils/keymaster';
 import { hasWin } from '../utils/mixins';
 import defConfig, { Keymap, KeymapOptions, KeymapsConfig } from './config';
 import { KeymapsEvents } from './types';
-
-export type KeymapEvent = `${KeymapsEvents}`;
+export type { KeymapEvent } from './types';
 
 hasWin() && keymaster.init(window);
 

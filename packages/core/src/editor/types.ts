@@ -7,7 +7,7 @@ import { DataSourceEvent, DataSourcesEventCallback } from '../data_sources/types
 import { DeviceEvent, DevicesEventCallback } from '../device_manager/types';
 import { ComponentEvent } from '../dom_components';
 import { I18nEvent, I18nEventCallback } from '../i18n/types';
-import { KeymapEvent } from '../keymaps';
+import { KeymapEvent, KeymapsEventCallback } from '../keymaps/types';
 import { ModalEvent } from '../modal_dialog';
 import { RichTextEditorEvent } from '../rich_text_editor';
 import { SelectorEvent } from '../selector_manager';
@@ -47,7 +47,8 @@ export interface EditorEventCallbacks
     CommandsEventCallback,
     DataSourcesEventCallback,
     DevicesEventCallback,
-    I18nEventCallback
+    I18nEventCallback,
+    KeymapsEventCallback
 {
   [key: string]: any[];
 }
