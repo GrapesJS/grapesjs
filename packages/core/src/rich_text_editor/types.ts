@@ -1,4 +1,6 @@
-import ComponentTextView from '../dom_components/view/ComponentTextView';
+import type ComponentTextView from '../dom_components/view/ComponentTextView';
+import type RichTextEditor from './model/RichTextEditor';
+import type { RichTextEditorAction } from './model/RichTextEditor';
 
 export interface ModelRTE {
   currentView?: ComponentTextView;
@@ -8,6 +10,12 @@ export type RichTextEditorEvent = `${RichTextEditorEvents}`;
 
 export interface RteDisableResult {
   forceSync?: boolean;
+}
+
+export interface RichTextEditorCustomEventProps {
+  enabled: boolean;
+  container: HTMLElement;
+  actions: RichTextEditorAction[];
 }
 
 /**{START_EVENTS}*/
@@ -34,6 +42,12 @@ export enum RichTextEditorEvents {
   custom = 'rte:custom',
 }
 /**{END_EVENTS}*/
+
+export interface RichTextEditorEventCallback {
+  [RichTextEditorEvents.enable]: [ComponentTextView, RichTextEditor];
+  [RichTextEditorEvents.disable]: [ComponentTextView, RichTextEditor | undefined];
+  [RichTextEditorEvents.custom]: [RichTextEditorCustomEventProps];
+}
 
 // need this to avoid the TS documentation generator to break
 export default RichTextEditorEvents;

@@ -43,7 +43,7 @@ import defConfig, { CustomRTE, CustomRteOptions, RichTextEditorConfig } from './
 import RichTextEditor, { RichTextEditorAction } from './model/RichTextEditor';
 import { ModelRTE, RichTextEditorEvents, RteDisableResult } from './types';
 
-export type { RichTextEditorEvent, RteDisableResult } from './types';
+export type { RichTextEditorEvent, RichTextEditorEventCallback, RteDisableResult } from './types';
 
 const eventsUp = `${CanvasEvents.refresh} frame:scroll ${ComponentsEvents.update}`;
 
