@@ -1,5 +1,10 @@
 import StyleManager from '.';
+import { AddOptions, ObjectAny, RemoveOptions } from '../common';
 import StyleableModel from '../domain_abstract/model/StyleableModel';
+import Property, { PropertyProps } from './model/Property';
+import PropertyStack from './model/PropertyStack';
+import Sector, { SectorProperties } from './model/Sector';
+import Sectors from './model/Sectors';
 import { PropertyNumberProps } from './model/PropertyNumber';
 import { PropertySelectProps } from './model/PropertySelect';
 import { PropertyStackProps } from './model/PropertyStack';
@@ -83,6 +88,43 @@ export enum StyleManagerEvents {
   all = 'style',
 }
 /**{END_EVENTS}*/
+
+export type StyleManagerEvent = `${StyleManagerEvents}`;
+
+export interface StyleManagerPropertyUpdateEventData {
+  property: Property;
+  from: Partial<PropertyProps>;
+  to: Partial<PropertyProps>;
+  value: any;
+  opts: ObjectAny;
+}
+
+export interface StyleManagerLayerSelectEventData {
+  property: PropertyStack;
+}
+
+export interface StyleManagerCustomEventData {
+  container: HTMLElement | undefined;
+}
+
+export interface StyleManagerAllEventData {
+  event: string;
+  model?: Sector | Sectors;
+  options: ObjectAny;
+}
+
+export interface StyleManagerEventCallback {
+  [StyleManagerEvents.sectorAdd]: [Sector, AddOptions];
+  [StyleManagerEvents.sectorRemove]: [Sector, RemoveOptions];
+  [StyleManagerEvents.sectorUpdate]: [Sector, Partial<SectorProperties>, ObjectAny];
+  [StyleManagerEvents.propertyAdd]: [Property, AddOptions];
+  [StyleManagerEvents.propertyRemove]: [Property, RemoveOptions];
+  [StyleManagerEvents.propertyUpdate]: [StyleManagerPropertyUpdateEventData];
+  [StyleManagerEvents.target]: [StyleTarget | undefined];
+  [StyleManagerEvents.layerSelect]: [StyleManagerLayerSelectEventData];
+  [StyleManagerEvents.custom]: [StyleManagerCustomEventData];
+  [StyleManagerEvents.all]: [StyleManagerAllEventData];
+}
 
 // need this to avoid the TS documentation generator to break
 export default StyleManagerEvents;

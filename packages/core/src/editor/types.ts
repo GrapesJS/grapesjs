@@ -15,7 +15,7 @@ import { ParserEvent, ParserEventCallback } from '../parser/types';
 import { RichTextEditorEvent, RichTextEditorEventCallback } from '../rich_text_editor';
 import { SelectorEvent, SelectorEventCallback } from '../selector_manager/types';
 import { StorageEvent, StorageEventCallback } from '../storage_manager/types';
-import { StyleManagerEvent } from '../style_manager';
+import { StyleManagerEvent, StyleManagerEventCallback } from '../style_manager/types';
 import { EditorConfig } from './config/config';
 import EditorModel from './model/Editor';
 
@@ -62,7 +62,8 @@ export interface EditorEventCallbacks
     ParserEventCallback,
     RichTextEditorEventCallback,
     SelectorEventCallback,
-    StorageEventCallback
+    StorageEventCallback,
+    StyleManagerEventCallback
 {
   [key: string]: any[];
 }

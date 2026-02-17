@@ -68,9 +68,7 @@ import { PropertyTypes, StyleManagerEvents, StyleTarget } from './types';
 import { CustomPropertyView } from './view/PropertyView';
 import SectorsView from './view/SectorsView';
 
-export type { PropertyTypes, StyleModuleParam, StyleTarget } from './types';
-
-export type StyleManagerEvent = `${StyleManagerEvents}`;
+export type { PropertyTypes, StyleManagerEventCallback, StyleModuleParam, StyleTarget } from './types';
 
 const propDef = (value: any) => value || value === 0;
 
