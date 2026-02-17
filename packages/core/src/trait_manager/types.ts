@@ -1,4 +1,5 @@
-import { CategoryProperties, ItemsByCategory } from '../abstract/ModuleCategory';
+import Category, { CategoryProperties, ItemsByCategory } from '../abstract/ModuleCategory';
+import { ObjectAny } from '../common';
 import Component from '../dom_components/model/Component';
 import Editor from '../editor';
 import EditorModel from '../editor/model/Editor';
@@ -35,6 +36,34 @@ export interface TraitManagerConfigModule extends TraitManagerConfig {
 }
 
 export interface TraitCustomData {
+  container?: HTMLElement;
+}
+
+export interface TraitSelectEventData {
+  component?: Component;
+  traits: Trait[];
+}
+
+export interface TraitValueEventData {
+  trait: Trait;
+  component: Component;
+  value: any;
+}
+
+export interface TraitCategoryUpdateEventData {
+  category: Category;
+  changes: Partial<CategoryProperties>;
+  options: ObjectAny;
+}
+
+export interface TraitAllEventData {
+  event: string;
+  trait?: Trait;
+  component?: Component;
+  value?: any;
+  category?: Category;
+  changes?: Partial<CategoryProperties>;
+  options?: ObjectAny;
   container?: HTMLElement;
 }
 
@@ -177,8 +206,6 @@ export interface TraitOption {
   [key: string]: unknown;
 }
 
-export type TraitsEvent = `${TraitsEvents}`;
-
 /**{START_EVENTS}*/
 export enum TraitsEvents {
   /**
@@ -194,6 +221,7 @@ export enum TraitsEvents {
    * editor.on('trait:value', ({ trait, component, value }) => { ... });
    */
   value = 'trait:value',
+  update = 'trait:update',
 
   /**
    * @event `trait:category:update` Trait category updated.
@@ -217,6 +245,17 @@ export enum TraitsEvents {
   all = 'trait',
 }
 /**{END_EVENTS}*/
+
+export type TraitEvent = `${TraitsEvents}`;
+
+export interface TraitEventCallback {
+  [TraitsEvents.select]: [TraitSelectEventData];
+  [TraitsEvents.value]: [TraitValueEventData];
+  [TraitsEvents.update]: [TraitValueEventData];
+  [TraitsEvents.categoryUpdate]: [TraitCategoryUpdateEventData];
+  [TraitsEvents.custom]: [TraitCustomData];
+  [TraitsEvents.all]: [TraitAllEventData];
+}
 
 // need this to avoid the TS documentation generator to break
 export default TraitsEvents;

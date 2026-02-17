@@ -257,7 +257,7 @@ export default class Trait extends Model<TraitProperties> {
     component.trigger(TraitsEvents.value, props);
     em?.trigger(TraitsEvents.value, props);
     // This should be triggered for any trait prop change
-    em?.trigger('trait:update', props);
+    em?.trigger(TraitsEvents.update, props);
   }
 
   getTargetValue(opts: TraitGetValueOptions = {}) {

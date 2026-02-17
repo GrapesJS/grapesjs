@@ -16,6 +16,7 @@ import { RichTextEditorEvent, RichTextEditorEventCallback } from '../rich_text_e
 import { SelectorEvent, SelectorEventCallback } from '../selector_manager/types';
 import { StorageEvent, StorageEventCallback } from '../storage_manager/types';
 import { StyleManagerEvent, StyleManagerEventCallback } from '../style_manager/types';
+import { TraitEvent, TraitEventCallback } from '../trait_manager/types';
 import { EditorConfig } from './config/config';
 import EditorModel from './model/Editor';
 
@@ -37,6 +38,7 @@ type EditorBuiltInEvents =
   | CanvasEvent
   | SelectorEvent
   | RichTextEditorEvent
+  | TraitEvent
   | ModalEvent
   | CommandEvent
   | GeneralEvent;
@@ -63,7 +65,8 @@ export interface EditorEventCallbacks
     RichTextEditorEventCallback,
     SelectorEventCallback,
     StorageEventCallback,
-    StyleManagerEventCallback
+    StyleManagerEventCallback,
+    TraitEventCallback
 {
   [key: string]: any[];
 }
