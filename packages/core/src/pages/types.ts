@@ -1,4 +1,6 @@
+import { AddOptions, EventCallbackRemove, EventCallbackRemoveBefore, EventCallbackUpdate, ObjectAny, SetOptions } from '../common';
 import { ModuleConfig } from '../abstract/Module';
+import Page from './model/Page';
 import { PageProperties } from './model/Page';
 
 export interface PageManagerConfig extends ModuleConfig {
@@ -65,6 +67,23 @@ export enum PagesEvents {
   all = 'page',
 }
 /**{END_EVENTS}*/
+
+export type PageEvent = `${PagesEvents}`;
+
+export interface PagesEventCallback {
+  [PagesEvents.add]: [Page, AddOptions];
+  [PagesEvents.addBefore]: [
+    PageProperties,
+    AddPage: () => Page | undefined,
+    AddOptions & SelectableOption & AbortOption,
+  ];
+  [PagesEvents.remove]: EventCallbackRemove<Page>;
+  [PagesEvents.removeBefore]: EventCallbackRemoveBefore<Page | undefined>;
+  [PagesEvents.select]: [Page, Page | undefined];
+  [PagesEvents.selectBefore]: [Page, SetOptions];
+  [PagesEvents.update]: EventCallbackUpdate<Page>;
+  [PagesEvents.all]: [{ event: string; page: Page; options: ObjectAny }];
+}
 
 // need this to avoid the TS documentation generator to break
 export default PagesEvents;

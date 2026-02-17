@@ -10,6 +10,7 @@ import { I18nEvent, I18nEventCallback } from '../i18n/types';
 import { KeymapEvent, KeymapsEventCallback } from '../keymaps/types';
 import { ModalEvent, ModalEventCallback } from '../modal_dialog/types';
 import { LayerEvent, LayerEventCallback } from '../navigator/types';
+import { PageEvent, PagesEventCallback } from '../pages/types';
 import { RichTextEditorEvent } from '../rich_text_editor';
 import { SelectorEvent } from '../selector_manager';
 import { StyleManagerEvent } from '../style_manager';
@@ -27,6 +28,7 @@ type EditorBuiltInEvents =
   | AssetEvent
   | KeymapEvent
   | LayerEvent
+  | PageEvent
   | StyleManagerEvent
   | StorageEvent
   | CanvasEvent
@@ -52,7 +54,8 @@ export interface EditorEventCallbacks
     I18nEventCallback,
     KeymapsEventCallback,
     LayerEventCallback,
-    ModalEventCallback
+    ModalEventCallback,
+    PagesEventCallback
 {
   [key: string]: any[];
 }
