@@ -24,11 +24,11 @@ canvas.setCoords(...);
 ```
 
 ## Available Events
-* `canvas:dragenter` Something is dragged inside the canvas, `DataTransfer` instance passed as an argument.
+* `canvas:dragenter` Something is dragged inside the canvas. `DataTransfer` instance and dragged content are passed as arguments.
 
-* `canvas:dragover` Something is dragging on the canvas, `DataTransfer` instance passed as an argument.
+* `canvas:dragover` Something is dragging on the canvas. Triggering event is passed as an argument.
 
-* `canvas:dragend` When a drag operation is ended, `DataTransfer` instance passed as an argument.
+* `canvas:dragend` When a drag operation is ended, triggering event is passed as an argument.
 
 * `canvas:dragdata` On any dataTransfer parse, `DataTransfer` instance and the `result` are passed as arguments. By changing `result.content` you're able to customize what is dropped.
 
@@ -97,6 +97,16 @@ editor.on('canvas:refresh', (canvasRefreshOptions) => {
  console.log('Canvas refreshed with options:', canvasRefreshOptions);
 });
 ```
+
+* `canvas:update` Canvas was updated.
+
+* `canvas:tools:update` Canvas tools were updated.
+
+* `canvas:move:start` Canvas move started.
+
+* `canvas:move` Canvas is moving.
+
+* `canvas:move:end` Canvas move ended.
 
 * `canvas:frame:load` Frame loaded in canvas. The event is triggered right after iframe's `onload`.
 

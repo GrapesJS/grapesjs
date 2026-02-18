@@ -16,7 +16,7 @@ Once the editor is instantiated you can use its API and listen to its events. Be
 
 ```js
 // Listen to events
-editor.on('run', () => { ... });
+editor.on('command:run', () => { ... });
 
 // Use the API
 const commands = editor.Commands;
@@ -90,6 +90,8 @@ editor.on('command:call', ({ id, result, options, type }) => {
 ```javascript
 editor.on('command:call:my-command', ({ result, options, type }) => { ... });
 ```
+
+* CommandEventOptions
 
 ## Methods
 

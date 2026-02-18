@@ -84,8 +84,6 @@ editor.on('selector:custom', ({ states, selected, container }) => { ... });
 editor.on('selector', ({ event, selector, changes, ... }) => { ... });
 ```
 
-* SelectorStringObject
-
 ## Methods
 
 *   [getConfig][2]

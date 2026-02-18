@@ -40,6 +40,8 @@ editor.on('rte:disable', (view, rte) => { ... });
 editor.on('rte:custom', ({ enabled, container, actions }) => { ... });
 ```
 
+* RichTextEditorEventCallback
+
 ## Methods
 
 *   [add][3]

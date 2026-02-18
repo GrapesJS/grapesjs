@@ -31,16 +31,16 @@ editor.on('device:add', (device) => { ... });
 editor.on('device:remove', (device) => { ... });
 ```
 
-* `device:select` A new device is selected. The `Device` is passed as an argument.
+* `device:select` A new device is selected. Current and previous `Device` are passed as arguments.
 
 ```javascript
-editor.on('device:select', (device) => { ... });
+editor.on('device:select', (newDevice, prevDevice) => { ... });
 ```
 
-* `device:update` Device updated. The `Device` and the object containing changes are passed as arguments.
+* `device:update` Device updated. The `Device`, changed properties, and update options are passed as arguments.
 
 ```javascript
-editor.on('device:update', (device) => { ... });
+editor.on('device:update', (device, changes, options) => { ... });
 ```
 
 * `device` Catch-all event for all the events mentioned above.

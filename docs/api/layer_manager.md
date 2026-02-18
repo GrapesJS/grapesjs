@@ -38,6 +38,12 @@ editor.on('layer:component', (component, opts) => { ... });
 editor.on('layer:custom', ({ container, root }) => { ... });
 ```
 
+* `layer:render` Component layer rendered. Object with component and rendered layer element is passed as an argument.
+
+```javascript
+editor.on('layer:render', ({ component, el }) => { ... });
+```
+
 ## Methods
 
 *   [setRoot][1]
