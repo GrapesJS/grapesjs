@@ -104,6 +104,7 @@ export default class CssComposer extends ItemManagerModule<CssComposerConfig & {
     config.rules = this.em.config.style || config.rules || '';
 
     this.rules = new CssRules([], config);
+    this.all = this.rules as any;
     this._setupCacheListeners();
   }
 

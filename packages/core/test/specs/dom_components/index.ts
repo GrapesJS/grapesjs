@@ -322,6 +322,70 @@ describe('DOM Components', () => {
         expect(em.Css.getAll().length).toBe(0);
       });
 
+      test('Re-add custom style when the related component is re-inserted', () => {
+        const cmp = obj.addComponent({ type: cmpId }) as Component;
+        expect(cmp.is(cmpId)).toBe(true);
+        expect(em.Css.getAll().length).toBe(1);
+        cmp.remove();
+        expect(em.Css.getAll().length).toBe(0);
+
+        const cmp2 = obj.addComponent({ type: cmpId }) as Component;
+        expect(cmp2.is(cmpId)).toBe(true);
+        const rule = em.Css.getRule(`.${cmpId}`);
+        expect(rule?.getStyle()).toEqual({ color: 'red' });
+        expect(em.Css.getAll().length).toBe(1);
+      });
+
+      test('Re-add component type styles after removing a nested row component', () => {
+        const rowId = 'test-row';
+        const colId = 'test-column';
+
+        obj.addType(rowId, {
+          model: {
+            defaults: {
+              attributes: { class: 'gjs-test-row' },
+              styles: `
+                .gjs-test-row {
+                  display: flex;
+                  gap: 16px;
+                }
+              `,
+              components: [{ type: colId }, { type: colId }, { type: colId }],
+            },
+          },
+        });
+
+        obj.addType(colId, {
+          model: {
+            defaults: {
+              attributes: { class: 'gjs-test-column' },
+              styles: `
+                .gjs-test-column {
+                  flex: 1;
+                }
+              `,
+            },
+          },
+        });
+
+        const row = obj.addComponent({ type: rowId }) as Component;
+        expect(em.Css.getRule('.gjs-test-row')?.getStyle()).toEqual({ display: 'flex', gap: '16px' });
+        expect(em.Css.getRule('.gjs-test-column')?.getStyle()).toEqual({ flex: '1' });
+        expect(em.Css.getAll().length).toBe(2);
+
+        row.remove();
+        expect(obj.getComponents().length).toBe(0);
+        expect(em.Css.getAll().length).toBe(0);
+        expect(em.Css.getRule('.gjs-test-row')).toBeFalsy();
+        expect(em.Css.getRule('.gjs-test-column')).toBeFalsy();
+
+        const rowAgain = obj.getWrapper()!.append({ type: rowId })[0];
+        expect(rowAgain.get('type')).toBe(rowId);
+        expect(em.Css.getAll().length).toBe(2);
+        expect(em.Css.getRule('.gjs-test-row')?.getStyle()).toEqual({ display: 'flex', gap: '16px' });
+        expect(em.Css.getRule('.gjs-test-column')?.getStyle()).toEqual({ flex: '1' });
+      });
+
       test('Custom style is not updated if already exists', () => {
         obj.addComponent({ type: cmpId });
         const rule = em.Css.getRule(`.${cmpId}`)!;
