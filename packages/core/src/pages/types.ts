@@ -1,4 +1,11 @@
-import { AddOptions, EventCallbackRemove, EventCallbackRemoveBefore, EventCallbackUpdate, ObjectAny, SetOptions } from '../common';
+import {
+  AddOptions,
+  EventCallbackRemove,
+  EventCallbackRemoveBefore,
+  EventCallbackUpdate,
+  ObjectAny,
+  SetOptions,
+} from '../common';
 import { ModuleConfig } from '../abstract/Module';
 import Page from './model/Page';
 import { PageProperties } from './model/Page';

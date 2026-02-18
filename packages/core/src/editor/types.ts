@@ -22,12 +22,12 @@ import { EditorConfig } from './config/config';
 import type EditorModel from './model/Editor';
 import type { EditorLoadOptions } from './model/Editor';
 
-type EditorLogEvent = `${EditorEvents.log}:${string}` | `${EditorEvents.log}-${string}` | `${EditorEvents.log}-${string}:${string}`;
+type EditorLogEvent =
+  | `${EditorEvents.log}:${string}`
+  | `${EditorEvents.log}-${string}`
+  | `${EditorEvents.log}-${string}:${string}`;
 
-type EditorCoreEvent =
-  | `${EditorEvents}`
-  | EditorLogEvent
-  | 'canvasScroll';
+type EditorCoreEvent = `${EditorEvents}` | EditorLogEvent | 'canvasScroll';
 
 type EditorBuiltInEvents =
   | EditorCoreEvent
@@ -91,7 +91,7 @@ export interface EditorEventCoreCallbacks {
   [key: `log:${string}`]: [string, EditorLogEventOptions];
   [key: `log-${string}`]: [string, EditorLogEventOptions];
   [key: `log-${string}:${string}`]: [string, EditorLogEventOptions];
-  'canvasScroll': [];
+  canvasScroll: [];
 }
 
 export interface EditorEventCallbacks
@@ -113,8 +113,7 @@ export interface EditorEventCallbacks
     SelectorEventCallback,
     StorageEventCallback,
     StyleManagerEventCallback,
-    TraitEventCallback
-{
+    TraitEventCallback {
   [key: string]: any[];
 }
 

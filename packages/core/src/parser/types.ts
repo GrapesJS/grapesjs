@@ -57,7 +57,9 @@ export interface ParserEventCallback {
   [ParserEvents.htmlRoot]: [{ input: string; root: HTMLElement }];
   [ParserEvents.html]: [{ input: string; output: HTMLParseResult; options: HTMLParserOptions }];
   [ParserEvents.cssBefore]: [{ input: string }];
-  [ParserEvents.css]: [{ input: string; output: CssRuleJSON[]; nodes: Array<CssRuleJSON | ParsedCssRule>; error: unknown }];
+  [ParserEvents.css]: [
+    { input: string; output: CssRuleJSON[]; nodes: Array<CssRuleJSON | ParsedCssRule>; error: unknown },
+  ];
   [ParserEvents.all]: [{ event: ParserEvent; input: string } & ObjectAny];
 }
 
