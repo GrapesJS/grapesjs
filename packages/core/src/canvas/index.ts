@@ -138,7 +138,7 @@ export default class CanvasModule extends Module<CanvasConfig> {
    */
   getDocument() {
     const frame = this.getFrameEl();
-    return frame?.contentDocument as Document;
+    return frame?.contentDocument;
   }
 
   /**
@@ -566,7 +566,7 @@ export default class CanvasModule extends Module<CanvasConfig> {
    * @returns {Boolean}
    */
   hasFocus() {
-    return this.getDocument().hasFocus();
+    return !!this.getDocument()?.hasFocus?.();
   }
 
   /**

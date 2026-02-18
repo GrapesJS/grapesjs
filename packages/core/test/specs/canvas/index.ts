@@ -20,6 +20,20 @@ describe('Canvas', () => {
     expect(canvas).toBeTruthy();
   });
 
+  describe('Focus', () => {
+    test('hasFocus() returns false if document is unavailable', () => {
+      jest.spyOn(canvas, 'getDocument').mockReturnValue(null as any);
+      expect(canvas.hasFocus()).toBe(false);
+    });
+
+    test('hasFocus() proxies document hasFocus when available', () => {
+      const hasFocus = jest.fn(() => true);
+      jest.spyOn(canvas, 'getDocument').mockReturnValue({ hasFocus } as any);
+      expect(canvas.hasFocus()).toBe(true);
+      expect(hasFocus).toHaveBeenCalledTimes(1);
+    });
+  });
+
   describe('Canvas Spots', () => {
     describe('addSpot()', () => {
       test('Add single spot', () => {

@@ -244,9 +244,11 @@ export default class ComponentSorter<NodeType extends BaseComponentNode> extends
     const targetDoc = Canvas.getDocument();
     let range = null;
 
+    if (!targetDoc) return;
+
     const poiner = getPointerEvent(e);
 
-    // @ts-ignore
+    // @ts-ignore not yet widely supported
     if (targetDoc.caretPositionFromPoint) {
       // New standard method
       // @ts-ignore

@@ -122,8 +122,8 @@ describe('GrapesJS', () => {
       config.protectedCss = '';
       const editor = initTestEditor(config);
       editor.onReady(() => {
-        const htmlEl = editor.Canvas.getDocument().documentElement;
-        expect(htmlEl.outerHTML.replace(/\s+/g, ' ')).toContain('body { background-color: #fff');
+        const htmlEl = editor.Canvas.getDocument()?.documentElement;
+        expect(htmlEl?.outerHTML.replace(/\s+/g, ' ')).toContain('body { background-color: #fff');
         done();
       });
     });
