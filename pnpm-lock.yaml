@@ -134,7 +134,7 @@ importers:
         version: 1.80.3
       vuepress:
         specifier: 1.9.10
-        version: 1.9.10(@vue/compiler-sfc@3.5.12)(ejs@3.1.10)(hogan.js@3.0.2)(lodash@4.17.21)(prettier@3.3.3)(underscore@1.13.1)
+        version: 1.9.10(@vue/compiler-sfc@3.5.12)(ejs@3.1.10)(hogan.js@3.0.2)(lodash@4.17.21)(prettier@3.3.3)(underscore@1.13.8)
       vuepress-plugin-sitemap:
         specifier: 2.3.1
         version: 2.3.1(chalk@4.1.2)(commander@10.0.1)(esm@3.2.25)
@@ -242,8 +242,8 @@ importers:
         specifier: 8.3.0
         version: 8.3.0
       underscore:
-        specifier: 1.13.1
-        version: 1.13.1
+        specifier: 1.13.8
+        version: 1.13.8
     devDependencies:
       '@types/markdown-it':
         specifier: 14.1.2
@@ -4325,20 +4325,22 @@ packages:
 
   glob@10.4.5:
     resolution: {integrity: sha512-7Bv8RF0k6xjo7d4A/PxYLbUCfb6c+Vpd2/mB2yRDlew7Jb5hEXiCD9ibfO7wpk8i4sevK6DFny9h7EYbM3/sHg==}
+    deprecated: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
     hasBin: true
 
   glob@7.2.3:
     resolution: {integrity: sha512-nFR0zLpU2YCaRxwoCJvL6UvCH2JFyFVIvwTLsIf21AuHlMskA1hhTdk+LlYJtOlYt9v6dvszD2BGRqBL+iQK9Q==}
-    deprecated: Glob versions prior to v9 are no longer supported
+    deprecated: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
 
   glob@8.1.0:
     resolution: {integrity: sha512-r8hpEjiQEYlF2QU0df3dS+nxxSIreXQS1qRhMJM0Q5NDdR386C7jb7Hwwod8Fgiuex+k0GFjgft18yvxm5XoCQ==}
     engines: {node: '>=12'}
-    deprecated: Glob versions prior to v9 are no longer supported
+    deprecated: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
 
   glob@9.3.5:
     resolution: {integrity: sha512-e1LleDykUz2Iu+MTYdkSsuWX8lvAjAcs0Xef0lNIu0S2wOAzuTxCJtcd9S3cijlwYF18EsU3rzb8jPVobxDh9Q==}
     engines: {node: '>=16 || 14 >=14.17'}
+    deprecated: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
 
   global-dirs@2.1.0:
     resolution: {integrity: sha512-MG6kdOUh/xBnyo9cJFeIKkLEc1AyFq42QTU4XiX51i2NEdxLxLWXIjEjmqKeSuKR7pAZjTqUVoT2b2huxVLgYQ==}
@@ -8106,8 +8108,8 @@ packages:
     resolution: {integrity: sha512-eXL4nmJT7oCpkZsHZUOJo8hcX3GbsiDOa0Qu9F646fi8dT3XuSVopVqAcEiVzSKKH7UoDti23wNX3qGFxcW5Qg==}
     engines: {node: '>=0.10.0'}
 
-  underscore@1.13.1:
-    resolution: {integrity: sha512-hzSoAVtJF+3ZtiFX0VgfFPHEDRm7Y/QPjGyNo4TVdnDTdft3tr8hEkD25a1jC+TjTuE7tkHGKkhwCgs9dgBB2g==}
+  underscore@1.13.8:
+    resolution: {integrity: sha512-DXtD3ZtEQzc7M8m4cXotyHR+FAS18C64asBYY5vqZexfYryNNnDc02W4hKg3rdQuqOYas1jkseX0+nZXjTXnvQ==}
 
   undici-types@6.19.8:
     resolution: {integrity: sha512-ve2KP6f/JnbPBFyobGHuerC9g1FYGn/F8n1LWTwNxCEzd6IfqTwUQcNXgEtmmQ6DlRrC1hrSrBnCZPokRrDHjw==}
@@ -8569,10 +8571,12 @@ packages:
   whatwg-encoding@2.0.0:
     resolution: {integrity: sha512-p41ogyeMUrw3jWclHWTQg1k05DSVXPLcVxRTYsXUk+ZooOCZLcoYgPZ/HL/D/N+uQPOtcp1me1WhBEaX02mhWg==}
     engines: {node: '>=12'}
+    deprecated: Use @exodus/bytes instead for a more spec-conformant and faster implementation
 
   whatwg-encoding@3.1.1:
     resolution: {integrity: sha512-6qN4hJdMwfYBtE3YBTTHhoeuUrDBPZmbQaxWAqSALV/MeEnR5z1xd8UKud2RAkFoPkmB+hli1TZSnyi84xz1vQ==}
     engines: {node: '>=18'}
+    deprecated: Use @exodus/bytes instead for a more spec-conformant and faster implementation
 
   whatwg-fetch@3.6.20:
     resolution: {integrity: sha512-EqhiFU6daOA8kpjOWTL0olhVOF3i7OrFzSYiGsEMB8GcXS+RrzauAERX65xMeNWVqxA6HXH2m69Z9LaKKdisfg==}
@@ -10647,9 +10651,9 @@ snapshots:
       '@vue/compiler-dom': 3.5.12
       '@vue/shared': 3.5.12
 
-  '@vue/component-compiler-utils@3.3.0(ejs@3.1.10)(hogan.js@3.0.2)(lodash@4.17.21)(underscore@1.13.1)':
+  '@vue/component-compiler-utils@3.3.0(ejs@3.1.10)(hogan.js@3.0.2)(lodash@4.17.21)(underscore@1.13.8)':
     dependencies:
-      consolidate: 0.15.1(ejs@3.1.10)(hogan.js@3.0.2)(lodash@4.17.21)(underscore@1.13.1)
+      consolidate: 0.15.1(ejs@3.1.10)(hogan.js@3.0.2)(lodash@4.17.21)(underscore@1.13.8)
       hash-sum: 1.0.2
       lru-cache: 4.1.5
       merge-source-map: 1.1.0
@@ -10716,7 +10720,7 @@ snapshots:
 
   '@vue/shared@3.5.12': {}
 
-  '@vuepress/core@1.9.10(@vue/compiler-sfc@3.5.12)(ejs@3.1.10)(hogan.js@3.0.2)(lodash@4.17.21)(prettier@3.3.3)(underscore@1.13.1)':
+  '@vuepress/core@1.9.10(@vue/compiler-sfc@3.5.12)(ejs@3.1.10)(hogan.js@3.0.2)(lodash@4.17.21)(prettier@3.3.3)(underscore@1.13.8)':
     dependencies:
       '@babel/core': 7.25.2
       '@vue/babel-preset-app': 4.5.19(@babel/core@7.25.2)(core-js@3.38.1)(vue@2.7.16)
@@ -10748,7 +10752,7 @@ snapshots:
       toml: 3.0.0
       url-loader: 1.1.2(webpack@4.47.0)
       vue: 2.7.16
-      vue-loader: 15.11.1(@vue/compiler-sfc@3.5.12)(cache-loader@3.0.1(webpack@4.47.0))(css-loader@2.1.1(webpack@4.0.0))(ejs@3.1.10)(hogan.js@3.0.2)(lodash@4.17.21)(prettier@3.3.3)(underscore@1.13.1)(vue-template-compiler@2.7.16)(webpack@4.47.0)
+      vue-loader: 15.11.1(@vue/compiler-sfc@3.5.12)(cache-loader@3.0.1(webpack@4.47.0))(css-loader@2.1.1(webpack@4.0.0))(ejs@3.1.10)(hogan.js@3.0.2)(lodash@4.17.21)(prettier@3.3.3)(underscore@1.13.8)(vue-template-compiler@2.7.16)(webpack@4.47.0)
       vue-router: 3.6.5(vue@2.7.16)
       vue-server-renderer: 2.7.16
       vue-template-compiler: 2.7.16
@@ -11560,11 +11564,11 @@ snapshots:
   backbone-undo@0.2.6:
     dependencies:
       backbone: 1.4.1
-      underscore: 1.13.1
+      underscore: 1.13.8
 
   backbone@1.4.1:
     dependencies:
-      underscore: 1.13.1
+      underscore: 1.13.8
 
   bail@2.0.2: {}
 
@@ -12192,14 +12196,14 @@ snapshots:
 
   console-browserify@1.2.0: {}
 
-  consolidate@0.15.1(ejs@3.1.10)(hogan.js@3.0.2)(lodash@4.17.21)(underscore@1.13.1):
+  consolidate@0.15.1(ejs@3.1.10)(hogan.js@3.0.2)(lodash@4.17.21)(underscore@1.13.8):
     dependencies:
       bluebird: 3.7.2
     optionalDependencies:
       ejs: 3.1.10
       hogan.js: 3.0.2
       lodash: 4.17.21
-      underscore: 1.13.1
+      underscore: 1.13.8
 
   constants-browserify@1.0.0: {}
 
@@ -18505,7 +18509,7 @@ snapshots:
 
   unc-path-regex@0.1.2: {}
 
-  underscore@1.13.1: {}
+  underscore@1.13.8: {}
 
   undici-types@6.19.8: {}
 
@@ -18760,9 +18764,9 @@ snapshots:
 
   vue-hot-reload-api@2.3.4: {}
 
-  vue-loader@15.11.1(@vue/compiler-sfc@3.5.12)(cache-loader@3.0.1(webpack@4.47.0))(css-loader@2.1.1(webpack@4.0.0))(ejs@3.1.10)(hogan.js@3.0.2)(lodash@4.17.21)(prettier@3.3.3)(underscore@1.13.1)(vue-template-compiler@2.7.16)(webpack@4.47.0):
+  vue-loader@15.11.1(@vue/compiler-sfc@3.5.12)(cache-loader@3.0.1(webpack@4.47.0))(css-loader@2.1.1(webpack@4.0.0))(ejs@3.1.10)(hogan.js@3.0.2)(lodash@4.17.21)(prettier@3.3.3)(underscore@1.13.8)(vue-template-compiler@2.7.16)(webpack@4.47.0):
     dependencies:
-      '@vue/component-compiler-utils': 3.3.0(ejs@3.1.10)(hogan.js@3.0.2)(lodash@4.17.21)(underscore@1.13.1)
+      '@vue/component-compiler-utils': 3.3.0(ejs@3.1.10)(hogan.js@3.0.2)(lodash@4.17.21)(underscore@1.13.8)
       css-loader: 2.1.1(webpack@4.47.0)
       hash-sum: 1.0.2
       loader-utils: 1.4.2
@@ -18890,9 +18894,9 @@ snapshots:
     dependencies:
       smoothscroll-polyfill: 0.4.4
 
-  vuepress@1.9.10(@vue/compiler-sfc@3.5.12)(ejs@3.1.10)(hogan.js@3.0.2)(lodash@4.17.21)(prettier@3.3.3)(underscore@1.13.1):
+  vuepress@1.9.10(@vue/compiler-sfc@3.5.12)(ejs@3.1.10)(hogan.js@3.0.2)(lodash@4.17.21)(prettier@3.3.3)(underscore@1.13.8):
     dependencies:
-      '@vuepress/core': 1.9.10(@vue/compiler-sfc@3.5.12)(ejs@3.1.10)(hogan.js@3.0.2)(lodash@4.17.21)(prettier@3.3.3)(underscore@1.13.1)
+      '@vuepress/core': 1.9.10(@vue/compiler-sfc@3.5.12)(ejs@3.1.10)(hogan.js@3.0.2)(lodash@4.17.21)(prettier@3.3.3)(underscore@1.13.8)
       '@vuepress/theme-default': 1.9.10
       '@vuepress/types': 1.9.10
       cac: 6.7.14

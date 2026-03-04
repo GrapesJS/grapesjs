@@ -37,7 +37,7 @@
     "codemirror-formatting": "1.0.0",
     "html-entities": "~1.4.0",
     "promise-polyfill": "8.3.0",
-    "underscore": "1.13.1"
+    "underscore": "1.13.8"
   },
   "devDependencies": {
     "@types/markdown-it": "14.1.2",
