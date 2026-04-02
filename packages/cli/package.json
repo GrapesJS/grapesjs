@@ -39,7 +39,7 @@
     "html-webpack-plugin": "5.6.3",
     "inquirer": "^8.2.5",
     "listr": "^0.14.3",
-    "lodash.template": "^4.5.0",
+    "lodash.template": "^4.18.1",
     "rimraf": "^4.1.2",
     "spdx-license-list": "^6.6.0",
     "terser-webpack-plugin": "^5.3.14",
