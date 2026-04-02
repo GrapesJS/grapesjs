@@ -23,6 +23,7 @@ import { DomComponentsConfig } from '../../dom_components/config/config';
 import { HTMLGeneratorBuildOptions } from '../../code_manager/model/HtmlGenerator';
 import { CssGeneratorBuildOptions } from '../../code_manager/model/CssGenerator';
 import { ObjectAny } from '../../common';
+import type { DataSourcesConfig } from '../../data_sources/config/config';
 import { ColorPickerOptions } from '../../utils/ColorPicker';
 
 export interface EditorConfig {
@@ -400,6 +401,11 @@ export interface EditorConfig {
    * Configurations for Parser module.
    */
   parser?: ParserConfig;
+
+  /**
+   * Configurations for Data Sources.
+   */
+  dataSources?: DataSourcesConfig;
 
   /** Texts **/
   textViewCode?: string;

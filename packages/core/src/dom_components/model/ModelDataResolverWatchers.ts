@@ -22,9 +22,9 @@ export class ModelDataResolverWatchers<T extends StyleableModelProperties> {
     private model: WatchableModel<T>,
     private options: ModelResolverWatcherOptions,
   ) {
-    this.propertyWatcher = new ModelResolverWatcher(model, this.onPropertyUpdate, options);
-    this.attributeWatcher = new ModelResolverWatcher(model, this.onAttributeUpdate, options);
-    this.styleWatcher = new ModelResolverWatcher(model, this.onStyleUpdate, options);
+    this.propertyWatcher = new ModelResolverWatcher(model, this.onPropertyUpdate, 'property', options);
+    this.attributeWatcher = new ModelResolverWatcher(model, this.onAttributeUpdate, 'attribute', options);
+    this.styleWatcher = new ModelResolverWatcher(model, this.onStyleUpdate, 'style', options);
   }
 
   bindModel(model: WatchableModel<T>) {

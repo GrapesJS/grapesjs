@@ -298,9 +298,11 @@ export default class CssComposer extends ItemManagerModule<CssComposerConfig & {
   addCollection(data: string | CssRuleJSON[], opts: Record<string, any> = {}, props = {}) {
     const { em } = this;
     const result: CssRule[] = [];
+    const parsedImportOpts = { parsedImportSource: 'css', ...opts };
 
     if (isString(data)) {
       data = em.Parser.parseCss(data);
+      opts = parsedImportOpts;
     }
 
     const d = data instanceof Array ? data : [data];

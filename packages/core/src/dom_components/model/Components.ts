@@ -68,18 +68,19 @@ const getComponentsFromDefs = (
           result = all[id] as any;
           const { onAttributes, onStyle } = updateOptions;
           const component = result as unknown as Component;
-          tagName && component.set({ tagName }, { ...opts, silent: true });
+          const htmlImportOpts = { ...opts, parsedImportSource: 'html' as const };
+          tagName && component.set({ tagName }, { ...htmlImportOpts, silent: true });
 
           if (onAttributes) {
-            onAttributes({ item, component, attributes: restAttr, options: opts });
+            onAttributes({ item, component, attributes: restAttr, options: htmlImportOpts });
           } else if (keys(restAttr).length) {
-            component.addAttributes(restAttr, { ...opts });
+            component.addAttributes(restAttr, htmlImportOpts);
           }
 
           if (onStyle) {
-            onStyle({ item, component, style, options: opts });
+            onStyle({ item, component, style, options: htmlImportOpts });
           } else if (keys(style).length) {
-            component.addStyle(style, opts);
+            component.addStyle(style, htmlImportOpts);
           }
         }
       } else {
@@ -289,11 +290,12 @@ Component> {
       const { components: bodyCmps = [], ...restBody } = (parsed.html as ComponentDefinitionDefined) || {};
       const { components: headCmps, ...restHead } = parsed.head || {};
       components = bodyCmps!;
-      root.set(restBody as any, opt);
-      root.head.set(restHead as any, opt);
-      root.head.components(headCmps, opt);
-      root.docEl.set(parsed.root as any, opt);
-      root.set({ doctype: parsed.doctype });
+      const htmlImportOpts = { ...opt, parsedImportSource: 'html' as const };
+      root.set(restBody as any, htmlImportOpts);
+      root.head.set(restHead as any, htmlImportOpts);
+      root.head.components(headCmps, htmlImportOpts);
+      root.docEl.set(parsed.root as any, htmlImportOpts);
+      root.set({ doctype: parsed.doctype }, htmlImportOpts);
     }
 
     // We need this to avoid duplicate IDs
@@ -305,6 +307,7 @@ Component> {
       cssc.addCollection(parsed.css, {
         ...optsToPass,
         extend: 1,
+        parsedImportSource: 'css',
       });
     }
 

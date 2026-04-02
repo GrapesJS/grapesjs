@@ -1,4 +1,5 @@
 import { AddOptions, Collection, Model, ObjectAny, RemoveOptions, SetOptions } from '../common';
+import type StyleableModel from '../domain_abstract/model/StyleableModel';
 import DataRecord from './model/DataRecord';
 import DataRecords from './model/DataRecords';
 import DataSource from './model/DataSource';
@@ -166,6 +167,27 @@ export type RecordPropsType<T> = T extends DataRecord<infer U> ? U : never;
 export interface DataSourceTransformers {
   onRecordSetValue?: (args: { id: string | number; key: string; value: any }) => any;
 }
+
+export type DataSourceImportSource = 'html' | 'css';
+
+export type DataSourcePropertyKind = 'property' | 'attribute' | 'style';
+
+export type DataSourcePropertyAction = 'overwrite' | 'update' | 'skip';
+
+export interface DataSourcePropertyContext {
+  target: StyleableModel;
+  kind: DataSourcePropertyKind;
+  source: DataSourceImportSource;
+  key: string;
+  value: any;
+  resolvedValue: any;
+  resolver: DataResolverProps;
+  path?: string;
+}
+
+export type DataSourcePropertyHandler =
+  | DataSourcePropertyAction
+  | ((context: DataSourcePropertyContext) => DataSourcePropertyAction);
 
 type DotSeparatedKeys<T> = T extends object
   ? {
