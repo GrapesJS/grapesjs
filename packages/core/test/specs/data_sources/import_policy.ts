@@ -34,6 +34,14 @@ const makeConditionVar = () => ({
   ifFalse: 'blue',
 });
 
+type BaseRecord = {
+  id: string;
+  title: string;
+  color: string;
+  content: string;
+  mutable?: boolean;
+};
+
 describe('Data source import policy', () => {
   let editor: Editor;
   let em: EditorModel;
@@ -45,7 +53,7 @@ describe('Data source import policy', () => {
   };
 
   const addBaseDataSource = (
-    record = { id: 'rec1', title: 'Initial Title', color: 'red', content: 'Dynamic Content' },
+    record: BaseRecord = { id: 'rec1', title: 'Initial Title', color: 'red', content: 'Dynamic Content' },
   ) => {
     dsm.add({
       id: 'records',

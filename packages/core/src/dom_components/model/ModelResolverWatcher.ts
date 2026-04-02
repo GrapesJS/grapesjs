@@ -53,12 +53,13 @@ export class ModelResolverWatcher<T extends ObjectHash> {
 
   addDataValues(values: ObjectAny | undefined, options: DataWatchersOptions = {}) {
     if (!values) return {};
-    values = this.applyImportPolicy(values, options);
-    const evaluatedValues = this.evaluateValues(values);
+    const nextValues = this.applyImportPolicy(values, options);
+    if (!nextValues) return {};
+    const evaluatedValues = this.evaluateValues(nextValues);
 
     const shouldSkipWatcherUpdates = options.skipWatcherUpdates || options.fromDataSource;
     if (!shouldSkipWatcherUpdates) {
-      this.updateListeners(values);
+      this.updateListeners(nextValues);
     }
 
     return evaluatedValues;
