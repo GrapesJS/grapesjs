@@ -127,7 +127,7 @@ export class ModelResolverWatcher<T extends ObjectHash> {
     const { parsedImportSource } = options;
     const { dataBindingImportPolicy } = this.em.DataSources.config;
 
-    if (!values || !parsedImportSource) return values;
+    if (!values || !parsedImportSource || dataBindingImportPolicy === 'overwrite') return values;
 
     const nextValues = { ...values };
     const source = parsedImportSource;
