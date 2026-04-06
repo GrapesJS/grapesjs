@@ -9,6 +9,7 @@ const yt = 'yt';
 const vi = 'vi';
 const ytnc = 'ytnc';
 const defProvider = 'so';
+export const YT_REFERRER_POLICY = 'strict-origin-when-cross-origin';
 
 const hasParam = (value: string) => value && value !== '0';
 
@@ -65,6 +66,24 @@ export default class ComponentVideo extends ComponentImage {
     }
   }
 
+  updateProviderAttributes() {
+    const { provider, attributes = {} } = this.attributes;
+    const attrs = { ...attributes };
+    let hasChanges = false;
+
+    if (provider === yt || provider === ytnc) {
+      if (!isDef(attrs.referrerpolicy)) {
+        attrs.referrerpolicy = YT_REFERRER_POLICY;
+        hasChanges = true;
+      }
+    } else if (attrs.referrerpolicy === YT_REFERRER_POLICY) {
+      delete attrs.referrerpolicy;
+      hasChanges = true;
+    }
+
+    hasChanges && this.setAttributes(attrs);
+  }
+
   /**
    * Update traits by provider
    * @private
@@ -88,6 +107,7 @@ export default class ComponentVideo extends ComponentImage {
         traits = this.getSourceTraits();
     }
 
+    this.updateProviderAttributes();
     this.set({ tagName }, { silent: true }); // avoid break in view
     // @ts-ignore
     this.set({ traits });

@@ -1,4 +1,4 @@
-import ComponentVideo from '../model/ComponentVideo';
+import ComponentVideo, { YT_REFERRER_POLICY } from '../model/ComponentVideo';
 import ComponentImageView from './ComponentImageView';
 import ComponentView from './ComponentView';
 
@@ -117,8 +117,7 @@ export default class ComponentVideoView extends ComponentImageView<ComponentVide
   renderYoutube() {
     const el = document.createElement('iframe');
     el.src = this.model.getYoutubeSrc();
-    el.frameBorder = '0';
-    el.setAttribute('allowfullscreen', 'true');
+    this.updateYoutubeAttributes(el);
     this.initVideoEl(el);
     return el;
   }
@@ -126,8 +125,7 @@ export default class ComponentVideoView extends ComponentImageView<ComponentVide
   renderYoutubeNoCookie() {
     var el = document.createElement('iframe');
     el.src = this.model.getYoutubeNoCookieSrc();
-    el.frameBorder = '0';
-    el.setAttribute('allowfullscreen', 'true');
+    this.updateYoutubeAttributes(el);
     this.initVideoEl(el);
     return el;
   }
@@ -139,6 +137,12 @@ export default class ComponentVideoView extends ComponentImageView<ComponentVide
     el.setAttribute('allowfullscreen', 'true');
     this.initVideoEl(el);
     return el;
+  }
+
+  updateYoutubeAttributes(el: HTMLIFrameElement) {
+    el.frameBorder = '0';
+    el.setAttribute('allowfullscreen', 'true');
+    el.setAttribute('referrerpolicy', YT_REFERRER_POLICY);
   }
 
   initVideoEl(el: HTMLElement) {
