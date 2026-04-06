@@ -124,10 +124,13 @@ export class ModelResolverWatcher<T extends ObjectHash> {
   }
 
   private applyImportPolicy(values: ObjectAny | undefined, options: DataWatchersOptions = {}) {
-    if (!values || !options.parsedImportSource) return values;
+    const { parsedImportSource } = options;
+    const { onDataSourceProperty } = this.em.DataSources.config;
+
+    if (!values || !parsedImportSource) return values;
 
     const nextValues = { ...values };
-    const source = options.parsedImportSource;
+    const source = parsedImportSource;
 
     Object.keys(nextValues).forEach((key) => {
       const resolverListener = this.resolverListeners[key];
@@ -149,7 +152,7 @@ export class ModelResolverWatcher<T extends ObjectHash> {
         resolver,
         path,
       };
-      const action = this.resolveImportAction(this.em.DataSources.getConfig('onDataSourceProperty'), context);
+      const action = this.resolveImportAction(onDataSourceProperty, context);
 
       if (action === 'overwrite') {
         return;
