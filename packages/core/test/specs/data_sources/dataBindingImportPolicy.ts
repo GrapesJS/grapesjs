@@ -13,9 +13,29 @@ const makeTitleVar = () => ({
   path: 'records.rec1.title',
 });
 
+const makeTagNameVar = () => ({
+  type: DataVariableType,
+  path: 'records.rec1.tagName',
+});
+
 const makeColorVar = () => ({
   type: DataVariableType,
   path: 'records.rec1.color',
+});
+
+const makeKeepPropVar = () => ({
+  type: DataVariableType,
+  path: 'records.rec1.keepProp',
+});
+
+const makeKeepAttrVar = () => ({
+  type: DataVariableType,
+  path: 'records.rec1.keepAttr',
+});
+
+const makeBorderColorVar = () => ({
+  type: DataVariableType,
+  path: 'records.rec1.borderColor',
 });
 
 const makeContentVar = () => ({
@@ -36,8 +56,12 @@ const makeConditionVar = () => ({
 
 type BaseRecord = {
   id: string;
+  tagName: string;
   title: string;
   color: string;
+  keepProp: string;
+  keepAttr: string;
+  borderColor: string;
   content: string;
   mutable?: boolean;
 };
@@ -53,7 +77,16 @@ describe('Data source import policy', () => {
   };
 
   const addBaseDataSource = (
-    record: BaseRecord = { id: 'rec1', title: 'Initial Title', color: 'red', content: 'Dynamic Content' },
+    record: BaseRecord = {
+      id: 'rec1',
+      tagName: 'div',
+      title: 'Initial Title',
+      color: 'red',
+      keepProp: 'Initial Keep Prop',
+      keepAttr: 'Initial Keep Attr',
+      borderColor: 'orange',
+      content: 'Dynamic Content',
+    },
   ) => {
     dsm.add({
       id: 'records',
@@ -63,14 +96,25 @@ describe('Data source import policy', () => {
 
   const createBoundComponent = () => {
     return cmpRoot.append({
-      tagName: 'div',
-      attributes: { id: 'bound-cmp', 'data-attr': makeTitleVar() },
-      style: { color: makeColorVar() },
+      tagName: makeTagNameVar(),
+      staticProp: 'staticValue',
+      dsPropToKeep: makeKeepPropVar(),
+      attributes: {
+        id: 'bound-cmp',
+        'data-attr': makeTitleVar(),
+        'data-static': 'staticAttr',
+        'data-keep': makeKeepAttrVar(),
+      },
+      style: {
+        color: makeColorVar(),
+        'background-color': 'black',
+        'border-color': makeBorderColorVar(),
+      },
     })[0];
   };
 
   const importStaticHtml = (
-    html = '<div id="bound-cmp" data-attr="Imported Title" style="color: green;">Imported</div>',
+    html = '<section id="bound-cmp" data-attr="Imported Title" style="color: green;">Imported</section>',
   ) => {
     cmpRoot.components().resetFromString(html);
   };
@@ -79,13 +123,47 @@ describe('Data source import policy', () => {
     return em.Css.addCollection([
       {
         selectors: ['.bound-rule'],
-        style: { color: makeColorVar() },
+        style: {
+          color: makeColorVar(),
+          'background-color': 'black',
+          'border-color': makeBorderColorVar(),
+        },
       },
     ])[0] as CssRule;
   };
 
   const importStaticCss = (css = '.bound-rule { color: green; }') => {
-    em.Css.addCollection(css);
+    em.Css.addCollection(css, { extend: 1 });
+  };
+
+  const expectUntouchedComponentValues = (
+    component: ReturnType<typeof createBoundComponent>,
+    values = {
+      keepProp: 'Initial Keep Prop',
+      keepAttr: 'Initial Keep Attr',
+      borderColor: 'orange',
+    },
+  ) => {
+    expect(component.get('staticProp')).toBe('staticValue');
+    expect(component.get('dsPropToKeep', { skipResolve: true })).toEqual(makeKeepPropVar());
+    expect(component.get('dsPropToKeep')).toBe(values.keepProp);
+    expect(component.getAttributes({ skipResolve: true })['data-static']).toBe('staticAttr');
+    expect(component.getAttributes({ skipResolve: true })['data-keep']).toEqual(makeKeepAttrVar());
+    expect(component.getAttributes()['data-keep']).toBe(values.keepAttr);
+    expect(component.getStyle({ skipResolve: true })['background-color']).toBe('black');
+    expect(component.getStyle({ skipResolve: true })['border-color']).toEqual(makeBorderColorVar());
+    expect(component.getStyle()['border-color']).toBe(values.borderColor);
+  };
+
+  const expectUntouchedRuleValues = (
+    rule: CssRule,
+    values = {
+      borderColor: 'orange',
+    },
+  ) => {
+    expect(rule.getStyle('', { skipResolve: true })['background-color']).toBe('black');
+    expect(rule.getStyle('', { skipResolve: true })['border-color']).toEqual(makeBorderColorVar());
+    expect(rule.getStyle()['border-color']).toBe(values.borderColor);
   };
 
   afterEach(() => {
@@ -99,13 +177,32 @@ describe('Data source import policy', () => {
 
     importStaticHtml();
 
+    expect(component.get('tagName')).toBe('section');
+    expect(component.get('tagName', { skipResolve: true })).toBeUndefined();
     expect(component.getAttributes({ skipResolve: true })['data-attr']).toBe('Imported Title');
     expect(component.getStyle({ skipResolve: true }).color).toBe('green');
+    expectUntouchedComponentValues(component);
 
-    dsm.get('records').getRecord('rec1')?.set({ title: 'Changed Title', color: 'purple' });
+    dsm
+      .get('records')
+      .getRecord('rec1')
+      ?.set({
+        tagName: 'article',
+        title: 'Changed Title',
+        color: 'purple',
+        keepProp: 'Changed Keep Prop',
+        keepAttr: 'Changed Keep Attr',
+        borderColor: 'yellow',
+      });
 
+    expect(component.get('tagName')).toBe('section');
     expect(component.getAttributes()['data-attr']).toBe('Imported Title');
     expect(component.getStyle().color).toBe('green');
+    expectUntouchedComponentValues(component, {
+      keepProp: 'Changed Keep Prop',
+      keepAttr: 'Changed Keep Attr',
+      borderColor: 'yellow',
+    });
   });
 
   test('skips static HTML updates and preserves existing bindings', () => {
@@ -117,15 +214,35 @@ describe('Data source import policy', () => {
 
     importStaticHtml();
 
+    expect(component.get('tagName', { skipResolve: true })).toEqual(makeTagNameVar());
+    expect(component.get('tagName')).toBe('div');
     expect(component.getAttributes({ skipResolve: true })['data-attr']).toEqual(makeTitleVar());
     expect(component.getStyle({ skipResolve: true }).color).toEqual(makeColorVar());
+    expectUntouchedComponentValues(component);
+    expect(dsm.getValue('records.rec1.tagName')).toBe('div');
     expect(dsm.getValue('records.rec1.title')).toBe('Initial Title');
     expect(dsm.getValue('records.rec1.color')).toBe('red');
 
-    dsm.get('records').getRecord('rec1')?.set({ title: 'Changed Title', color: 'purple' });
+    dsm
+      .get('records')
+      .getRecord('rec1')
+      ?.set({
+        tagName: 'article',
+        title: 'Changed Title',
+        color: 'purple',
+        keepProp: 'Changed Keep Prop',
+        keepAttr: 'Changed Keep Attr',
+        borderColor: 'yellow',
+      });
 
+    expect(component.get('tagName')).toBe('article');
     expect(component.getAttributes()['data-attr']).toBe('Changed Title');
     expect(component.getStyle().color).toBe('purple');
+    expectUntouchedComponentValues(component, {
+      keepProp: 'Changed Keep Prop',
+      keepAttr: 'Changed Keep Attr',
+      borderColor: 'yellow',
+    });
   });
 
   test('updates datasource values and keeps bindings on parsed HTML import', () => {
@@ -137,15 +254,35 @@ describe('Data source import policy', () => {
 
     importStaticHtml();
 
+    expect(dsm.getValue('records.rec1.tagName')).toBe('section');
     expect(dsm.getValue('records.rec1.title')).toBe('Imported Title');
     expect(dsm.getValue('records.rec1.color')).toBe('green');
+    expect(component.get('tagName', { skipResolve: true })).toEqual(makeTagNameVar());
+    expect(component.get('tagName')).toBe('section');
     expect(component.getAttributes({ skipResolve: true })['data-attr']).toEqual(makeTitleVar());
     expect(component.getStyle({ skipResolve: true }).color).toEqual(makeColorVar());
+    expectUntouchedComponentValues(component);
 
-    dsm.get('records').getRecord('rec1')?.set({ title: 'Changed Again', color: 'orange' });
+    dsm
+      .get('records')
+      .getRecord('rec1')
+      ?.set({
+        tagName: 'article',
+        title: 'Changed Again',
+        color: 'orange',
+        keepProp: 'Changed Keep Prop',
+        keepAttr: 'Changed Keep Attr',
+        borderColor: 'yellow',
+      });
 
+    expect(component.get('tagName')).toBe('article');
     expect(component.getAttributes()['data-attr']).toBe('Changed Again');
     expect(component.getStyle().color).toBe('orange');
+    expectUntouchedComponentValues(component, {
+      keepProp: 'Changed Keep Prop',
+      keepAttr: 'Changed Keep Attr',
+      borderColor: 'yellow',
+    });
   });
 
   test('overwrites bound rule values on parsed CSS string import by default', () => {
@@ -156,10 +293,12 @@ describe('Data source import policy', () => {
     importStaticCss();
 
     expect(rule.getStyle('', { skipResolve: true }).color).toBe('green');
+    expectUntouchedRuleValues(rule);
 
-    dsm.get('records').getRecord('rec1')?.set({ color: 'orange' });
+    dsm.get('records').getRecord('rec1')?.set({ color: 'orange', borderColor: 'yellow' });
 
     expect(rule.getStyle().color).toBe('green');
+    expectUntouchedRuleValues(rule, { borderColor: 'yellow' });
   });
 
   test('skips static CSS updates and preserves existing rule bindings', () => {
@@ -173,10 +312,12 @@ describe('Data source import policy', () => {
 
     expect(dsm.getValue('records.rec1.color')).toBe('red');
     expect(rule.getStyle('', { skipResolve: true }).color).toEqual(makeColorVar());
+    expectUntouchedRuleValues(rule);
 
-    dsm.get('records').getRecord('rec1')?.set({ color: 'orange' });
+    dsm.get('records').getRecord('rec1')?.set({ color: 'orange', borderColor: 'yellow' });
 
     expect(rule.getStyle().color).toBe('orange');
+    expectUntouchedRuleValues(rule, { borderColor: 'yellow' });
   });
 
   test('applies policy to parsed CSS string imports for existing rules', () => {
@@ -190,10 +331,12 @@ describe('Data source import policy', () => {
 
     expect(dsm.getValue('records.rec1.color')).toBe('green');
     expect(rule.getStyle('', { skipResolve: true }).color).toEqual(makeColorVar());
+    expectUntouchedRuleValues(rule);
 
-    dsm.get('records').getRecord('rec1')?.set({ color: 'orange' });
+    dsm.get('records').getRecord('rec1')?.set({ color: 'orange', borderColor: 'yellow' });
 
     expect(rule.getStyle().color).toBe('orange');
+    expectUntouchedRuleValues(rule, { borderColor: 'yellow' });
   });
 
   test('supports callback policies per key and kind', () => {
@@ -213,10 +356,14 @@ describe('Data source import policy', () => {
 
     importStaticHtml();
 
+    expect(dsm.getValue('records.rec1.tagName')).toBe('section');
     expect(dsm.getValue('records.rec1.title')).toBe('Initial Title');
     expect(dsm.getValue('records.rec1.color')).toBe('green');
+    expect(component.get('tagName', { skipResolve: true })).toEqual(makeTagNameVar());
+    expect(component.get('tagName')).toBe('section');
     expect(component.getAttributes({ skipResolve: true })['data-attr']).toEqual(makeTitleVar());
     expect(component.getStyle({ skipResolve: true }).color).toEqual(makeColorVar());
+    expectUntouchedComponentValues(component);
   });
 
   test('keeps bindings and warns when update cannot write data-condition values', () => {
@@ -246,7 +393,17 @@ describe('Data source import policy', () => {
     init({
       dataSources: { dataBindingImportPolicy: 'update' },
     });
-    addBaseDataSource({ id: 'rec1', title: 'Initial Title', color: 'red', content: 'Dynamic Content', mutable: false });
+    addBaseDataSource({
+      id: 'rec1',
+      tagName: 'div',
+      title: 'Initial Title',
+      color: 'red',
+      keepProp: 'Initial Keep Prop',
+      keepAttr: 'Initial Keep Attr',
+      borderColor: 'orange',
+      content: 'Dynamic Content',
+      mutable: false,
+    });
     const warningSpy = jest.spyOn(em, 'logWarning');
     const rule = createBoundRule();
 
