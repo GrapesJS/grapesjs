@@ -1,10 +1,10 @@
 import { ObjectAny, ObjectHash } from '../../common';
 import DataResolverListener from '../../data_sources/model/DataResolverListener';
 import {
-  DataSourceImportSource,
-  DataSourcePropertyContext,
-  DataSourcePropertyHandler,
-  DataSourcePropertyKind,
+  DataBindingImportContext,
+  DataBindingImportPolicy,
+  DataBindingImportSource,
+  DataBindingKind,
 } from '../../data_sources/types';
 import { getDataResolverInstance, getDataResolverInstanceValue, isDataResolverProps } from '../../data_sources/utils';
 import type StyleableModel from '../../domain_abstract/model/StyleableModel';
@@ -14,7 +14,7 @@ import { isFunction } from 'underscore';
 export interface DataWatchersOptions {
   skipWatcherUpdates?: boolean;
   fromDataSource?: boolean;
-  parsedImportSource?: DataSourceImportSource;
+  parsedImportSource?: DataBindingImportSource;
 }
 
 export interface ModelResolverWatcherOptions {
@@ -31,7 +31,7 @@ export class ModelResolverWatcher<T extends ObjectHash> {
   constructor(
     private model: WatchableModel<T>,
     private updateFn: UpdateFn<T>,
-    private kind: DataSourcePropertyKind,
+    private kind: DataBindingKind,
     options: ModelResolverWatcherOptions,
   ) {
     this.em = options.em;
@@ -125,7 +125,7 @@ export class ModelResolverWatcher<T extends ObjectHash> {
 
   private applyImportPolicy(values: ObjectAny | undefined, options: DataWatchersOptions = {}) {
     const { parsedImportSource } = options;
-    const { onDataSourceProperty } = this.em.DataSources.config;
+    const { dataBindingImportPolicy } = this.em.DataSources.config;
 
     if (!values || !parsedImportSource) return values;
 
@@ -142,7 +142,7 @@ export class ModelResolverWatcher<T extends ObjectHash> {
 
       const resolver = resolverListener.resolver.toJSON();
       const path = 'path' in resolver ? resolver.path : undefined;
-      const context: DataSourcePropertyContext = {
+      const context: DataBindingImportContext = {
         target: this.model as StyleableModel,
         kind: this.kind,
         source,
@@ -152,7 +152,7 @@ export class ModelResolverWatcher<T extends ObjectHash> {
         resolver,
         path,
       };
-      const action = this.resolveImportAction(onDataSourceProperty, context);
+      const action = this.resolveImportAction(dataBindingImportPolicy, context);
 
       if (action === 'overwrite') {
         return;
@@ -172,7 +172,7 @@ export class ModelResolverWatcher<T extends ObjectHash> {
     return nextValues;
   }
 
-  private resolveImportAction(handler: DataSourcePropertyHandler | undefined, context: DataSourcePropertyContext) {
+  private resolveImportAction(handler: DataBindingImportPolicy | undefined, context: DataBindingImportContext) {
     const action = isFunction(handler) ? handler(context) : handler;
 
     return action === 'skip' || action === 'update' || action === 'overwrite' ? action : 'overwrite';
@@ -190,7 +190,7 @@ export class ModelResolverWatcher<T extends ObjectHash> {
     }
   }
 
-  private warnImportFallback(key: string, source: DataSourceImportSource, path?: string) {
+  private warnImportFallback(key: string, source: DataBindingImportSource, path?: string) {
     this.em.logWarning(
       `[DataSources]: Failed to update the data source bound to "${key}" during ${source} import; keeping the existing binding.`,
       { key, source, path },

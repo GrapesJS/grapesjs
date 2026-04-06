@@ -1,4 +1,4 @@
-import type { CssRule, DataSourcePropertyContext, Editor } from '../../../src';
+import type { CssRule, DataBindingImportContext, Editor } from '../../../src';
 import type DataSourceManager from '../../../src/data_sources';
 import { DataConditionType } from '../../../src/data_sources/model/conditional_variables/DataCondition';
 import { StringOperation } from '../../../src/data_sources/model/conditional_variables/operators/StringOperator';
@@ -110,7 +110,7 @@ describe('Data source import policy', () => {
 
   test('skips static HTML updates and preserves existing bindings', () => {
     init({
-      dataSources: { onDataSourceProperty: 'skip' },
+      dataSources: { dataBindingImportPolicy: 'skip' },
     });
     addBaseDataSource();
     const component = createBoundComponent();
@@ -130,7 +130,7 @@ describe('Data source import policy', () => {
 
   test('updates datasource values and keeps bindings on parsed HTML import', () => {
     init({
-      dataSources: { onDataSourceProperty: 'update' },
+      dataSources: { dataBindingImportPolicy: 'update' },
     });
     addBaseDataSource();
     const component = createBoundComponent();
@@ -164,7 +164,7 @@ describe('Data source import policy', () => {
 
   test('skips static CSS updates and preserves existing rule bindings', () => {
     init({
-      dataSources: { onDataSourceProperty: 'skip' },
+      dataSources: { dataBindingImportPolicy: 'skip' },
     });
     addBaseDataSource();
     const rule = createBoundRule();
@@ -181,7 +181,7 @@ describe('Data source import policy', () => {
 
   test('applies policy to parsed CSS string imports for existing rules', () => {
     init({
-      dataSources: { onDataSourceProperty: 'update' },
+      dataSources: { dataBindingImportPolicy: 'update' },
     });
     addBaseDataSource();
     const rule = createBoundRule();
@@ -199,7 +199,7 @@ describe('Data source import policy', () => {
   test('supports callback policies per key and kind', () => {
     init({
       dataSources: {
-        onDataSourceProperty: ({ key, kind, source }: DataSourcePropertyContext) => {
+        dataBindingImportPolicy: ({ key, kind, source }: DataBindingImportContext) => {
           if (source === 'html' && kind === 'attribute' && key === 'data-attr') {
             return 'skip';
           }
@@ -221,7 +221,7 @@ describe('Data source import policy', () => {
 
   test('keeps bindings and warns when update cannot write data-condition values', () => {
     init({
-      dataSources: { onDataSourceProperty: 'update' },
+      dataSources: { dataBindingImportPolicy: 'update' },
     });
     addBaseDataSource();
     const warningSpy = jest.spyOn(em, 'logWarning');
@@ -244,7 +244,7 @@ describe('Data source import policy', () => {
 
   test('keeps bindings and warns when datasource updates fail', () => {
     init({
-      dataSources: { onDataSourceProperty: 'update' },
+      dataSources: { dataBindingImportPolicy: 'update' },
     });
     addBaseDataSource({ id: 'rec1', title: 'Initial Title', color: 'red', content: 'Dynamic Content', mutable: false });
     const warningSpy = jest.spyOn(em, 'logWarning');
@@ -259,7 +259,7 @@ describe('Data source import policy', () => {
 
   test('does not change direct setter overwrite behavior', () => {
     init({
-      dataSources: { onDataSourceProperty: 'skip' },
+      dataSources: { dataBindingImportPolicy: 'skip' },
     });
     addBaseDataSource();
     const component = createBoundComponent();

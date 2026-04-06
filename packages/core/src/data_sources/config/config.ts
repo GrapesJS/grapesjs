@@ -1,4 +1,4 @@
-import type { DataSourcePropertyHandler } from '../types';
+import type { DataBindingImportPolicy } from '../types';
 
 export interface DataSourcesConfig {
   /**
@@ -11,12 +11,12 @@ export interface DataSourcesConfig {
    * Controls how parsed static HTML/CSS updates interact with existing data source bindings.
    * @default 'overwrite'
    */
-  onDataSourceProperty?: DataSourcePropertyHandler;
+  dataBindingImportPolicy?: DataBindingImportPolicy;
 }
 
 const config: () => DataSourcesConfig = () => ({
   autoloadProviders: false,
-  onDataSourceProperty: 'overwrite',
+  dataBindingImportPolicy: 'overwrite',
 });
 
 export default config;

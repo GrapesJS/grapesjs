@@ -13,7 +13,7 @@ import type {
   ComponentResizeEventStartProps,
   ComponentResizeEventUpdateProps,
 } from '../commands/view/Resize';
-import type { DataSourceImportSource } from '../data_sources/types';
+import type { DataBindingImportSource } from '../data_sources/types';
 import type { StyleProps } from '../domain_abstract/model/StyleableModel';
 import type Selector from '../selector_manager/model/Selector';
 import type Component from './model/Component';
@@ -40,7 +40,7 @@ export interface SymbolInfo {
 export interface ParseStringOptions extends AddOptions, OptionAsDocument, WithHTMLParserOptions {
   keepIds?: string[];
   cloneRules?: boolean;
-  parsedImportSource?: DataSourceImportSource;
+  parsedImportSource?: DataBindingImportSource;
 }
 
 export enum ComponentsEvents {

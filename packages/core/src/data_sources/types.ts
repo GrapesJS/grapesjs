@@ -168,16 +168,16 @@ export interface DataSourceTransformers {
   onRecordSetValue?: (args: { id: string | number; key: string; value: any }) => any;
 }
 
-export type DataSourceImportSource = 'html' | 'css';
+export type DataBindingImportSource = 'html' | 'css';
 
-export type DataSourcePropertyKind = 'property' | 'attribute' | 'style';
+export type DataBindingKind = 'property' | 'attribute' | 'style';
 
-export type DataSourcePropertyAction = 'overwrite' | 'update' | 'skip';
+export type DataBindingImportAction = 'overwrite' | 'update' | 'skip';
 
-export interface DataSourcePropertyContext {
+export interface DataBindingImportContext {
   target: StyleableModel;
-  kind: DataSourcePropertyKind;
-  source: DataSourceImportSource;
+  kind: DataBindingKind;
+  source: DataBindingImportSource;
   key: string;
   value: any;
   resolvedValue: any;
@@ -185,9 +185,9 @@ export interface DataSourcePropertyContext {
   path?: string;
 }
 
-export type DataSourcePropertyHandler =
-  | DataSourcePropertyAction
-  | ((context: DataSourcePropertyContext) => DataSourcePropertyAction);
+export type DataBindingImportPolicy =
+  | DataBindingImportAction
+  | ((context: DataBindingImportContext) => DataBindingImportAction);
 
 type DotSeparatedKeys<T> = T extends object
   ? {
