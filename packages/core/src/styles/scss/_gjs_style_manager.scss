@@ -423,6 +423,14 @@
   padding: 5px 0 0;
 }
 
+// Keep the border-radius UI in corner order while the underlying property
+// list stays aligned with CSS shorthand semantics.
+.#{gjs_vars.$sm-prefix}property__border-radius {
+  .#{gjs_vars.$sm-prefix}property__border-bottom-right-radius {
+    order: 4;
+  }
+}
+
 .#{gjs_vars.$sm-prefix}stack ##{gjs_vars.$sm-prefix}add {
   @extend .#{gjs_vars.$app-prefix}color-main;
 
