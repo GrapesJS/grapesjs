@@ -343,12 +343,12 @@ export default class PropertyFactory {
               id: 'border-top-right-radius-sub',
             },
             {
-              extend: 'border-bottom-left-radius',
-              id: 'border-bottom-left-radius-sub',
-            },
-            {
               extend: 'border-bottom-right-radius',
               id: 'border-bottom-right-radius-sub',
+            },
+            {
+              extend: 'border-bottom-left-radius',
+              id: 'border-bottom-left-radius-sub',
             },
           ]),
         },

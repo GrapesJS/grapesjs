@@ -445,6 +445,39 @@ describe('StyleManager properties logic', () => {
     });
   });
 
+  describe('Border radius composite', () => {
+    let borderRadiusProp: PropertyComposite;
+
+    beforeEach(() => {
+      rule1 = cssc.addRules('.cls { color: red; }')[0];
+      obj.addSector(sectorTest, {
+        name: 'sector',
+        properties: [{ extend: 'border-radius' }],
+      });
+      borderRadiusProp = obj.getProperty(sectorTest, 'border-radius') as PropertyComposite;
+      em.setSelected(cmp);
+      obj.__upSel();
+    });
+
+    test('Updates bottom-left in the fourth shorthand slot', () => {
+      borderRadiusProp.getProperty('border-bottom-left-radius-sub')?.upValue('20px');
+      obj.__upSel();
+
+      expect(rule1.getStyle()).toEqual({
+        color: 'red',
+        'border-radius': '0 0 0 20px',
+      });
+    });
+
+    test('Parses bottom-left and bottom-right from shorthand correctly', () => {
+      rule1.setStyle({ 'border-radius': '1px 2px 3px 4px' });
+      obj.__upSel();
+
+      expect(borderRadiusProp.getProperty('border-bottom-right-radius-sub')?.getFullValue()).toBe('3px');
+      expect(borderRadiusProp.getProperty('border-bottom-left-radius-sub')?.getFullValue()).toBe('4px');
+    });
+  });
+
   describe('Stack type', () => {
     const propTest = 'stack-prop';
     const propATest = `${propTest}-a`;
