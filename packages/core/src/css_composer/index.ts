@@ -42,6 +42,7 @@ import { ObjectAny, PrevToNewIdMap } from '../common';
 import { UpdateStyleOptions } from '../domain_abstract/model/StyleableModel';
 import { CssEvents } from './types';
 import CssRuleView from './view/CssRuleView';
+import type { DataBindingImportPolicy } from '../data_sources/types';
 
 /** @private */
 interface RuleOptions {
@@ -72,6 +73,12 @@ export interface GetSetRuleOptions extends UpdateStyleOptions {
 }
 
 type CssRuleStyle = Required<CssRuleProperties>['style'];
+
+export interface AddCollectionOptions extends UpdateStyleOptions {
+  extend?: boolean | number;
+  avoidUpdateStyle?: boolean;
+  dataBindingImportPolicy?: DataBindingImportPolicy;
+}
 
 export default class CssComposer extends ItemManagerModule<CssComposerConfig & { pStylePrefix?: string }> {
   classes = {
@@ -295,10 +302,10 @@ export default class CssComposer extends ItemManagerModule<CssComposerConfig & {
    * @return {Array<Model>}
    * @private
    */
-  addCollection(data: string | CssRuleJSON[], opts: Record<string, any> = {}, props = {}) {
+  addCollection(data: string | CssRuleJSON[], opts: AddCollectionOptions = {}, props = {}) {
     const { em } = this;
     const result: CssRule[] = [];
-    const parsedImportOpts = { parsedImportSource: 'css', ...opts };
+    const parsedImportOpts: AddCollectionOptions = { ...opts, parsedImportSource: 'css' as const };
 
     if (isString(data)) {
       data = em.Parser.parseCss(data);

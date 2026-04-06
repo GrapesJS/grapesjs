@@ -115,8 +115,9 @@ describe('Data source import policy', () => {
 
   const importStaticHtml = (
     html = '<section id="bound-cmp" data-attr="Imported Title" style="color: green;">Imported</section>',
+    opts = {},
   ) => {
-    cmpRoot.components().resetFromString(html);
+    cmpRoot.components().resetFromString(html, opts);
   };
 
   const createBoundRule = () => {
@@ -132,8 +133,8 @@ describe('Data source import policy', () => {
     ])[0] as CssRule;
   };
 
-  const importStaticCss = (css = '.bound-rule { color: green; }') => {
-    em.Css.addCollection(css, { extend: 1 });
+  const importStaticCss = (css = '.bound-rule { color: green; }', opts = {}) => {
+    em.Css.addCollection(css, { extend: 1, ...opts });
   };
 
   const expectUntouchedComponentValues = (
@@ -364,6 +365,39 @@ describe('Data source import policy', () => {
     expect(component.getAttributes({ skipResolve: true })['data-attr']).toEqual(makeTitleVar());
     expect(component.getStyle({ skipResolve: true }).color).toEqual(makeColorVar());
     expectUntouchedComponentValues(component);
+  });
+
+  test('supports per-call override on parsed HTML import', () => {
+    init({
+      dataSources: { dataBindingImportPolicy: 'skip' },
+    });
+    addBaseDataSource();
+    const component = createBoundComponent();
+
+    importStaticHtml(undefined, { dataBindingImportPolicy: 'update' });
+
+    expect(dsm.getValue('records.rec1.tagName')).toBe('section');
+    expect(dsm.getValue('records.rec1.title')).toBe('Imported Title');
+    expect(dsm.getValue('records.rec1.color')).toBe('green');
+    expect(component.get('tagName', { skipResolve: true })).toEqual(makeTagNameVar());
+    expect(component.get('tagName')).toBe('section');
+    expect(component.getAttributes({ skipResolve: true })['data-attr']).toEqual(makeTitleVar());
+    expect(component.getStyle({ skipResolve: true }).color).toEqual(makeColorVar());
+  });
+
+  test('supports per-call override on parsed CSS import', () => {
+    init({
+      dataSources: { dataBindingImportPolicy: 'skip' },
+    });
+    addBaseDataSource();
+    const rule = createBoundRule();
+
+    importStaticCss(undefined, { dataBindingImportPolicy: 'update' });
+
+    expect(dsm.getValue('records.rec1.color')).toBe('green');
+    expect(rule.getStyle('', { skipResolve: true }).color).toEqual(makeColorVar());
+    expect(rule.getStyle().color).toBe('green');
+    expectUntouchedRuleValues(rule);
   });
 
   test('keeps bindings and warns when update cannot write data-condition values', () => {

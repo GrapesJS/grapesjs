@@ -17,6 +17,7 @@ import ComponentText from './ComponentText';
 import ComponentWrapper from './ComponentWrapper';
 import { ComponentsEvents, ParseStringOptions } from '../types';
 import { isSymbolInstance, isSymbolRoot, updateSymbolComps } from './SymbolUtils';
+import type { DataBindingImportPolicy } from '../../data_sources/types';
 
 export interface ResetCommonUpdateProps {
   component: Component;
@@ -27,6 +28,7 @@ export interface ResetCommonUpdateProps {
 export interface ResetFromStringOptions {
   visitedCmps?: Record<string, ComponentDefinitionDefined[]>;
   keepIds?: string[];
+  dataBindingImportPolicy?: DataBindingImportPolicy;
   updateOptions?: {
     onAttributes?: (props: ResetCommonUpdateProps & { attributes: Record<string, any> }) => void;
     onStyle?: (props: ResetCommonUpdateProps & { style: Record<string, any> }) => void;
