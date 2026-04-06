@@ -184,17 +184,14 @@ describe('Data source import policy', () => {
     expect(component.getStyle({ skipResolve: true }).color).toBe('green');
     expectUntouchedComponentValues(component);
 
-    dsm
-      .get('records')
-      .getRecord('rec1')
-      ?.set({
-        tagName: 'article',
-        title: 'Changed Title',
-        color: 'purple',
-        keepProp: 'Changed Keep Prop',
-        keepAttr: 'Changed Keep Attr',
-        borderColor: 'yellow',
-      });
+    dsm.get('records').getRecord('rec1')?.set({
+      tagName: 'article',
+      title: 'Changed Title',
+      color: 'purple',
+      keepProp: 'Changed Keep Prop',
+      keepAttr: 'Changed Keep Attr',
+      borderColor: 'yellow',
+    });
 
     expect(component.get('tagName')).toBe('section');
     expect(component.getAttributes()['data-attr']).toBe('Imported Title');
@@ -224,17 +221,14 @@ describe('Data source import policy', () => {
     expect(dsm.getValue('records.rec1.title')).toBe('Initial Title');
     expect(dsm.getValue('records.rec1.color')).toBe('red');
 
-    dsm
-      .get('records')
-      .getRecord('rec1')
-      ?.set({
-        tagName: 'article',
-        title: 'Changed Title',
-        color: 'purple',
-        keepProp: 'Changed Keep Prop',
-        keepAttr: 'Changed Keep Attr',
-        borderColor: 'yellow',
-      });
+    dsm.get('records').getRecord('rec1')?.set({
+      tagName: 'article',
+      title: 'Changed Title',
+      color: 'purple',
+      keepProp: 'Changed Keep Prop',
+      keepAttr: 'Changed Keep Attr',
+      borderColor: 'yellow',
+    });
 
     expect(component.get('tagName')).toBe('article');
     expect(component.getAttributes()['data-attr']).toBe('Changed Title');
@@ -264,17 +258,14 @@ describe('Data source import policy', () => {
     expect(component.getStyle({ skipResolve: true }).color).toEqual(makeColorVar());
     expectUntouchedComponentValues(component);
 
-    dsm
-      .get('records')
-      .getRecord('rec1')
-      ?.set({
-        tagName: 'article',
-        title: 'Changed Again',
-        color: 'orange',
-        keepProp: 'Changed Keep Prop',
-        keepAttr: 'Changed Keep Attr',
-        borderColor: 'yellow',
-      });
+    dsm.get('records').getRecord('rec1')?.set({
+      tagName: 'article',
+      title: 'Changed Again',
+      color: 'orange',
+      keepProp: 'Changed Keep Prop',
+      keepAttr: 'Changed Keep Attr',
+      borderColor: 'yellow',
+    });
 
     expect(component.get('tagName')).toBe('article');
     expect(component.getAttributes()['data-attr']).toBe('Changed Again');
