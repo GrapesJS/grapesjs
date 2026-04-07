@@ -1,6 +1,10 @@
-import { isEmpty, forEach, isString, isArray } from 'underscore';
+import { isEmpty, forEach, isString, isArray, isObject } from 'underscore';
 import { ObjectAny, ObjectHash } from '../../common';
-import StyleableModel, { StyleProps } from '../../domain_abstract/model/StyleableModel';
+import StyleableModel, {
+  GetStyleOpts,
+  StyleProps,
+  UpdateStyleOptions,
+} from '../../domain_abstract/model/StyleableModel';
 import Selectors from '../../selector_manager/model/Selectors';
 import { getMediaLength } from '../../code_manager/model/CssGenerator';
 import { isEmptyObj, hasWin } from '../../utils/mixins';
@@ -11,9 +15,14 @@ import CssRuleView from '../view/CssRuleView';
 export interface ToCssOptions {
   important?: boolean | string[];
   allowEmpty?: boolean;
+  withNested?: boolean;
   style?: StyleProps;
   inline?: boolean;
 }
+
+type ToCssOptionsInternal = ToCssOptions & {
+  nested?: boolean;
+};
 
 /** @private */
 export interface CssRuleProperties extends ObjectHash {
@@ -80,6 +89,8 @@ export interface CssRuleJSON extends Omit<CssRuleProperties, 'selectors'> {
 // @ts-ignore
 const { CSS } = hasWin() ? window : {};
 
+const isNestedStyleKey = (key: string) => /^(@|&|[.#:[>+~*])/.test(key);
+
 /**
  * @typedef CssRule
  * @property {Array<Selector>} selectors Array of selectors
@@ -101,6 +112,8 @@ export default class CssRule extends StyleableModel<CssRuleProperties> {
   em?: EditorModel;
   opt: any;
   views: CssRuleView[] = [];
+  parentRule?: CssRule;
+  nestedStyleKey?: string;
 
   defaults() {
     return {
@@ -133,6 +146,114 @@ export default class CssRule extends StyleableModel<CssRuleProperties> {
     const { em } = this;
     const changed = this.changedAttributes();
     changed && !isEmptyObj(changed) && em?.changesUp(options, { rule, changed, options });
+  }
+
+  isNested() {
+    return !!this.parentRule;
+  }
+
+  protected __isNestedStyleValue(value: unknown): value is CssRule {
+    return value instanceof CssRule && value.parentRule === this;
+  }
+
+  protected __attachNestedRule(rule: CssRule, key: string, opts: UpdateStyleOptions = {}) {
+    rule.parentRule = this;
+    rule.nestedStyleKey = key;
+    rule.em = rule.em || this.em;
+
+    const rules = this.em?.Css.getAll();
+    if (rules && !rules.get(rule)) {
+      rules.add(rule, opts);
+    }
+
+    return rule;
+  }
+
+  protected __detachNestedRule(rule: CssRule, opts: UpdateStyleOptions = {}) {
+    if (rule.parentRule !== this) return;
+
+    rule.parentRule = undefined;
+    rule.nestedStyleKey = undefined;
+    this.em?.Css.getAll().remove(rule, opts);
+  }
+
+  protected __createNestedRule(key: string, value: unknown, opts: UpdateStyleOptions = {}) {
+    const rule =
+      value instanceof CssRule
+        ? value
+        : new CssRule(
+            {
+              style: value as ObjectAny,
+            } as CssRuleProperties,
+            { em: this.em },
+          );
+
+    return this.__attachNestedRule(rule, key, opts);
+  }
+
+  protected __normalizeStyle(style: ObjectAny, opts: UpdateStyleOptions = {}) {
+    const result = { ...style };
+
+    Object.keys(result).forEach((key) => {
+      const value = result[key];
+      const isNested = isNestedStyleKey(key) && (value instanceof CssRule || (isObject(value) && !isArray(value)));
+
+      if (isNested) {
+        result[key] = this.__createNestedRule(key, value, opts);
+      }
+    });
+
+    return result;
+  }
+
+  protected __getStyleForExtend() {
+    return this.getStyle('', { skipResolve: true, withNested: true });
+  }
+
+  protected __getStyleForUpdate(opts: UpdateStyleOptions = {}) {
+    return this.getStyle('', { skipResolve: true, withNested: true });
+  }
+
+  protected __onStyleUpdate(prevStyle: StyleProps, opts: UpdateStyleOptions = {}) {
+    const nextStyle = this.getStyle('', { withNested: true, skipResolve: true });
+
+    Object.keys(prevStyle).forEach((key) => {
+      const prevRule = prevStyle[key];
+      if (this.__isNestedStyleValue(prevRule) && nextStyle[key] !== prevRule) {
+        this.__detachNestedRule(prevRule, opts);
+      }
+    });
+  }
+
+  protected __getStyleResult(style: StyleProps, prop: keyof StyleProps | '' | undefined, opts: GetStyleOpts = {}) {
+    if (opts.withNested) {
+      return super.__getStyleResult(style, prop, opts);
+    }
+
+    const result = super.__getStyleResult(style, prop, opts);
+
+    if (prop && prop !== '') {
+      return this.__isNestedStyleValue(result) ? undefined : result;
+    }
+
+    const styleResult = { ...(result as StyleProps) };
+    Object.keys(styleResult).forEach((key) => {
+      if (this.__isNestedStyleValue(styleResult[key])) {
+        delete styleResult[key];
+      }
+    });
+
+    return styleResult;
+  }
+
+  protected __stylePropToString(prop: string, value: StyleProps[keyof StyleProps], opts: ToCssOptions = {}) {
+    const nestedRule = this.__isNestedStyleValue(value) && value;
+
+    if (nestedRule) {
+      return opts.withNested ? nestedRule.getDeclaration({ ...opts, nested: true } as ToCssOptionsInternal) : '';
+    }
+
+    return super.__stylePropToString(prop, value, opts);
   }
 
   clone(): typeof this {
@@ -224,12 +345,17 @@ export default class CssRule extends StyleableModel<CssRuleProperties> {
    */
   getDeclaration(opts: ToCssOptions = {}) {
     let result = '';
+    const optsInternal = opts as ToCssOptionsInternal;
     const { important } = this.attributes;
     const selectors = this.selectorsToString(opts);
     const style = this.styleToString({ important, ...opts });
     const singleAtRule = this.get('singleAtRule');
+    const nestedStyleKey = optsInternal.nested && this.nestedStyleKey;
+    const hasStyle = style || opts.allowEmpty;
 
-    if ((selectors || singleAtRule) && (style || opts.allowEmpty)) {
+    if (nestedStyleKey && hasStyle) {
+      result = `${nestedStyleKey}{${style}}`;
+    } else if ((selectors || singleAtRule) && hasStyle) {
       result = singleAtRule ? style : `${selectors}{${style}}`;
     }
 
@@ -310,6 +436,18 @@ export default class CssRule extends StyleableModel<CssRuleProperties> {
 
   toJSON(opts?: ObjectAny) {
     const obj = super.toJSON(opts);
+    const style = this.getStyle('', { withNested: true, skipResolve: true });
+    const styleJson = { ...style };
+
+    Object.keys(styleJson).forEach((key) => {
+      const rule = styleJson[key];
+      if (this.__isNestedStyleValue(rule)) {
+        styleJson[key] = rule.toJSON({ ...opts, nested: true }).style || {};
+      }
+    });
+
+    obj.style = styleJson;
+
     if (this.em?.getConfig().avoidDefaults) {
       const defaults = this.defaults();
 

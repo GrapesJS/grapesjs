@@ -18,8 +18,10 @@ export default class CssRules extends Collection<CssRule> {
   }
 
   toJSON(opts?: any) {
-    const result = Collection.prototype.toJSON.call(this, opts);
-    return result.filter((rule: CssRuleProperties) => rule.style && !rule.shallow);
+    return this.models
+      .filter((rule) => !rule.isNested())
+      .map((rule) => rule.toJSON(opts))
+      .filter((rule: CssRuleProperties) => rule.style && !rule.shallow);
   }
 
   onAdd(model: CssRule, c: CssRules, o: any) {

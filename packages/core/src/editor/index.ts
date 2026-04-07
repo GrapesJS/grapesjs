@@ -257,6 +257,7 @@ export default class Editor implements IBaseModule<EditorConfig> {
    * @param {Boolean} [opts.onlyMatched=false] Return only rules matched by the passed component.
    * @param {Boolean} [opts.keepUnusedStyles=false] Force keep all defined rules. Toggle on in case output looks different inside/outside of the editor.
    * @param {Boolean} [opts.allowEmpty=false] Include rules with empty style declarations.
+   * @param {Boolean} [opts.withNested=false] Include nested CSS rules.
    * @returns {String|Array<CssRule>} CSS string or array of CssRules
    */
   getCss(opts?: EditorModelParam<'getCss', 0>) {

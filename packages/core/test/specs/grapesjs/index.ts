@@ -1,4 +1,5 @@
 import grapesjs, { Component, Editor, usePlugin } from '../../../src';
+import CssRule from '../../../src/css_composer/model/CssRule';
 import ComponentWrapper from '../../../src/dom_components/model/ComponentWrapper';
 import { EditorConfig } from '../../../src/editor/config/config';
 import type { Plugin } from '../../../src/plugin_manager';
@@ -332,6 +333,144 @@ describe('GrapesJS', () => {
       expect(editor.getStyle().length).toEqual(1);
       expect(editor.getCss({ allowEmpty: true })).toEqual(protCss);
       expect(editor.getCss({ allowEmpty: true, keepUnusedStyles: true })).toEqual(`${protCss}.test-empty{}`);
+    });
+
+    test('Allow nested css rules option for getCSS method', () => {
+      config.components = '<div class="foo"></div><div class="baz"></div>';
+      const editor = grapesjs.init(config);
+      const rule = editor.Css.setRule('.foo', {
+        color: 'green',
+        '.bar': {
+          color: 'red',
+        },
+      });
+      const rule2 = editor.Css.setRule('.baz', {
+        color: 'blue',
+        '.bar': {
+          color: 'yellow',
+        },
+      });
+      const nested = rule.getStyle('.bar', { withNested: true }) as CssRule;
+      const nested2 = rule2.getStyle('.bar', { withNested: true }) as CssRule;
+      const protCss = editor.getConfig().protectedCss;
+
+      expect(editor.Css.getAll().length).toEqual(4);
+      expect(nested.isNested()).toBe(true);
+      expect(nested2.isNested()).toBe(true);
+      expect(nested).not.toBe(nested2);
+      expect(editor.getCss()).toEqual(`${protCss}.foo{color:green;}.baz{color:blue;}`);
+      expect(editor.getCss({ withNested: true })).toEqual(
+        `${protCss}.foo{color:green;.bar{color:red;}}.baz{color:blue;.bar{color:yellow;}}`,
+      );
+    });
+
+    test('Nested css rules option from config optsCss', () => {
+      config.components = '<div class="foo"></div>';
+      config.optsCss = { withNested: true };
+      const editor = grapesjs.init(config);
+      editor.Css.setRule('.foo', {
+        color: 'green',
+        '.bar': {
+          color: 'red',
+        },
+      });
+      const protCss = editor.getConfig().protectedCss;
+
+      expect(editor.getCss()).toEqual(`${protCss}.foo{color:green;.bar{color:red;}}`);
+    });
+
+    test('Allow multiple nested css rules for the same parent rule', () => {
+      config.components = '<div class="foo"></div>';
+      const editor = grapesjs.init(config);
+      const rule = editor.Css.setRule('.foo', {
+        color: 'green',
+        '.bar': {
+          color: 'red',
+        },
+        '.baz': {
+          color: 'blue',
+        },
+      });
+      const nestedBar = rule.getStyle('.bar', { withNested: true }) as CssRule;
+      const nestedBaz = rule.getStyle('.baz', { withNested: true }) as CssRule;
+      const protCss = editor.getConfig().protectedCss;
+
+      expect(editor.Css.getAll().length).toEqual(3);
+      expect(nestedBar.isNested()).toBe(true);
+      expect(nestedBaz.isNested()).toBe(true);
+      expect(nestedBar).not.toBe(nestedBaz);
+      expect(editor.getCss({ withNested: true })).toEqual(
+        `${protCss}.foo{color:green;.bar{color:red;}.baz{color:blue;}}`,
+      );
+    });
+
+    test('Allow deep nested css rules', () => {
+      config.components = '<div class="foo"></div>';
+      const editor = grapesjs.init(config);
+      const rule = editor.Css.setRule('.foo', {
+        color: 'green',
+        '.bar': {
+          color: 'red',
+          '.baz': {
+            color: 'blue',
+          },
+        },
+      });
+      const nestedBar = rule.getStyle('.bar', { withNested: true }) as CssRule;
+      const nestedBaz = nestedBar.getStyle('.baz', { withNested: true }) as CssRule;
+      const protCss = editor.getConfig().protectedCss;
+
+      expect(editor.Css.getAll().length).toEqual(3);
+      expect(nestedBar.isNested()).toBe(true);
+      expect(nestedBaz.isNested()).toBe(true);
+      expect(nestedBaz.parentRule).toBe(nestedBar);
+      expect(editor.getCss({ withNested: true })).toEqual(
+        `${protCss}.foo{color:green;.bar{color:red;.baz{color:blue;}}}`,
+      );
+    });
+
+    test('Nested css rules are stored under parent style', () => {
+      config.components = '<div class="foo"></div>';
+      const editor = grapesjs.init(config);
+      editor.Css.setRule('.foo', {
+        color: 'green',
+        '.bar': {
+          color: 'red',
+        },
+      });
+      const projectData = editor.getProjectData();
+
+      expect(projectData.styles).toHaveLength(1);
+      expect(projectData.styles[0].style).toEqual({
+        color: 'green',
+        '.bar': {
+          color: 'red',
+        },
+      });
+
+      const reloaded = grapesjs.init({ ...config, container: document.createElement('div') });
+      reloaded.loadProjectData(projectData);
+      expect(reloaded.Css.getAll().length).toEqual(2);
+      expect(reloaded.getCss({ withNested: true })).toEqual(
+        `${reloaded.getConfig().protectedCss}.foo{color:green;.bar{color:red;}}`,
+      );
+    });
+
+    test('Nested css rules are removed when parent style is replaced', () => {
+      config.components = '<div class="foo"></div>';
+      const editor = grapesjs.init(config);
+      const rule = editor.Css.setRule('.foo', {
+        color: 'green',
+        '.bar': {
+          color: 'red',
+        },
+      });
+      const protCss = editor.getConfig().protectedCss;
+
+      rule.setStyle({ color: 'blue' });
+
+      expect(editor.Css.getAll().length).toEqual(1);
+      expect(editor.getCss({ withNested: true })).toEqual(`${protCss}.foo{color:blue;}`);
     });
 
     test('Keep unused css classes/selectors option for media rules', () => {

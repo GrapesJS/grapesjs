@@ -14,7 +14,7 @@ import { DataWatchersOptions } from '../../dom_components/model/ModelResolverWat
 import { DataResolverProps } from '../../data_sources/types';
 import { _StringKey } from 'backbone';
 
-export type StyleProps = Record<string, string | string[] | DataResolverProps>;
+export type StyleProps = Record<string, string | string[] | DataResolverProps | ObjectAny>;
 
 export interface UpdateStyleOptions extends SetOptions, DataWatchersOptions {
   partial?: boolean;
@@ -38,6 +38,7 @@ export interface StyleableModelProperties extends ObjectHash {
 
 export interface GetStyleOpts {
   skipResolve?: boolean;
+  withNested?: boolean;
 }
 
 type WithDataResolvers<T> = {
@@ -118,7 +119,30 @@ export default class StyleableModel<T extends StyleableModelProperties = any> ex
    * @return {Object}
    */
   extendStyle(prop: ObjectAny): ObjectAny {
-    return { ...this.getStyle('', { skipResolve: true }), ...prop };
+    return { ...this.__getStyleForExtend(), ...prop };
+  }
+
+  protected __getStyleForExtend() {
+    return this.getStyle('', { skipResolve: true });
+  }
+
+  protected __getStyleForUpdate(opts: UpdateStyleOptions = {}) {
+    return this.getStyle('', { skipResolve: true });
+  }
+
+  protected __normalizeStyle(style: ObjectAny, opts: UpdateStyleOptions = {}) {
+    return style;
+  }
+
+  protected __onStyleUpdate(propOrig: StyleProps, opts: UpdateStyleOptions = {}) {}
+
+  protected __getStyleResult(
+    style: StyleProps,
+    prop: keyof StyleProps | '' | undefined,
+    opts: GetStyleOpts = {},
+  ): StyleProps | StyleProps[keyof StyleProps] | undefined {
+    const shouldReturnFull = !prop || prop === '';
+    return shouldReturnFull ? style : style[prop];
   }
 
   /**
@@ -132,6 +156,9 @@ export default class StyleableModel<T extends StyleableModelProperties = any> ex
     prop?: keyof StyleProps | '' | ObjectAny,
     opts: GetStyleOpts = {},
   ): StyleProps | StyleProps[keyof StyleProps] | undefined {
+    const isPropObject = isObject(prop);
+    const resolvedProp = isPropObject ? '' : prop;
+    const resolvedOpts = isPropObject ? (prop as GetStyleOpts) : opts;
     const rawStyle = this.get('style');
     const parsedStyle: StyleProps = isString(rawStyle)
       ? this.parseStyle(rawStyle)
@@ -141,15 +168,13 @@ export default class StyleableModel<T extends StyleableModelProperties = any> ex
 
     delete parsedStyle.__p;
 
-    const shouldReturnFull = !prop || prop === '' || isObject(prop);
-
-    if (!opts.skipResolve) {
-      return shouldReturnFull ? parsedStyle : parsedStyle[prop];
+    if (!resolvedOpts.skipResolve) {
+      return this.__getStyleResult(parsedStyle, resolvedProp, resolvedOpts);
     }
 
     const unresolvedStyles: StyleProps = this.dataResolverWatchers.getValueOrResolver('styles', parsedStyle);
 
-    return shouldReturnFull ? unresolvedStyles : unresolvedStyles[prop];
+    return this.__getStyleResult(unresolvedStyles, resolvedProp, resolvedOpts);
   }
 
   /**
@@ -163,7 +188,9 @@ export default class StyleableModel<T extends StyleableModelProperties = any> ex
       prop = this.parseStyle(prop);
     }
 
-    const propOrig = this.getStyle('', { skipResolve: true });
+    prop = this.__normalizeStyle(prop, opts);
+
+    const propOrig = this.__getStyleForUpdate(opts);
 
     if (opts.partial || opts.avoidStore) {
       opts.avoidStore = true;
@@ -208,6 +235,8 @@ export default class StyleableModel<T extends StyleableModelProperties = any> ex
         em.trigger(`styleable:change:${pr}`, this, pr, opts);
       }
     });
+
+    this.__onStyleUpdate(propOrig, opts);
 
     return newStyle;
   }
@@ -270,25 +299,36 @@ export default class StyleableModel<T extends StyleableModelProperties = any> ex
    * @return {String}
    */
   styleToString(opts: ToCssOptions = {}) {
+    const style = opts.style || (this.getStyle('', opts as any) as StyleProps);
+    return this.__styleToString(style, opts);
+  }
+
+  protected __styleToString(style: StyleProps, opts: ToCssOptions = {}) {
     const result: string[] = [];
-    const style = opts.style || (this.getStyle(opts as any) as StyleProps);
-    const imp = opts.important;
 
     for (let prop in style) {
-      const important = isArray(imp) ? imp.indexOf(prop) >= 0 : imp;
       const firstChars = prop.substring(0, 2);
       const isPrivate = firstChars === '__';
 
       if (isPrivate) continue;
 
-      const value = style[prop];
-      const values = isArray(value) ? (value as string[]) : [value];
-
-      (values as string[]).forEach((val: string) => {
-        const value = `${val}${important ? ' !important' : ''}`;
-        value && result.push(`${prop}:${value};`);
-      });
+      const value = this.__stylePropToString(prop, style[prop], opts);
+      value && result.push(value);
     }
+
+    return result.join('');
+  }
+
+  protected __stylePropToString(prop: string, value: StyleProps[keyof StyleProps], opts: ToCssOptions = {}) {
+    const result: string[] = [];
+    const imp = opts.important;
+    const important = isArray(imp) ? imp.indexOf(prop) >= 0 : imp;
+    const values = isArray(value) ? (value as string[]) : [value];
+
+    (values as string[]).forEach((val: string) => {
+      const value = `${val}${important ? ' !important' : ''}`;
+      value && result.push(`${prop}:${value};`);
+    });
 
     return result.join('');
   }

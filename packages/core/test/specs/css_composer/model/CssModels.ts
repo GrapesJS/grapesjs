@@ -67,6 +67,27 @@ describe('CssRule', () => {
     expect(obj.toCSS()).toEqual('.test1{color:red;}');
   });
 
+  test('toCSS with nested selector rule', () => {
+    obj.getSelectors().add({ name: 'test1' });
+    obj.setStyle({
+      color: 'green',
+      '.bar': {
+        color: 'red',
+      },
+    });
+    const nested = obj.getStyle('.bar', { withNested: true }) as CssRule;
+
+    expect(nested).toBeInstanceOf(CssRule);
+    expect(nested.parentRule).toBe(obj);
+    expect(nested.nestedStyleKey).toBe('.bar');
+    expect(nested.get('selectorsAdd')).toBe('');
+    expect(obj.getStyle()).toEqual({ color: 'green' });
+    expect(obj.getStyle({ withNested: true })['.bar']).toBe(nested);
+    expect(obj.getStyle('.bar')).toBeUndefined();
+    expect(obj.toCSS()).toEqual('.test1{color:green;}');
+    expect(obj.toCSS({ withNested: true })).toEqual('.test1{color:green;.bar{color:red;}}');
+  });
+
   test('toCSS wraps correctly inside media rule', () => {
     const media = '(max-width: 768px)';
     obj.set('atRuleType', 'media');
@@ -88,6 +109,19 @@ describe('CssRule', () => {
     obj.set('singleAtRule', true);
     obj.setStyle({ 'font-family': 'Sans' });
     expect(obj.toCSS()).toEqual('@font-face{font-family:Sans;}');
+  });
+
+  test('toCSS with nested @page margin at-rule', () => {
+    obj.set('atRuleType', 'page');
+    obj.set('singleAtRule', true);
+    obj.setStyle({
+      margin: '2cm',
+      '@bottom-center': {
+        content: '"x"',
+      },
+    });
+    expect(obj.toCSS()).toEqual('@page{margin:2cm;}');
+    expect(obj.toCSS({ withNested: true })).toEqual('@page{margin:2cm;@bottom-center{content:"x";}}');
   });
 
   test('toCSS with a generic at-rule and condition', () => {
