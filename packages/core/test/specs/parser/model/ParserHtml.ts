@@ -823,6 +823,84 @@ describe('ParserHtml', () => {
     });
   });
 
+  describe('with convertAttributeValues', () => {
+    test('keeps regular attribute values as strings by default', () => {
+      const str = `<div data-bool="true" data-list="[1,2,3]" data-obj='{"key":"value"}' data-gjs-test='{"key":"value"}'></div>`;
+      const result = [
+        {
+          tagName: 'div',
+          test: { key: 'value' },
+          attributes: {
+            'data-bool': 'true',
+            'data-list': '[1,2,3]',
+            'data-obj': '{"key":"value"}',
+          },
+        },
+      ];
+      expect(obj.parse(str).html).toEqual(result);
+    });
+
+    test('converts all regular attribute values when true', () => {
+      const str = `<div data-bool="true" data-false="false" data-list="[1,2,3]" data-obj='{"key":"value"}'></div>`;
+      const result = [
+        {
+          tagName: 'div',
+          attributes: {
+            'data-bool': true,
+            'data-false': false,
+            'data-list': [1, 2, 3],
+            'data-obj': { key: 'value' },
+          },
+        },
+      ];
+      expect(obj.parse(str, null, { convertAttributeValues: true }).html).toEqual(result);
+    });
+
+    test('converts only exact attribute names when an array is provided', () => {
+      const str = `<img src='["image.png"]' srcset='["image@2x.png"]' data-test="false"/>`;
+      const result = [
+        {
+          tagName: 'img',
+          type: 'image',
+          attributes: {
+            src: ['image.png'],
+            srcset: '["image@2x.png"]',
+            'data-test': 'false',
+          },
+        },
+      ];
+      expect(obj.parse(str, null, { convertAttributeValues: ['src'] }).html).toEqual(result);
+    });
+
+    test('converts attributes with a dynamic resolver function', () => {
+      const str = `<img src="[1,2,3]" alt="[1,2,3]"/><a href="[1,2,3]"></a>`;
+      const result = [
+        {
+          tagName: 'img',
+          type: 'image',
+          attributes: {
+            src: [1, 2, 3],
+            alt: '[1,2,3]',
+          },
+        },
+        {
+          tagName: 'a',
+          type: 'link',
+          attributes: {
+            href: '[1,2,3]',
+          },
+        },
+      ];
+
+      expect(
+        obj.parse(str, null, {
+          convertAttributeValues: ({ attribute, value, node }) =>
+            attribute === 'src' && value === '[1,2,3]' && node.tagName.toLowerCase() === 'img',
+        }).html,
+      ).toEqual(result);
+    });
+  });
+
   describe('with convertDataGjsAttributesHyphens OFF (default)', () => {
     beforeEach(() => {
       em = new Editor({});

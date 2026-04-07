@@ -14,6 +14,11 @@ export type CustomParserCss = (input: string, editor: Editor) => ParsedCssRule[]
 
 export type CustomParserHtml = (input: string, options: HTMLParserOptions) => HTMLElement;
 
+export type ConvertAttributeValuesOption =
+  | boolean
+  | readonly string[]
+  | ((props: { attribute: string; value: string | boolean; node: HTMLElement }) => boolean);
+
 export interface HTMLParseResult {
   html: ComponentDefinitionDefined | ComponentDefinitionDefined[];
   css?: CssRuleJSON[];
@@ -83,6 +88,17 @@ export interface HTMLParserOptions extends OptionAsDocument {
    * @default false
    */
   convertDataGjsAttributesHyphens?: boolean;
+
+  /**
+   * Convert regular HTML attribute values using the same parser used by `data-gjs-*` attributes.
+   *
+   * - `true`: converts all regular attributes.
+   * - `string[]`: converts only the listed attributes, matched by exact attribute name.
+   * - `Function`: converts attributes when the function returns `true`.
+   *
+   * @default false
+   */
+  convertAttributeValues?: ConvertAttributeValuesOption;
 }
 
 export interface ParserConfig {
@@ -133,6 +149,7 @@ const config: () => ParserConfig = () => ({
     allowUnsafeAttrValue: false,
     keepEmptyTextNodes: false,
     convertDataGjsAttributesHyphens: false,
+    convertAttributeValues: false,
   },
 });
 

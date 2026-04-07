@@ -63,6 +63,7 @@ export default class ParserModule extends Module<ParserConfig & { name?: string 
    * @param  {Boolean|Function} [options.detectDocument] Indicate if or how to detect if the HTML string should be treated as document
    * @param  {Function} [options.preParser] How to pre-process the HTML string before parsing
    * @param  {Boolean} [options.convertDataGjsAttributesHyphens=false] Convert `data-gjs-*` attributes from hyphenated to camelCase (eg. `data-gjs-my-component` to `data-gjs-myComponent`)
+   * @param  {Boolean|Array<String>|Function} [options.convertAttributeValues=false] Convert regular HTML attribute values using the same parser used by `data-gjs-*` attributes
    * @returns {Object} Object containing the result `{ html: ..., css: ... }`
    * @example
    * const resHtml = Parser.parseHtml(`<table><div>Hi</div></table>`, {

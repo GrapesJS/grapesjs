@@ -16,8 +16,11 @@ const ParserHtml = (em?: EditorModel, config: ParserConfig & { returnArray?: boo
 
     modelAttrStart,
 
-    getPropAttribute(attrName: string, attrValue?: string) {
-      const name = attrName.replace(this.modelAttrStart, '');
+    parseAttributeValue(attrValue?: string | boolean) {
+      if (typeof attrValue !== 'string') {
+        return attrValue;
+      }
+
       const valueLen = attrValue?.length || 0;
       const firstChar = attrValue?.substring(0, 1);
       const lastChar = attrValue?.substring(valueLen - 1);
@@ -31,10 +34,36 @@ const ParserHtml = (em?: EditorModel, config: ParserConfig & { returnArray?: boo
           (firstChar == '{' && lastChar == '}') || (firstChar == '[' && lastChar == ']') ? JSON.parse(value) : value;
       } catch (e) {}
 
+      return value;
+    },
+
+    getPropAttribute(attrName: string, attrValue?: string) {
+      const name = attrName.replace(this.modelAttrStart, '');
+      const value = this.parseAttributeValue(attrValue);
+
       return {
         name,
         value,
       };
+    },
+
+    shouldConvertAttributeValue(
+      attribute: string,
+      value: string | boolean,
+      node: HTMLElement,
+      convertAttributeValues: HTMLParserOptions['convertAttributeValues'],
+    ) {
+      if (!convertAttributeValues) {
+        return false;
+      } else if (convertAttributeValues === true) {
+        return true;
+      } else if (isArray(convertAttributeValues)) {
+        return convertAttributeValues.includes(attribute);
+      } else if (isFunction(convertAttributeValues)) {
+        return !!convertAttributeValues({ attribute, value, node });
+      }
+
+      return false;
     },
 
     /**
@@ -126,18 +155,23 @@ const ParserHtml = (em?: EditorModel, config: ParserConfig & { returnArray?: boo
       return result;
     },
 
-    parseNodeAttr(node: HTMLElement, modelResult?: ComponentDefinitionDefined) {
+    parseNodeAttr(
+      node: HTMLElement,
+      modelResult?: ComponentDefinitionDefined,
+      opts: HTMLParserOptions = config.optionsHtml || {},
+    ) {
       const model = modelResult || {};
       const attrs = node.attributes || [];
       const attrsLen = attrs.length;
-      const convertHyphens = !!config?.optionsHtml?.convertDataGjsAttributesHyphens;
+      const convertHyphens = !!opts.convertDataGjsAttributesHyphens;
+      const { convertAttributeValues } = opts;
       const defaults =
         (convertHyphens && !!model.type && result(em?.Components.getType(model.type)?.model.prototype, 'defaults')) ||
         {};
 
       for (let i = 0; i < attrsLen; i++) {
         let nodeName = attrs[i].nodeName;
-        let nodeValue: string | boolean = attrs[i].nodeValue!;
+        let nodeValue: any = attrs[i].nodeValue!;
 
         if (nodeName == 'style') {
           model.style = this.parseStyle(nodeValue);
@@ -158,6 +192,10 @@ const ParserHtml = (em?: EditorModel, config: ParserConfig & { returnArray?: boo
           // @ts-ignore Check for attributes from props (eg. required, disabled)
           if (nodeValue === '' && node[nodeName] === true) {
             nodeValue = true;
+          }
+
+          if (this.shouldConvertAttributeValue(nodeName, nodeValue, node, convertAttributeValues)) {
+            nodeValue = this.parseAttributeValue(nodeValue);
           }
 
           if (!model.attributes) {
@@ -212,7 +250,7 @@ const ParserHtml = (em?: EditorModel, config: ParserConfig & { returnArray?: boo
         model.tagName = tag && ns === 'http://www.w3.org/1999/xhtml' ? tag.toLowerCase() : tag;
       }
 
-      model = this.parseNodeAttr(node, model);
+      model = this.parseNodeAttr(node, model, opts);
 
       // Check for custom void elements (valid in XML)
       if (!nodesLen && `${node.outerHTML}`.slice(-2) === '/>') {
@@ -384,7 +422,7 @@ const ParserHtml = (em?: EditorModel, config: ParserConfig & { returnArray?: boo
 
       if (asDocument) {
         res.head = this.parseNode(docEl.head, cf);
-        res.root = this.parseNodeAttr(root);
+        res.root = this.parseNodeAttr(root, undefined, cf);
         resHtml = this.parseNode(docEl.body, cf);
       } else {
         const result = this.parseNodes(root, cf);
