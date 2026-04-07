@@ -29,6 +29,11 @@ export type CssGeneratorBuildOptions = {
    * Force keep all defined rules. Toggle on in case output looks different inside/outside of the editor.
    */
   keepUnusedStyles?: boolean;
+
+  /**
+   * Include rules with empty style declarations.
+   */
+  allowEmpty?: boolean;
   rules?: CssRule[];
   clearStyles?: boolean;
 };
@@ -172,7 +177,7 @@ export default class CssGenerator extends Model {
     });
 
     if ((selectorStrNoAdd && found) || selectorsAdd || singleAtRule || !model) {
-      const block = rule.getDeclaration();
+      const block = rule.getDeclaration({ allowEmpty: opts.allowEmpty });
       block && (opts.json ? (result = rule) : (result += block));
     } else {
       dump.push(rule);

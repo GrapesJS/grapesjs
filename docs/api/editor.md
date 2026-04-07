@@ -175,6 +175,7 @@ Returns CSS built inside canvas
     *   `opts.avoidProtected` **[Boolean][17]** Don't include protected CSS (optional, default `false`)
     *   `opts.onlyMatched` **[Boolean][17]** Return only rules matched by the passed component. (optional, default `false`)
     *   `opts.keepUnusedStyles` **[Boolean][17]** Force keep all defined rules. Toggle on in case output looks different inside/outside of the editor. (optional, default `false`)
+    *   `opts.allowEmpty` **[Boolean][17]** Include rules with empty style declarations. (optional, default `false`)
 
 Returns **([String][18] | [Array][19]\<CssRule>)** CSS string or array of CssRules
 

@@ -302,6 +302,38 @@ describe('GrapesJS', () => {
       expect(css).toEqual(`${protCss}.test2{color:red;}.test3{color:blue;}`);
     });
 
+    test('Allow empty css rules option for getCSS method', () => {
+      config.components = '<div class="test-empty"></div>';
+      config.style = '.test-empty{}';
+      const editor = grapesjs.init(config);
+      const protCss = editor.getConfig().protectedCss;
+
+      expect(editor.getStyle().length).toEqual(1);
+      expect(editor.getCss()).toEqual(protCss);
+      expect(editor.getCss({ allowEmpty: true })).toEqual(`${protCss}.test-empty{}`);
+    });
+
+    test('Allow empty css rules option for media rules', () => {
+      config.components = '<div class="test-empty"></div>';
+      config.style = '@media (max-width: 992px){.test-empty{}}';
+      const editor = grapesjs.init(config);
+      const protCss = editor.getConfig().protectedCss;
+
+      expect(editor.getStyle().length).toEqual(1);
+      expect(editor.getCss({ allowEmpty: true })).toEqual(`${protCss}@media (max-width: 992px){.test-empty{}}`);
+    });
+
+    test('Allow empty css rules option with keepUnusedStyles', () => {
+      config.components = '<div></div>';
+      config.style = '.test-empty{}';
+      const editor = grapesjs.init(config);
+      const protCss = editor.getConfig().protectedCss;
+
+      expect(editor.getStyle().length).toEqual(1);
+      expect(editor.getCss({ allowEmpty: true })).toEqual(protCss);
+      expect(editor.getCss({ allowEmpty: true, keepUnusedStyles: true })).toEqual(`${protCss}.test-empty{}`);
+    });
+
     test('Keep unused css classes/selectors option for media rules', () => {
       cssString =
         '.test2{color:red}.test3{color:blue} @media only screen and (max-width: 620px) { .notused { color: red; } } ';
