@@ -46,14 +46,18 @@ export interface ParseStringOptions extends AddOptions, OptionAsDocument, WithHT
 
 export enum ComponentsEvents {
   /**
-   * @event `component:add` New component added.
+   * @event `component:add` Component added. The callback receives the component and the options object.
+   * This can also be triggered on component moves and clones, so you can check
+   * `options.action` (`add-component`, `move-component`, `clone-component`) to distinguish the case.
    * @example
-   * editor.on('component:add', (component) => { ... });
+   * editor.on('component:add', (component, options) => {
+   *  console.log(options.action);
+   * });
    */
   add = 'component:add',
 
   /**
-   * @event `component:remove` Component removed.
+   * @event `component:remove` Component removed from the editor. This can also happen as part of a component move.
    * @example
    * editor.on('component:remove', (component) => { ... });
    */
