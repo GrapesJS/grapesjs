@@ -85,7 +85,7 @@ export function offset(el: HTMLElement) {
  * @return {Boolean}
  */
 export function matches(el: HTMLElement, selector: string): boolean {
-  return el.matches(selector);
+  return !!el?.matches?.(selector);
 }
 
 /**
