@@ -95,6 +95,8 @@ type GetComponentStyleOpts = GetStyleOpts & {
   inline?: boolean;
 };
 
+const idsMapCounter = Symbol('idsMapCounter');
+
 /**
  * The Component object represents a single node of our template structure, so when you update its properties the changes are
  * immediately reflected on the canvas and in the code to export (indeed, when you ask to export the code we just go through all
@@ -412,11 +414,17 @@ export default class Component extends StyleableModel<ComponentProperties> {
     const { em } = this;
     const um = em?.UndoManager;
     const comps = this.components();
-    if (um && !this.__hasUm) {
+
+    if (!um || this.__hasUm) {
+      return;
+    }
+
+    if (um) {
       um.add(comps);
       um.add(this.getSelectors());
       this.__hasUm = true;
     }
+
     opts.recursive && comps.map((c) => c.__postAdd(opts));
   }
 
@@ -2132,12 +2140,12 @@ export default class Component extends StyleableModel<ComponentProperties> {
       idMap[currentId] = nextId;
     }
 
-    list[nextId] = model;
+    Component.setListId(list, nextId, model);
     return nextId;
   }
 
   static getNewId(list: ObjectAny) {
-    const count = Object.keys(list).length;
+    const count = Component.getListCount(list);
     const ilen = count.toString().length + 2;
     const uid = (Math.random() + 1.1).toString(36).slice(-ilen);
     let newId = `i${uid}`;
@@ -2147,6 +2155,31 @@ export default class Component extends StyleableModel<ComponentProperties> {
     }
 
     return newId;
+  }
+
+  static getListCount(list: ObjectAny) {
+    const listWithCounter = list as ObjectAny & { [idsMapCounter]?: number };
+    let count = listWithCounter[idsMapCounter];
+
+    if (isUndefined(count)) {
+      count = Object.keys(list).length;
+      Object.defineProperty(list, idsMapCounter, {
+        configurable: true,
+        writable: true,
+        value: count,
+      });
+    }
+
+    return count;
+  }
+
+  static setListId(list: ObjectAny, id: string, model: Component) {
+    if (!list[id]) {
+      const listWithCounter = list as ObjectAny & { [idsMapCounter]?: number };
+      listWithCounter[idsMapCounter] = Component.getListCount(list) + 1;
+    }
+
+    list[id] = model;
   }
 
   static getIncrementId(id: string, list: ObjectAny, opts: { keepIds?: string[] } = {}) {
