@@ -216,7 +216,8 @@ export default class StyleableModel<T extends StyleableModelProperties = any> ex
   }
 
   getView(frame?: Frame) {
-    let { views, em } = this;
+    let { em } = this;
+    const views = this.views || [];
     const frm = frame || em?.getCurrentFrameModel();
     return frm ? views.find((v) => v.frameView === frm.view) : views[0];
   }

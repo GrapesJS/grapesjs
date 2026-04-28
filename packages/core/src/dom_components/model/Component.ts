@@ -1762,14 +1762,8 @@ export default class Component extends StyleableModel<ComponentProperties> {
    * @return {ComponentView}
    */
   getView(frame?: Frame) {
-    let { view, views, em } = this;
-    const frm = frame || em?.getCurrentFrameModel();
-
-    if (frm) {
-      view = views.filter((view) => view.frameView === frm.view)[0];
-    }
-
-    return view;
+    const { view } = this;
+    return (super.getView(frame) as ComponentView | undefined) || view;
   }
 
   getCurrentView() {
