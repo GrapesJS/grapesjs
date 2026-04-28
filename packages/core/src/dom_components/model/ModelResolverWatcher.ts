@@ -245,6 +245,10 @@ export class ModelResolverWatcher<T extends ObjectHash> {
     return serializableValues;
   }
 
+  hasDataResolvers() {
+    return Object.keys(this.resolverListeners).length > 0;
+  }
+
   getValuesResolvingFromCollections() {
     const keys = Object.keys(this.resolverListeners).filter((key: string) => {
       return this.resolverListeners[key].resolver.resolvesFromCollection();

@@ -2080,7 +2080,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
     const current = list[id];
 
     if (!current) {
-      list[id] = model;
+      Component.setListId(list, id, model);
     } else if (current !== model) {
       const keepIdsCrossPages = model.em?.Components.config.keepAttributeIdsCrossPages;
       const currentPage = current.page;

@@ -25,6 +25,22 @@ describe('Undo Manager', () => {
     expect(um.getStack()).toHaveLength(0);
   });
 
+  test('Disabled undo manager does not track changes', () => {
+    const { editor, um } = setupTestEditor({
+      withCanvas: true,
+      config: { undoManager: false },
+    });
+    const wrapper = editor.getWrapper()!;
+
+    wrapper.append('<div></div>');
+
+    expect(um.isDisabled).toBe(true);
+    expect(um.hasUndo()).toBe(false);
+    expect(um.getStack()).toHaveLength(0);
+
+    editor.destroy();
+  });
+
   describe('Component changes', () => {
     test('Add component', () => {
       expect(wrapper.components()).toHaveLength(0);

@@ -98,7 +98,10 @@ export default class StyleableModel<T extends StyleableModelProperties = any> ex
     }
 
     this.dataResolverWatchers = this.dataResolverWatchers ?? options.dataResolverWatchers;
-    const evaluatedValues = this.dataResolverWatchers.addProps(attributes, options) as Partial<T>;
+    const shouldResolveProps = this.dataResolverWatchers.shouldResolveProps(attributes);
+    const evaluatedValues: Partial<T> = shouldResolveProps
+      ? (this.dataResolverWatchers.addProps(attributes, options) as Partial<T>)
+      : (attributes as Partial<T>);
 
     return super.set(evaluatedValues, options);
   }

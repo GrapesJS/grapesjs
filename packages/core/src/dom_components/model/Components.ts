@@ -405,7 +405,8 @@ Component> {
   onAdd(model: Component, c?: any, opts: { temporary?: boolean } = {}) {
     const { domc, em } = this;
     const avoidInline = em.config.avoidInlineStyle;
-    domc && domc.Component.ensureInList(model);
+    const allById = domc?.allById();
+    allById?.[model.getId()] !== model && domc?.Component.ensureInList(model);
 
     if (!avoidInline && em.config.forceClass && !opts.temporary) {
       const style = model.getStyle();

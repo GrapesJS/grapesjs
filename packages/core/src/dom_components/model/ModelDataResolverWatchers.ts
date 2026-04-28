@@ -9,6 +9,7 @@ import { getSymbolsToUpdate, isSymbol } from './SymbolUtils';
 import Component, { keySymbolOvrd } from './Component';
 import { StyleableModelProperties } from '../../domain_abstract/model/StyleableModel';
 import { isEmpty, isObject } from 'underscore';
+import { isDataResolverProps } from '../../data_sources/utils';
 
 export const updateFromWatcher = { fromDataSource: true, avoidStore: true };
 export const keyDataValues = '__data_values';
@@ -61,6 +62,25 @@ export class ModelDataResolverWatchers<T extends StyleableModelProperties> {
     }
 
     return evaluatedProps;
+  }
+
+  shouldResolveProps(props: ObjectAny) {
+    if (this.hasDataResolvers()) return true;
+    if (this.hasDataValues(props[keyDataValues])) return true;
+    if (this.hasResolverValue(props.attributes) || this.hasResolverValue(props.style)) return true;
+
+    const { excludedFromEvaluation } = this;
+    const propKeys = Object.keys(props);
+
+    for (let index = 0; index < propKeys.length; index++) {
+      const key = propKeys[index];
+
+      if (!excludedFromEvaluation.includes(key) && isDataResolverProps(props[key])) {
+        return true;
+      }
+    }
+
+    return false;
   }
 
   getProps(data: ObjectAny): ObjectAny {
@@ -137,6 +157,24 @@ export class ModelDataResolverWatchers<T extends StyleableModelProperties> {
     return [this.propertyWatcher, this.styleWatcher, this.attributeWatcher];
   }
 
+  private get excludedFromEvaluation() {
+    return ['components', 'dataResolver', 'status', 'state', 'open', keySymbolOvrd, keyDataValues];
+  }
+
+  private hasDataResolvers() {
+    return this.watchers.some((watcher) => watcher.hasDataResolvers());
+  }
+
+  private hasDataValues(dataValues: ObjectAny | undefined) {
+    return Object.values(dataValues || {}).some((value) => isObject(value) && !isEmpty(value));
+  }
+
+  private hasResolverValue(values: ObjectAny | string | undefined) {
+    if (!isObject(values)) return false;
+
+    return Object.values(values).some(isDataResolverProps);
+  }
+
   private isComponent(model: any): model is Component {
     return model instanceof Component;
   }
@@ -187,15 +225,7 @@ export class ModelDataResolverWatchers<T extends StyleableModelProperties> {
   }
 
   private filterProps(props: ObjectAny) {
-    const excludedFromEvaluation = [
-      'components',
-      'dataResolver',
-      'status',
-      'state',
-      'open',
-      keySymbolOvrd,
-      keyDataValues,
-    ];
+    const { excludedFromEvaluation } = this;
     const filteredProps = Object.fromEntries(
       Object.entries(props).filter(([key]) => !excludedFromEvaluation.includes(key)),
     );
