@@ -69,6 +69,10 @@ export default {
    * */
   stopSelectComponent() {
     this.toggleSelectComponent();
+    this.onContainerChange.cancel?.();
+    this.onSelect.cancel?.();
+    this.updateAttached.cancel?.();
+    this._upToolbar.cancel?.();
   },
 
   /**
@@ -708,7 +712,6 @@ export default {
     this.stopSelectComponent();
     !opts.preserveSelected && em.setSelected();
     this.toggleToolsEl();
-    this.updateAttached.cancel();
-    editor && editor.stopCommand('resize');
+    editor?.stopCommand('resize');
   },
 } as CommandObject<any, { [k: string]: any }>;

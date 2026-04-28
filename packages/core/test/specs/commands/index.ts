@@ -48,6 +48,27 @@ describe('Commands', () => {
       expect(obj.get('select-comp')).not.toBeUndefined();
     });
 
+    test('Select component command cancels pending debounced callbacks on teardown', () => {
+      const command = obj.get('select-comp') as any;
+      const cancelOnContainerChange = jest.fn();
+      const cancelOnSelect = jest.fn();
+      const cancelUpdateAttached = jest.fn();
+      const cancelToolbar = jest.fn();
+      command.toggleSelectComponent = jest.fn();
+      command.onContainerChange = { cancel: cancelOnContainerChange };
+      command.onSelect = { cancel: cancelOnSelect };
+      command.updateAttached = { cancel: cancelUpdateAttached };
+      command._upToolbar = { cancel: cancelToolbar };
+
+      command.stopSelectComponent();
+
+      expect(command.toggleSelectComponent).toHaveBeenCalledWith();
+      expect(cancelOnContainerChange).toHaveBeenCalledTimes(1);
+      expect(cancelOnSelect).toHaveBeenCalledTimes(1);
+      expect(cancelUpdateAttached).toHaveBeenCalledTimes(1);
+      expect(cancelToolbar).toHaveBeenCalledTimes(1);
+    });
+
     test('Commands module should not have toLoad property', () => {
       // @ts-ignore
       expect(obj.toLoad).toBeUndefined();
