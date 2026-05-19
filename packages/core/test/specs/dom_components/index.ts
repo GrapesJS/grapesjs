@@ -7,6 +7,7 @@ import ComponentWrapper from '../../../src/dom_components/model/ComponentWrapper
 import { flattenHTML, setupTestEditor } from '../../common';
 import { ProjectData } from '../../../src/storage_manager';
 import { CanMoveReason } from '../../../src/dom_components';
+import { wait } from '../../../src/utils/mixins';
 
 describe('DOM Components', () => {
   describe('Main', () => {
@@ -254,7 +255,7 @@ describe('DOM Components', () => {
       expect(comp.get('editable')).toBe(1);
     });
 
-    test('Remove and undo component with styles', (done) => {
+    test('Remove and undo component with styles', async () => {
       const id = 'idtest2';
       const um = em.UndoManager;
       const cc = em.Css;
@@ -265,27 +266,28 @@ describe('DOM Components', () => {
       </style>`) as Component;
       const rule = cc.getAll().at(0);
       expect(rule.toCSS()).toEqual(`#${id}{color:red;padding:50px 100px;background-color:red;}`);
+
+      await wait(); // flush noUndo inline-style move
+
       obj.getComponents().first().addStyle({ margin: '10px' });
       const css = `#${id}{color:red;padding:50px 100px;background-color:red;margin:10px;}`;
       expect(rule.toCSS()).toEqual(css);
 
-      setTimeout(() => {
-        // Undo is committed now
-        component.remove();
-        expect(obj.getComponents().length).toBe(0);
-        expect(cc.getAll().length).toBe(0);
-        um.undo();
+      await wait(); // separate style change from remove undo-group
 
-        expect(obj.getComponents().length).toBe(1);
-        expect(cc.getAll().length).toBe(1);
-        expect(obj.getComponents().at(0)).toBe(component);
-        expect(cc.getAll().at(0)).toBe(rule);
+      component.remove();
+      expect(obj.getComponents().length).toBe(0);
+      expect(cc.getAll().length).toBe(0);
 
-        expect(em.getHtml({ component })).toEqual(`<div id="${id}">Text</div>`);
-        expect(rule.toCSS()).toEqual(css);
+      um.undo();
 
-        done();
-      }, 20);
+      expect(obj.getComponents().length).toBe(1);
+      expect(cc.getAll().length).toBe(1);
+      expect(obj.getComponents().at(0)).toBe(component);
+      expect(cc.getAll().at(0)).toBe(rule);
+
+      expect(em.getHtml({ component })).toEqual(`<div id="${id}">Text</div>`);
+      expect(rule.toCSS()).toEqual(css);
     });
 
     describe('Custom components with styles', () => {
