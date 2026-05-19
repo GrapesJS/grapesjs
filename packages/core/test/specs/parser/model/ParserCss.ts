@@ -184,6 +184,56 @@ describe('ParserCss', () => {
     expect(obj.parse(str)).toEqual([result]);
   });
 
+  test('Parse nested selector rules', () => {
+    const str = `.foo {
+      color: green;
+      .bar {
+        color: red;
+        .baz {
+          color: blue;
+        }
+      }
+    }`;
+    expect(obj.parse(str)).toEqual([
+      {
+        selectors: ['foo'],
+        style: {
+          color: 'green',
+          '.bar': {
+            color: 'red',
+            '.baz': {
+              color: 'blue',
+            },
+          },
+        },
+      },
+    ]);
+  });
+
+  test('Parse nested selector rules inside media query', () => {
+    const str = `@media (max-width: 992px) {
+      .foo {
+        color: green;
+        .bar {
+          color: red;
+        }
+      }
+    }`;
+    expect(obj.parse(str)).toEqual([
+      {
+        atRuleType: 'media',
+        selectors: ['foo'],
+        style: {
+          color: 'green',
+          '.bar': {
+            color: 'red',
+          },
+        },
+        mediaText: '(max-width: 992px)',
+      },
+    ]);
+  });
+
   // Phantom doesn't find 'node.conditionText' so will skip it
   test('Parse rules inside media queries', () => {
     var str =

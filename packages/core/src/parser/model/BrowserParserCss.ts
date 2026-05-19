@@ -109,6 +109,40 @@ export const parseStyle = (node: CSSStyleRule) => {
   return style;
 };
 
+const getNestedRuleKey = (node: CSSRule) => {
+  const selectorText = (node as CSSStyleRule).selectorText?.trim();
+
+  if (selectorText) {
+    // CSSOM serializes nested relative selectors with the implied nesting
+    // selector inserted (eg. `& .child`), while the nested style object keeps
+    // only the original nested key (eg. `.child`).
+    return selectorText.replace(/^&(?:\s+)?/, '').trim();
+  }
+
+  const { cssText = '' } = node;
+  const blockIndex = cssText.indexOf('{');
+
+  return blockIndex >= 0 ? cssText.slice(0, blockIndex).trim() : '';
+};
+
+export const parseRuleStyle = (node: CSSStyleRule | CSSRule) => {
+  const style = parseStyle(node as CSSStyleRule) as Record<string, any>;
+  const nestedNodes = (node as CSSStyleRule).cssRules || [];
+
+  // Nested CSS rules stay attached to the parent declaration block in the
+  // parsed output, eg. `{ color: 'green', '.child': { color: 'red' } }`.
+  for (let i = 0, len = nestedNodes.length; i < len; i++) {
+    const nestedNode = nestedNodes[i];
+    const nestedKey = getNestedRuleKey(nestedNode);
+
+    if (!nestedKey) continue;
+
+    style[nestedKey] = parseRuleStyle(nestedNode);
+  }
+
+  return style;
+};
+
 /**
  * Get the condition when possible
  * @param  {CSSRule} node
@@ -196,7 +230,7 @@ export const parseNode = (el: CSSStyleSheet | CSSRule) => {
 
     if (!sels && !isSingleAtRule) continue;
 
-    const style = parseStyle(node as CSSStyleRule);
+    const style = parseRuleStyle(node);
     const selsParsed = parseSelector(sels);
     const selsAdd = selsParsed.add;
     const selsArr: string[][] = selsParsed.result;
