@@ -168,7 +168,8 @@ export const getElRect = (el?: Element) => {
   let rectText;
 
   if (isTextNode(el)) {
-    const range = document.createRange();
+    if (!el.parentNode) return def;
+    const range = el.ownerDocument.createRange();
     range.selectNode(el);
     rectText = range.getBoundingClientRect();
     range.detach();

@@ -48,6 +48,7 @@ type WithDataResolvers<T> = {
 export default class StyleableModel<T extends StyleableModelProperties = any> extends Model<T, UpdateStyleOptions> {
   em?: EditorModel;
   views: StyleableView[] = [];
+  view?: StyleableView;
   dataResolverWatchers: ModelDataResolverWatchers<T>;
   collectionsStateMap: DataCollectionStateMap = {};
   opt: { em?: EditorModel };
@@ -99,7 +100,10 @@ export default class StyleableModel<T extends StyleableModelProperties = any> ex
     }
 
     this.dataResolverWatchers = this.dataResolverWatchers ?? options.dataResolverWatchers;
-    const evaluatedValues = this.dataResolverWatchers.addProps(attributes, options) as Partial<T>;
+    const shouldResolveProps = this.dataResolverWatchers.shouldResolveProps(attributes);
+    const evaluatedValues: Partial<T> = shouldResolveProps
+      ? (this.dataResolverWatchers.addProps(attributes, options) as Partial<T>)
+      : (attributes as Partial<T>);
 
     return super.set(evaluatedValues, options);
   }
@@ -242,9 +246,10 @@ export default class StyleableModel<T extends StyleableModelProperties = any> ex
   }
 
   getView(frame?: Frame) {
-    let { views, em } = this;
+    let { em, view } = this;
+    const views = this.views || [];
     const frm = frame || em?.getCurrentFrameModel();
-    return frm ? views.find((v) => v.frameView === frm.view) : views[0];
+    return frm ? views.find((v) => v.frameView === frm.view) : views[0] || view;
   }
 
   setView(view: StyleableView) {

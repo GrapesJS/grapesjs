@@ -1,3 +1,4 @@
+import { isFunction } from 'underscore';
 import CanvasModule from '..';
 import { ModuleModel } from '../../abstract';
 import { BoxRect, LiteralUnion } from '../../common';
@@ -31,7 +32,7 @@ export interface CanvasSpotBase<T extends CanvasSpotType> {
   /**
    * Fixed box rect of the spot, eg. `{ width: 100, height: 100, x: 0, y: 0 }`.
    */
-  boxRect?: BoxRect;
+  boxRect?: BoxRect | (() => BoxRect);
   /**
    * Component to which the spot will be attached.
    */
@@ -97,10 +98,10 @@ export default class CanvasSpot<T extends CanvasSpotProps = CanvasSpotProps> ext
   getBoxRect(opts?: GetBoxRectOptions) {
     const { el, em } = this;
     const cvView = em.Canvas.getCanvasView();
-    const boxRect = this.get('boxRect');
+    const boxRect = this.attributes.boxRect;
 
     if (boxRect) {
-      return boxRect;
+      return isFunction(boxRect) ? boxRect() : (boxRect as BoxRect);
     } else if (el && cvView) {
       return cvView.getElBoxRect(el, opts);
     }

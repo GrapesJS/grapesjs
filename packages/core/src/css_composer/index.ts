@@ -78,6 +78,7 @@ export interface AddCollectionOptions extends UpdateStyleOptions {
   extend?: boolean | number;
   avoidUpdateStyle?: boolean;
   dataBindingImportPolicy?: DataBindingImportPolicy;
+  at?: number;
 }
 
 export default class CssComposer extends ItemManagerModule<CssComposerConfig & { pStylePrefix?: string }> {

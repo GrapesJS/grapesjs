@@ -148,7 +148,7 @@ JSON.stringify(component);
 ```
 
 ::: tip
-For storing/loading all the components you should rely on the [Storage Manager](/modules/storage.html)
+For storing/loading all the components you should rely on the [Storage Manager](/modules/Storage.html)
 :::
 
 So, the **Component instance** is responsible for the **final data** (eg. HTML, JSON) of your templates. If you need, for example, to update/add some attribute in the HTML you need to update its component (eg. `component.addAttributes({ title: 'Title added' })`), so the Component/Model is your **Source of Truth**.

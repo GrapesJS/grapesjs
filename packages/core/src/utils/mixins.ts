@@ -85,10 +85,6 @@ export const getGlobal = () =>
 
 export const toLowerCase = (str: string) => (str || '').toLowerCase();
 
-const elProt = hasWin() ? window.Element.prototype : {};
-// @ts-ignore
-const matches = elProt.matches || elProt.webkitMatchesSelector || elProt.mozMatchesSelector || elProt.msMatchesSelector;
-
 export const getUiClass = (em: EditorModel, defCls: string) => {
   const { stylePrefix, customUI } = em.getConfig();
   return [customUI && `${stylePrefix}cui`, defCls].filter((i) => i).join(' ');
@@ -315,7 +311,6 @@ export const buildBase64UrlFromSvg = (svg: string) => {
 export {
   hasDnd,
   upFirst,
-  matches,
   getModel,
   camelCase,
   getElement,

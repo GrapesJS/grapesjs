@@ -160,7 +160,7 @@ export default class CommandAbstract<O extends ObjectAny = any> extends Model {
    * Stop current command
    */
   stopCommand(opts?: any) {
-    this.em.Commands.stop(this.id as string, opts);
+    this.em?.Commands?.stop?.(this.id as string, opts);
   }
 
   /**

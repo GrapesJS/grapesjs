@@ -148,9 +148,13 @@ export default class UndoManagerModule extends Module<UndoManagerConfig & { name
     [EditorEvents.undo, EditorEvents.redo].forEach((ev) => this.um.on(ev, () => em.trigger(ev)));
   }
 
+  get isDisabled() {
+    return !!this.config._disable;
+  }
+
   postLoad() {
     const { config, em } = this;
-    config.trackSelection && em && this.add(em.get('selected'));
+    config.trackSelection && !this.isDisabled && em && this.add(em.get('selected'));
   }
 
   /**
@@ -169,6 +173,7 @@ export default class UndoManagerModule extends Module<UndoManagerConfig & { name
    * um.add(someModelOrCollection);
    */
   add(entity: any) {
+    if (this.isDisabled) return this;
     this.um.register(entity);
     return this;
   }
@@ -181,6 +186,7 @@ export default class UndoManagerModule extends Module<UndoManagerConfig & { name
    * um.remove(someModelOrCollection);
    */
   remove(entity: any) {
+    if (this.isDisabled) return this;
     this.um.unregister(entity);
     return this;
   }
@@ -192,6 +198,7 @@ export default class UndoManagerModule extends Module<UndoManagerConfig & { name
    * um.removeAll();
    */
   removeAll() {
+    if (this.isDisabled) return this;
     this.um.unregisterAll();
     return this;
   }
