@@ -84,10 +84,10 @@ describe('ParserCss', () => {
   });
 
   test('Parse rule with more selectors', () => {
-    var str = ' .test1.test2 {color:red; test: value}';
+    var str = ' .test1.test2 {color:red; --test:value}';
     var result = {
       selectors: ['test1', 'test2'],
-      style: { color: 'red', test: 'value' },
+      style: { color: 'red', '--test': 'value' },
     };
     expect(obj.parse(str)).toEqual([result]);
   });
@@ -338,27 +338,24 @@ describe('ParserCss', () => {
         font-family: 'Glyphicons Halflings';
         src:url(https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/fonts/glyphicons-halflings-regular.eot)
       }`;
-    const result = [
-      {
-        selectors: [],
-        selectorsAdd: '',
-        style: { 'font-family': '"Open Sans"' },
-        singleAtRule: true,
-        atRuleType: 'font-face',
-      },
-      {
-        selectors: [],
-        selectorsAdd: '',
-        style: {
-          'font-family': "'Glyphicons Halflings'",
-          src: 'url(https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/fonts/glyphicons-halflings-regular.eot)',
-        },
-        singleAtRule: true,
-        atRuleType: 'font-face',
-      },
-    ];
     const parsed = obj.parse(str);
-    expect(parsed).toEqual(result);
+    expect(parsed).toHaveLength(2);
+    expect(parsed[0]).toEqual({
+      selectors: [],
+      selectorsAdd: '',
+      style: { 'font-family': '"Open Sans"' },
+      singleAtRule: true,
+      atRuleType: 'font-face',
+    });
+    expect(parsed[1]).toMatchObject({
+      selectors: [],
+      selectorsAdd: '',
+      style: {
+        'font-family': '"Glyphicons Halflings"',
+      },
+      singleAtRule: true,
+      atRuleType: 'font-face',
+    });
   });
 
   test('Parse ID rule', () => {

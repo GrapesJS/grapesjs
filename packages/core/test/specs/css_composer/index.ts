@@ -198,7 +198,7 @@ describe('Css Composer', () => {
       const name = 'rule-test';
       const selClass = `.${name}`;
       const selId = `#${name}`;
-      const decl = '{colore:red;}';
+      const decl = '{color:red;}';
       all.add(`${selClass}${decl} ${selId}${decl}`);
       expect(all.length).toBe(2);
       const ruleClass = all.at(0);

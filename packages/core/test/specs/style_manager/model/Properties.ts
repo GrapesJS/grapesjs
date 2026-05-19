@@ -479,7 +479,7 @@ describe('StyleManager properties logic', () => {
   });
 
   describe('Stack type', () => {
-    const propTest = 'stack-prop';
+    const propTest = '--stack-prop';
     const propATest = `${propTest}-a`;
     const propBTest = `${propTest}-b`;
     const propCTest = `${propTest}-c`;

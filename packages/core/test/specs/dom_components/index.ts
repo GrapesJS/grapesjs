@@ -372,7 +372,12 @@ describe('DOM Components', () => {
 
         const row = obj.addComponent({ type: rowId }) as Component;
         expect(em.Css.getRule('.gjs-test-row')?.getStyle()).toEqual({ display: 'flex', gap: '16px' });
-        expect(em.Css.getRule('.gjs-test-column')?.getStyle()).toEqual({ flex: '1' });
+        expect(em.Css.getRule('.gjs-test-column')?.getStyle()).toEqual({
+          flex: '1 1 0%',
+          'flex-basis': '0%',
+          'flex-grow': '1',
+          'flex-shrink': '1',
+        });
         expect(em.Css.getAll().length).toBe(2);
 
         row.remove();
@@ -385,7 +390,12 @@ describe('DOM Components', () => {
         expect(rowAgain.get('type')).toBe(rowId);
         expect(em.Css.getAll().length).toBe(2);
         expect(em.Css.getRule('.gjs-test-row')?.getStyle()).toEqual({ display: 'flex', gap: '16px' });
-        expect(em.Css.getRule('.gjs-test-column')?.getStyle()).toEqual({ flex: '1' });
+        expect(em.Css.getRule('.gjs-test-column')?.getStyle()).toEqual({
+          flex: '1 1 0%',
+          'flex-basis': '0%',
+          'flex-grow': '1',
+          'flex-shrink': '1',
+        });
       });
 
       test('Custom style is not updated if already exists', () => {

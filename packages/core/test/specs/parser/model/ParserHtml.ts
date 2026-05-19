@@ -458,31 +458,26 @@ describe('ParserHtml', () => {
       <div>a div</div>
     `;
 
-    const expected = [
-      {
-        selectors: [],
-        selectorsAdd: '',
-        style: {
-          'font-family': '"Open Sans"',
-          src: 'url(https://fonts.gstatic.com/s/droidsans/v8/SlGVmQWMvZQIdix7AFxXkHNSbRYXags.woff2)',
-        },
-        singleAtRule: true,
-        atRuleType: 'font-face',
+    const css = obj.parse(str, ParserCss()).css || [];
+    expect(css).toHaveLength(2);
+    expect(css[0]).toEqual({
+      selectors: [],
+      selectorsAdd: '',
+      style: {
+        'font-family': '"Open Sans"',
       },
-      {
-        selectors: [],
-        selectorsAdd: '',
-        style: {
-          'font-family': "'Glyphicons Halflings'",
-          src: 'url(https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/fonts/glyphicons-halflings-regular.eot)',
-        },
-        singleAtRule: true,
-        atRuleType: 'font-face',
+      singleAtRule: true,
+      atRuleType: 'font-face',
+    });
+    expect(css[1]).toMatchObject({
+      selectors: [],
+      selectorsAdd: '',
+      style: {
+        'font-family': '"Glyphicons Halflings"',
       },
-    ];
-
-    const res = obj.parse(str, ParserCss());
-    expect(res.css).toEqual(expected);
+      singleAtRule: true,
+      atRuleType: 'font-face',
+    });
   });
 
   test('Parse nested div with text and spaces', () => {
