@@ -234,7 +234,30 @@ describe('ParserCss', () => {
     ]);
   });
 
-  // Phantom doesn't find 'node.conditionText' so will skip it
+  // Pending CSSOM/jsdom support for nested @page margin at-rules.
+  test.skip('Parse nested @page margin rules', () => {
+    const str = `@page {
+      margin-top: 2cm;
+      @bottom-center {
+        content: "x";
+      }
+    }`;
+    expect(obj.parse(str)).toEqual([
+      {
+        atRuleType: 'page',
+        selectors: [],
+        selectorsAdd: '',
+        singleAtRule: true,
+        style: {
+          'margin-top': '2cm',
+          '@bottom-center': {
+            content: '"x"',
+          },
+        },
+      },
+    ]);
+  });
+
   test('Parse rules inside media queries', () => {
     var str =
       '.test1:hover{ color:white }@media (max-width: 992px){ .test1.test2:hover{ color:red } .test2{ color: blue }}';
