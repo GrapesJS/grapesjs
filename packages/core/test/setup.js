@@ -18,4 +18,7 @@ global._ = _;
 global.__GJS_VERSION__ = '';
 global.grapesjs = require('./../src').default;
 global.$ = global.grapesjs.$;
-global.localStorage = localStorage;
+Object.defineProperty(global, 'localStorage', {
+  value: localStorage,
+  configurable: true,
+});

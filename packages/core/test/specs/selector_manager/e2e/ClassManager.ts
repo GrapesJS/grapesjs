@@ -78,9 +78,9 @@ describe('ClassManager E2E tests', () => {
       tagEl.addNewTag('test');
       gjs.editor.on('component:update:classes', spy);
       tagEl.addNewTag('test');
-      expect(spy).toBeCalledTimes(0);
+      expect(spy).toHaveBeenCalledTimes(0);
       tagEl.addNewTag('test2');
-      expect(spy).toBeCalledTimes(1);
+      expect(spy).toHaveBeenCalledTimes(1);
     });
 
     test('Selectors are properly transformed to JSON', () => {

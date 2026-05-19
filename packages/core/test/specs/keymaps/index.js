@@ -74,7 +74,7 @@ describe('Keymaps', () => {
         });
         document.dispatchEvent(keyboardEvent);
 
-        expect(handler.callRun).toBeCalled();
+        expect(handler.callRun).toHaveBeenCalled();
       });
     });
 
@@ -96,7 +96,7 @@ describe('Keymaps', () => {
         });
         document.dispatchEvent(keyboardEvent);
 
-        expect(handler.callRun).toBeCalledTimes(0);
+        expect(handler.callRun).toHaveBeenCalledTimes(0);
       });
 
       it('Should run the handler if checked as force', () => {
@@ -112,7 +112,7 @@ describe('Keymaps', () => {
         });
         document.dispatchEvent(keyboardEvent);
 
-        expect(handler.callRun).toBeCalled();
+        expect(handler.callRun).toHaveBeenCalled();
       });
     });
   });

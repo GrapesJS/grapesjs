@@ -60,7 +60,7 @@ describe('Storage Manager', () => {
     test('Store is executed', async () => {
       const spy = jest.spyOn(obj, '__exec');
       await obj.store({ item: 'test' });
-      expect(spy).toBeCalledTimes(1);
+      expect(spy).toHaveBeenCalledTimes(1);
     });
 
     test('Load default storages ', () => {

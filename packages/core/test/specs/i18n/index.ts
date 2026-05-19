@@ -199,9 +199,9 @@ describe('I18n', () => {
       em.on('i18n:locale', handlerLocale);
       obj.addMessages({ en: { msg1: 'Msg 1', msg2: 'Msg 2' } });
       obj.setLocale('it');
-      expect(handlerAdd).toBeCalledTimes(1);
-      expect(handlerUpdate).toBeCalledTimes(1);
-      expect(handlerLocale).toBeCalledTimes(1);
+      expect(handlerAdd).toHaveBeenCalledTimes(1);
+      expect(handlerUpdate).toHaveBeenCalledTimes(1);
+      expect(handlerLocale).toHaveBeenCalledTimes(1);
     });
   });
 });

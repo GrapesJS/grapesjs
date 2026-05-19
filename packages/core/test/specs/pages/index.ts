@@ -192,7 +192,7 @@ describe('Managing pages', () => {
     em.on(pm.events.add, eventAdd);
     pm.add({});
     expect(pm.getAll().length).toBe(2);
-    expect(eventAdd).toBeCalledTimes(1);
+    expect(eventAdd).toHaveBeenCalledTimes(1);
   });
 
   test('Abort add page', () => {
@@ -218,7 +218,7 @@ describe('Managing pages', () => {
     const page = pm.add({})!;
     pm.remove(`${page.id}`);
     expect(pm.getAll().length).toBe(1);
-    expect(eventRm).toBeCalledTimes(1);
+    expect(eventRm).toHaveBeenCalledTimes(1);
   });
 
   test('Abort remove page', () => {
@@ -247,8 +247,8 @@ describe('Managing pages', () => {
     const up = { name: 'Test' };
     const opts = { myopts: 1 };
     page.set(up, opts);
-    expect(event).toBeCalledTimes(1);
-    expect(event).toBeCalledWith(page, up, opts);
+    expect(event).toHaveBeenCalledTimes(1);
+    expect(event).toHaveBeenCalledWith(page, up, opts);
   });
 
   test('Prevent duplicate ids in components and styles', () => {

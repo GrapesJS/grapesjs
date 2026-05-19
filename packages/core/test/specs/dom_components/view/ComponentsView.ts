@@ -38,7 +38,7 @@ describe('ComponentsView', () => {
   test('Add new component', () => {
     const addSpy = jest.spyOn(view, 'addToCollection');
     view.collection.add({});
-    expect(addSpy).toBeCalledTimes(1);
+    expect(addSpy).toHaveBeenCalledTimes(1);
   });
 
   test('Render new component', () => {

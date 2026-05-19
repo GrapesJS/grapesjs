@@ -58,6 +58,6 @@ describe('AssetImageView', () => {
     const fn = jest.fn();
     obj.model.on('remove', fn);
     obj.onRemove({ stopImmediatePropagation() {} } as any);
-    expect(fn).toBeCalledTimes(1);
+    expect(fn).toHaveBeenCalledTimes(1);
   });
 });

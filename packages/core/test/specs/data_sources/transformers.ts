@@ -92,8 +92,8 @@ describe('DataSource Transformers', () => {
     const ds = dsm.get('test-data-source');
     const dr = ds.addRecord({ id: 'id1', content: 'i love grapes' });
 
-    expect(() => dr.set('content', 123)).toThrowError('Value must be a string');
-    expect(() => dr.set({ content: 123 })).toThrowError('Value must be a string');
+    expect(() => dr.set('content', 123)).toThrow('Value must be a string');
+    expect(() => dr.set({ content: 123 })).toThrow('Value must be a string');
 
     dr.set({ content: 'I LOVE GRAPES' });
 

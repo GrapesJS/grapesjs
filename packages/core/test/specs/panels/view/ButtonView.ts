@@ -72,14 +72,14 @@ describe('ButtonView', () => {
     const spy = jest.spyOn(view, 'toggleActive' as any);
     model.set('disable', true, { silent: true });
     view.clicked();
-    expect(spy).toBeCalledTimes(0);
+    expect(spy).toHaveBeenCalledTimes(0);
   });
 
   test('Enable the click action when button is enable', () => {
     const spy = jest.spyOn(view, 'toggleActive' as any);
     model.set('disable', false, { silent: true });
     view.clicked();
-    expect(spy).toBeCalledTimes(1);
+    expect(spy).toHaveBeenCalledTimes(1);
   });
 
   test('Renders correctly', () => {

@@ -1,4 +1,4 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`JsonPlaceholder Usage should render a list of comments from jsonplaceholder api 1`] = `
 "<body>

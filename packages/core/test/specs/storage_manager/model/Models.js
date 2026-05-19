@@ -58,7 +58,7 @@ describe('RemoteStorage', () => {
     const { calls } = obj.request.mock;
     expect(calls.length).toBe(1);
     expect(calls[0][0]).toBe(defaultOpts.urlStore);
-    // expect(obj.request).toBeCalledWith(opts.urlStore, defaultOpts, opts);
+    // expect(obj.request).toHaveBeenCalledWith(opts.urlStore, defaultOpts, opts);
     const { body, ...args } = calls[0][1];
     expect(args).toEqual({
       method: 'POST',
@@ -70,7 +70,7 @@ describe('RemoteStorage', () => {
   test('Load data', async () => {
     await obj.load(defaultOpts);
     const { calls } = obj.request.mock;
-    expect(obj.request).toBeCalledTimes(1);
+    expect(obj.request).toHaveBeenCalledTimes(1);
     expect(calls[0][0]).toBe(defaultOpts.urlLoad);
     expect(calls[0][1]).toEqual({
       method: 'GET',
@@ -87,7 +87,7 @@ describe('RemoteStorage', () => {
       fetchOptions: () => customOpts,
     });
 
-    expect(obj.request).toBeCalledTimes(1);
+    expect(obj.request).toHaveBeenCalledTimes(1);
     expect(obj.request.mock.calls[0][1]).toEqual({
       method: 'GET',
       body: undefined,

@@ -67,7 +67,7 @@ describe('ClassTagView', () => {
     obj.$el.find('#checkbox').trigger('click');
     expect(obj.model.get('active')).toEqual(false);
     // expect(spy.called).toEqual(true);
-    expect(spy).toBeCalledTimes(1);
+    expect(spy).toHaveBeenCalledTimes(1);
   });
 
   test('Label input is disabled', () => {

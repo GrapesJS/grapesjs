@@ -121,7 +121,7 @@ describe('CssRulesView', () => {
   test('Add new rule', () => {
     const spy = jest.spyOn(obj, 'addToCollection');
     obj.collection.add({});
-    expect(spy).toBeCalledTimes(1);
+    expect(spy).toHaveBeenCalledTimes(1);
   });
 
   test('Add correctly rules with different media queries', () => {

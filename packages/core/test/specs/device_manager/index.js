@@ -45,8 +45,8 @@ describe('DeviceManager', () => {
       em.on(obj.events.add, eventFn);
       em.on(obj.events.all, eventFnAll);
       obj.add(testNameDevice, testWidthDevice);
-      expect(eventFn).toBeCalledTimes(1);
-      expect(eventFnAll).toBeCalled();
+      expect(eventFn).toHaveBeenCalledTimes(1);
+      expect(eventFnAll).toHaveBeenCalled();
     });
 
     test('Added device has correct data', () => {
@@ -117,8 +117,8 @@ describe('DeviceManager', () => {
       expect(all.length).toEqual(0);
       expect(model).toBe(removed);
       // Check for events
-      expect(eventFn).toBeCalledTimes(1);
-      expect(eventFnAll).toBeCalled();
+      expect(eventFn).toHaveBeenCalledTimes(1);
+      expect(eventFnAll).toHaveBeenCalled();
     });
 
     test('Update device', () => {
@@ -128,8 +128,8 @@ describe('DeviceManager', () => {
       const up = { name: 'Test' };
       const opts = { myopts: 1 };
       model.set(up, opts);
-      expect(event).toBeCalledTimes(1);
-      expect(event).toBeCalledWith(model, up, opts);
+      expect(event).toHaveBeenCalledTimes(1);
+      expect(event).toHaveBeenCalledWith(model, up, opts);
     });
 
     test('Select device', () => {
@@ -144,19 +144,19 @@ describe('DeviceManager', () => {
       obj.select(model);
       expect(em.get('device')).toBe('dev-1');
       expect(obj.getSelected()).toBe(model);
-      expect(event).toBeCalledTimes(1);
-      expect(eventAll).toBeCalled();
+      expect(event).toHaveBeenCalledTimes(1);
+      expect(eventAll).toHaveBeenCalled();
 
       // Select from the manager with id
       obj.select('dev-2');
       expect(em.get('device')).toBe('dev-2');
       expect(obj.getSelected()).toBe(model2);
-      expect(event).toBeCalledTimes(2);
+      expect(event).toHaveBeenCalledTimes(2);
 
       // Select from the editor
       em.set('device', 'dev-1');
       expect(obj.getSelected()).toBe(model);
-      expect(event).toBeCalledTimes(3);
+      expect(event).toHaveBeenCalledTimes(3);
     });
 
     test('Render devices', () => {

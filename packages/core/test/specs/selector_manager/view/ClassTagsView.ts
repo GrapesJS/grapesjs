@@ -75,7 +75,7 @@ describe('ClassTagsView', () => {
   test('Add new tag triggers correct method', () => {
     const spy = jest.spyOn(view, 'addToClasses');
     coll.add({ name: 'test' });
-    expect(spy).toBeCalledTimes(1);
+    expect(spy).toHaveBeenCalledTimes(1);
   });
 
   test('Start new tag creation', () => {
@@ -126,7 +126,7 @@ describe('ClassTagsView', () => {
     coll.add([{ name: 'test1' }, { name: 'test2' }]);
     const spy = jest.spyOn(view, 'addToClasses');
     coll.trigger('reset');
-    expect(spy).toBeCalledTimes(2);
+    expect(spy).toHaveBeenCalledTimes(2);
   });
 
   test("Don't accept empty tags", () => {
@@ -157,7 +157,7 @@ describe('ClassTagsView', () => {
   test('States are visible in case of more tags inside', () => {
     coll.add({ label: 'test' });
     view.updateStateVis();
-    expect(testContext.$statesC.css('display')).toEqual('');
+    expect(testContext.$statesC.css('display')).not.toEqual('none');
   });
 
   test('Update state visibility on new tag', (done) => {
@@ -165,7 +165,7 @@ describe('ClassTagsView', () => {
     em.setSelected(compTest);
     view.addNewTag('test');
     setTimeout(() => {
-      expect(spy).toBeCalledTimes(1);
+      expect(spy).toHaveBeenCalledTimes(1);
       done();
     });
   });
@@ -176,7 +176,7 @@ describe('ClassTagsView', () => {
     const spy = jest.spyOn(view, 'updateStateVis');
     coll.remove(coll.at(0));
     setTimeout(() => {
-      expect(spy).toBeCalledTimes(1);
+      expect(spy).toHaveBeenCalledTimes(1);
       done();
     });
   });

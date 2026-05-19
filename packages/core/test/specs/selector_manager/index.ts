@@ -193,9 +193,9 @@ describe('SelectorManager', () => {
         em.on(obj.events.add, eventAdd);
         em.on(obj.events.all, eventAll);
         const added = obj.add(itemTest);
-        expect(eventAdd).toBeCalledTimes(1);
-        expect(eventAdd).toBeCalledWith(added, expect.anything());
-        expect(eventAll).toBeCalled();
+        expect(eventAdd).toHaveBeenCalledTimes(1);
+        expect(eventAdd).toHaveBeenCalledWith(added, expect.anything());
+        expect(eventAll).toHaveBeenCalled();
       });
 
       test('Remove triggers proper events', () => {
@@ -209,10 +209,10 @@ describe('SelectorManager', () => {
         em.on(obj.events.all, eventAll);
         const removed = obj.remove(itemTest);
         expect(obj.getAll().length).toBe(0);
-        expect(eventBfRm).toBeCalledTimes(1);
-        expect(eventRm).toBeCalledTimes(1);
-        expect(eventRm).toBeCalledWith(removed, expect.anything());
-        expect(eventAll).toBeCalled();
+        expect(eventBfRm).toHaveBeenCalledTimes(1);
+        expect(eventRm).toHaveBeenCalledTimes(1);
+        expect(eventRm).toHaveBeenCalledWith(removed, expect.anything());
+        expect(eventAll).toHaveBeenCalled();
       });
 
       test('Update triggers proper events', () => {
@@ -224,9 +224,9 @@ describe('SelectorManager', () => {
         em.on(obj.events.update, eventUp);
         em.on(obj.events.all, eventAll);
         added.set(newProps);
-        expect(eventUp).toBeCalledTimes(1);
-        expect(eventUp).toBeCalledWith(added, newProps, expect.anything());
-        expect(eventAll).toBeCalled();
+        expect(eventUp).toHaveBeenCalledTimes(1);
+        expect(eventUp).toHaveBeenCalledWith(added, newProps, expect.anything());
+        expect(eventAll).toHaveBeenCalled();
       });
     });
   });

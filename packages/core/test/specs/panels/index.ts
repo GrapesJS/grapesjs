@@ -82,7 +82,7 @@ describe('Panels', () => {
       const btn = obj.addButton('test', { id: 'btn', active: true });
       btn?.on('updateActive', fn);
       obj.active();
-      expect(fn).toBeCalledTimes(1);
+      expect(fn).toHaveBeenCalledTimes(1);
     });
 
     test('Disable correctly buttons flagged as disabled', () => {
@@ -91,7 +91,7 @@ describe('Panels', () => {
       const btn = obj.addButton('test', { id: 'btn', disable: true });
       btn?.on('change:disable', fn);
       obj.disableButtons();
-      expect(fn).toBeCalledTimes(1);
+      expect(fn).toHaveBeenCalledTimes(1);
     });
 
     test("Can't remove button to non existent panel", () => {

@@ -28,7 +28,7 @@ describe('ButtonsView', () => {
   test('Add new button', () => {
     const spy = jest.spyOn(view, 'addToCollection' as any);
     view.collection.add([{}]);
-    expect(spy).toBeCalledTimes(1);
+    expect(spy).toHaveBeenCalledTimes(1);
   });
 
   test('Render new button', () => {

@@ -545,7 +545,7 @@ describe('Component', () => {
       },
     });
 
-    expect(() => new ExtendedComponent({}, compOpts)).not.toThrowError();
+    expect(() => new ExtendedComponent({}, compOpts)).not.toThrow();
   });
 });
 

@@ -34,7 +34,7 @@ describe('AssetsView', () => {
   test('Add new asset', () => {
     const spy = jest.spyOn(obj, 'addAsset');
     coll.add({ src: 'test' });
-    expect(spy).toBeCalledTimes(1);
+    expect(spy).toHaveBeenCalledTimes(1);
   });
 
   test('Render new asset', () => {
