@@ -51,10 +51,6 @@
     "sass": "1.80.3",
     "whatwg-fetch": "3.6.20"
   },
-  "resolutions": {
-    "backbone-undo/backbone": "1.3.3",
-    "backbone-undo/underscore": "1.13.1"
-  },
   "keywords": [
     "grapes",
     "grapesjs",
