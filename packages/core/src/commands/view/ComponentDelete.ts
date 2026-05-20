@@ -1,9 +1,19 @@
 import { isArray } from 'underscore';
-import Component from '../../dom_components/model/Component';
-import { CommandObject } from './CommandAbstract';
+import type Component from '../../dom_components/model/Component';
+import Editor from '../../editor';
+import type { CommandPublicFnFromHandler } from '../registryHelpers';
+import CommandAbstract from './CommandAbstract';
 
-const command: CommandObject<{ component?: Component }> = {
-  run(ed, s, opts = {}) {
+export interface ComponentDeleteRunOptions {
+  component?: Component | Component[];
+}
+
+export interface ComponentDeleteCommandRegistryRun {
+  'core:component-delete': CommandPublicFnFromHandler<CommandComponentDelete['run']>;
+}
+
+export default class CommandComponentDelete extends CommandAbstract<ComponentDeleteRunOptions> {
+  run(ed: Editor, s: any, opts: ComponentDeleteRunOptions = {}) {
     const removed: Component[] = [];
     let components = opts.component || ed.getSelectedAll();
     components = isArray(components) ? [...components] : [components];
@@ -23,7 +33,5 @@ const command: CommandObject<{ component?: Component }> = {
     ed.selectRemove(removed);
 
     return removed;
-  },
-};
-
-export default command;
+  }
+}
