@@ -42,6 +42,30 @@ import CommandAbstract, {
   CommandOptions,
   CommandStored,
 } from './view/CommandAbstract';
+import CanvasClear from './view/CanvasClear';
+import CanvasMove from './view/CanvasMove';
+import ComponentDelete from './view/ComponentDelete';
+import ComponentDrag from './view/ComponentDrag';
+import ComponentEnter from './view/ComponentEnter';
+import ComponentExit from './view/ComponentExit';
+import ComponentNext from './view/ComponentNext';
+import ComponentPrev from './view/ComponentPrev';
+import ComponentStyleClear from './view/ComponentStyleClear';
+import CopyComponent from './view/CopyComponent';
+import ExportTemplate from './view/ExportTemplate';
+import CommandFullscreen from './view/Fullscreen';
+import MoveComponent from './view/MoveComponent';
+import OpenAssets from './view/OpenAssets';
+import OpenBlocks from './view/OpenBlocks';
+import OpenLayers from './view/OpenLayers';
+import OpenStyleManager from './view/OpenStyleManager';
+import OpenTraitManager from './view/OpenTraitManager';
+import PasteComponent from './view/PasteComponent';
+import Preview from './view/Preview';
+import Resize from './view/Resize';
+import SelectComponent from './view/SelectComponent';
+import ShowOffset from './view/ShowOffset';
+import SwitchVisibility from './view/SwitchVisibility';
 import defConfig, { CommandsConfig } from './config/config';
 import { Module } from '../abstract';
 import Component from '../dom_components/model/Component';
@@ -63,31 +87,31 @@ const isCommandConstructor = (command: Command): command is CommandConstructor =
   isFunction(command) && (command === CommandAbstract || command.prototype instanceof CommandAbstract);
 
 const commandsDef = [
-  ['preview', 'Preview', 'preview'],
-  ['resize', 'Resize', 'resize'],
-  ['fullscreen', 'Fullscreen', 'fullscreen'],
-  ['copy', 'CopyComponent'],
-  ['paste', 'PasteComponent'],
-  ['canvas-move', 'CanvasMove'],
-  ['canvas-clear', 'CanvasClear'],
-  ['open-code', 'ExportTemplate', 'export-template'],
-  ['open-layers', 'OpenLayers', 'open-layers'],
-  ['open-styles', 'OpenStyleManager', 'open-sm'],
-  ['open-traits', 'OpenTraitManager', 'open-tm'],
-  ['open-blocks', 'OpenBlocks', 'open-blocks'],
-  ['open-assets', 'OpenAssets', 'open-assets'],
-  ['component-select', 'SelectComponent', 'select-comp'],
-  ['component-outline', 'SwitchVisibility', 'sw-visibility'],
-  ['component-offset', 'ShowOffset', 'show-offset'],
-  ['component-move', 'MoveComponent', 'move-comp'],
-  ['component-next', 'ComponentNext'],
-  ['component-prev', 'ComponentPrev'],
-  ['component-enter', 'ComponentEnter'],
-  ['component-exit', 'ComponentExit', 'select-parent'],
-  ['component-delete', 'ComponentDelete'],
-  ['component-style-clear', 'ComponentStyleClear'],
-  ['component-drag', 'ComponentDrag'],
-];
+  ['preview', Preview, 'preview'],
+  ['resize', Resize, 'resize'],
+  ['fullscreen', CommandFullscreen, 'fullscreen'],
+  ['copy', CopyComponent],
+  ['paste', PasteComponent],
+  ['canvas-move', CanvasMove],
+  ['canvas-clear', CanvasClear],
+  ['open-code', ExportTemplate, 'export-template'],
+  ['open-layers', OpenLayers, 'open-layers'],
+  ['open-styles', OpenStyleManager, 'open-sm'],
+  ['open-traits', OpenTraitManager, 'open-tm'],
+  ['open-blocks', OpenBlocks, 'open-blocks'],
+  ['open-assets', OpenAssets, 'open-assets'],
+  ['component-select', SelectComponent, 'select-comp'],
+  ['component-outline', SwitchVisibility, 'sw-visibility'],
+  ['component-offset', ShowOffset, 'show-offset'],
+  ['component-move', MoveComponent, 'move-comp'],
+  ['component-next', ComponentNext],
+  ['component-prev', ComponentPrev],
+  ['component-enter', ComponentEnter],
+  ['component-exit', ComponentExit, 'select-parent'],
+  ['component-delete', ComponentDelete],
+  ['component-style-clear', ComponentStyleClear],
+  ['component-drag', ComponentDrag],
+] as const;
 
 const defComOptions = { preserveSelected: 1 };
 
@@ -213,7 +237,7 @@ export default class CommandsModule extends Module<CommandsConfig & { pStylePref
     defaultCommands['core:redo'] = (e) => e.UndoManager.redo();
     commandsDef.forEach((item) => {
       const oldCmd = item[2];
-      const cmd = require(`./view/${item[1]}`).default;
+      const cmd = item[1];
       const cmdName = `core:${item[0]}`;
       defaultCommands[cmdName] = cmd;
       if (oldCmd) {
@@ -323,7 +347,8 @@ export default class CommandsModule extends Module<CommandsConfig & { pStylePref
       this.add(id, cmdObj);
       // Extend also old name commands if exist
       const oldCmd = commandsDef.filter((cmd) => `core:${cmd[0]}` === id && cmd[2])[0];
-      oldCmd && this.add(oldCmd[2], cmdObj);
+      const oldCmdId = oldCmd?.[2];
+      oldCmdId && this.add(oldCmdId, cmdObj);
     }
 
     return this;
