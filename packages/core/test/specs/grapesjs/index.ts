@@ -606,7 +606,7 @@ describe('GrapesJS', () => {
         config.plugins = [pluginName];
 
         editor = grapesjs.init(config);
-        expect(editor.Commands.get('export-template')!.test).toEqual(1);
+        expect((editor.Commands.get('export-template') as any).test).toEqual(1);
       });
 
       describe('usePlugin', () => {

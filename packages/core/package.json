@@ -69,7 +69,7 @@
     "build:mjs": "cross-env BUILD_MODULE=true node node_modules/grapesjs-cli/dist/cli.js build --dts='skip' --patch=false --targets=\"defaults\"",
     "build:css": "sass src/styles/scss/main.scss dist/css/grapes.min.css --no-source-map --style=compressed --load-path=node_modules",
     "ts:build": "node node_modules/grapesjs-cli/dist/cli.js build --dts='only' --patch=false",
-    "ts:check": "tsc -p test/types/tsconfig.json",
+    "ts:check": "tsc --noEmit --esModuleInterop dist/index.d.ts",
     "start": "cross-env NODE_ENV=development run-p start:*",
     "start:js": "node node_modules/grapesjs-cli/dist/cli.js serve",
     "start:css": "npm run build:css -- --watch",

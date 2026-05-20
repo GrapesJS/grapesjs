@@ -41,7 +41,7 @@ describe('Commands', () => {
       obj.add('test', comm);
       expect(obj.has('test')).toBe(true);
       expect(Object.keys(obj.getAll()).length).toBe(len + 1);
-      expect(obj.get('test')!.test).toEqual('test');
+      expect((obj.get('test') as any).test).toEqual('test');
     });
 
     test('Default commands after loadDefaultCommands', () => {

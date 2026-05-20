@@ -3,15 +3,20 @@ import Editor from '../../../../src/editor';
 
 describe('Fullscreen command', () => {
   let editor: Editor;
-  let container: HTMLElement & { requestFullscreen: jest.Mock };
+  let container: HTMLElement;
+  let requestFullscreen: jest.Mock<Promise<void>, []>;
   let isFullscreen: boolean;
   let exitFullscreen: jest.Mock;
 
   beforeEach(() => {
     isFullscreen = false;
-    container = document.createElement('div') as HTMLElement & { requestFullscreen: jest.Mock };
-    container.requestFullscreen = jest.fn(() => {
+    requestFullscreen = jest.fn(async () => {
       isFullscreen = true;
+    });
+    container = document.createElement('div');
+    Object.defineProperty(container, 'requestFullscreen', {
+      configurable: true,
+      value: requestFullscreen,
     });
     exitFullscreen = jest.fn(() => {
       isFullscreen = false;
@@ -42,7 +47,7 @@ describe('Fullscreen command', () => {
     expect(editor.Commands.get('fullscreen')).toBeInstanceOf(CommandFullscreen);
 
     editor.runCommand('core:fullscreen');
-    expect(container.requestFullscreen).toHaveBeenCalledTimes(1);
+    expect(requestFullscreen).toHaveBeenCalledTimes(1);
     expect(addSpy).toHaveBeenCalledWith('fullscreenchange', expect.any(Function));
 
     editor.stopCommand('core:fullscreen');
@@ -50,7 +55,7 @@ describe('Fullscreen command', () => {
     expect(removeSpy).toHaveBeenCalledWith('fullscreenchange', expect.any(Function));
 
     editor.runCommand('fullscreen', { target: container });
-    expect(container.requestFullscreen).toHaveBeenCalledTimes(2);
+    expect(requestFullscreen).toHaveBeenCalledTimes(2);
 
     editor.stopCommand('fullscreen');
     expect(exitFullscreen).toHaveBeenCalledTimes(2);

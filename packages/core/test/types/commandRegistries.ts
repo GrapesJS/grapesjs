@@ -1,4 +1,4 @@
-import type { Editor } from 'grapesjs';
+import type { Editor } from '../../src';
 
 interface MyCommandOptions {
   value: number;
@@ -12,7 +12,7 @@ interface MyCommandStopOptions {
   reason: string;
 }
 
-declare module 'grapesjs' {
+declare module '../../src' {
   interface CommandRegistryRun {
     'my:command': (options: MyCommandOptions) => MyCommandResult;
     'my:stateless': () => number;
