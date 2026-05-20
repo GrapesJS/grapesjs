@@ -1,15 +1,19 @@
 import { $ } from '../../common';
 import CanvasComponentNode from '../../utils/sorter/CanvasComponentNode';
 import { DragDirection } from '../../utils/sorter/types';
-import { CommandObject } from './CommandAbstract';
-export default {
+import CommandAbstract from './CommandAbstract';
+
+export default class CommandSelectPosition extends CommandAbstract {
+  [key: string]: any;
+
   /**
    * Start select position event
    * @param {HTMLElement[]} sourceElements
    * @private
    * */
-  startSelectPosition(sourceElements: HTMLElement[], doc: Document, opts: any = {}) {
+  startSelectPosition(sourceElements: HTMLElement[] = [], doc?: Document, opts: any = {}) {
     this.isPointed = false;
+    if (!sourceElements.length || !doc) return;
     const utils = this.em.Utils;
     const container = sourceElements[0].ownerDocument.body;
 
@@ -39,7 +43,7 @@ export default {
     sourceElements &&
       sourceElements.length > 0 &&
       this.sorter.startSort(sourceElements.map((element) => ({ element })));
-  },
+  }
 
   /**
    * Get frame position
@@ -47,12 +51,12 @@ export default {
    * @private
    */
   getOffsetDim() {
-    var frameOff = this.offset(this.canvas.getFrameEl());
-    var canvasOff = this.offset(this.canvas.getElement());
-    var top = frameOff.top - canvasOff.top;
-    var left = frameOff.left - canvasOff.left;
+    const frameOff = this.offset(this.canvas.getFrameEl());
+    const canvasOff = this.offset(this.canvas.getElement());
+    const top = frameOff.top - canvasOff.top;
+    const left = frameOff.left - canvasOff.left;
     return { top, left };
-  },
+  }
 
   /**
    * Stop select position event
@@ -60,7 +64,7 @@ export default {
    * */
   stopSelectPosition() {
     this.posTargetCollection = null;
-    this.posIndex = this.posMethod == 'after' && this.cDim.length !== 0 ? this.posIndex + 1 : this.posIndex; //Normalize
+    this.posIndex = this.posMethod == 'after' && this.cDim.length !== 0 ? this.posIndex + 1 : this.posIndex;
     if (this.sorter) {
       this.sorter.cancelDrag();
     }
@@ -75,7 +79,7 @@ export default {
       this.posTargetModel = this.posTargetEl.data('model');
       this.posTargetCollection = this.posTargetEl.data('model-comp');
     }
-  },
+  }
 
   /**
    * Enabel select position
@@ -83,7 +87,7 @@ export default {
    */
   enable() {
     this.startSelectPosition();
-  },
+  }
 
   /**
    * Check if the pointer is near to the float component
@@ -94,22 +98,22 @@ export default {
    * @private
    * */
   nearFloat(index: number, method: string, dims: any[]) {
-    var i = index || 0;
-    var m = method || 'before';
-    var len = dims.length;
-    var isLast = len !== 0 && m == 'after' && i == len;
+    const i = index || 0;
+    const m = method || 'before';
+    const len = dims.length;
+    const isLast = len !== 0 && m == 'after' && i == len;
     if (len !== 0 && ((!isLast && !dims[i][4]) || (dims[i - 1] && !dims[i - 1][4]) || (isLast && !dims[i - 1][4])))
       return 1;
     return 0;
-  },
+  }
 
   run() {
     this.enable();
-  },
+  }
 
   stop() {
     this.stopSelectPosition();
     this.$wrapper.css('cursor', '');
     this.$wrapper.unbind();
-  },
-} as CommandObject<{}, { [k: string]: any }>;
+  }
+}

@@ -8,6 +8,7 @@ import SelectComponent from './SelectComponent';
 import SelectPosition from './SelectPosition';
 
 const SelectComponentProto = SelectComponent.prototype as any;
+const SelectPositionProto = SelectPosition.prototype as any;
 
 export interface MoveComponentCommandRegistryRun {
   'core:component-move': CommandPublicFnFromHandler<CommandMoveComponent['run']>;
@@ -32,7 +33,7 @@ export default class CommandMoveComponent extends CommandAbstract {
   }
 
   run(...args: any[]) {
-    return (SelectPosition.run as any).apply(this, args);
+    return SelectPositionProto.run.apply(this, args);
   }
 
   enable(...args: any[]) {
@@ -178,7 +179,7 @@ export default class CommandMoveComponent extends CommandAbstract {
 }
 
 [
-  SelectPosition as Record<string, unknown>,
+  SelectPositionProto as Record<string, unknown>,
   SelectComponentProto as Record<string, unknown>,
 ].forEach((source) => {
   Object.getOwnPropertyNames(source).forEach((key) => {
