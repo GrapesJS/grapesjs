@@ -3,8 +3,8 @@ import OpenLayers from '../../../../src/commands/view/OpenLayers';
 describe('OpenLayers command', () => {
   test('should show layers container when opened', () => {
     const command = new OpenLayers({});
-    const trigger = jest.fn(() => ({ trigger }));
-    const panel = { set: jest.fn(() => ({ trigger })) };
+    const panelTrigger = jest.fn();
+    const panel = { set: jest.fn(() => ({ trigger: panelTrigger })) };
     const render = jest.fn(() => document.createElement('div'));
     const editor = {
       LayerManager: {

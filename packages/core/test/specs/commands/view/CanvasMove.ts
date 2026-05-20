@@ -14,7 +14,7 @@ describe('CanvasMove command', () => {
 
   test('onKeyUp should stop the command on space key', () => {
     const command = new CanvasMove({});
-    command.editor = { stopCommand: jest.fn() };
+    command.editor = { stopCommand: jest.fn() } as any;
     command.id = 'core:canvas-move';
 
     command.onKeyUp({ which: 32 } as KeyboardEvent);

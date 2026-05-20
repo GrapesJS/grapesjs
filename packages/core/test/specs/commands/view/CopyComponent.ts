@@ -10,7 +10,7 @@ describe('CopyComponent command', () => {
       getSelectedAll: jest.fn(() => selected),
     };
 
-    command.run(editor);
+    command.run(editor as any);
 
     expect(set).toHaveBeenCalledWith('clipboard', selected);
   });
@@ -29,7 +29,7 @@ describe('CopyComponent command', () => {
       getSelectedAll: jest.fn(() => [component]),
     };
 
-    command.run(editor);
+    command.run(editor as any);
 
     expect(component.delegate.copy).toHaveBeenCalledWith(component);
     expect(set).toHaveBeenCalledWith('clipboard', [delegated]);

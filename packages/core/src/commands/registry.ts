@@ -17,6 +17,7 @@ import type { ExportTemplateCommandRegistryRun, ExportTemplateCommandRegistrySto
 import type { OpenAssetsCommandRegistryRun, OpenAssetsCommandRegistryStop } from './view/OpenAssets';
 import type { OpenLayersCommandRegistryRun, OpenLayersCommandRegistryStop } from './view/OpenLayers';
 import type { OpenBlocksCommandRegistryRun, OpenBlocksCommandRegistryStop } from './view/OpenBlocks';
+import type { SwitchVisibilityCommandRegistryRun, SwitchVisibilityCommandRegistryStop } from './view/SwitchVisibility';
 import type {
   OpenStyleManagerCommandRegistryRun,
   OpenStyleManagerCommandRegistryStop,
@@ -46,7 +47,8 @@ export interface CommandRegistryRun
     OpenBlocksCommandRegistryRun,
     OpenLayersCommandRegistryRun,
     OpenStyleManagerCommandRegistryRun,
-    OpenTraitManagerCommandRegistryRun {}
+    OpenTraitManagerCommandRegistryRun,
+    SwitchVisibilityCommandRegistryRun {}
 
 export interface CommandRegistryStop
   extends FullscreenCommandRegistryStop,
@@ -58,7 +60,8 @@ export interface CommandRegistryStop
     OpenBlocksCommandRegistryStop,
     OpenLayersCommandRegistryStop,
     OpenStyleManagerCommandRegistryStop,
-    OpenTraitManagerCommandRegistryStop {}
+    OpenTraitManagerCommandRegistryStop,
+    SwitchVisibilityCommandRegistryStop {}
 
 export type CommandRunKnownId = Extract<keyof CommandRegistryRun, string>;
 export type CommandStopKnownId = Extract<keyof CommandRegistryStop, string>;

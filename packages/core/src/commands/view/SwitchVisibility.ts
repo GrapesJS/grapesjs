@@ -1,21 +1,32 @@
 import { bindAll } from 'underscore';
 import Frame from '../../canvas/model/Frame';
 import Editor from '../../editor';
-import { CommandObject } from './CommandAbstract';
 import { isDef } from '../../utils/mixins';
+import type { CommandPublicFnFromHandler } from '../registryHelpers';
+import CommandAbstract from './CommandAbstract';
 
-export default {
+export interface SwitchVisibilityCommandRegistryRun {
+  'core:component-outline': CommandPublicFnFromHandler<CommandSwitchVisibility['run']>;
+  'sw-visibility': CommandPublicFnFromHandler<CommandSwitchVisibility['run']>;
+}
+
+export interface SwitchVisibilityCommandRegistryStop {
+  'core:component-outline': CommandPublicFnFromHandler<CommandSwitchVisibility['stop']>;
+  'sw-visibility': CommandPublicFnFromHandler<CommandSwitchVisibility['stop']>;
+}
+
+export default class CommandSwitchVisibility extends CommandAbstract {
   init() {
     bindAll(this, '_onFramesChange');
-  },
+  }
 
-  run(ed) {
+  run(ed: Editor) {
     this.toggleVis(ed, true);
-  },
+  }
 
-  stop(ed) {
+  stop(ed: Editor) {
     this.toggleVis(ed, false);
-  },
+  }
 
   toggleVis(ed: Editor, active = true) {
     if (!ed.Commands.isActive('preview')) {
@@ -25,7 +36,7 @@ export default {
       canvasModel[mth]('change:frames', this._onFramesChange);
       this.handleFrames(cv.getFrames(), active);
     }
-  },
+  }
 
   handleFrames(frames: Frame[], active?: boolean) {
     frames.forEach((frame: Frame & { __ol?: boolean }) => {
@@ -36,11 +47,11 @@ export default {
         frame.__ol = true;
       }
     });
-  },
+  }
 
   _onFramesChange(_: any, frames: Frame[]) {
     this.handleFrames(frames);
-  },
+  }
 
   _upFrame(frame: Frame, active?: boolean) {
     const { ppfx, em, id } = this;
@@ -48,10 +59,5 @@ export default {
     const method = isActive ? 'add' : 'remove';
     const cls = `${ppfx}dashed`;
     frame.view?.getBody().classList[method](cls);
-  },
-} as CommandObject<
-  {},
-  {
-    [key: string]: any;
   }
->;
+}
