@@ -15,6 +15,7 @@ import type { ComponentEnterCommandRegistryRun } from './view/ComponentEnter';
 import type { ComponentExitCommandRegistryRun } from './view/ComponentExit';
 import type { ComponentDeleteCommandRegistryRun } from './view/ComponentDelete';
 import type { ComponentStyleClearCommandRegistryRun } from './view/ComponentStyleClear';
+import type { ComponentDragCommandRegistryRun } from './view/ComponentDrag';
 import type { CopyComponentCommandRegistryRun } from './view/CopyComponent';
 import type { PasteComponentCommandRegistryRun } from './view/PasteComponent';
 import type { CanvasMoveCommandRegistryRun, CanvasMoveCommandRegistryStop } from './view/CanvasMove';
@@ -53,6 +54,7 @@ export interface CommandRegistryRun
     ComponentExitCommandRegistryRun,
     ComponentDeleteCommandRegistryRun,
     ComponentStyleClearCommandRegistryRun,
+    ComponentDragCommandRegistryRun,
     CopyComponentCommandRegistryRun,
     PasteComponentCommandRegistryRun,
     CanvasMoveCommandRegistryRun,
