@@ -1,7 +1,21 @@
-import { CommandObject } from './CommandAbstract';
+import Editor from '../../editor';
+import type { CommandPublicFnFromHandler } from '../registryHelpers';
+import CommandAbstract from './CommandAbstract';
 
-export default {
-  run(editor) {
+export interface OpenLayersCommandRegistryRun {
+  'core:open-layers': CommandPublicFnFromHandler<CommandOpenLayers['run']>;
+  'open-layers': CommandPublicFnFromHandler<CommandOpenLayers['run']>;
+}
+
+export interface OpenLayersCommandRegistryStop {
+  'core:open-layers': CommandPublicFnFromHandler<CommandOpenLayers['stop']>;
+  'open-layers': CommandPublicFnFromHandler<CommandOpenLayers['stop']>;
+}
+
+export default class CommandOpenLayers extends CommandAbstract {
+  layers?: HTMLDivElement;
+
+  run(editor: Editor) {
     const lm = editor.LayerManager;
     const pn = editor.Panels;
     const lmConfig = lm.getConfig();
@@ -11,7 +25,6 @@ export default {
     if (!this.layers) {
       const id = 'views-container';
       const layers = document.createElement('div');
-      // @ts-ignore
       const panels = pn.getPanel(id) || pn.addPanel({ id });
 
       if (lmConfig.custom) {
@@ -25,10 +38,10 @@ export default {
     }
 
     this.layers.style.display = 'block';
-  },
+  }
 
   stop() {
     const { layers } = this;
     layers && (layers.style.display = 'none');
-  },
-} as CommandObject<{}, { [k: string]: any }>;
+  }
+}

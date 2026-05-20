@@ -14,6 +14,7 @@ import type { PasteComponentCommandRegistryRun } from './view/PasteComponent';
 import type { CanvasMoveCommandRegistryRun, CanvasMoveCommandRegistryStop } from './view/CanvasMove';
 import type { CanvasClearCommandRegistryRun } from './view/CanvasClear';
 import type { ExportTemplateCommandRegistryRun, ExportTemplateCommandRegistryStop } from './view/ExportTemplate';
+import type { OpenLayersCommandRegistryRun, OpenLayersCommandRegistryStop } from './view/OpenLayers';
 
 type CommandRegistryHandler = (...args: any[]) => any;
 type CommandRegistryEntry<TRegistry, TId extends string> = TId extends keyof TRegistry
@@ -30,14 +31,16 @@ export interface CommandRegistryRun
     PasteComponentCommandRegistryRun,
     CanvasMoveCommandRegistryRun,
     CanvasClearCommandRegistryRun,
-    ExportTemplateCommandRegistryRun {}
+    ExportTemplateCommandRegistryRun,
+    OpenLayersCommandRegistryRun {}
 
 export interface CommandRegistryStop
   extends FullscreenCommandRegistryStop,
     PreviewCommandRegistryStop,
     ResizeCommandRegistryStop,
     CanvasMoveCommandRegistryStop,
-    ExportTemplateCommandRegistryStop {}
+    ExportTemplateCommandRegistryStop,
+    OpenLayersCommandRegistryStop {}
 
 export type CommandRunKnownId = Extract<keyof CommandRegistryRun, string>;
 export type CommandStopKnownId = Extract<keyof CommandRegistryStop, string>;
