@@ -1,14 +1,35 @@
-import { CommandObject } from './CommandAbstract';
-import { EditorParam } from '../../editor';
+import Editor, { EditorParam } from '../../editor';
 import { createEl } from '../../utils/dom';
+import type { CommandPublicFnFromHandler } from '../registryHelpers';
+import CommandAbstract from './CommandAbstract';
 
-interface ExportTemplateRunOptions {
+export interface ExportTemplateRunOptions {
   optsHtml?: EditorParam<'getHtml', 0>;
   optsCss?: EditorParam<'getCss', 0>;
 }
 
-export default {
-  run(editor, sender, opts: ExportTemplateRunOptions = {}) {
+export interface ExportTemplateCommandRegistryRun {
+  'core:open-code': CommandPublicFnFromHandler<CommandExportTemplate['run']>;
+  'export-template': CommandPublicFnFromHandler<CommandExportTemplate['run']>;
+}
+
+export interface ExportTemplateCommandRegistryStop {
+  'core:open-code': CommandPublicFnFromHandler<CommandExportTemplate['stop']>;
+  'export-template': CommandPublicFnFromHandler<CommandExportTemplate['stop']>;
+}
+
+export default class CommandExportTemplate extends CommandAbstract<
+  ExportTemplateRunOptions,
+  ExportTemplateRunOptions,
+  void,
+  void
+> {
+  cm: Editor['CodeManager'] | null = null;
+  editors?: HTMLElement;
+  htmlEditor?: { setContent: (content: string) => void };
+  cssEditor?: { setContent: (content?: string) => void };
+
+  run(editor: Editor, sender: any, opts: ExportTemplateRunOptions = {}) {
     sender && sender.set && sender.set('active', 0);
     const config = editor.getConfig();
     const modal = editor.Modal;
@@ -33,14 +54,14 @@ export default {
       })
       .getModel()
       .once('change:open', () => editor.stopCommand(`${this.id}`));
-    this.htmlEditor.setContent(editor.getHtml(opts.optsHtml));
-    this.cssEditor.setContent(editor.getCss(opts.optsCss));
-  },
+    this.htmlEditor?.setContent(editor.getHtml(opts.optsHtml));
+    this.cssEditor?.setContent(editor.getCss(opts.optsCss));
+  }
 
-  stop(editor) {
+  stop(editor: Editor) {
     const modal = editor.Modal;
     modal && modal.close();
-  },
+  }
 
   buildEditor(codeName: string, theme: string, label: string) {
     const cm = this.em.CodeManager;
@@ -56,5 +77,5 @@ export default {
     } as any).render().el;
 
     return { model, el };
-  },
-} as CommandObject<{}, { [k: string]: any }>;
+  }
+}
