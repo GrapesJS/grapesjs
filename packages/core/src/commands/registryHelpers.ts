@@ -4,6 +4,5 @@ export type CommandPublicFnFromHandler<T> = T extends (editor: any, sender: any,
   ? (...args: P) => R
   : never;
 
-export type CommandPublicOptions<T extends CommandPublicHandler> = Parameters<T> extends []
-  ? undefined
-  : Parameters<T>[0];
+export type CommandPublicOptions<T extends CommandPublicHandler> =
+  Parameters<T> extends [] ? undefined : Parameters<T>[0];

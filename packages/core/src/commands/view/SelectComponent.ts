@@ -303,10 +303,7 @@ export default class CommandSelectComponent extends CommandAbstract {
     }
 
     if (cmp) {
-      if (
-        em.isEditing() &&
-        ((!cmp.get('textable') && cmp.isChildOf('text')) || em.getEditing() !== cmp)
-      ) {
+      if (em.isEditing() && ((!cmp.get('textable') && cmp.isChildOf('text')) || em.getEditing() !== cmp)) {
         return;
       }
 

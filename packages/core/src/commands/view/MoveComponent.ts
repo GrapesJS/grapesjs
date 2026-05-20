@@ -178,10 +178,7 @@ export default class CommandMoveComponent extends CommandAbstract {
   }
 }
 
-[
-  SelectPositionProto as Record<string, unknown>,
-  SelectComponentProto as Record<string, unknown>,
-].forEach((source) => {
+[SelectPositionProto as Record<string, unknown>, SelectComponentProto as Record<string, unknown>].forEach((source) => {
   Object.getOwnPropertyNames(source).forEach((key) => {
     if (key === 'constructor') return;
     if (!(key in CommandMoveComponent.prototype)) {

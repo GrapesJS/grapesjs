@@ -1,11 +1,7 @@
 import type { ObjectAny } from '../common';
 import type { CommandPublicOptions } from './registryHelpers';
 import type CommandAbstract from './view/CommandAbstract';
-import type {
-  CommandConstructor,
-  CommandFunction,
-  CommandObject,
-} from './view/CommandAbstract';
+import type { CommandConstructor, CommandFunction, CommandObject } from './view/CommandAbstract';
 import type { FullscreenCommandRegistryRun, FullscreenCommandRegistryStop } from './view/Fullscreen';
 import type { PreviewCommandRegistryRun, PreviewCommandRegistryStop } from './view/Preview';
 import type { ResizeCommandRegistryRun, ResizeCommandRegistryStop } from './view/Resize';
@@ -28,14 +24,8 @@ import type { MoveComponentCommandRegistryRun, MoveComponentCommandRegistryStop 
 import type { SelectComponentCommandRegistryRun, SelectComponentCommandRegistryStop } from './view/SelectComponent';
 import type { ShowOffsetCommandRegistryRun, ShowOffsetCommandRegistryStop } from './view/ShowOffset';
 import type { SwitchVisibilityCommandRegistryRun, SwitchVisibilityCommandRegistryStop } from './view/SwitchVisibility';
-import type {
-  OpenStyleManagerCommandRegistryRun,
-  OpenStyleManagerCommandRegistryStop,
-} from './view/OpenStyleManager';
-import type {
-  OpenTraitManagerCommandRegistryRun,
-  OpenTraitManagerCommandRegistryStop,
-} from './view/OpenTraitManager';
+import type { OpenStyleManagerCommandRegistryRun, OpenStyleManagerCommandRegistryStop } from './view/OpenStyleManager';
+import type { OpenTraitManagerCommandRegistryRun, OpenTraitManagerCommandRegistryStop } from './view/OpenTraitManager';
 
 type CommandRegistryHandler = (...args: any[]) => any;
 type CommandRegistryEntry<TRegistry, TId extends string> = TId extends keyof TRegistry
