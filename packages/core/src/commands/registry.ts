@@ -8,12 +8,12 @@ import type {
 } from './view/CommandAbstract';
 import type { FullscreenCommandRegistryRun, FullscreenCommandRegistryStop } from './view/Fullscreen';
 
-type CommandPublicHandler = (...args: any[]) => any;
+type CommandRegistryHandler = (...args: any[]) => any;
 type CommandRegistryEntry<TRegistry, TId extends string> = TId extends keyof TRegistry
-  ? TRegistry[TId] extends CommandPublicHandler
+  ? TRegistry[TId] extends CommandRegistryHandler
     ? TRegistry[TId]
-    : CommandPublicHandler
-  : CommandPublicHandler;
+    : CommandRegistryHandler
+  : CommandRegistryHandler;
 
 export interface CommandRegistryRun extends FullscreenCommandRegistryRun {}
 

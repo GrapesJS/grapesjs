@@ -1,6 +1,98 @@
+import type { Editor } from '../../../src';
 import EditorModel from '../../../src/editor/model/Editor';
 import type Commands from '../../../src/commands';
 import type { Command, CommandFunction, CommandOptions } from '../../../src/commands/view/CommandAbstract';
+
+interface MyCommandOptions {
+  value: number;
+}
+
+interface MyCommandResult {
+  done: boolean;
+}
+
+interface MyCommandStopOptions {
+  reason: string;
+}
+
+declare module '../../../src' {
+  interface CommandRegistryRun {
+    'my:command': (options: MyCommandOptions) => MyCommandResult;
+    'my:stateless': () => number;
+  }
+
+  interface CommandRegistryStop {
+    'my:command': (options: MyCommandStopOptions) => void;
+  }
+}
+
+const assertCommandTypes = () => {
+  const typedEditor = {} as Editor;
+
+  const fullscreenResult: void = typedEditor.runCommand('core:fullscreen');
+  typedEditor.runCommand('fullscreen', { target: document.body });
+  // @ts-expect-error Fullscreen target must be an element or selector string
+  typedEditor.runCommand('core:fullscreen', { target: 1 });
+
+  const customResult: MyCommandResult = typedEditor.runCommand('my:command', { value: 1 });
+  customResult.done;
+  typedEditor.stopCommand('my:command', { reason: 'done' });
+  // @ts-expect-error Missing required run options
+  typedEditor.runCommand('my:command');
+  // @ts-expect-error Stop options do not match the registry
+  typedEditor.stopCommand('my:command', { value: 1 });
+
+  const statelessResult: number = typedEditor.runCommand('my:stateless');
+  statelessResult.toFixed();
+  // @ts-expect-error Stateless commands should not accept options
+  typedEditor.runCommand('my:stateless', {});
+
+  typedEditor.Commands.add('my:command', {
+    run(_editor, _sender, options) {
+      options.value.toFixed();
+      return { done: true };
+    },
+    stop(_editor, _sender, options) {
+      options.reason.toUpperCase();
+    },
+  });
+
+  typedEditor.Commands.add('my:command', (_editor, _sender, options) => {
+    options.value.toFixed();
+    return { done: true };
+  });
+
+  typedEditor.Commands.add('my:stateless', () => 1);
+
+  typedEditor.Commands.add('my:command', {
+    run(_editor, _sender, options) {
+      // @ts-expect-error The command run options should come from the registry
+      options.reason.toUpperCase();
+      return { done: true };
+    },
+  });
+
+  typedEditor.Commands.config.defaultOptions = {
+    'my:command': {
+      run(options) {
+        return { ...options, value: options.value + 1 };
+      },
+      stop(options) {
+        return { ...options, reason: options.reason.toUpperCase() };
+      },
+    },
+    'core:fullscreen': {
+      run(options) {
+        return { ...options, target: options?.target ?? '.app' };
+      },
+    },
+  };
+  typedEditor.Commands.config.defaultOptions['my:command']?.run?.({ value: 1 });
+
+  return fullscreenResult;
+};
+
+void assertCommandTypes;
 
 describe('Commands', () => {
   describe('Main', () => {
