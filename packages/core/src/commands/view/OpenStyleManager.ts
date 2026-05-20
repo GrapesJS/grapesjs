@@ -1,8 +1,26 @@
 import { $ } from '../../common';
-import { CommandObject } from './CommandAbstract';
+import Editor from '../../editor';
+import type { CommandPublicFnFromHandler } from '../registryHelpers';
+import CommandAbstract from './CommandAbstract';
 
-export default {
-  run(editor, sender) {
+export interface OpenStyleManagerCommandRegistryRun {
+  'core:open-styles': CommandPublicFnFromHandler<CommandOpenStyleManager['run']>;
+  'open-sm': CommandPublicFnFromHandler<CommandOpenStyleManager['run']>;
+}
+
+export interface OpenStyleManagerCommandRegistryStop {
+  'core:open-styles': CommandPublicFnFromHandler<CommandOpenStyleManager['stop']>;
+  'open-sm': CommandPublicFnFromHandler<CommandOpenStyleManager['stop']>;
+}
+
+export default class CommandOpenStyleManager extends CommandAbstract {
+  sender?: any;
+  sm?: any;
+  $cnt?: any;
+  $cntInner?: any;
+  $header?: any;
+
+  run(editor: Editor, sender: any) {
     this.sender = sender;
 
     if (!this.$cnt) {
@@ -19,14 +37,12 @@ export default {
       $cntInner.append($cntSm);
       $cnt.append($cntInner);
 
-      // Device Manager
       if (DeviceManager && config.showDevices) {
         const devicePanel = Panels.addPanel({ id: 'devices-c' });
         const dvEl = DeviceManager.render();
         devicePanel.set('appendContent', dvEl).trigger(trgEvCnt);
       }
 
-      // Selector Manager container
       const slmConfig = SelectorManager.getConfig();
       if (slmConfig.custom) {
         SelectorManager.__trgCustom({ container: $cntSlm.get(0) });
@@ -34,7 +50,6 @@ export default {
         $cntSlm.append(SelectorManager.render([]));
       }
 
-      // Style Manager
       this.sm = StyleManager;
       const smConfig = StyleManager.getConfig();
       const pfx = smConfig.stylePrefix;
@@ -47,20 +62,16 @@ export default {
         $cntSm.append(StyleManager.render());
       }
 
-      // Create panel if not exists
       const pnCnt = 'views-container';
       const pnl = Panels.getPanel(pnCnt) || Panels.addPanel({ id: pnCnt });
-
-      // Add all containers to the panel
       pnl.set('appendContent', $cnt).trigger(trgEvCnt);
 
-      // Toggle Style Manager on target selection
       const em = editor.getModel();
       this.listenTo(em, StyleManager.events.target, this.toggleSm);
     }
 
     this.toggleSm();
-  },
+  }
 
   /**
    * Toggle Style Manager visibility
@@ -77,10 +88,10 @@ export default {
       $cntInner?.hide();
       $header?.show();
     }
-  },
+  }
 
   stop() {
     this.$cntInner?.hide();
     this.$header?.hide();
-  },
-} as CommandObject<{}, { [k: string]: any }>;
+  }
+}
