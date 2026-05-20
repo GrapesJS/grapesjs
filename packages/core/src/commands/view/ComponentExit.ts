@@ -1,8 +1,15 @@
-import Component from '../../dom_components/model/Component';
-import { CommandObject } from './CommandAbstract';
+import type Component from '../../dom_components/model/Component';
+import Editor from '../../editor';
+import type { CommandPublicFnFromHandler } from '../registryHelpers';
+import CommandAbstract from './CommandAbstract';
 
-export default {
-  run(ed, snd, opts = {}) {
+export interface ComponentExitCommandRegistryRun {
+  'core:component-exit': CommandPublicFnFromHandler<CommandComponentExit['run']>;
+  'select-parent': CommandPublicFnFromHandler<CommandComponentExit['run']>;
+}
+
+export default class CommandComponentExit extends CommandAbstract {
+  run(ed: Editor, _: any, opts: any = {}) {
     if (!ed.Canvas.hasFocus() && !opts.force) return;
     const toSelect: Component[] = [];
 
@@ -18,5 +25,5 @@ export default {
     });
 
     toSelect.length && ed.select(toSelect);
-  },
-} as CommandObject;
+  }
+}
