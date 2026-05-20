@@ -11,6 +11,7 @@ import type { PreviewCommandRegistryRun, PreviewCommandRegistryStop } from './vi
 import type { ResizeCommandRegistryRun, ResizeCommandRegistryStop } from './view/Resize';
 import type { ComponentNextCommandRegistryRun } from './view/ComponentNext';
 import type { ComponentPrevCommandRegistryRun } from './view/ComponentPrev';
+import type { ComponentEnterCommandRegistryRun } from './view/ComponentEnter';
 import type { CopyComponentCommandRegistryRun } from './view/CopyComponent';
 import type { PasteComponentCommandRegistryRun } from './view/PasteComponent';
 import type { CanvasMoveCommandRegistryRun, CanvasMoveCommandRegistryStop } from './view/CanvasMove';
@@ -45,6 +46,7 @@ export interface CommandRegistryRun
     ResizeCommandRegistryRun,
     ComponentNextCommandRegistryRun,
     ComponentPrevCommandRegistryRun,
+    ComponentEnterCommandRegistryRun,
     CopyComponentCommandRegistryRun,
     PasteComponentCommandRegistryRun,
     CanvasMoveCommandRegistryRun,
