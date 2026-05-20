@@ -1,23 +1,40 @@
 import { each } from 'underscore';
 import Editor from '../../editor';
-import { CommandObject } from './CommandAbstract';
+import type { CommandPublicFnFromHandler } from '../registryHelpers';
+import CommandAbstract from './CommandAbstract';
 
 const cmdOutline = 'core:component-outline';
 
-export default {
+export interface PreviewCommandRegistryRun {
+  'core:preview': CommandPublicFnFromHandler<CommandPreview['run']>;
+  preview: CommandPublicFnFromHandler<CommandPreview['run']>;
+}
+
+export interface PreviewCommandRegistryStop {
+  'core:preview': CommandPublicFnFromHandler<CommandPreview['stop']>;
+  preview: CommandPublicFnFromHandler<CommandPreview['stop']>;
+}
+
+export default class CommandPreview extends CommandAbstract {
+  helper?: HTMLSpanElement;
+  panels?: ReturnType<Editor['Panels']['getPanels']>;
+  selected?: ReturnType<Editor['getSelectedAll']>;
+  sender?: any;
+  shouldRunSwVisibility?: boolean;
+
   getPanels(editor: Editor) {
     if (!this.panels) {
       this.panels = editor.Panels.getPanels();
     }
 
-    return this.panels;
-  },
+    return this.panels!;
+  }
 
   preventDrag(opts: any) {
     opts.abort = 1;
-  },
+  }
 
-  tglEffects(on: boolean) {
+  tglEffects(on = false) {
     const { em } = this;
     const mthEv = on ? 'on' : 'off';
     if (em) {
@@ -29,9 +46,9 @@ export default {
       each(elP, (item) => ((item as HTMLElement).style.pointerEvents = on ? 'all' : ''));
       em[mthEv]('run:tlb-move:before', this.preventDrag);
     }
-  },
+  }
 
-  run(editor, sender) {
+  run(editor: Editor, sender: any) {
     this.sender = sender;
     this.selected = [...editor.getSelectedAll()];
     editor.select();
@@ -58,7 +75,7 @@ export default {
 
     this.helper.style.display = 'inline-block';
 
-    panels.forEach((panel: any) => panel.set('visible', false));
+    panels.forEach((panel) => panel.set('visible', false));
 
     const canvasS = canvas.style;
     canvasS.width = '100%';
@@ -68,10 +85,10 @@ export default {
     canvasS.padding = '0';
     canvasS.margin = '0';
     editor.refresh();
-    this.tglEffects(1);
-  },
+    this.tglEffects(true);
+  }
 
-  stop(editor) {
+  stop(editor: Editor) {
     const { sender = {}, selected } = this;
     sender.set && sender.set('active', 0);
     const panels = this.getPanels(editor);
@@ -82,7 +99,7 @@ export default {
     }
 
     editor.getModel().runDefault();
-    panels.forEach((panel: any) => panel.set('visible', true));
+    panels.forEach((panel) => panel.set('visible', true));
 
     const canvas = editor.Canvas.getElement();
     canvas.setAttribute('style', '');
@@ -95,5 +112,5 @@ export default {
 
     editor.refresh();
     this.tglEffects();
-  },
-} as CommandObject<{}, { [k: string]: any }>;
+  }
+}
