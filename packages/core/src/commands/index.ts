@@ -36,12 +36,7 @@
  */
 
 import { isFunction, includes } from 'underscore';
-import CommandAbstract, {
-  Command,
-  CommandConstructor,
-  CommandOptions,
-  CommandStored,
-} from './view/CommandAbstract';
+import CommandAbstract, { Command, CommandConstructor, CommandOptions, CommandStored } from './view/CommandAbstract';
 import CanvasClear from './view/CanvasClear';
 import CanvasMove from './view/CanvasMove';
 import ComponentDelete from './view/ComponentDelete';
@@ -336,7 +331,10 @@ export default class CommandsModule extends Module<CommandsConfig & { pStylePref
    *  }
    * });
    * */
-  extend<const TId extends string>(id: TId, cmd: CommandObjectById<TId, ObjectAny> = {} as CommandObjectById<TId, ObjectAny>) {
+  extend<const TId extends string>(
+    id: TId,
+    cmd: CommandObjectById<TId, ObjectAny> = {} as CommandObjectById<TId, ObjectAny>,
+  ) {
     const command = this.get(id);
 
     if (command) {

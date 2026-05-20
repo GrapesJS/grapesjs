@@ -4,7 +4,6 @@ import CommandAbstract from './CommandAbstract';
 
 export interface CopyComponentCommandRegistryRun {
   'core:copy': CommandPublicFnFromHandler<CommandCopyComponent['run']>;
-  copy: CommandPublicFnFromHandler<CommandCopyComponent['run']>;
 }
 
 export default class CommandCopyComponent extends CommandAbstract {

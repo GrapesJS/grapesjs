@@ -10,6 +10,7 @@ import type { FullscreenCommandRegistryRun, FullscreenCommandRegistryStop } from
 import type { PreviewCommandRegistryRun, PreviewCommandRegistryStop } from './view/Preview';
 import type { ResizeCommandRegistryRun, ResizeCommandRegistryStop } from './view/Resize';
 import type { CopyComponentCommandRegistryRun } from './view/CopyComponent';
+import type { PasteComponentCommandRegistryRun } from './view/PasteComponent';
 
 type CommandRegistryHandler = (...args: any[]) => any;
 type CommandRegistryEntry<TRegistry, TId extends string> = TId extends keyof TRegistry
@@ -22,7 +23,8 @@ export interface CommandRegistryRun
   extends FullscreenCommandRegistryRun,
     PreviewCommandRegistryRun,
     ResizeCommandRegistryRun,
-    CopyComponentCommandRegistryRun {}
+    CopyComponentCommandRegistryRun,
+    PasteComponentCommandRegistryRun {}
 
 export interface CommandRegistryStop
   extends FullscreenCommandRegistryStop,
