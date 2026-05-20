@@ -9,7 +9,7 @@ inputs:
   node-version:
     description: 'The version of Node.js to use for building the project.'
     required: false
-    default: '20.16.0'
+    default: '22.22.2'
 
 runs:
   using: composite
