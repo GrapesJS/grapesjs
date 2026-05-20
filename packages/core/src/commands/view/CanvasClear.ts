@@ -1,8 +1,13 @@
-import { CommandObject } from './CommandAbstract';
+import type { CommandPublicFnFromHandler } from '../registryHelpers';
+import CommandAbstract from './CommandAbstract';
 
-export default {
-  run(ed) {
+export interface CanvasClearCommandRegistryRun {
+  'core:canvas-clear': CommandPublicFnFromHandler<CommandCanvasClear['run']>;
+}
+
+export default class CommandCanvasClear extends CommandAbstract {
+  run(ed: any) {
     ed.Components.clear();
     ed.Css.clear();
-  },
-} as CommandObject;
+  }
+}
