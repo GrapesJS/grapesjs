@@ -45,6 +45,30 @@ describe('Commands', () => {
       expect((obj.get('test') as any).test).toEqual('test');
     });
 
+    test('Remove command', () => {
+      obj.add('test', commSimple);
+
+      obj.remove('test');
+
+      expect(obj.has('test')).toBe(false);
+      expect(obj.getAll().test).toBeUndefined();
+    });
+
+    test('Remove active command and clean up active state', () => {
+      const stop = jest.fn(() => commResultStop);
+      obj.add(commName, {
+        run: () => commResultRun,
+        stop,
+      });
+      obj.run(commName);
+
+      obj.remove(commName);
+
+      expect(stop).toHaveBeenCalledTimes(1);
+      expect(obj.isActive(commName)).toBe(false);
+      expect(obj.has(commName)).toBe(false);
+    });
+
     test('Default commands after loadDefaultCommands', () => {
       expect(obj.get('select-comp')).not.toBeUndefined();
     });

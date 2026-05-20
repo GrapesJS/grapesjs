@@ -23,6 +23,7 @@
  *
  * ## Methods
  * * [add](#add)
+ * * [remove](#remove)
  * * [get](#get)
  * * [getAll](#getall)
  * * [extend](#extend)
@@ -294,6 +295,22 @@ export default class CommandsModule extends Module<CommandsConfig & { pStylePref
 
     result.id = id;
     this.commands[id] = CommandAbstract.extend(result) as CommandConstructor;
+
+    return this;
+  }
+
+  /**
+   * Remove command from the collection
+   * @param {string} id Command's ID
+   * @return {this}
+   */
+  remove(id: string) {
+    if (this.isActive(id)) {
+      this.stopCommand(this.get(id), { force: true });
+    }
+
+    delete this.active[id];
+    delete this.commands[id];
 
     return this;
   }
