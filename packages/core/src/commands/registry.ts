@@ -19,6 +19,10 @@ import type {
   OpenStyleManagerCommandRegistryRun,
   OpenStyleManagerCommandRegistryStop,
 } from './view/OpenStyleManager';
+import type {
+  OpenTraitManagerCommandRegistryRun,
+  OpenTraitManagerCommandRegistryStop,
+} from './view/OpenTraitManager';
 
 type CommandRegistryHandler = (...args: any[]) => any;
 type CommandRegistryEntry<TRegistry, TId extends string> = TId extends keyof TRegistry
@@ -37,7 +41,8 @@ export interface CommandRegistryRun
     CanvasClearCommandRegistryRun,
     ExportTemplateCommandRegistryRun,
     OpenLayersCommandRegistryRun,
-    OpenStyleManagerCommandRegistryRun {}
+    OpenStyleManagerCommandRegistryRun,
+    OpenTraitManagerCommandRegistryRun {}
 
 export interface CommandRegistryStop
   extends FullscreenCommandRegistryStop,
@@ -46,7 +51,8 @@ export interface CommandRegistryStop
     CanvasMoveCommandRegistryStop,
     ExportTemplateCommandRegistryStop,
     OpenLayersCommandRegistryStop,
-    OpenStyleManagerCommandRegistryStop {}
+    OpenStyleManagerCommandRegistryStop,
+    OpenTraitManagerCommandRegistryStop {}
 
 export type CommandRunKnownId = Extract<keyof CommandRegistryRun, string>;
 export type CommandStopKnownId = Extract<keyof CommandRegistryStop, string>;

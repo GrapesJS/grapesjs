@@ -1,71 +1,82 @@
-import { CommandObject } from './CommandAbstract';
 import { $ } from '../../common';
 import { ComponentsEvents } from '../../dom_components/types';
+import Editor from '../../editor';
+import type { CommandPublicFnFromHandler } from '../registryHelpers';
+import CommandAbstract from './CommandAbstract';
 
-export default {
-  run(editor, sender) {
+export interface OpenTraitManagerCommandRegistryRun {
+  'core:open-traits': CommandPublicFnFromHandler<CommandOpenTraitManager['run']>;
+  'open-tm': CommandPublicFnFromHandler<CommandOpenTraitManager['run']>;
+}
+
+export interface OpenTraitManagerCommandRegistryStop {
+  'core:open-traits': CommandPublicFnFromHandler<CommandOpenTraitManager['stop']>;
+  'open-tm': CommandPublicFnFromHandler<CommandOpenTraitManager['stop']>;
+}
+
+export default class CommandOpenTraitManager extends CommandAbstract {
+  sender?: any;
+  target?: any;
+  $cn?: any;
+  $cn2?: any;
+  $header?: any;
+
+  run(editor: Editor, sender: any) {
     this.sender = sender;
     const em = editor.getModel();
-
     const config = editor.Config;
     const pfx = config.stylePrefix;
     const tm = editor.TraitManager;
     const confTm = tm.getConfig();
-    let panelC;
 
     if (confTm.appendTo) return;
 
     if (!this.$cn) {
-      this.$cn = $('<div></div>');
-      this.$cn2 = $('<div></div>');
-      this.$cn.append(this.$cn2);
+      const $cn = $('<div></div>');
+      const $cn2 = $('<div></div>');
+      this.$cn = $cn;
+      this.$cn2 = $cn2;
+      $cn.append($cn2);
       this.$header = $('<div>').append(`<div class="${confTm.stylePrefix}header">${em.t('traitManager.empty')}</div>`);
-      this.$cn.append(this.$header);
+      $cn.append(this.$header);
 
       if (confTm.custom) {
-        tm.__trgCustom({ container: this.$cn2.get(0) });
+        tm.__trgCustom({ container: $cn2.get(0) });
       } else {
-        this.$cn2.append(`<div class="${pfx}traits-label">${em.t('traitManager.label')}</div>`);
-        this.$cn2.append(tm.render());
+        $cn2.append(`<div class="${pfx}traits-label">${em.t('traitManager.label')}</div>`);
+        $cn2.append(tm.render());
       }
 
-      var panels = editor.Panels;
+      const panels = editor.Panels;
+      const panel = panels.getPanel('views-container') || panels.addPanel({ id: 'views-container' });
+      panel?.set('appendContent', $cn.get(0)).trigger('change:appendContent');
 
-      if (!panels.getPanel('views-container')) {
-        // @ts-ignore
-        panelC = panels.addPanel({ id: 'views-container' });
-      } else {
-        panelC = panels.getPanel('views-container');
-      }
-
-      panelC?.set('appendContent', this.$cn.get(0)).trigger('change:appendContent');
-
-      this.target = editor.getModel();
+      this.target = em;
       this.listenTo(this.target, ComponentsEvents.toggled, this.toggleTm);
     }
 
     this.toggleTm();
-  },
+  }
 
   /**
    * Toggle Trait Manager visibility
    * @private
    */
   toggleTm() {
-    const sender = this.sender;
-    if (sender && sender.get && !sender.get('active')) return;
+    const { sender, target, $cn2, $header } = this;
+    if ((sender && sender.get && !sender.get('active')) || !target) return;
 
-    if (this.target.getSelectedAll().length === 1) {
-      this.$cn2.show();
-      this.$header.hide();
+    if (target.getSelectedAll().length === 1) {
+      $cn2?.show();
+      $header?.hide();
     } else {
-      this.$cn2.hide();
-      this.$header.show();
+      $cn2?.hide();
+      $header?.show();
     }
-  },
+  }
 
   stop() {
-    this.$cn2 && this.$cn2.hide();
-    this.$header && this.$header.hide();
-  },
-} as CommandObject<{}, { [k: string]: any }>;
+    this.$cn2?.hide();
+    this.$header?.hide();
+  }
+}
