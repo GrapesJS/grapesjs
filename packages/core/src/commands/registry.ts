@@ -18,6 +18,7 @@ import type { OpenAssetsCommandRegistryRun, OpenAssetsCommandRegistryStop } from
 import type { OpenLayersCommandRegistryRun, OpenLayersCommandRegistryStop } from './view/OpenLayers';
 import type { OpenBlocksCommandRegistryRun, OpenBlocksCommandRegistryStop } from './view/OpenBlocks';
 import type { MoveComponentCommandRegistryRun, MoveComponentCommandRegistryStop } from './view/MoveComponent';
+import type { SelectComponentCommandRegistryRun, SelectComponentCommandRegistryStop } from './view/SelectComponent';
 import type { ShowOffsetCommandRegistryRun, ShowOffsetCommandRegistryStop } from './view/ShowOffset';
 import type { SwitchVisibilityCommandRegistryRun, SwitchVisibilityCommandRegistryStop } from './view/SwitchVisibility';
 import type {
@@ -51,6 +52,7 @@ export interface CommandRegistryRun
     OpenLayersCommandRegistryRun,
     OpenStyleManagerCommandRegistryRun,
     OpenTraitManagerCommandRegistryRun,
+    SelectComponentCommandRegistryRun,
     ShowOffsetCommandRegistryRun,
     SwitchVisibilityCommandRegistryRun {}
 
@@ -66,6 +68,7 @@ export interface CommandRegistryStop
     OpenLayersCommandRegistryStop,
     OpenStyleManagerCommandRegistryStop,
     OpenTraitManagerCommandRegistryStop,
+    SelectComponentCommandRegistryStop,
     ShowOffsetCommandRegistryStop,
     SwitchVisibilityCommandRegistryStop {}
 

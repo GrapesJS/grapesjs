@@ -7,6 +7,8 @@ import CommandAbstract from './CommandAbstract';
 import SelectComponent from './SelectComponent';
 import SelectPosition from './SelectPosition';
 
+const SelectComponentProto = SelectComponent.prototype as any;
+
 export interface MoveComponentCommandRegistryRun {
   'core:component-move': CommandPublicFnFromHandler<CommandMoveComponent['run']>;
   'move-comp': CommandPublicFnFromHandler<CommandMoveComponent['run']>;
@@ -21,7 +23,7 @@ export default class CommandMoveComponent extends CommandAbstract {
   [key: string]: any;
 
   init(o: any) {
-    (SelectComponent.init as any).apply(this, arguments as any);
+    SelectComponentProto.init.apply(this, arguments as any);
     bindAll(this, 'initSorter', 'rollback', 'onEndMove');
     this.opt = o;
     this.hoverClass = `${this.ppfx}highlighter-warning`;
@@ -34,7 +36,7 @@ export default class CommandMoveComponent extends CommandAbstract {
   }
 
   enable(...args: any[]) {
-    SelectComponent.enable.apply(this, args);
+    SelectComponentProto.enable.apply(this, args);
     this.getBadgeEl().addClass(this.badgeClass);
     this.getHighlighterEl().addClass(this.hoverClass);
     const wp = this.$wrapper;
@@ -167,7 +169,7 @@ export default class CommandMoveComponent extends CommandAbstract {
   }
 
   stop(...args: any[]) {
-    (SelectComponent.stop as any).apply(this, args);
+    SelectComponentProto.stop.apply(this, args);
     this.getBadgeEl().removeClass(this.badgeClass);
     this.getHighlighterEl().removeClass(this.hoverClass);
     const wp = this.$wrapper;
@@ -177,9 +179,10 @@ export default class CommandMoveComponent extends CommandAbstract {
 
 [
   SelectPosition as Record<string, unknown>,
-  SelectComponent as Record<string, unknown>,
+  SelectComponentProto as Record<string, unknown>,
 ].forEach((source) => {
-  Object.keys(source).forEach((key) => {
+  Object.getOwnPropertyNames(source).forEach((key) => {
+    if (key === 'constructor') return;
     if (!(key in CommandMoveComponent.prototype)) {
       (CommandMoveComponent.prototype as Record<string, unknown>)[key] = source[key];
     }
