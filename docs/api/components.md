@@ -27,8 +27,8 @@ cmp.addType(...);
 
 *   `component:create` - Component is created (only the model, is not yet mounted in the canvas), called after the init() method
 *   `component:mount` - Component is mounted to an element and rendered in canvas
-*   `component:add` - Triggered when a new component is added to the editor, the model is passed as an argument to the callback
-*   `component:remove` - Triggered when a component is removed, the model is passed as an argument to the callback
+*   `component:add` - Triggered when a component is added to the editor. The callback receives the model and the options object. This can also be triggered on component moves and clones, so you can check `options.action` (`add-component`, `move-component`, `clone-component`) to distinguish the case
+*   `component:remove` - Triggered when a component is removed from the editor. This can also happen as part of a component move
 *   `component:remove:before` - Triggered before the remove of the component, the model, remove function (if aborted via options, with this function you can complete the remove) and options (use options.abort = true to prevent remove), are passed as arguments to the callback
 *   `component:clone` - Triggered when a component is cloned, the new model is passed as an argument to the callback
 *   `component:update` - Triggered when a component is updated (moved, styled, etc.), the model is passed as an argument to the callback

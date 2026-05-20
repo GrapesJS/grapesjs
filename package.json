@@ -62,6 +62,13 @@
     "overrides": {
       "jest-environment-jsdom>jsdom": "27.4.0"
     },
+    "packageExtensions": {
+      "@vuepress/shared-utils@1.9.10": {
+        "dependencies": {
+          "lru-cache": "5.1.1"
+        }
+      }
+    },
     "peerDependencyRules": {
       "ignoreMissing": [
         "@babel/*",

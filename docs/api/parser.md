@@ -87,6 +87,7 @@ Parse HTML string and return the object containing the Component Definition
     *   `options.detectDocument` **([Boolean][8] | [Function][9])?** Indicate if or how to detect if the HTML string should be treated as document
     *   `options.preParser` **[Function][9]?** How to pre-process the HTML string before parsing
     *   `options.convertDataGjsAttributesHyphens` **[Boolean][8]** Convert `data-gjs-*` attributes from hyphenated to camelCase (eg. `data-gjs-my-component` to `data-gjs-myComponent`) (optional, default `false`)
+    *   `options.convertAttributeValues` **([Boolean][8] | [Array][10]<[String][6]> | [Function][9])** Convert regular HTML attribute values using the same parser used by `data-gjs-*` attributes (optional, default `false`)
 
 ### Examples
 
