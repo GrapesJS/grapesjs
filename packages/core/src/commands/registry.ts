@@ -9,6 +9,7 @@ import type {
 import type { FullscreenCommandRegistryRun, FullscreenCommandRegistryStop } from './view/Fullscreen';
 import type { PreviewCommandRegistryRun, PreviewCommandRegistryStop } from './view/Preview';
 import type { ResizeCommandRegistryRun, ResizeCommandRegistryStop } from './view/Resize';
+import type { ComponentNextCommandRegistryRun } from './view/ComponentNext';
 import type { CopyComponentCommandRegistryRun } from './view/CopyComponent';
 import type { PasteComponentCommandRegistryRun } from './view/PasteComponent';
 import type { CanvasMoveCommandRegistryRun, CanvasMoveCommandRegistryStop } from './view/CanvasMove';
@@ -41,6 +42,7 @@ export interface CommandRegistryRun
   extends FullscreenCommandRegistryRun,
     PreviewCommandRegistryRun,
     ResizeCommandRegistryRun,
+    ComponentNextCommandRegistryRun,
     CopyComponentCommandRegistryRun,
     PasteComponentCommandRegistryRun,
     CanvasMoveCommandRegistryRun,

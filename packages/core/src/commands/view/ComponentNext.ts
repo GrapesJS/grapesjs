@@ -1,8 +1,14 @@
-import Component from '../../dom_components/model/Component';
-import { CommandObject } from './CommandAbstract';
+import type Component from '../../dom_components/model/Component';
+import Editor from '../../editor';
+import type { CommandPublicFnFromHandler } from '../registryHelpers';
+import CommandAbstract from './CommandAbstract';
 
-export default {
-  run(ed) {
+export interface ComponentNextCommandRegistryRun {
+  'core:component-next': CommandPublicFnFromHandler<CommandComponentNext['run']>;
+}
+
+export default class CommandComponentNext extends CommandAbstract {
+  run(ed: Editor) {
     if (!ed.Canvas.hasFocus()) return;
     const toSelect: Component[] = [];
 
@@ -13,7 +19,7 @@ export default {
       const len = parent.components().length;
       let incr = 0;
       let at = 0;
-      let next: any;
+      let next: Component | null = null;
 
       // Get the next selectable component
       do {
@@ -26,5 +32,5 @@ export default {
     });
 
     toSelect.length && ed.select(toSelect);
-  },
-} as CommandObject;
+  }
+}

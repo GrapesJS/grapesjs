@@ -280,12 +280,15 @@ export default class CommandSelectComponent extends CommandAbstract {
     this.canvas.getHighlighter(view).style.opacity = 0;
   }
 
-  onClick(ev: Event) {
+  onClick(ev: Event): void {
     ev.stopPropagation();
     ev.preventDefault();
     const { em } = this;
 
-    if (em.get('_cmpDrag')) return em.set('_cmpDrag');
+    if (em.get('_cmpDrag')) {
+      em.set('_cmpDrag');
+      return;
+    }
 
     const el = ev.target as HTMLElement;
     let cmp = getComponentModel(el);
