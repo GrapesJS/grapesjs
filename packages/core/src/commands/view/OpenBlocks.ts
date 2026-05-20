@@ -1,10 +1,28 @@
 import { isFunction } from 'underscore';
 import { createEl } from '../../utils/dom';
-import { CommandObject } from './CommandAbstract';
+import Editor from '../../editor';
+import type { CommandPublicFnFromHandler } from '../registryHelpers';
+import CommandAbstract from './CommandAbstract';
 
-export default {
+export interface OpenBlocksCommandRegistryRun {
+  'core:open-blocks': CommandPublicFnFromHandler<CommandOpenBlocks['run']>;
+  'open-blocks': CommandPublicFnFromHandler<CommandOpenBlocks['run']>;
+}
+
+export interface OpenBlocksCommandRegistryStop {
+  'core:open-blocks': CommandPublicFnFromHandler<CommandOpenBlocks['stop']>;
+  'open-blocks': CommandPublicFnFromHandler<CommandOpenBlocks['stop']>;
+}
+
+export default class CommandOpenBlocks extends CommandAbstract {
+  container?: HTMLElement;
+  editor?: Editor;
+  bm?: any;
+  firstRender?: boolean;
+
   open() {
     const { container, editor, bm, config } = this;
+    if (!container || !editor || !bm || !config) return;
     const { custom, appendTo } = config;
 
     if (isFunction(custom.open)) {
@@ -19,21 +37,22 @@ export default {
       if (!custom) container.appendChild(bm.render());
     }
 
-    if (container) container.style.display = 'block';
-  },
+    container.style.display = 'block';
+  }
 
   close() {
-    const { container, config } = this;
+    const { container, config, bm } = this;
+    if (!config || !bm) return;
     const { custom } = config;
 
     if (isFunction(custom.close)) {
-      return custom.close(this.bm.__customData());
+      return custom.close(bm.__customData());
     }
 
     if (container) container.style.display = 'none';
-  },
+  }
 
-  run(editor) {
+  run(editor: Editor) {
     const bm = editor.Blocks;
     this.config = bm.getConfig();
     this.firstRender = !this.container;
@@ -50,9 +69,9 @@ export default {
     }
 
     this.open();
-  },
+  }
 
   stop() {
     this.close();
-  },
-} as CommandObject<{}, { [k: string]: any }>;
+  }
+}

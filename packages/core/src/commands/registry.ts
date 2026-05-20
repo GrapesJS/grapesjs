@@ -15,6 +15,7 @@ import type { CanvasMoveCommandRegistryRun, CanvasMoveCommandRegistryStop } from
 import type { CanvasClearCommandRegistryRun } from './view/CanvasClear';
 import type { ExportTemplateCommandRegistryRun, ExportTemplateCommandRegistryStop } from './view/ExportTemplate';
 import type { OpenLayersCommandRegistryRun, OpenLayersCommandRegistryStop } from './view/OpenLayers';
+import type { OpenBlocksCommandRegistryRun, OpenBlocksCommandRegistryStop } from './view/OpenBlocks';
 import type {
   OpenStyleManagerCommandRegistryRun,
   OpenStyleManagerCommandRegistryStop,
@@ -40,6 +41,7 @@ export interface CommandRegistryRun
     CanvasMoveCommandRegistryRun,
     CanvasClearCommandRegistryRun,
     ExportTemplateCommandRegistryRun,
+    OpenBlocksCommandRegistryRun,
     OpenLayersCommandRegistryRun,
     OpenStyleManagerCommandRegistryRun,
     OpenTraitManagerCommandRegistryRun {}
@@ -50,6 +52,7 @@ export interface CommandRegistryStop
     ResizeCommandRegistryStop,
     CanvasMoveCommandRegistryStop,
     ExportTemplateCommandRegistryStop,
+    OpenBlocksCommandRegistryStop,
     OpenLayersCommandRegistryStop,
     OpenStyleManagerCommandRegistryStop,
     OpenTraitManagerCommandRegistryStop {}
