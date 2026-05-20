@@ -3,14 +3,17 @@ import Component from '../../dom_components/model/Component';
 import { ComponentsEvents } from '../../dom_components/types';
 import ComponentView from '../../dom_components/view/ComponentView';
 import StyleableModel, { StyleProps } from '../../domain_abstract/model/StyleableModel';
+import Editor from '../../editor';
 import { getUnitFromValue } from '../../utils/mixins';
 import Resizer, { RectDim, ResizerOptions } from '../../utils/Resizer';
-import { CommandObject } from './CommandAbstract';
+import type { CommandPublicFnFromHandler } from '../registryHelpers';
+import CommandAbstract from './CommandAbstract';
 
 export interface ComponentResizeOptions extends ResizerOptions {
   component: Component;
   componentView?: ComponentView;
   el?: HTMLElement;
+  force?: boolean;
   afterStart?: () => void;
   afterEnd?: () => void;
   /**
@@ -101,8 +104,25 @@ export enum ConvertUnitsToPx {
   perc = '%',
 }
 
-export default {
-  run(editor, _, options: ComponentResizeOptions) {
+export interface ResizeCommandRegistryRun {
+  'core:resize': CommandPublicFnFromHandler<CommandResize['run']>;
+  resize: CommandPublicFnFromHandler<CommandResize['run']>;
+}
+
+export interface ResizeCommandRegistryStop {
+  'core:resize': CommandPublicFnFromHandler<CommandResize['stop']>;
+  resize: CommandPublicFnFromHandler<CommandResize['stop']>;
+}
+
+export default class CommandResize extends CommandAbstract<
+  ComponentResizeOptions,
+  ComponentResizeOptions,
+  Resizer,
+  void
+> {
+  canvasResizer?: Resizer;
+
+  run(editor: Editor, _: any, options: ComponentResizeOptions): Resizer {
     const { Canvas, Utils, em } = editor;
     const canvasView = Canvas.getCanvasView();
     const pfx = em.config.stylePrefix || '';
@@ -225,13 +245,13 @@ export default {
         options.afterEnd?.();
       },
 
-      updateTarget: (_el, rect, options) => {
-        updateTarget(_el, rect, options);
+      updateTarget: (_el, rect, updateOptions) => {
+        updateTarget(_el, rect, updateOptions);
         if (!modelToStyle) {
           return;
         }
 
-        const { store, selectedHandler, config, resizer, event } = options;
+        const { store, selectedHandler, config, resizer, event } = updateOptions;
         const { keyHeight, keyWidth, autoHeight, autoWidth, unitWidth, unitHeight } = config;
         const onlyHeight = ['tc', 'bc'].indexOf(selectedHandler!) >= 0;
         const onlyWidth = ['cl', 'cr'].indexOf(selectedHandler!) >= 0;
@@ -298,21 +318,21 @@ export default {
 
     let { canvasResizer } = this;
 
-    // Create the resizer for the canvas if not yet created
     if (!canvasResizer) {
       this.canvasResizer = new Utils.Resizer(resizeOptions);
       canvasResizer = this.canvasResizer;
     }
 
+    canvasResizer = canvasResizer!;
     canvasResizer.setOptions(resizeOptions, true);
     canvasResizer.blur();
     canvasResizer.focus(el);
     return canvasResizer;
-  },
+  }
 
   stop() {
     this.canvasResizer?.blur();
-  },
+  }
 
   convertPxToUnit(props: ConvertPxToUnitProps): string {
     const { el, valuePx, unit, dpi = 96, roundDecimals = 3, isHeight, elComputedStyle } = props;
@@ -378,11 +398,5 @@ export default {
     }
 
     return `${+valueResult.toFixed(roundDecimals)}${untiResult}`;
-  },
-} as CommandObject<
-  ComponentResizeOptions,
-  {
-    canvasResizer?: Resizer;
-    convertPxToUnit: (props: ConvertPxToUnitProps) => string;
   }
->;
+}

@@ -8,6 +8,7 @@ import type {
 } from './view/CommandAbstract';
 import type { FullscreenCommandRegistryRun, FullscreenCommandRegistryStop } from './view/Fullscreen';
 import type { PreviewCommandRegistryRun, PreviewCommandRegistryStop } from './view/Preview';
+import type { ResizeCommandRegistryRun, ResizeCommandRegistryStop } from './view/Resize';
 
 type CommandRegistryHandler = (...args: any[]) => any;
 type CommandRegistryEntry<TRegistry, TId extends string> = TId extends keyof TRegistry
@@ -16,9 +17,15 @@ type CommandRegistryEntry<TRegistry, TId extends string> = TId extends keyof TRe
     : CommandRegistryHandler
   : CommandRegistryHandler;
 
-export interface CommandRegistryRun extends FullscreenCommandRegistryRun, PreviewCommandRegistryRun {}
+export interface CommandRegistryRun
+  extends FullscreenCommandRegistryRun,
+    PreviewCommandRegistryRun,
+    ResizeCommandRegistryRun {}
 
-export interface CommandRegistryStop extends FullscreenCommandRegistryStop, PreviewCommandRegistryStop {}
+export interface CommandRegistryStop
+  extends FullscreenCommandRegistryStop,
+    PreviewCommandRegistryStop,
+    ResizeCommandRegistryStop {}
 
 export type CommandRunKnownId = Extract<keyof CommandRegistryRun, string>;
 export type CommandStopKnownId = Extract<keyof CommandRegistryStop, string>;
