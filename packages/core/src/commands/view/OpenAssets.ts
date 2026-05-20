@@ -1,29 +1,53 @@
 import { isFunction } from 'underscore';
 import Asset from '../../asset_manager/model/Asset';
+import Editor from '../../editor';
 import { createEl } from '../../utils/dom';
-import { CommandObject } from './CommandAbstract';
+import type { CommandPublicFnFromHandler } from '../registryHelpers';
+import CommandAbstract from './CommandAbstract';
 
-export default {
-  open(content: string) {
+export interface OpenAssetsCommandRegistryRun {
+  'core:open-assets': CommandPublicFnFromHandler<CommandOpenAssets['run']>;
+  'open-assets': CommandPublicFnFromHandler<CommandOpenAssets['run']>;
+}
+
+export interface OpenAssetsCommandRegistryStop {
+  'core:open-assets': CommandPublicFnFromHandler<CommandOpenAssets['stop']>;
+  'open-assets': CommandPublicFnFromHandler<CommandOpenAssets['stop']>;
+}
+
+export default class CommandOpenAssets extends CommandAbstract {
+  title = '';
+  editor?: Editor;
+  am?: any;
+  rendered?: HTMLElement;
+
+  open(content: string | HTMLElement) {
     const { editor, title, config, am } = this;
+    if (!editor || !config || !am) return;
     const { custom } = config;
+
     if (isFunction(custom.open)) {
       return custom.open(am.__customData());
     }
+
     const { Modal } = editor;
-    Modal.open({ title, content }).onceClose(() => editor.stopCommand(this.id));
-  },
+    Modal.open({ title, content }).onceClose(() => editor.stopCommand(this.id as string));
+  }
 
   close() {
-    const { custom } = this.config;
-    if (isFunction(custom.close)) {
-      return custom.close(this.am.__customData());
-    }
-    const { Modal } = this.editor;
-    Modal && Modal.close();
-  },
+    const { config, am, editor } = this;
+    if (!config || !am || !editor) return;
+    const { custom } = config;
 
-  run(editor, sender, opts = {}) {
+    if (isFunction(custom.close)) {
+      return custom.close(am.__customData());
+    }
+
+    const { Modal } = editor;
+    Modal && Modal.close();
+  }
+
+  run(editor: Editor, sender: any, opts: any = {}) {
     const am = editor.AssetManager;
     const config = am.getConfig();
     const { types = [], accept, select } = opts;
@@ -59,18 +83,20 @@ export default {
         this.rendered = am.getContainer();
       }
 
-      if (accept) {
-        const uploadEl = this.rendered.querySelector(`input#${config.stylePrefix}uploadFile`);
+      const { rendered } = this;
+      if (accept && rendered) {
+        const uploadEl = rendered.querySelector(`input#${config.stylePrefix}uploadFile`);
         uploadEl && uploadEl.setAttribute('accept', accept);
       }
     }
 
-    this.open(this.rendered);
+    const { rendered } = this;
+    rendered && this.open(rendered);
     return this;
-  },
+  }
 
-  stop(editor) {
+  stop(editor: Editor) {
     this.editor = editor;
-    this.close(this.rendered);
-  },
-} as CommandObject<any, { [k: string]: any }>;
+    this.close();
+  }
+}

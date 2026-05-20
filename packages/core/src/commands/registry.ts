@@ -14,6 +14,7 @@ import type { PasteComponentCommandRegistryRun } from './view/PasteComponent';
 import type { CanvasMoveCommandRegistryRun, CanvasMoveCommandRegistryStop } from './view/CanvasMove';
 import type { CanvasClearCommandRegistryRun } from './view/CanvasClear';
 import type { ExportTemplateCommandRegistryRun, ExportTemplateCommandRegistryStop } from './view/ExportTemplate';
+import type { OpenAssetsCommandRegistryRun, OpenAssetsCommandRegistryStop } from './view/OpenAssets';
 import type { OpenLayersCommandRegistryRun, OpenLayersCommandRegistryStop } from './view/OpenLayers';
 import type { OpenBlocksCommandRegistryRun, OpenBlocksCommandRegistryStop } from './view/OpenBlocks';
 import type {
@@ -41,6 +42,7 @@ export interface CommandRegistryRun
     CanvasMoveCommandRegistryRun,
     CanvasClearCommandRegistryRun,
     ExportTemplateCommandRegistryRun,
+    OpenAssetsCommandRegistryRun,
     OpenBlocksCommandRegistryRun,
     OpenLayersCommandRegistryRun,
     OpenStyleManagerCommandRegistryRun,
@@ -52,6 +54,7 @@ export interface CommandRegistryStop
     ResizeCommandRegistryStop,
     CanvasMoveCommandRegistryStop,
     ExportTemplateCommandRegistryStop,
+    OpenAssetsCommandRegistryStop,
     OpenBlocksCommandRegistryStop,
     OpenLayersCommandRegistryStop,
     OpenStyleManagerCommandRegistryStop,
