@@ -17,6 +17,7 @@ import type { ExportTemplateCommandRegistryRun, ExportTemplateCommandRegistrySto
 import type { OpenAssetsCommandRegistryRun, OpenAssetsCommandRegistryStop } from './view/OpenAssets';
 import type { OpenLayersCommandRegistryRun, OpenLayersCommandRegistryStop } from './view/OpenLayers';
 import type { OpenBlocksCommandRegistryRun, OpenBlocksCommandRegistryStop } from './view/OpenBlocks';
+import type { MoveComponentCommandRegistryRun, MoveComponentCommandRegistryStop } from './view/MoveComponent';
 import type { ShowOffsetCommandRegistryRun, ShowOffsetCommandRegistryStop } from './view/ShowOffset';
 import type { SwitchVisibilityCommandRegistryRun, SwitchVisibilityCommandRegistryStop } from './view/SwitchVisibility';
 import type {
@@ -44,6 +45,7 @@ export interface CommandRegistryRun
     CanvasMoveCommandRegistryRun,
     CanvasClearCommandRegistryRun,
     ExportTemplateCommandRegistryRun,
+    MoveComponentCommandRegistryRun,
     OpenAssetsCommandRegistryRun,
     OpenBlocksCommandRegistryRun,
     OpenLayersCommandRegistryRun,
@@ -58,6 +60,7 @@ export interface CommandRegistryStop
     ResizeCommandRegistryStop,
     CanvasMoveCommandRegistryStop,
     ExportTemplateCommandRegistryStop,
+    MoveComponentCommandRegistryStop,
     OpenAssetsCommandRegistryStop,
     OpenBlocksCommandRegistryStop,
     OpenLayersCommandRegistryStop,
