@@ -1,34 +1,49 @@
 import { bindAll } from 'underscore';
 import { CanvasEvents } from '../../canvas/types';
+import Editor from '../../editor';
 import Dragger from '../../utils/Dragger';
 import { getKeyChar, off, on } from '../../utils/dom';
-import { CommandObject } from './CommandAbstract';
+import type { CommandPublicFnFromHandler } from '../registryHelpers';
+import CommandAbstract from './CommandAbstract';
 
-export default {
-  run(ed) {
+export interface CanvasMoveCommandRegistryRun {
+  'core:canvas-move': CommandPublicFnFromHandler<CommandCanvasMove['run']>;
+}
+
+export interface CanvasMoveCommandRegistryStop {
+  'core:canvas-move': CommandPublicFnFromHandler<CommandCanvasMove['stop']>;
+}
+
+export default class CommandCanvasMove extends CommandAbstract {
+  editor!: Editor;
+  canvasModel: any;
+  dragger?: Dragger;
+
+  run(ed: Editor) {
     bindAll(this, 'onKeyUp', 'enableDragger', 'disableDragger');
     this.editor = ed;
     this.canvasModel = this.canvas.getCanvasView().model;
-    this.toggleMove(1);
-  },
-  stop(ed) {
+    this.toggleMove(true);
+  }
+
+  stop() {
     this.toggleMove();
-    this.disableDragger();
-  },
+    this.disableDragger(new MouseEvent('mouseup'));
+  }
 
   onKeyUp(ev: KeyboardEvent) {
     if (getKeyChar(ev) === ' ') {
-      this.editor.stopCommand(this.id);
+      this.editor.stopCommand(this.id as string);
     }
-  },
+  }
 
   enableDragger(ev: Event) {
-    this.toggleDragger(1, ev);
-  },
+    this.toggleDragger(true, ev);
+  }
 
-  disableDragger(ev: Event) {
-    this.toggleDragger(0, ev);
-  },
+  disableDragger(ev?: Event) {
+    this.toggleDragger(false, ev as Event);
+  }
 
   toggleDragger(enable: boolean, ev: Event) {
     const { canvasModel, em } = this;
@@ -47,23 +62,23 @@ export default {
         setPosition({ x, y }) {
           canvasModel.set({ x, y });
         },
-        onStart(ev, dragger) {
+        onStart(_ev, dragger) {
           em.trigger(CanvasEvents.moveStart, dragger);
         },
-        onDrag(ev, dragger) {
+        onDrag(_ev, dragger) {
           em.trigger(CanvasEvents.move, dragger);
         },
-        onEnd(ev, dragger) {
+        onEnd(_ev, dragger) {
           em.trigger(CanvasEvents.moveEnd, dragger);
         },
       });
       this.dragger = dragger;
     }
 
-    enable ? dragger.start(ev) : dragger.stop();
-  },
+    enable ? dragger!.start(ev) : dragger!.stop(ev);
+  }
 
-  toggleMove(enable: boolean) {
+  toggleMove(enable = false) {
     const { ppfx } = this;
     const methodCls = enable ? 'add' : 'remove';
     const methodEv = enable ? 'on' : 'off';
@@ -75,10 +90,5 @@ export default {
     methodsEv[methodEv](document, 'keyup', this.onKeyUp);
     methodsEv[methodEv](canvas, 'mousedown', this.enableDragger);
     methodsEv[methodEv](document, 'mouseup', this.disableDragger);
-  },
-} as CommandObject<
-  any,
-  {
-    [key: string]: any;
   }
->;
+}

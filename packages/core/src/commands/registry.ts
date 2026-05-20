@@ -11,6 +11,7 @@ import type { PreviewCommandRegistryRun, PreviewCommandRegistryStop } from './vi
 import type { ResizeCommandRegistryRun, ResizeCommandRegistryStop } from './view/Resize';
 import type { CopyComponentCommandRegistryRun } from './view/CopyComponent';
 import type { PasteComponentCommandRegistryRun } from './view/PasteComponent';
+import type { CanvasMoveCommandRegistryRun, CanvasMoveCommandRegistryStop } from './view/CanvasMove';
 
 type CommandRegistryHandler = (...args: any[]) => any;
 type CommandRegistryEntry<TRegistry, TId extends string> = TId extends keyof TRegistry
@@ -24,12 +25,14 @@ export interface CommandRegistryRun
     PreviewCommandRegistryRun,
     ResizeCommandRegistryRun,
     CopyComponentCommandRegistryRun,
-    PasteComponentCommandRegistryRun {}
+    PasteComponentCommandRegistryRun,
+    CanvasMoveCommandRegistryRun {}
 
 export interface CommandRegistryStop
   extends FullscreenCommandRegistryStop,
     PreviewCommandRegistryStop,
-    ResizeCommandRegistryStop {}
+    ResizeCommandRegistryStop,
+    CanvasMoveCommandRegistryStop {}
 
 export type CommandRunKnownId = Extract<keyof CommandRegistryRun, string>;
 export type CommandStopKnownId = Extract<keyof CommandRegistryStop, string>;
