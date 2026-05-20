@@ -4,28 +4,63 @@ import Editor from '../../editor';
 import EditorModel from '../../editor/model/Editor';
 import CommandsEvents, { type CommandCallEventData, type CommandEventData } from '../types';
 
-interface ICommand<O extends ObjectAny = any> {
-  run?: CommandAbstract<O>['run'];
-  stop?: CommandAbstract<O>['stop'];
+interface ICommand<TRunOptions = any, TStopOptions = TRunOptions, TRunResult = any, TStopResult = any> {
+  run?: CommandAbstract<TRunOptions, TStopOptions, TRunResult, TStopResult>['run'];
+  stop?: CommandAbstract<TRunOptions, TStopOptions, TRunResult, TStopResult>['stop'];
   id?: string;
+  noStop?: boolean;
+  initialize?: unknown;
   [key: string]: unknown;
 }
 
-export type CommandFunction<O extends ObjectAny = any> = CommandAbstract<O>['run'];
+export type CommandFunction<TRunOptions = any, TRunResult = any> = CommandAbstract<
+  TRunOptions,
+  any,
+  TRunResult,
+  any
+>['run'];
 
-export type Command = CommandObject | CommandFunction;
+export interface CommandConstructor<
+  TRunOptions = any,
+  TStopOptions = TRunOptions,
+  TRunResult = any,
+  TStopResult = any,
+> {
+  new (o: any): CommandAbstract<TRunOptions, TStopOptions, TRunResult, TStopResult>;
+  prototype: CommandAbstract<TRunOptions, TStopOptions, TRunResult, TStopResult>;
+}
+
+export type Command = CommandObject<any, ObjectAny, any, any, any> | CommandFunction | CommandConstructor;
+export type CommandStored = CommandConstructor | CommandAbstract;
 
 export type CommandOptions = Record<string, any>;
 
-export type CommandObject<O extends ObjectAny = any, T extends ObjectAny = {}> = ICommand<O> &
+export type CommandObject<
+  TRunOptions = any,
+  T extends ObjectAny = {},
+  TStopOptions = TRunOptions,
+  TRunResult = any,
+  TStopResult = any,
+> = ICommand<TRunOptions, TStopOptions, TRunResult, TStopResult> &
   T &
-  ThisType<T & CommandAbstract<O>>;
+  ThisType<T & CommandAbstract<TRunOptions, TStopOptions, TRunResult, TStopResult>>;
 
-export function defineCommand<O extends ObjectAny = any, T extends ObjectAny = {}>(def: CommandObject<O, T>) {
+export function defineCommand<
+  TRunOptions = any,
+  T extends ObjectAny = {},
+  TStopOptions = TRunOptions,
+  TRunResult = any,
+  TStopResult = any,
+>(def: CommandObject<TRunOptions, T, TStopOptions, TRunResult, TStopResult>) {
   return def;
 }
 
-export default class CommandAbstract<O extends ObjectAny = any> extends Model {
+export default class CommandAbstract<
+  TRunOptions = any,
+  TStopOptions = TRunOptions,
+  TRunResult = any,
+  TStopResult = any,
+> extends Model {
   config: any;
   em: EditorModel;
   pfx: string;
@@ -109,8 +144,9 @@ export default class CommandAbstract<O extends ObjectAny = any> extends Model {
    * @param  {Object}  [options={}] Options
    * @private
    * */
-  callRun(editor: Editor, options: any = {}) {
+  callRun(editor: Editor, opts: TRunOptions = {} as TRunOptions) {
     const { id } = this;
+    const options = opts as CommandOptions;
     editor.trigger(`${CommandsEvents.runBeforeCommand}${id}`, { options });
 
     if (options.abort) {
@@ -119,7 +155,7 @@ export default class CommandAbstract<O extends ObjectAny = any> extends Model {
     }
 
     const sender = options.sender || editor;
-    const result = this.run(editor, sender, options);
+    const result = this.run(editor, sender, options as TRunOptions);
     const data: CommandEventData = { id, result, options };
     const dataCall: CommandCallEventData = { ...data, type: 'run' };
 
@@ -141,11 +177,12 @@ export default class CommandAbstract<O extends ObjectAny = any> extends Model {
    * @param  {Object}  [options={}] Options
    * @private
    * */
-  callStop(editor: Editor, options: any = {}) {
+  callStop(editor: Editor, opts: TStopOptions = {} as TStopOptions) {
     const { id } = this;
+    const options = opts as CommandOptions;
     const sender = options.sender || editor;
     editor.trigger(`${CommandsEvents.stopBeforeCommand}${id}`, { options });
-    const result = this.stop(editor, sender, options);
+    const result = this.stop(editor, sender, options as TStopOptions);
     const data: CommandEventData = { id, result, options };
     const dataCall: CommandCallEventData = { ...data, type: 'stop' };
     delete editor.Commands.active[id];
@@ -169,7 +206,9 @@ export default class CommandAbstract<O extends ObjectAny = any> extends Model {
    * @param  {Object}  sender  Button sender
    * @private
    * */
-  run(em: Editor, sender: any, options: O) {}
+  run(em: Editor, sender: any, options: TRunOptions): TRunResult {
+    return undefined as TRunResult;
+  }
 
   /**
    * Method that stop command
@@ -177,5 +216,7 @@ export default class CommandAbstract<O extends ObjectAny = any> extends Model {
    * @param  {Object}  sender  Button sender
    * @private
    * */
-  stop(em: Editor, sender: any, options: O) {}
+  stop(em: Editor, sender: any, options: TStopOptions): TStopResult {
+    return undefined as TStopResult;
+  }
 }

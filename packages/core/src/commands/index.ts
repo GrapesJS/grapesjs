@@ -36,15 +36,31 @@
  */
 
 import { isFunction, includes } from 'underscore';
-import CommandAbstract, { Command, CommandOptions, CommandObject, CommandFunction } from './view/CommandAbstract';
+import CommandAbstract, {
+  Command,
+  CommandConstructor,
+  CommandOptions,
+  CommandStored,
+} from './view/CommandAbstract';
 import defConfig, { CommandsConfig } from './config/config';
 import { Module } from '../abstract';
 import Component from '../dom_components/model/Component';
 import { ComponentsEvents } from '../dom_components/types';
 import type Editor from '../editor/model/Editor';
 import type { ObjectAny } from '../common';
+import type {
+  CommandDefinitionById,
+  CommandObjectById,
+  CommandRunArgs,
+  CommandRunResult,
+  CommandStopArgs,
+  CommandStopResult,
+} from './registry';
 import CommandsEvents from './types';
 export type { CommandEvent } from './types';
+
+const isCommandConstructor = (command: Command): command is CommandConstructor =>
+  isFunction(command) && (command === CommandAbstract || command.prototype instanceof CommandAbstract);
 
 const commandsDef = [
   ['preview', 'Preview', 'preview'],
@@ -99,7 +115,7 @@ export const getOnComponentDragEnd =
 export default class CommandsModule extends Module<CommandsConfig & { pStylePrefix?: string }> {
   CommandAbstract = CommandAbstract;
   defaultCommands: Record<string, Command> = {};
-  commands: Record<string, CommandObject> = {};
+  commands: Record<string, CommandStored> = {};
   active: Record<string, any> = {};
   events = CommandsEvents;
 
@@ -119,7 +135,7 @@ export default class CommandsModule extends Module<CommandsConfig & { pStylePref
     // Load commands passed via configuration
     Object.keys(config.defaults!).forEach((k) => {
       const obj = config.defaults![k];
-      if (obj.id) this.add(obj.id, obj);
+      if (obj.id) this.add(obj.id, obj as CommandDefinitionById<typeof obj.id>);
     });
 
     defaultCommands['tlb-delete'] = {
@@ -180,7 +196,7 @@ export default class CommandsModule extends Module<CommandsConfig & { pStylePref
             //sel.set('status', 'freezed');
           }
 
-          const cmdMove = ed.Commands.get('move-comp')!;
+          const cmdMove = ed.Commands.get('move-comp') as any;
           cmdMove.onStart = onStart;
           cmdMove.onDrag = onDrag;
           cmdMove.onEndMoveFromModel = onEnd;
@@ -237,8 +253,19 @@ export default class CommandsModule extends Module<CommandsConfig & { pStylePref
    * // As a function
    * commands.add('myCommand2', editor => { ... });
    * */
-  add<T extends ObjectAny = {}>(id: string, command: CommandFunction | CommandObject<any, T>) {
-    let result: CommandObject = isFunction(command) ? { run: command } : command;
+  add<const TId extends string, T extends ObjectAny = {}>(id: TId, command: CommandDefinitionById<TId, T>) {
+    if (isCommandConstructor(command)) {
+      const { prototype } = command;
+      const noStop = prototype.stop === CommandAbstract.prototype.stop;
+
+      prototype.noStop = noStop;
+      prototype.id = id;
+      this.commands[id] = command;
+
+      return this;
+    }
+
+    let result = (isFunction(command) ? { run: command } : command) as CommandObjectById<string, T>;
 
     if (!result.stop) {
       result.noStop = true;
@@ -247,7 +274,7 @@ export default class CommandsModule extends Module<CommandsConfig & { pStylePref
     delete result.initialize;
 
     result.id = id;
-    this.commands[id] = CommandAbstract.extend(result);
+    this.commands[id] = CommandAbstract.extend(result) as CommandConstructor;
 
     return this;
   }
@@ -260,8 +287,8 @@ export default class CommandsModule extends Module<CommandsConfig & { pStylePref
    * var myCommand = commands.get('myCommand');
    * myCommand.run();
    * */
-  get(id: string): CommandObject | undefined {
-    let command: any = this.commands[id];
+  get(id: string): CommandAbstract | undefined {
+    let command = this.commands[id];
 
     if (isFunction(command)) {
       command = new command(this.config);
@@ -285,7 +312,7 @@ export default class CommandsModule extends Module<CommandsConfig & { pStylePref
    *  }
    * });
    * */
-  extend(id: string, cmd: CommandObject = {}) {
+  extend<const TId extends string>(id: TId, cmd: CommandObjectById<TId, ObjectAny> = {} as CommandObjectById<TId, ObjectAny>) {
     const command = this.get(id);
 
     if (command) {
@@ -327,8 +354,8 @@ export default class CommandsModule extends Module<CommandsConfig & { pStylePref
    * @example
    * commands.run('myCommand', { someOption: 1 });
    */
-  run(id: string, options: CommandOptions = {}) {
-    return this.runCommand(this.get(id), options);
+  run<const TId extends string>(id: TId, ...args: CommandRunArgs<TId>): CommandRunResult<TId> {
+    return this.runCommand(this.get(id), args[0] as CommandOptions) as CommandRunResult<TId>;
   }
 
   /**
@@ -339,8 +366,8 @@ export default class CommandsModule extends Module<CommandsConfig & { pStylePref
    * @example
    * commands.stop('myCommand', { someOption: 1 });
    */
-  stop(id: string, options: CommandOptions = {}) {
-    return this.stopCommand(this.get(id), options);
+  stop<const TId extends string>(id: TId, ...args: CommandStopArgs<TId>): CommandStopResult<TId> {
+    return this.stopCommand(this.get(id), args[0] as CommandOptions) as CommandStopResult<TId>;
   }
 
   /**
@@ -380,7 +407,7 @@ export default class CommandsModule extends Module<CommandsConfig & { pStylePref
    * @return {*} Result of the command
    * @private
    */
-  runCommand(command?: CommandObject, options: CommandOptions = {}) {
+  runCommand(command?: CommandAbstract, options: CommandOptions = {}) {
     let result;
 
     if (command?.run) {
@@ -405,7 +432,7 @@ export default class CommandsModule extends Module<CommandsConfig & { pStylePref
    * @return {*} Result of the command
    * @private
    */
-  stopCommand(command?: CommandObject, options: CommandOptions = {}) {
+  stopCommand(command?: CommandAbstract, options: CommandOptions = {}) {
     let result;
 
     if (command?.run) {
@@ -429,9 +456,9 @@ export default class CommandsModule extends Module<CommandsConfig & { pStylePref
    * @return {Command}
    * @private
    * */
-  create(command: CommandObject) {
+  create(command: CommandObjectById<string, ObjectAny>) {
     if (!command.stop) command.noStop = true;
-    const cmd = CommandAbstract.extend(command);
+    const cmd = CommandAbstract.extend(command) as CommandConstructor;
     return new cmd(this.config);
   }
 

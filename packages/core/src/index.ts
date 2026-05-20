@@ -98,6 +98,7 @@ export const grapesjs = {
  */
 export type { CategoryProperties as BlockCategoryProperties } from './abstract/ModuleCategory';
 export type { ComponentDragEventProps } from './commands/view/ComponentDrag';
+export type { CommandRegistryRun, CommandRegistryStop } from './commands/registry';
 
 // Exports for TS
 export type { default as Asset } from './asset_manager/model/Asset';

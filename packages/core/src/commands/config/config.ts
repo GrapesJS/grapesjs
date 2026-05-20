@@ -1,9 +1,14 @@
-import type { CommandObject, CommandOptions } from '../view/CommandAbstract';
+import type { CommandObject } from '../view/CommandAbstract';
+import type { CommandKnownId, CommandRunOptions, CommandStopOptions } from '../registry';
 
-interface CommandConfigDefaultOptions {
-  run?: (options: CommandOptions) => CommandOptions;
-  stop?: (options: CommandOptions) => CommandOptions;
+export interface CommandConfigDefaultOptions<TId extends string = string> {
+  run?: (options: CommandRunOptions<TId>) => CommandRunOptions<TId>;
+  stop?: (options: CommandStopOptions<TId>) => CommandStopOptions<TId>;
 }
+
+export type CommandsDefaultOptions = {
+  [TId in CommandKnownId]?: CommandConfigDefaultOptions<TId>;
+} & Record<string, CommandConfigDefaultOptions>;
 
 export interface CommandsConfig {
   /**
@@ -50,7 +55,7 @@ export interface CommandsConfig {
    *  }
    * }
    */
-  defaultOptions?: Record<string, CommandConfigDefaultOptions>;
+  defaultOptions?: CommandsDefaultOptions;
 }
 
 const config: () => CommandsConfig = () => ({

@@ -48,6 +48,7 @@ import BlockManager from '../block_manager';
 import CanvasModule from '../canvas';
 import CodeManagerModule from '../code_manager';
 import CommandsModule from '../commands';
+import type { CommandRunArgs, CommandRunResult, CommandStopArgs, CommandStopResult } from '../commands/registry';
 import { AddOptions, EventHandler } from '../common';
 import CssComposer from '../css_composer';
 import CssRule from '../css_composer/model/CssRule';
@@ -498,8 +499,8 @@ export default class Editor implements IBaseModule<EditorConfig> {
    * @example
    * editor.runCommand('myCommand', {someValue: 1});
    */
-  runCommand(id: string, options: Record<string, unknown> = {}) {
-    return this.Commands.run(id, options);
+  runCommand<const TId extends string>(id: TId, ...args: CommandRunArgs<TId>): CommandRunResult<TId> {
+    return this.Commands.run(id, ...(args as any)) as CommandRunResult<TId>;
   }
 
   /**
@@ -510,8 +511,8 @@ export default class Editor implements IBaseModule<EditorConfig> {
    * @example
    * editor.stopCommand('myCommand', {someValue: 1});
    */
-  stopCommand(id: string, options: Record<string, unknown> = {}) {
-    return this.Commands.stop(id, options);
+  stopCommand<const TId extends string>(id: TId, ...args: CommandStopArgs<TId>): CommandStopResult<TId> {
+    return this.Commands.stop(id, ...(args as any)) as CommandStopResult<TId>;
   }
 
   /**
