@@ -167,7 +167,7 @@ export const domToParsedNode = (node: Node): ParsedNodeMeta => {
   return parsedNode;
 };
 
-export const domRootToFragment = (root: HTMLElement): ParsedNodeMeta => ({
+export const domRootToFragmentParsedNode = (root: HTMLElement): ParsedNodeMeta => ({
   nodeType: ParsedNodeType.fragment,
   __domNode: root,
   childNodes: getDomChildNodes(root).map((node) => domToParsedNode(node)),

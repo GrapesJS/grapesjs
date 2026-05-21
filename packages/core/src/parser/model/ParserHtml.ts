@@ -20,7 +20,7 @@ import {
   createElementNode,
   createFragmentRoot,
   domDocumentToParsedNode,
-  domRootToFragment,
+  domRootToFragmentParsedNode,
   findChildElement,
   getNodeChildNodes,
   getNodeTextContent,
@@ -494,7 +494,9 @@ const ParserHtml = (em?: EditorModel, config: ParserConfig & { returnArray?: boo
       const parseRes = isFunction(cf.parserHtml) ? cf.parserHtml(input, options) : BrowserParserHtml(input, options);
 
       return {
-        root: asDocument ? domDocumentToParsedNode(parseRes as Document) : domRootToFragment(parseRes as HTMLElement),
+        root: asDocument
+          ? domDocumentToParsedNode(parseRes as Document)
+          : domRootToFragmentParsedNode(parseRes as HTMLElement),
         isParsedMode: false,
       };
     },
