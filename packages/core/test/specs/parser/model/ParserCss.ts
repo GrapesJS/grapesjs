@@ -17,12 +17,12 @@ export const CSS_BG_OBJ = {
 };
 
 describe('ParserCss', () => {
-  let obj: ReturnType<typeof ParserCss>;
+  let obj: ParserCss;
   let em: EditorModel;
 
   beforeEach(() => {
     em = new EditorModel({});
-    obj = ParserCss(em, {});
+    obj = new ParserCss(em, {});
   });
 
   afterEach(() => {
@@ -466,7 +466,7 @@ describe('ParserCss', () => {
       selectors: ['test1'],
       style: { color: 'blue' },
     };
-    obj = ParserCss(em, {
+    obj = new ParserCss(em, {
       parserCss: () => [result],
     });
     expect(obj.parse(str)).toEqual([result]);

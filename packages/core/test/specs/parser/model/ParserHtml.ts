@@ -438,7 +438,7 @@ describe('ParserHtml', () => {
         style: { color: 'blue' },
       },
     ];
-    const res = obj.parse(str, ParserCss());
+    const res = obj.parse(str, new ParserCss());
     expect(res.html).toEqual(resHtml);
     expect(res.css).toEqual(resCss);
   });
@@ -458,7 +458,7 @@ describe('ParserHtml', () => {
       <div>a div</div>
     `;
 
-    const css = obj.parse(str, ParserCss()).css || [];
+    const css = obj.parse(str, new ParserCss()).css || [];
     expect(css).toHaveLength(2);
     expect(css[0]).toEqual({
       selectors: [],
@@ -1271,7 +1271,7 @@ describe('ParserHtml', () => {
         },
       ]);
 
-      expect(obj.parse('', ParserCss(), { parserCode: 'custom-html' })).toEqual({
+      expect(obj.parse('', new ParserCss(), { parserCode: 'custom-html' })).toEqual({
         html: [
           {
             tagName: 'a',
