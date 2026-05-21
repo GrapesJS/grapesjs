@@ -125,23 +125,23 @@ export const domDocumentToParsedNode = (doc: Document): ParsedNodeMeta => ({
 });
 
 export const domToParsedNode = (node: Node): ParsedNodeMeta => {
-  if (node.nodeType === ParsedNodeType.document) {
-    return domDocumentToParsedNode(node as Document);
-  }
+  const { nodeType } = node;
+  if (nodeType === ParsedNodeType.document) return domDocumentToParsedNode(node as Document);
 
+  const el = node as HTMLElement;
   const parsedNode: ParsedNodeMeta = {
-    nodeType: node.nodeType,
+    nodeType,
+    tagName: el.tagName || '',
+    namespaceURI: el.namespaceURI || undefined,
     __domNode: node,
   };
 
-  if (node.nodeType === ParsedNodeType.text || node.nodeType === ParsedNodeType.comment) {
+  if (nodeType === ParsedNodeType.text || nodeType === ParsedNodeType.comment) {
     parsedNode.textContent = node.textContent ?? '';
   }
 
-  if (node.nodeType === ParsedNodeType.element) {
+  if (nodeType === ParsedNodeType.element) {
     const el = node as HTMLElement;
-    parsedNode.tagName = el.tagName || '';
-    parsedNode.namespaceURI = el.namespaceURI || undefined;
 
     const attrs = el.attributes || [];
     if (attrs.length) {
