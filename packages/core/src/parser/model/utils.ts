@@ -114,7 +114,7 @@ export const sanitizeNode = (node: ParsedNodeMeta, opts: HTMLParserOptions) => {
     delete node.attributes;
   }
 
-  each(getNodeChildNodes(node), (child) => sanitizeNode(child, opts));
+  getNodeChildNodes(node).forEach((child) => sanitizeNode(child, opts));
 };
 
 export const domDocumentToParsedNode = (doc: Document): ParsedNodeMeta => ({
@@ -182,9 +182,7 @@ export const normalizeDocumentRoot = (nodes: ParsedNode[]) => {
     return documentNode;
   }
 
-  const htmlNode = flatNodes.find(
-    (node) => node.nodeType === ParsedNodeType.element && getNodeTagName(node) === 'html',
-  );
+  const htmlNode = flatNodes.find((node) => getNodeTagName(node) === 'html');
   const documentRoot: ParsedNodeMeta = {
     nodeType: ParsedNodeType.document,
     childNodes: [],
@@ -202,12 +200,8 @@ export const normalizeDocumentRoot = (nodes: ParsedNode[]) => {
   }
 
   const remaining = [...flatNodes];
-  const headIndex = remaining.findIndex(
-    (node) => node.nodeType === ParsedNodeType.element && getNodeTagName(node) === 'head',
-  );
-  const bodyIndex = remaining.findIndex(
-    (node) => node.nodeType === ParsedNodeType.element && getNodeTagName(node) === 'body',
-  );
+  const headIndex = remaining.findIndex((node) => getNodeTagName(node) === 'head');
+  const bodyIndex = remaining.findIndex((node) => getNodeTagName(node) === 'body');
   const headNode = headIndex >= 0 ? remaining.splice(headIndex, 1)[0] : undefined;
   const bodyNode =
     bodyIndex >= 0

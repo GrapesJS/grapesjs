@@ -12,7 +12,7 @@ export interface ParsedCssRule {
 }
 
 export interface ParsedNode {
-  nodeType: number;
+  nodeType?: number;
   tagName?: string;
   namespaceURI?: string;
   attributes?: Record<string, string>;
