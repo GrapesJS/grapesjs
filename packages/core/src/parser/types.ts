@@ -20,6 +20,25 @@ export interface ParsedNode {
   textContent?: string;
 }
 
+export interface ParsedNodeMeta extends ParsedNode {
+  __boolAttributes?: string[];
+  __doctype?: string;
+  __domNode?: any;
+  __selfClosing?: boolean;
+}
+
+export enum ParsedNodeType {
+  element = 1,
+  text = 3,
+  comment = 8,
+  document = 9,
+  fragment = 11,
+}
+
+export enum ParsedNodeNamespace {
+  html = 'http://www.w3.org/1999/xhtml',
+}
+
 export type ParsedElementNode = ParsedNode & { tagName: string };
 
 export interface CustomParserCodeContext {

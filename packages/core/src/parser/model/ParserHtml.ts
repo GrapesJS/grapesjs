@@ -2,13 +2,34 @@ import { each, isArray, isFunction, isUndefined, result } from 'underscore';
 import { ObjectAny, ObjectStrings } from '../../common';
 import { ComponentDefinitionDefined, ComponentStackItem } from '../../dom_components/model/types';
 import EditorModel from '../../editor/model/Editor';
-import { HTMLParseResult, HTMLParserOptions, ParseNodeOptions, ParserConfig } from '../config/config';
-import BrowserParserHtml from './BrowserParserHtml';
 import { doctypeToString, processDataGjsAttributeHyphen } from '../../utils/dom';
 import { isDef } from '../../utils/mixins';
-import { ParserEvents } from '../types';
+import { HTMLParserOptions, ParseNodeOptions, ParserConfig } from '../config/config';
+import {
+  HTMLParseResult,
+  ParsedElementNode,
+  ParsedNode,
+  ParsedNodeMeta,
+  ParsedNodeNamespace,
+  ParsedNodeType,
+  ParserEvents,
+  SyntheticElementCtor,
+} from '../types';
+import BrowserParserHtml from './BrowserParserHtml';
+import { getSyntheticElementCtor } from './SyntheticElement';
 
 const modelAttrStart = 'data-gjs-';
+
+interface ParserHtmlInternalOptions extends ParseNodeOptions {
+  __parsedMode?: boolean;
+  __syntheticElementCtor?: SyntheticElementCtor;
+}
+
+const hasOwn = (obj: object, key: string) => Object.prototype.hasOwnProperty.call(obj, key);
+
+const getNodeChildNodes = (node: ParsedNodeMeta) => node.childNodes || [];
+const getNodeTagName = (node: ParsedNodeMeta) => `${node.tagName || ''}`.toLowerCase();
+const getSourceNode = (node: ParsedNodeMeta) => node.__domNode || node;
 
 const ParserHtml = (em?: EditorModel, config: ParserConfig & { returnArray?: boolean } = {}) => {
   return {
@@ -50,7 +71,7 @@ const ParserHtml = (em?: EditorModel, config: ParserConfig & { returnArray?: boo
     shouldConvertAttributeValue(
       attribute: string,
       value: string | boolean,
-      node: HTMLElement,
+      node: HTMLElement | ParsedElementNode,
       convertAttributeValues: HTMLParserOptions['convertAttributeValues'],
     ) {
       if (!convertAttributeValues) {
@@ -156,31 +177,30 @@ const ParserHtml = (em?: EditorModel, config: ParserConfig & { returnArray?: boo
     },
 
     parseNodeAttr(
-      node: HTMLElement,
+      node: ParsedNodeMeta,
       modelResult?: ComponentDefinitionDefined,
       opts: HTMLParserOptions = config.optionsHtml || {},
     ) {
       const model = modelResult || {};
-      const attrs = node.attributes || [];
-      const attrsLen = attrs.length;
+      const attrs = node.attributes || {};
       const convertHyphens = !!opts.convertDataGjsAttributesHyphens;
       const { convertAttributeValues } = opts;
       const defaults =
         (convertHyphens && !!model.type && result(em?.Components.getType(model.type)?.model.prototype, 'defaults')) ||
         {};
+      const sourceNode = getSourceNode(node) as HTMLElement | ParsedElementNode;
 
-      for (let i = 0; i < attrsLen; i++) {
-        let nodeName = attrs[i].nodeName;
-        let nodeValue: any = attrs[i].nodeValue!;
+      each(attrs, (attrValue, attrName) => {
+        let nodeValue: any = attrValue;
 
-        if (nodeName == 'style') {
-          model.style = this.parseStyle(nodeValue);
-        } else if (nodeName == 'class') {
-          model.classes = this.parseClass(nodeValue);
-        } else if (nodeName == 'contenteditable') {
-          continue;
-        } else if (nodeName.indexOf(this.modelAttrStart) === 0) {
-          const propsResult = this.getPropAttribute(nodeName, nodeValue);
+        if (attrName == 'style') {
+          model.style = this.parseStyle(`${nodeValue}`);
+        } else if (attrName == 'class') {
+          model.classes = this.parseClass(`${nodeValue}`);
+        } else if (attrName == 'contenteditable') {
+          return;
+        } else if (attrName.indexOf(this.modelAttrStart) === 0) {
+          const propsResult = this.getPropAttribute(attrName, `${nodeValue}`);
           let resolvedName = propsResult.name;
           if (convertHyphens && !(resolvedName in defaults)) {
             const transformed = processDataGjsAttributeHyphen(resolvedName);
@@ -189,12 +209,14 @@ const ParserHtml = (em?: EditorModel, config: ParserConfig & { returnArray?: boo
 
           model[resolvedName] = propsResult.value;
         } else {
-          // @ts-ignore Check for attributes from props (eg. required, disabled)
-          if (nodeValue === '' && node[nodeName] === true) {
+          if (
+            nodeValue === '' &&
+            ((node.__domNode as any)?.[attrName] === true || node.__boolAttributes?.includes(attrName))
+          ) {
             nodeValue = true;
           }
 
-          if (this.shouldConvertAttributeValue(nodeName, nodeValue, node, convertAttributeValues)) {
+          if (this.shouldConvertAttributeValue(attrName, nodeValue, sourceNode, convertAttributeValues)) {
             nodeValue = this.parseAttributeValue(nodeValue);
           }
 
@@ -202,19 +224,19 @@ const ParserHtml = (em?: EditorModel, config: ParserConfig & { returnArray?: boo
             model.attributes = {};
           }
 
-          model.attributes[nodeName] = nodeValue;
+          model.attributes[attrName] = nodeValue;
         }
-      }
+      });
 
       return model;
     },
 
-    detectNode(node: HTMLElement, opts: ParseNodeOptions = {}) {
+    detectNode(node: ParsedNodeMeta, opts: ParserHtmlInternalOptions = {}) {
       const { compTypes } = this;
       let result: ComponentDefinitionDefined = {};
 
       if (compTypes) {
-        const type = node.getAttribute?.(`${this.modelAttrStart}type`);
+        const type = node.attributes?.[`${this.modelAttrStart}type`];
 
         // If the type is already defined, use it
         if (type) {
@@ -223,7 +245,16 @@ const ParserHtml = (em?: EditorModel, config: ParserConfig & { returnArray?: boo
           // Find the component type
           for (let i = 0; i < compTypes.length; i++) {
             const compType = compTypes[i];
-            let obj = compType.model.isComponent(node, opts);
+            const { model } = compType;
+            let obj;
+
+            if (opts.__parsedMode) {
+              obj = model.isParsedNode
+                ? model.isParsedNode(node, opts)
+                : model.isComponent(this.__getSyntheticNode(node, opts) as any, opts);
+            } else {
+              obj = model.isComponent(getSourceNode(node), opts);
+            }
 
             if (obj) {
               if (typeof obj !== 'object') {
@@ -239,21 +270,21 @@ const ParserHtml = (em?: EditorModel, config: ParserConfig & { returnArray?: boo
       return result;
     },
 
-    parseNode(node: HTMLElement, opts: ParseNodeOptions = {}) {
-      const nodes = (node as HTMLTemplateElement).content?.childNodes || node.childNodes;
+    parseNode(node: ParsedNodeMeta, opts: ParserHtmlInternalOptions = {}) {
+      const nodes = getNodeChildNodes(node);
       const nodesLen = nodes.length;
       let model = this.detectNode(node, opts);
 
       if (!model.tagName && model.tagName !== '') {
         const tag = node.tagName || '';
         const ns = node.namespaceURI || '';
-        model.tagName = tag && ns === 'http://www.w3.org/1999/xhtml' ? tag.toLowerCase() : tag;
+        model.tagName = tag && ns === ParsedNodeNamespace.html ? tag.toLowerCase() : tag;
       }
 
       model = this.parseNodeAttr(node, model, opts);
 
       // Check for custom void elements (valid in XML)
-      if (!nodesLen && `${node.outerHTML}`.slice(-2) === '/>') {
+      if (!nodesLen && node.__selfClosing) {
         model.void = true;
       }
 
@@ -264,11 +295,11 @@ const ParserHtml = (em?: EditorModel, config: ParserConfig & { returnArray?: boo
 
         // If there is only one child and it's a TEXTNODE
         // just make it content of the current node
-        if (nodesLen === 1 && firstChild.nodeType === 3) {
+        if (nodesLen === 1 && firstChild.nodeType === ParsedNodeType.text) {
           !model.type && (model.type = 'text');
           model.components = {
             type: 'textnode',
-            content: firstChild.nodeValue,
+            content: firstChild.textContent,
           };
         } else {
           model.components = this.parseNodes(node, {
@@ -313,13 +344,13 @@ const ParserHtml = (em?: EditorModel, config: ParserConfig & { returnArray?: boo
      * @param  {HTMLElement} el DOM element to traverse
      * @return {Array<Object>}
      */
-    parseNodes(el: HTMLElement, opts: ParseNodeOptions = {}) {
+    parseNodes(el: ParsedNodeMeta, opts: ParserHtmlInternalOptions = {}) {
       const result: ComponentDefinitionDefined[] = [];
-      const nodes = (el as HTMLTemplateElement).content?.childNodes || el.childNodes;
+      const nodes = getNodeChildNodes(el);
       const nodesLen = nodes.length;
 
       for (let i = 0; i < nodesLen; i++) {
-        const node = nodes[i] as HTMLElement;
+        const node = nodes[i];
         const nodePrev = result[result.length - 1];
         const model = this.parseNode(node, opts);
 
@@ -333,10 +364,10 @@ const ParserHtml = (em?: EditorModel, config: ParserConfig & { returnArray?: boo
           // Try to keep meaningful whitespaces when possible (#5984)
           // Ref: https://github.com/GrapesJS/grapesjs/pull/5719#discussion_r1518531999
           if (!opts.keepEmptyTextNodes) {
-            const content = node.nodeValue || '';
+            const content = node.textContent || '';
             const isFirstOrLast = i === 0 || i === nodesLen - 1;
-            const hasNewLive = content.includes('\n');
-            if (content != ' ' && !content.trim() && (isFirstOrLast || hasNewLive)) {
+            const hasNewLine = content.includes('\n');
+            if (content != ' ' && !content.trim() && (isFirstOrLast || hasNewLine)) {
               continue;
             }
           }
@@ -363,14 +394,15 @@ const ParserHtml = (em?: EditorModel, config: ParserConfig & { returnArray?: boo
       const conf = em?.get('Config') || {};
       const Parser = em?.Parser;
       const res: HTMLParseResult = { html: [] };
+      const parserCode = this.__getParserCodeId(opts);
       const preOptions = {
         ...config.optionsHtml,
-        // @ts-ignore Support previous `configParser.htmlType` option
-        htmlType: config.optionsHtml?.htmlType || config.htmlType,
+        htmlType: config.optionsHtml?.htmlType || (config as any).htmlType,
         ...opts,
       };
       const options = {
         ...preOptions,
+        parserCode,
         asDocument: this.__checkAsDocument(str, preOptions),
       };
       const cf = { ...config, ...options };
@@ -378,42 +410,28 @@ const ParserHtml = (em?: EditorModel, config: ParserConfig & { returnArray?: boo
       const inputOptions = { input: isFunction(preParser) ? preParser(str, { editor: em?.getEditor()! }) : str };
       Parser?.__emitEvent(ParserEvents.htmlBefore, inputOptions);
       const { input } = inputOptions;
-      const parseRes = isFunction(cf.parserHtml) ? cf.parserHtml(input, options) : BrowserParserHtml(input, options);
-      let root = parseRes as HTMLElement;
-      const docEl = parseRes as Document;
+      const parseRes = this.__parseInput(input, options, cf, parserCode);
+      const root = parseRes.root;
+      const parserConfig = Parser?.getConfig() || config;
+      const parseOptions: ParserHtmlInternalOptions = {
+        ...cf,
+        __parsedMode: parseRes.isParsedMode,
+        __syntheticElementCtor: getSyntheticElementCtor(parserConfig.customSyntheticElement),
+      };
 
-      if (asDocument) {
-        root = docEl.documentElement;
-        res.doctype = doctypeToString(docEl.doctype);
-      }
-
-      const scripts = root.querySelectorAll('script');
-      let i = scripts.length;
-
-      // Support previous `configMain.allowScripts` option
       const allowScripts = !isUndefined(conf.allowScripts) ? conf.allowScripts : options.allowScripts;
 
-      // Remove script tags
       if (!allowScripts) {
-        while (i--) scripts[i].parentNode?.removeChild(scripts[i]);
+        this.__removeElementNodes(root, 'script');
       }
 
-      // Remove unsafe attributes
       if (!options.allowUnsafeAttr || !options.allowUnsafeAttrValue) {
         this.__sanitizeNode(root, options);
       }
 
-      // Detach style tags and parse them
       if (parserCss) {
-        const styles = root.querySelectorAll('style');
-        let j = styles.length;
-        let styleStr = '';
-
-        while (j--) {
-          styleStr = styles[j].innerHTML + styleStr;
-          styles[j].parentNode?.removeChild(styles[j]);
-        }
-
+        const styleNodes = this.__removeElementNodes(root, 'style');
+        const styleStr = styleNodes.map((node) => this.__getNodeTextContent(node)).join('');
         if (styleStr) res.css = parserCss.parse(styleStr);
       }
 
@@ -421,12 +439,19 @@ const ParserHtml = (em?: EditorModel, config: ParserConfig & { returnArray?: boo
       let resHtml: HTMLParseResult['html'] = [];
 
       if (asDocument) {
-        res.head = this.parseNode(docEl.head, cf);
-        res.root = this.parseNodeAttr(root, undefined, cf);
-        resHtml = this.parseNode(docEl.body, cf);
+        const docNode: ParsedNodeMeta =
+          root.nodeType === ParsedNodeType.document ? root : this.__normalizeDocumentRoot(getNodeChildNodes(root));
+        const htmlNode = this.__findChildElement(docNode, 'html');
+        const headNode = htmlNode && this.__findChildElement(htmlNode, 'head');
+        const bodyNode = (htmlNode && this.__findChildElement(htmlNode, 'body')) || this.__createElementNode('body');
+
+        res.doctype = docNode.__doctype;
+        headNode && (res.head = this.parseNode(headNode, parseOptions));
+        htmlNode && (res.root = this.parseNodeAttr(htmlNode, undefined, parseOptions));
+        resHtml = this.parseNode(bodyNode, parseOptions);
       } else {
-        const result = this.parseNodes(root, cf);
-        // I have to keep it otherwise it breaks the DomComponents.addComponent (returns always array)
+        const result = this.parseNodes(root, parseOptions);
+        // Need this otherwise it breaks the DomComponents.addComponent (returns always array)
         resHtml = result.length === 1 && !cf.returnArray ? result[0] : result;
       }
 
@@ -436,18 +461,268 @@ const ParserHtml = (em?: EditorModel, config: ParserConfig & { returnArray?: boo
       return res;
     },
 
-    __sanitizeNode(node: HTMLElement, opts: HTMLParserOptions) {
-      const attrs = node.attributes || [];
-      const nodes = node.childNodes || [];
-      const toRemove: string[] = [];
-      each(attrs, (attr) => {
-        const name = attr.nodeName || '';
-        const value = attr.nodeValue || '';
-        !opts.allowUnsafeAttr && name.startsWith('on') && toRemove.push(name);
-        !opts.allowUnsafeAttrValue && value.startsWith('javascript:') && toRemove.push(name);
+    __getSyntheticNode(node: ParsedNodeMeta, opts: ParserHtmlInternalOptions) {
+      const parserConfig = em?.Parser?.getConfig() || config;
+      const SyntheticElement =
+        opts.__syntheticElementCtor || getSyntheticElementCtor(parserConfig.customSyntheticElement);
+      return new SyntheticElement(node);
+    },
+
+    __parseInput(input: string, options: HTMLParserOptions, cf: ParserConfig, parserCode: string) {
+      const codeParser = parserCode ? em?.Parser?.getParserCode(parserCode) : undefined;
+      const { asDocument } = options;
+
+      if (parserCode) {
+        if (!codeParser) throw new Error(`Parser code "${parserCode}" not found`);
+
+        const parsedNode = codeParser.parse(input, { editor: em?.getEditor()!, options });
+        const parsedNodes = isArray(parsedNode) ? parsedNode : [parsedNode];
+
+        return {
+          root: asDocument ? this.__normalizeDocumentRoot(parsedNodes) : this.__createFragmentRoot(parsedNodes),
+          isParsedMode: true,
+        };
+      }
+
+      const parseRes = isFunction(cf.parserHtml) ? cf.parserHtml(input, options) : BrowserParserHtml(input, options);
+
+      return {
+        root: asDocument
+          ? this.__domDocumentToParsedNode(parseRes as Document)
+          : this.__domRootToFragment(parseRes as HTMLElement),
+        isParsedMode: false,
+      };
+    },
+
+    __getParserCodeId(options: HTMLParserOptions) {
+      if (hasOwn(options, 'parserCode')) return options.parserCode || '';
+      return em?.Parser?.parserCode || config.parserCode || '';
+    },
+
+    __cloneParsedNode(node: ParsedNode): ParsedNodeMeta {
+      const cloned: ParsedNodeMeta = {
+        nodeType: node.nodeType,
+      };
+
+      node.tagName && (cloned.tagName = node.tagName);
+      node.namespaceURI && (cloned.namespaceURI = node.namespaceURI);
+      node.textContent !== undefined && (cloned.textContent = node.textContent);
+      node.attributes && (cloned.attributes = { ...node.attributes });
+      node.childNodes && (cloned.childNodes = node.childNodes.map((child) => this.__cloneParsedNode(child)));
+
+      const meta = node as ParsedNodeMeta & { doctype?: string; selfClosing?: boolean };
+      meta.__doctype && (cloned.__doctype = meta.__doctype);
+      meta.doctype && (cloned.__doctype = meta.doctype);
+      meta.__selfClosing && (cloned.__selfClosing = meta.__selfClosing);
+      meta.selfClosing && (cloned.__selfClosing = meta.selfClosing);
+      meta.__boolAttributes && (cloned.__boolAttributes = [...meta.__boolAttributes]);
+
+      return cloned;
+    },
+
+    __domRootToFragment(root: HTMLElement) {
+      return {
+        nodeType: ParsedNodeType.fragment,
+        __domNode: root,
+        childNodes: this.__getDomChildNodes(root).map((node) => this.__domToParsedNode(node)),
+      } as ParsedNodeMeta;
+    },
+
+    __domDocumentToParsedNode(doc: Document): ParsedNodeMeta {
+      return {
+        nodeType: ParsedNodeType.document,
+        __domNode: doc,
+        __doctype: doctypeToString(doc.doctype),
+        childNodes: doc.documentElement ? [this.__domToParsedNode(doc.documentElement)] : [],
+      };
+    },
+
+    __domToParsedNode(node: Node): ParsedNodeMeta {
+      if (node.nodeType === ParsedNodeType.document) {
+        return this.__domDocumentToParsedNode(node as Document);
+      }
+
+      const parsedNode: ParsedNodeMeta = {
+        nodeType: node.nodeType,
+        __domNode: node,
+      };
+
+      if (node.nodeType === ParsedNodeType.text || node.nodeType === ParsedNodeType.comment) {
+        parsedNode.textContent = node.textContent ?? '';
+      }
+
+      if (node.nodeType === ParsedNodeType.element) {
+        const el = node as HTMLElement;
+        parsedNode.tagName = el.tagName || '';
+        parsedNode.namespaceURI = el.namespaceURI || undefined;
+
+        const attrs = el.attributes || [];
+        if (attrs.length) {
+          parsedNode.attributes = {};
+        }
+
+        const boolAttributes: string[] = [];
+        for (let i = 0; i < attrs.length; i++) {
+          const attr = attrs[i];
+          parsedNode.attributes![attr.nodeName] = attr.nodeValue || '';
+          if (attr.nodeValue === '' && (el as any)[attr.nodeName] === true) {
+            boolAttributes.push(attr.nodeName);
+          }
+        }
+
+        boolAttributes.length && (parsedNode.__boolAttributes = boolAttributes);
+
+        const childNodes = this.__getDomChildNodes(el);
+        childNodes.length && (parsedNode.childNodes = childNodes.map((child) => this.__domToParsedNode(child)));
+        parsedNode.__selfClosing = `${el.outerHTML || ''}`.slice(-2) === '/>';
+      }
+
+      return parsedNode;
+    },
+
+    __getDomChildNodes(node: Node) {
+      const template = node as HTMLTemplateElement;
+      const childNodes = template.content?.childNodes || node.childNodes || [];
+      return Array.from(childNodes);
+    },
+
+    __createElementNode(tagName: string, childNodes: ParsedNodeMeta[] = []) {
+      return {
+        nodeType: ParsedNodeType.element,
+        tagName,
+        namespaceURI: ParsedNodeNamespace.html,
+        childNodes,
+      } as ParsedNodeMeta;
+    },
+
+    __createFragmentRoot(nodes: ParsedNode[]) {
+      return {
+        nodeType: ParsedNodeType.fragment,
+        childNodes: nodes.map((node) => this.__cloneParsedNode(node)),
+      } as ParsedNodeMeta;
+    },
+
+    __normalizeDocumentRoot(nodes: ParsedNode[]) {
+      const flatNodes = nodes
+        .map((node) => this.__cloneParsedNode(node))
+        .flatMap((node) => (node.nodeType === ParsedNodeType.fragment ? getNodeChildNodes(node) : [node]));
+      const documentNode = flatNodes.find((node) => node.nodeType === ParsedNodeType.document);
+      if (documentNode) {
+        return documentNode;
+      }
+
+      const htmlNode = flatNodes.find(
+        (node) => node.nodeType === ParsedNodeType.element && getNodeTagName(node) === 'html',
+      );
+      const documentRoot: ParsedNodeMeta = {
+        nodeType: ParsedNodeType.document,
+        childNodes: [],
+      };
+
+      if (htmlNode) {
+        const extraNodes = flatNodes.filter((node) => node !== htmlNode);
+        if (extraNodes.length) {
+          const bodyNode = this.__findChildElement(htmlNode, 'body') || this.__appendChildElement(htmlNode, 'body');
+          bodyNode.childNodes = [...getNodeChildNodes(bodyNode), ...extraNodes];
+        }
+
+        documentRoot.childNodes = [htmlNode];
+        return documentRoot;
+      }
+
+      const remaining = [...flatNodes];
+      const headIndex = remaining.findIndex(
+        (node) => node.nodeType === ParsedNodeType.element && getNodeTagName(node) === 'head',
+      );
+      const bodyIndex = remaining.findIndex(
+        (node) => node.nodeType === ParsedNodeType.element && getNodeTagName(node) === 'body',
+      );
+      const headNode = headIndex >= 0 ? remaining.splice(headIndex, 1)[0] : undefined;
+      const bodyNode =
+        bodyIndex >= 0
+          ? remaining.splice(bodyIndex > headIndex && headIndex >= 0 ? bodyIndex - 1 : bodyIndex, 1)[0]
+          : undefined;
+      const htmlRoot = this.__createElementNode('html');
+      const htmlChildren: ParsedNodeMeta[] = [];
+
+      headNode && htmlChildren.push(headNode);
+      const normalizedBody = bodyNode || this.__createElementNode('body');
+      normalizedBody.childNodes = [...getNodeChildNodes(normalizedBody), ...remaining];
+      htmlChildren.push(normalizedBody);
+
+      htmlRoot.childNodes = htmlChildren;
+      documentRoot.childNodes = [htmlRoot];
+      return documentRoot;
+    },
+
+    __appendChildElement(node: ParsedNodeMeta, tagName: string) {
+      const child = this.__createElementNode(tagName);
+      node.childNodes = [...getNodeChildNodes(node), child];
+      return child;
+    },
+
+    __findChildElement(node: ParsedNodeMeta, tagName: string) {
+      return getNodeChildNodes(node).find((child) => getNodeTagName(child) === tagName);
+    },
+
+    __removeElementNodes(root: ParsedNodeMeta, tagName: string) {
+      const removed: ParsedNodeMeta[] = [];
+      const remove = (node: ParsedNodeMeta) => {
+        if (!node.childNodes?.length) return;
+        const nextNodes: ParsedNodeMeta[] = [];
+
+        node.childNodes.forEach((child) => {
+          if (getNodeTagName(child) === tagName) {
+            removed.push(child);
+            return;
+          }
+
+          remove(child);
+          nextNodes.push(child);
+        });
+
+        node.childNodes = nextNodes;
+      };
+
+      remove(root);
+      return removed;
+    },
+
+    __getNodeTextContent(node: ParsedNodeMeta): string {
+      if (node.nodeType === ParsedNodeType.text || node.nodeType === ParsedNodeType.comment) {
+        return node.textContent ?? '';
+      }
+
+      if (node.textContent && !node.childNodes?.length) {
+        return node.textContent;
+      }
+
+      return getNodeChildNodes(node)
+        .map((child) => this.__getNodeTextContent(child))
+        .join('');
+    },
+
+    __sanitizeNode(node: ParsedNodeMeta, opts: HTMLParserOptions) {
+      const attrs = node.attributes || {};
+      const cleanAttrs: Record<string, string> = {};
+
+      each(attrs, (value, name) => {
+        const attrValue = `${value}`;
+        const isUnsafeAttr = !opts.allowUnsafeAttr && name.startsWith('on');
+        const isUnsafeValue = !opts.allowUnsafeAttrValue && attrValue.startsWith('javascript:');
+
+        if (!isUnsafeAttr && !isUnsafeValue) {
+          cleanAttrs[name] = attrValue;
+        }
       });
-      toRemove.map((name) => node.removeAttribute(name));
-      each(nodes, (node) => this.__sanitizeNode(node as HTMLElement, opts));
+
+      if (Object.keys(cleanAttrs).length) {
+        node.attributes = cleanAttrs;
+      } else {
+        delete node.attributes;
+      }
+
+      each(getNodeChildNodes(node), (child) => this.__sanitizeNode(child, opts));
     },
 
     __checkAsDocument(str: string, opts: HTMLParserOptions) {

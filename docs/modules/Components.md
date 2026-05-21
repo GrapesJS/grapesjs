@@ -93,6 +93,8 @@ As we mentioned before, when you pass an HTML string as a component to the edito
 
 <img :src="$withBase('/component-type-stack.svg')" class="img-ctr">
 
+When you use a custom HTML code parser via `Parser.parserCode`, component recognition can also rely on `isParsedNode`, which receives the normalized parsed node instead of a DOM element.
+
 ::: tip
 If you're importing big string chunks of HTML code you might want to improve the performances by skipping the parsing and the component recognition steps by passing directly Component Definition objects or using the JSX syntax.
 Read [here](#setup-jsx-syntax) about how to setup JSX syntax parser
@@ -338,6 +340,39 @@ editor.addComponents('<some-element data-gjs-type="some-component">...');
 ```
 
 If you define the Component Type without using `isComponent`, the only way for the editor to see that component will be with an explicitly declared type (via an object `{ type: '...' }` or using `data-gjs-type`).
+
+### isParsedNode
+
+If your HTML is parsed through a custom code parser, you can avoid DOM dependencies completely by using `isParsedNode`.
+
+```js
+editor.Components.addType('my-input-type', {
+  isParsedNode: (node) => {
+    if (node.tagName === 'input') {
+      return {
+        type: 'my-input-type',
+      };
+    }
+  },
+  // ...
+});
+```
+
+The method receives a normalized parsed node and can return the same kind of values accepted by `isComponent`.
+If both `isParsedNode` and `isComponent` are provided, `isParsedNode` has priority while `parserCode` is active.
+
+Existing `isComponent` definitions continue to work in headless parsing too. In that case GrapesJS provides a read-only synthetic element with common DOM-like properties such as `tagName`, `childNodes`, `children`, `getAttribute`, and `textContent`.
+
+If one of your legacy checks needs extra helpers, extend the synthetic element globally:
+
+```js
+editor.Parser.config.customSyntheticElement = (SyntheticElement) =>
+  class MySyntheticElement extends SyntheticElement {
+    get foo() {
+      return this.getAttribute('data-foo') || '';
+    }
+  };
+```
 
 ### Model
 

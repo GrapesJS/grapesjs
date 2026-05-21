@@ -1,14 +1,14 @@
-import { ParsedNode, SyntheticElementCtor } from '../types';
-
-const HTML_NAMESPACE = 'http://www.w3.org/1999/xhtml';
+import { ParsedNode, ParsedNodeNamespace, ParsedNodeType, SyntheticElementCtor } from '../types';
 
 const getTagName = (node: ParsedNode) => {
   const tagName = node.tagName || '';
-  return tagName && (!node.namespaceURI || node.namespaceURI === HTML_NAMESPACE) ? tagName.toUpperCase() : tagName;
+  return tagName && (!node.namespaceURI || node.namespaceURI === ParsedNodeNamespace.html)
+    ? tagName.toUpperCase()
+    : tagName;
 };
 
 const getNodeTextContent = (node: ParsedNode): string => {
-  if (node.nodeType === 3 || node.nodeType === 8) {
+  if (node.nodeType === ParsedNodeType.text || node.nodeType === ParsedNodeType.comment) {
     return node.textContent ?? '';
   }
 
@@ -80,7 +80,7 @@ export class SyntheticElement {
   }
 
   get nodeValue() {
-    return this.nodeType === 3 || this.nodeType === 8 ? this.textContent : null;
+    return this.nodeType === ParsedNodeType.text || this.nodeType === ParsedNodeType.comment ? this.textContent : null;
   }
 
   get className() {
