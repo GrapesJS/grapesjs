@@ -30,6 +30,222 @@ const hasOwn = (obj: object, key: string) => Object.prototype.hasOwnProperty.cal
 const getNodeChildNodes = (node: ParsedNodeMeta) => node.childNodes || [];
 const getNodeTagName = (node: ParsedNodeMeta) => `${node.tagName || ''}`.toLowerCase();
 const getSourceNode = (node: ParsedNodeMeta) => node.__domNode || node;
+const getDomChildNodes = (node: Node) => {
+  const template = node as HTMLTemplateElement;
+  const childNodes = template.content?.childNodes || node.childNodes || [];
+  return Array.from(childNodes);
+};
+
+const cloneParsedNode = (node: ParsedNode): ParsedNodeMeta => {
+  const cloned: ParsedNodeMeta = {
+    nodeType: node.nodeType,
+  };
+
+  node.tagName && (cloned.tagName = node.tagName);
+  node.namespaceURI && (cloned.namespaceURI = node.namespaceURI);
+  node.textContent !== undefined && (cloned.textContent = node.textContent);
+  node.attributes && (cloned.attributes = { ...node.attributes });
+  node.childNodes && (cloned.childNodes = node.childNodes.map((child) => cloneParsedNode(child)));
+
+  const meta = node as ParsedNodeMeta & { doctype?: string; selfClosing?: boolean };
+  meta.__doctype && (cloned.__doctype = meta.__doctype);
+  meta.doctype && (cloned.__doctype = meta.doctype);
+  meta.__selfClosing && (cloned.__selfClosing = meta.__selfClosing);
+  meta.selfClosing && (cloned.__selfClosing = meta.selfClosing);
+  meta.__boolAttributes && (cloned.__boolAttributes = [...meta.__boolAttributes]);
+
+  return cloned;
+};
+
+const createElementNode = (tagName: string, childNodes: ParsedNodeMeta[] = []): ParsedNodeMeta => ({
+  nodeType: ParsedNodeType.element,
+  tagName,
+  namespaceURI: ParsedNodeNamespace.html,
+  childNodes,
+});
+
+const createFragmentRoot = (nodes: ParsedNode[]): ParsedNodeMeta => ({
+  nodeType: ParsedNodeType.fragment,
+  childNodes: nodes.map((node) => cloneParsedNode(node)),
+});
+
+const appendChildElement = (node: ParsedNodeMeta, tagName: string) => {
+  const child = createElementNode(tagName);
+  node.childNodes = [...getNodeChildNodes(node), child];
+  return child;
+};
+
+const findChildElement = (node: ParsedNodeMeta, tagName: string) =>
+  getNodeChildNodes(node).find((child) => getNodeTagName(child) === tagName);
+
+const getNodeTextContent = (node: ParsedNodeMeta): string => {
+  if (node.nodeType === ParsedNodeType.text || node.nodeType === ParsedNodeType.comment) {
+    return node.textContent ?? '';
+  }
+
+  if (node.textContent && !node.childNodes?.length) {
+    return node.textContent;
+  }
+
+  return getNodeChildNodes(node)
+    .map((child) => getNodeTextContent(child))
+    .join('');
+};
+
+const removeElementNodes = (root: ParsedNodeMeta, tagName: string) => {
+  const removed: ParsedNodeMeta[] = [];
+  const remove = (node: ParsedNodeMeta) => {
+    if (!node.childNodes?.length) return;
+    const nextNodes: ParsedNodeMeta[] = [];
+
+    node.childNodes.forEach((child) => {
+      if (getNodeTagName(child) === tagName) {
+        removed.push(child);
+        return;
+      }
+
+      remove(child);
+      nextNodes.push(child);
+    });
+
+    node.childNodes = nextNodes;
+  };
+
+  remove(root);
+  return removed;
+};
+
+const sanitizeNode = (node: ParsedNodeMeta, opts: HTMLParserOptions) => {
+  const attrs = node.attributes || {};
+  const cleanAttrs: Record<string, string> = {};
+
+  each(attrs, (value, name) => {
+    const attrValue = `${value}`;
+    const isUnsafeAttr = !opts.allowUnsafeAttr && name.startsWith('on');
+    const isUnsafeValue = !opts.allowUnsafeAttrValue && attrValue.startsWith('javascript:');
+
+    if (!isUnsafeAttr && !isUnsafeValue) {
+      cleanAttrs[name] = attrValue;
+    }
+  });
+
+  if (Object.keys(cleanAttrs).length) {
+    node.attributes = cleanAttrs;
+  } else {
+    delete node.attributes;
+  }
+
+  each(getNodeChildNodes(node), (child) => sanitizeNode(child, opts));
+};
+
+const domDocumentToParsedNode = (doc: Document): ParsedNodeMeta => ({
+  nodeType: ParsedNodeType.document,
+  __domNode: doc,
+  __doctype: doctypeToString(doc.doctype),
+  childNodes: doc.documentElement ? [domToParsedNode(doc.documentElement)] : [],
+});
+
+const domToParsedNode = (node: Node): ParsedNodeMeta => {
+  if (node.nodeType === ParsedNodeType.document) {
+    return domDocumentToParsedNode(node as Document);
+  }
+
+  const parsedNode: ParsedNodeMeta = {
+    nodeType: node.nodeType,
+    __domNode: node,
+  };
+
+  if (node.nodeType === ParsedNodeType.text || node.nodeType === ParsedNodeType.comment) {
+    parsedNode.textContent = node.textContent ?? '';
+  }
+
+  if (node.nodeType === ParsedNodeType.element) {
+    const el = node as HTMLElement;
+    parsedNode.tagName = el.tagName || '';
+    parsedNode.namespaceURI = el.namespaceURI || undefined;
+
+    const attrs = el.attributes || [];
+    if (attrs.length) {
+      parsedNode.attributes = {};
+    }
+
+    const boolAttributes: string[] = [];
+    for (let i = 0; i < attrs.length; i++) {
+      const attr = attrs[i];
+      parsedNode.attributes![attr.nodeName] = attr.nodeValue || '';
+      if (attr.nodeValue === '' && (el as any)[attr.nodeName] === true) {
+        boolAttributes.push(attr.nodeName);
+      }
+    }
+
+    boolAttributes.length && (parsedNode.__boolAttributes = boolAttributes);
+
+    const childNodes = getDomChildNodes(el);
+    childNodes.length && (parsedNode.childNodes = childNodes.map((child) => domToParsedNode(child)));
+    parsedNode.__selfClosing = `${el.outerHTML || ''}`.slice(-2) === '/>';
+  }
+
+  return parsedNode;
+};
+
+const domRootToFragment = (root: HTMLElement): ParsedNodeMeta => ({
+  nodeType: ParsedNodeType.fragment,
+  __domNode: root,
+  childNodes: getDomChildNodes(root).map((node) => domToParsedNode(node)),
+});
+
+const normalizeDocumentRoot = (nodes: ParsedNode[]) => {
+  const flatNodes = nodes
+    .map((node) => cloneParsedNode(node))
+    .flatMap((node) => (node.nodeType === ParsedNodeType.fragment ? getNodeChildNodes(node) : [node]));
+  const documentNode = flatNodes.find((node) => node.nodeType === ParsedNodeType.document);
+  if (documentNode) {
+    return documentNode;
+  }
+
+  const htmlNode = flatNodes.find(
+    (node) => node.nodeType === ParsedNodeType.element && getNodeTagName(node) === 'html',
+  );
+  const documentRoot: ParsedNodeMeta = {
+    nodeType: ParsedNodeType.document,
+    childNodes: [],
+  };
+
+  if (htmlNode) {
+    const extraNodes = flatNodes.filter((node) => node !== htmlNode);
+    if (extraNodes.length) {
+      const bodyNode = findChildElement(htmlNode, 'body') || appendChildElement(htmlNode, 'body');
+      bodyNode.childNodes = [...getNodeChildNodes(bodyNode), ...extraNodes];
+    }
+
+    documentRoot.childNodes = [htmlNode];
+    return documentRoot;
+  }
+
+  const remaining = [...flatNodes];
+  const headIndex = remaining.findIndex(
+    (node) => node.nodeType === ParsedNodeType.element && getNodeTagName(node) === 'head',
+  );
+  const bodyIndex = remaining.findIndex(
+    (node) => node.nodeType === ParsedNodeType.element && getNodeTagName(node) === 'body',
+  );
+  const headNode = headIndex >= 0 ? remaining.splice(headIndex, 1)[0] : undefined;
+  const bodyNode =
+    bodyIndex >= 0
+      ? remaining.splice(bodyIndex > headIndex && headIndex >= 0 ? bodyIndex - 1 : bodyIndex, 1)[0]
+      : undefined;
+  const htmlRoot = createElementNode('html');
+  const htmlChildren: ParsedNodeMeta[] = [];
+
+  headNode && htmlChildren.push(headNode);
+  const normalizedBody = bodyNode || createElementNode('body');
+  normalizedBody.childNodes = [...getNodeChildNodes(normalizedBody), ...remaining];
+  htmlChildren.push(normalizedBody);
+
+  htmlRoot.childNodes = htmlChildren;
+  documentRoot.childNodes = [htmlRoot];
+  return documentRoot;
+};
 
 const ParserHtml = (em?: EditorModel, config: ParserConfig & { returnArray?: boolean } = {}) => {
   return {
@@ -422,16 +638,16 @@ const ParserHtml = (em?: EditorModel, config: ParserConfig & { returnArray?: boo
       const allowScripts = !isUndefined(conf.allowScripts) ? conf.allowScripts : options.allowScripts;
 
       if (!allowScripts) {
-        this.__removeElementNodes(root, 'script');
+        removeElementNodes(root, 'script');
       }
 
       if (!options.allowUnsafeAttr || !options.allowUnsafeAttrValue) {
-        this.__sanitizeNode(root, options);
+        sanitizeNode(root, options);
       }
 
       if (parserCss) {
-        const styleNodes = this.__removeElementNodes(root, 'style');
-        const styleStr = styleNodes.map((node) => this.__getNodeTextContent(node)).join('');
+        const styleNodes = removeElementNodes(root, 'style');
+        const styleStr = styleNodes.map((node) => getNodeTextContent(node)).join('');
         if (styleStr) res.css = parserCss.parse(styleStr);
       }
 
@@ -440,10 +656,10 @@ const ParserHtml = (em?: EditorModel, config: ParserConfig & { returnArray?: boo
 
       if (asDocument) {
         const docNode: ParsedNodeMeta =
-          root.nodeType === ParsedNodeType.document ? root : this.__normalizeDocumentRoot(getNodeChildNodes(root));
-        const htmlNode = this.__findChildElement(docNode, 'html');
-        const headNode = htmlNode && this.__findChildElement(htmlNode, 'head');
-        const bodyNode = (htmlNode && this.__findChildElement(htmlNode, 'body')) || this.__createElementNode('body');
+          root.nodeType === ParsedNodeType.document ? root : normalizeDocumentRoot(getNodeChildNodes(root));
+        const htmlNode = findChildElement(docNode, 'html');
+        const headNode = htmlNode && findChildElement(htmlNode, 'head');
+        const bodyNode = (htmlNode && findChildElement(htmlNode, 'body')) || createElementNode('body');
 
         res.doctype = docNode.__doctype;
         headNode && (res.head = this.parseNode(headNode, parseOptions));
@@ -479,7 +695,7 @@ const ParserHtml = (em?: EditorModel, config: ParserConfig & { returnArray?: boo
         const parsedNodes = isArray(parsedNode) ? parsedNode : [parsedNode];
 
         return {
-          root: asDocument ? this.__normalizeDocumentRoot(parsedNodes) : this.__createFragmentRoot(parsedNodes),
+          root: asDocument ? normalizeDocumentRoot(parsedNodes) : createFragmentRoot(parsedNodes),
           isParsedMode: true,
         };
       }
@@ -487,9 +703,7 @@ const ParserHtml = (em?: EditorModel, config: ParserConfig & { returnArray?: boo
       const parseRes = isFunction(cf.parserHtml) ? cf.parserHtml(input, options) : BrowserParserHtml(input, options);
 
       return {
-        root: asDocument
-          ? this.__domDocumentToParsedNode(parseRes as Document)
-          : this.__domRootToFragment(parseRes as HTMLElement),
+        root: asDocument ? domDocumentToParsedNode(parseRes as Document) : domRootToFragment(parseRes as HTMLElement),
         isParsedMode: false,
       };
     },
@@ -497,232 +711,6 @@ const ParserHtml = (em?: EditorModel, config: ParserConfig & { returnArray?: boo
     __getParserCodeId(options: HTMLParserOptions) {
       if (hasOwn(options, 'parserCode')) return options.parserCode || '';
       return em?.Parser?.parserCode || config.parserCode || '';
-    },
-
-    __cloneParsedNode(node: ParsedNode): ParsedNodeMeta {
-      const cloned: ParsedNodeMeta = {
-        nodeType: node.nodeType,
-      };
-
-      node.tagName && (cloned.tagName = node.tagName);
-      node.namespaceURI && (cloned.namespaceURI = node.namespaceURI);
-      node.textContent !== undefined && (cloned.textContent = node.textContent);
-      node.attributes && (cloned.attributes = { ...node.attributes });
-      node.childNodes && (cloned.childNodes = node.childNodes.map((child) => this.__cloneParsedNode(child)));
-
-      const meta = node as ParsedNodeMeta & { doctype?: string; selfClosing?: boolean };
-      meta.__doctype && (cloned.__doctype = meta.__doctype);
-      meta.doctype && (cloned.__doctype = meta.doctype);
-      meta.__selfClosing && (cloned.__selfClosing = meta.__selfClosing);
-      meta.selfClosing && (cloned.__selfClosing = meta.selfClosing);
-      meta.__boolAttributes && (cloned.__boolAttributes = [...meta.__boolAttributes]);
-
-      return cloned;
-    },
-
-    __domRootToFragment(root: HTMLElement) {
-      return {
-        nodeType: ParsedNodeType.fragment,
-        __domNode: root,
-        childNodes: this.__getDomChildNodes(root).map((node) => this.__domToParsedNode(node)),
-      } as ParsedNodeMeta;
-    },
-
-    __domDocumentToParsedNode(doc: Document): ParsedNodeMeta {
-      return {
-        nodeType: ParsedNodeType.document,
-        __domNode: doc,
-        __doctype: doctypeToString(doc.doctype),
-        childNodes: doc.documentElement ? [this.__domToParsedNode(doc.documentElement)] : [],
-      };
-    },
-
-    __domToParsedNode(node: Node): ParsedNodeMeta {
-      if (node.nodeType === ParsedNodeType.document) {
-        return this.__domDocumentToParsedNode(node as Document);
-      }
-
-      const parsedNode: ParsedNodeMeta = {
-        nodeType: node.nodeType,
-        __domNode: node,
-      };
-
-      if (node.nodeType === ParsedNodeType.text || node.nodeType === ParsedNodeType.comment) {
-        parsedNode.textContent = node.textContent ?? '';
-      }
-
-      if (node.nodeType === ParsedNodeType.element) {
-        const el = node as HTMLElement;
-        parsedNode.tagName = el.tagName || '';
-        parsedNode.namespaceURI = el.namespaceURI || undefined;
-
-        const attrs = el.attributes || [];
-        if (attrs.length) {
-          parsedNode.attributes = {};
-        }
-
-        const boolAttributes: string[] = [];
-        for (let i = 0; i < attrs.length; i++) {
-          const attr = attrs[i];
-          parsedNode.attributes![attr.nodeName] = attr.nodeValue || '';
-          if (attr.nodeValue === '' && (el as any)[attr.nodeName] === true) {
-            boolAttributes.push(attr.nodeName);
-          }
-        }
-
-        boolAttributes.length && (parsedNode.__boolAttributes = boolAttributes);
-
-        const childNodes = this.__getDomChildNodes(el);
-        childNodes.length && (parsedNode.childNodes = childNodes.map((child) => this.__domToParsedNode(child)));
-        parsedNode.__selfClosing = `${el.outerHTML || ''}`.slice(-2) === '/>';
-      }
-
-      return parsedNode;
-    },
-
-    __getDomChildNodes(node: Node) {
-      const template = node as HTMLTemplateElement;
-      const childNodes = template.content?.childNodes || node.childNodes || [];
-      return Array.from(childNodes);
-    },
-
-    __createElementNode(tagName: string, childNodes: ParsedNodeMeta[] = []) {
-      return {
-        nodeType: ParsedNodeType.element,
-        tagName,
-        namespaceURI: ParsedNodeNamespace.html,
-        childNodes,
-      } as ParsedNodeMeta;
-    },
-
-    __createFragmentRoot(nodes: ParsedNode[]) {
-      return {
-        nodeType: ParsedNodeType.fragment,
-        childNodes: nodes.map((node) => this.__cloneParsedNode(node)),
-      } as ParsedNodeMeta;
-    },
-
-    __normalizeDocumentRoot(nodes: ParsedNode[]) {
-      const flatNodes = nodes
-        .map((node) => this.__cloneParsedNode(node))
-        .flatMap((node) => (node.nodeType === ParsedNodeType.fragment ? getNodeChildNodes(node) : [node]));
-      const documentNode = flatNodes.find((node) => node.nodeType === ParsedNodeType.document);
-      if (documentNode) {
-        return documentNode;
-      }
-
-      const htmlNode = flatNodes.find(
-        (node) => node.nodeType === ParsedNodeType.element && getNodeTagName(node) === 'html',
-      );
-      const documentRoot: ParsedNodeMeta = {
-        nodeType: ParsedNodeType.document,
-        childNodes: [],
-      };
-
-      if (htmlNode) {
-        const extraNodes = flatNodes.filter((node) => node !== htmlNode);
-        if (extraNodes.length) {
-          const bodyNode = this.__findChildElement(htmlNode, 'body') || this.__appendChildElement(htmlNode, 'body');
-          bodyNode.childNodes = [...getNodeChildNodes(bodyNode), ...extraNodes];
-        }
-
-        documentRoot.childNodes = [htmlNode];
-        return documentRoot;
-      }
-
-      const remaining = [...flatNodes];
-      const headIndex = remaining.findIndex(
-        (node) => node.nodeType === ParsedNodeType.element && getNodeTagName(node) === 'head',
-      );
-      const bodyIndex = remaining.findIndex(
-        (node) => node.nodeType === ParsedNodeType.element && getNodeTagName(node) === 'body',
-      );
-      const headNode = headIndex >= 0 ? remaining.splice(headIndex, 1)[0] : undefined;
-      const bodyNode =
-        bodyIndex >= 0
-          ? remaining.splice(bodyIndex > headIndex && headIndex >= 0 ? bodyIndex - 1 : bodyIndex, 1)[0]
-          : undefined;
-      const htmlRoot = this.__createElementNode('html');
-      const htmlChildren: ParsedNodeMeta[] = [];
-
-      headNode && htmlChildren.push(headNode);
-      const normalizedBody = bodyNode || this.__createElementNode('body');
-      normalizedBody.childNodes = [...getNodeChildNodes(normalizedBody), ...remaining];
-      htmlChildren.push(normalizedBody);
-
-      htmlRoot.childNodes = htmlChildren;
-      documentRoot.childNodes = [htmlRoot];
-      return documentRoot;
-    },
-
-    __appendChildElement(node: ParsedNodeMeta, tagName: string) {
-      const child = this.__createElementNode(tagName);
-      node.childNodes = [...getNodeChildNodes(node), child];
-      return child;
-    },
-
-    __findChildElement(node: ParsedNodeMeta, tagName: string) {
-      return getNodeChildNodes(node).find((child) => getNodeTagName(child) === tagName);
-    },
-
-    __removeElementNodes(root: ParsedNodeMeta, tagName: string) {
-      const removed: ParsedNodeMeta[] = [];
-      const remove = (node: ParsedNodeMeta) => {
-        if (!node.childNodes?.length) return;
-        const nextNodes: ParsedNodeMeta[] = [];
-
-        node.childNodes.forEach((child) => {
-          if (getNodeTagName(child) === tagName) {
-            removed.push(child);
-            return;
-          }
-
-          remove(child);
-          nextNodes.push(child);
-        });
-
-        node.childNodes = nextNodes;
-      };
-
-      remove(root);
-      return removed;
-    },
-
-    __getNodeTextContent(node: ParsedNodeMeta): string {
-      if (node.nodeType === ParsedNodeType.text || node.nodeType === ParsedNodeType.comment) {
-        return node.textContent ?? '';
-      }
-
-      if (node.textContent && !node.childNodes?.length) {
-        return node.textContent;
-      }
-
-      return getNodeChildNodes(node)
-        .map((child) => this.__getNodeTextContent(child))
-        .join('');
-    },
-
-    __sanitizeNode(node: ParsedNodeMeta, opts: HTMLParserOptions) {
-      const attrs = node.attributes || {};
-      const cleanAttrs: Record<string, string> = {};
-
-      each(attrs, (value, name) => {
-        const attrValue = `${value}`;
-        const isUnsafeAttr = !opts.allowUnsafeAttr && name.startsWith('on');
-        const isUnsafeValue = !opts.allowUnsafeAttrValue && attrValue.startsWith('javascript:');
-
-        if (!isUnsafeAttr && !isUnsafeValue) {
-          cleanAttrs[name] = attrValue;
-        }
-      });
-
-      if (Object.keys(cleanAttrs).length) {
-        node.attributes = cleanAttrs;
-      } else {
-        delete node.attributes;
-      }
-
-      each(getNodeChildNodes(node), (child) => this.__sanitizeNode(child, opts));
     },
 
     __checkAsDocument(str: string, opts: HTMLParserOptions) {
