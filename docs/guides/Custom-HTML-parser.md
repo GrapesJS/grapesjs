@@ -12,6 +12,12 @@ This is useful for:
 - integrations that already have their own HTML parser
 - cases where component recognition should not depend on browser DOM nodes
 
+::: warning
+This guide requires GrapesJS v0.22.17 or higher
+:::
+
+[[toc]]
+
 ## Register a parser
 
 Code parsers are managed by the `Parser` module.
