@@ -128,6 +128,14 @@ export type { default as Button } from './panels/model/Button';
 export type { default as Buttons } from './panels/model/Buttons';
 export type { default as Panel } from './panels/model/Panel';
 export type { default as Panels } from './panels/model/Panels';
+export type {
+  CustomParserCode,
+  CustomParserCodeContext,
+  CustomParserCodeFunction,
+  HTMLParseResult,
+  ParsedNode,
+  ParsedCssRule,
+} from './parser/types';
 export type { default as Selector } from './selector_manager/model/Selector';
 export type { default as Selectors } from './selector_manager/model/Selectors';
 export type { default as State } from './selector_manager/model/State';

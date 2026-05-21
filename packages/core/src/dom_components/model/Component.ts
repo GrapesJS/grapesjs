@@ -25,6 +25,7 @@ import StyleableModel, {
 } from '../../domain_abstract/model/StyleableModel';
 import EditorModel from '../../editor/model/Editor';
 import ItemView from '../../navigator/view/ItemView';
+import { ParsedNode } from '../../parser/types';
 import Selector from '../../selector_manager/model/Selector';
 import Selectors from '../../selector_manager/model/Selectors';
 import Trait from '../../trait_manager/model/Trait';
@@ -2057,6 +2058,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
   }
 
   static typeExtends = new Set<string>();
+  static isParsedNode?: (node: ParsedNode, opts?: any) => ComponentDefinitionDefined | boolean | undefined;
 
   static getDefaults() {
     return result(this.prototype, 'defaults');

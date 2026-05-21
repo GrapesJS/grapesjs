@@ -92,8 +92,9 @@ export default class ComponentMap extends ComponentImage {
   }
 
   static isComponent(el: HTMLIFrameElement) {
-    if (toLowerCase(el.tagName) == 'iframe' && /maps\.google\.com/.test(el.src)) {
-      return { type: 'map', src: el.src };
+    const src = el.getAttribute?.('src') || '';
+    if (toLowerCase(el.tagName) == 'iframe' && /maps\.google\.com/.test(src)) {
+      return { type: 'map', src };
     }
   }
 }

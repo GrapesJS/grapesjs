@@ -20,6 +20,9 @@
  * * [getConfig](#getconfig)
  * * [parseHtml](#parsehtml)
  * * [parseCss](#parsecss)
+ * * [addParserCode](#addparsercode)
+ * * [getParserCode](#getparsercode)
+ * * [removeParserCode](#removeparsercode)
  *
  * @module Parser
  */
@@ -29,18 +32,32 @@ import EditorModel from '../editor/model/Editor';
 import defConfig, { HTMLParserOptions, ParserConfig } from './config/config';
 import ParserCss from './model/ParserCss';
 import ParserHtml from './model/ParserHtml';
-import { ParserEvents } from './types';
+import { CustomParserCode, CustomParserCodeFunction, ParserEvents } from './types';
 
 export default class ParserModule extends Module<ParserConfig & { name?: string }> {
   parserHtml: ReturnType<typeof ParserHtml>;
   parserCss: ReturnType<typeof ParserCss>;
+  parsersCode = new Map<string, CustomParserCode>();
   events = ParserEvents;
+  private _parserCode = '';
 
   constructor(em: EditorModel) {
     super(em, 'Parser', defConfig());
     const { config } = this;
     this.parserCss = ParserCss(em, config);
     this.parserHtml = ParserHtml(em, config);
+    const parserCode = config.parserCode || '';
+    Object.entries(config.parsersCode || {}).forEach(([id, parser]) => this.addParserCode(id, parser));
+    this.parserCode = parserCode;
+  }
+
+  get parserCode() {
+    return this._parserCode;
+  }
+
+  set parserCode(value: string) {
+    this._parserCode = value || '';
+    this.getConfig().parserCode = this._parserCode;
   }
 
   /**
@@ -61,6 +78,7 @@ export default class ParserModule extends Module<ParserConfig & { name?: string 
    * @param  {Boolean} [options.keepEmptyTextNodes=false] Keep whitespaces regardless of whether they are meaningful
    * @param  {Boolean} [options.asDocument] Treat the HTML string as document
    * @param  {Boolean|Function} [options.detectDocument] Indicate if or how to detect if the HTML string should be treated as document
+   * @param  {String} [options.parserCode] Use a specific parser from the code parser registry. Pass an empty string to force the built-in/legacy parser path.
    * @param  {Function} [options.preParser] How to pre-process the HTML string before parsing
    * @param  {Boolean} [options.convertDataGjsAttributesHyphens=false] Convert `data-gjs-*` attributes from hyphenated to camelCase (eg. `data-gjs-my-component` to `data-gjs-myComponent`)
    * @param  {Boolean|Array<String>|Function} [options.convertAttributeValues=false] Convert regular HTML attribute values using the same parser used by `data-gjs-*` attributes
@@ -92,6 +110,43 @@ export default class ParserModule extends Module<ParserConfig & { name?: string 
    */
   parseCss(input: string) {
     return this.parserCss.parse(input);
+  }
+
+  /**
+   * Add a new HTML code parser to the registry.
+   * @param {string} id Parser ID
+   * @param {Function} parse Parser function
+   * @param {Object} [options={}] Parser options
+   * @param {Boolean} [options.skipSelect=false] Avoid selecting the added parser as default
+   * @returns {Object} Added parser definition
+   */
+  addParserCode(id: string, parse: CustomParserCodeFunction, options: { skipSelect?: boolean } = {}) {
+    const parser = { id, parse };
+    this.parsersCode.set(id, parser);
+    !options.skipSelect && (this.parserCode = id);
+    return parser;
+  }
+
+  /**
+   * Get an HTML code parser by id.
+   * @param {string} id Parser ID
+   * @returns {Object|undefined} Parser definition
+   */
+  getParserCode(id: string) {
+    return this.parsersCode.get(id);
+  }
+
+  /**
+   * Remove an HTML code parser from the registry.
+   * @param {string} id Parser ID
+   * @returns {Object|undefined} Removed parser definition
+   */
+  removeParserCode(id: string) {
+    const parser = this.parsersCode.get(id);
+    if (!parser) return;
+    this.parsersCode.delete(id);
+    this.parserCode === id && (this.parserCode = '');
+    return parser;
   }
 
   __emitEvent(event: string, data: ObjectAny) {

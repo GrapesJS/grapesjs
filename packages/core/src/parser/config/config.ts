@@ -1,14 +1,6 @@
 import { OptionAsDocument } from '../../common';
-import { CssRuleJSON } from '../../css_composer/model/CssRule';
-import { ComponentDefinitionDefined } from '../../dom_components/model/types';
 import Editor from '../../editor';
-
-export interface ParsedCssRule {
-  selectors: string | string[];
-  style: Record<string, string>;
-  atRule?: string;
-  params?: string;
-}
+import type { CustomParserCodeFunction, ParsedCssRule, ParsedElementNode, SyntheticElementCtor } from '../types';
 
 export type CustomParserCss = (input: string, editor: Editor) => ParsedCssRule[];
 
@@ -17,15 +9,7 @@ export type CustomParserHtml = (input: string, options: HTMLParserOptions) => HT
 export type ConvertAttributeValuesOption =
   | boolean
   | readonly string[]
-  | ((props: { attribute: string; value: string | boolean; node: HTMLElement }) => boolean);
-
-export interface HTMLParseResult {
-  html: ComponentDefinitionDefined | ComponentDefinitionDefined[];
-  css?: CssRuleJSON[];
-  doctype?: string;
-  root?: ComponentDefinitionDefined;
-  head?: ComponentDefinitionDefined;
-}
+  | ((props: { attribute: string; value: string | boolean; node: HTMLElement | ParsedElementNode }) => boolean);
 
 export interface ParseNodeOptions extends HTMLParserOptions {
   inSvg?: boolean;
@@ -33,6 +17,11 @@ export interface ParseNodeOptions extends HTMLParserOptions {
 }
 
 export interface HTMLParserOptions extends OptionAsDocument {
+  /**
+   * Default custom parser from the code parser registry.
+   */
+  parserCode?: string;
+
   /**
    * DOMParser mime type.
    * If you use the `text/html` parser, it will fix the invalid syntax automatically.
@@ -132,6 +121,22 @@ export interface ParserConfig {
   parserHtml?: CustomParserHtml;
 
   /**
+   * Custom HTML code parsers registry.
+   */
+  parsersCode?: Record<string, CustomParserCodeFunction>;
+
+  /**
+   * Selected HTML code parser from the registry.
+   */
+  parserCode?: string;
+
+  /**
+   * Extend the default synthetic element used to bridge legacy `isComponent` checks
+   * when parsing with `parserCode`.
+   */
+  customSyntheticElement?: (SyntheticElement: SyntheticElementCtor) => SyntheticElementCtor;
+
+  /**
    * Default HTML parser options (used in `parserModule.parseHtml('<div...', options)`).
    */
   optionsHtml?: HTMLParserOptions;
@@ -142,7 +147,11 @@ const config: () => ParserConfig = () => ({
   textTypes: ['text', 'textnode', 'comment'],
   parserCss: undefined,
   parserHtml: undefined,
+  parsersCode: {},
+  parserCode: undefined,
+  customSyntheticElement: undefined,
   optionsHtml: {
+    parserCode: undefined,
     htmlType: 'text/html',
     allowScripts: false,
     allowUnsafeAttr: false,

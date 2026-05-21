@@ -1,7 +1,8 @@
 import { isString } from 'underscore';
 import { CssRuleJSON } from '../../css_composer/model/CssRule';
 import EditorModel from '../../editor/model/Editor';
-import { ParsedCssRule, ParserConfig } from '../config/config';
+import { ParserConfig } from '../config/config';
+import { ParsedCssRule } from '../types';
 import BrowserCssParser, { parseSelector, createNode } from './BrowserParserCss';
 import { ParserEvents } from '../types';
 

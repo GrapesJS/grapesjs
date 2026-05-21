@@ -62,6 +62,9 @@ editor.on('parse', ({ event, ... }) => { ... });
 *   [getConfig][2]
 *   [parseHtml][3]
 *   [parseCss][4]
+*   [addParserCode][12]
+*   [getParserCode][13]
+*   [removeParserCode][14]
 
 ## getConfig
 
@@ -85,6 +88,7 @@ Parse HTML string and return the object containing the Component Definition
     *   `options.keepEmptyTextNodes` **[Boolean][8]** Keep whitespaces regardless of whether they are meaningful (optional, default `false`)
     *   `options.asDocument` **[Boolean][8]?** Treat the HTML string as document
     *   `options.detectDocument` **([Boolean][8] | [Function][9])?** Indicate if or how to detect if the HTML string should be treated as document
+    *   `options.parserCode` **[String][6]?** Use a specific parser from the code parser registry. Pass an empty string to force the built-in/legacy parser path.
     *   `options.preParser` **[Function][9]?** How to pre-process the HTML string before parsing
     *   `options.convertDataGjsAttributesHyphens` **[Boolean][8]** Convert `data-gjs-*` attributes from hyphenated to camelCase (eg. `data-gjs-my-component` to `data-gjs-myComponent`) (optional, default `false`)
     *   `options.convertAttributeValues` **([Boolean][8] | [Array][10]<[String][6]> | [Function][9])** Convert regular HTML attribute values using the same parser used by `data-gjs-*` attributes (optional, default `false`)
@@ -122,6 +126,47 @@ const res = Parser.parseCss('.cls { color: red }');
 
 Returns **[Array][10]<[Object][5]>** Array containing the result
 
+## addParserCode
+
+Add a new HTML code parser to the registry.
+
+```javascript
+const parser = Parser.addParserCode(
+  'my-parser',
+  (input, { editor, options }) => [{ nodeType: 1, tagName: 'section' }],
+  { skipSelect: true },
+);
+```
+
+Returns **[Object][5]** Added parser definition
+
+## getParserCode
+
+Get a registered HTML code parser by id.
+
+Returns **([Object][5] | [undefined][11])**
+
+## removeParserCode
+
+Remove a registered HTML code parser by id.
+
+Returns **([Object][5] | [undefined][11])**
+
+## Properties
+
+### parserCode
+
+Get or update the selected HTML code parser id.
+
+```javascript
+Parser.parserCode = 'my-parser';
+Parser.parserCode = '';
+```
+
+### parsersCode
+
+Object containing the registered HTML code parsers keyed by id.
+
 [1]: https://github.com/GrapesJS/grapesjs/blob/master/src/parser/config/config.ts
 
 [2]: #getconfig
@@ -129,6 +174,12 @@ Returns **[Array][10]<[Object][5]>** Array containing the result
 [3]: #parsehtml
 
 [4]: #parsecss
+
+[12]: #addparsercode
+
+[13]: #getparsercode
+
+[14]: #removeparsercode
 
 [5]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
 
@@ -141,3 +192,5 @@ Returns **[Array][10]<[Object][5]>** Array containing the result
 [9]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function
 
 [10]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array
+
+[11]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined

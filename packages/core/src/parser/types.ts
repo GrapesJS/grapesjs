@@ -1,6 +1,48 @@
 import { ObjectAny } from '../common';
 import { CssRuleJSON } from '../css_composer/model/CssRule';
-import { HTMLParseResult, HTMLParserOptions, ParsedCssRule } from './config/config';
+import { ComponentDefinitionDefined } from '../dom_components/model/types';
+import Editor from '../editor';
+import type { HTMLParserOptions } from './config/config';
+
+export interface ParsedCssRule {
+  selectors: string | string[];
+  style: Record<string, string>;
+  atRule?: string;
+  params?: string;
+}
+
+export interface ParsedNode {
+  nodeType: number;
+  tagName?: string;
+  namespaceURI?: string;
+  attributes?: Record<string, string>;
+  childNodes?: ParsedNode[];
+  textContent?: string;
+}
+
+export type ParsedElementNode = ParsedNode & { tagName: string };
+
+export interface CustomParserCodeContext {
+  editor: Editor;
+  options: HTMLParserOptions;
+}
+
+export type CustomParserCodeFunction = (input: string, props: CustomParserCodeContext) => ParsedNode[];
+
+export interface CustomParserCode {
+  id: string;
+  parse: CustomParserCodeFunction;
+}
+
+export type SyntheticElementCtor = new (node: ParsedNode, parent?: any) => any;
+
+export interface HTMLParseResult {
+  html: ComponentDefinitionDefined | ComponentDefinitionDefined[];
+  css?: CssRuleJSON[];
+  doctype?: string;
+  root?: ComponentDefinitionDefined;
+  head?: ComponentDefinitionDefined;
+}
 
 /**{START_EVENTS}*/
 export enum ParserEvents {
@@ -54,7 +96,7 @@ export type ParserEvent = `${ParserEvents}`;
 
 export interface ParserEventCallback {
   [ParserEvents.htmlBefore]: [{ input: string }];
-  [ParserEvents.htmlRoot]: [{ input: string; root: HTMLElement }];
+  [ParserEvents.htmlRoot]: [{ input: string; root: ParsedNode }];
   [ParserEvents.html]: [{ input: string; output: HTMLParseResult; options: HTMLParserOptions }];
   [ParserEvents.cssBefore]: [{ input: string }];
   [ParserEvents.css]: [

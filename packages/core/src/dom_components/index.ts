@@ -130,6 +130,8 @@ import ComponentVideoView from './view/ComponentVideoView';
 import ComponentView, { IComponentView } from './view/ComponentView';
 import ComponentWrapperView from './view/ComponentWrapperView';
 import ComponentsView from './view/ComponentsView';
+import { ParseNodeOptions } from '../parser/config/config';
+import { ParsedNode } from '../parser/types';
 
 export type { ComponentEvent } from './types';
 
@@ -144,6 +146,7 @@ export interface ComponentViewDefinition extends IComponentView {
 
 export interface AddComponentTypeOptions {
   isComponent?: (el: HTMLElement) => boolean | ComponentDefinitionDefined | undefined;
+  isParsedNode?: (node: ParsedNode, opts?: ParseNodeOptions) => boolean | ComponentDefinitionDefined | undefined;
   model?: Partial<ComponentModelDefinition> & ThisType<ComponentModelDefinition & Component>;
   view?: Partial<ComponentViewDefinition> & ThisType<ComponentViewDefinition & ComponentView>;
   block?: boolean | Partial<BlockProperties>;
@@ -543,7 +546,17 @@ export default class ComponentManager extends ItemManagerModule<DomComponentsCon
    */
   addType(type: string, methods: AddComponentTypeOptions) {
     const { em } = this;
-    const { model = {}, view = {}, isComponent, extend, extendView, extendFn = [], extendFnView = [], block } = methods;
+    const {
+      model = {},
+      view = {},
+      isComponent,
+      isParsedNode,
+      extend,
+      extendView,
+      extendFn = [],
+      extendFnView = [],
+      block,
+    } = methods;
     const compType = this.getType(type);
     const extendType = this.getType(extend!);
     const extendViewType = this.getType(extendView!);
@@ -580,6 +593,7 @@ export default class ComponentManager extends ItemManagerModule<DomComponentsCon
         {
           typeExtends,
           isComponent: compType && !extendType && !isComponent ? modelToExt.isComponent : isComponent || (() => 0),
+          isParsedNode: compType && !extendType && !isParsedNode ? modelToExt.isParsedNode : isParsedNode || undefined,
         },
       );
       // Reassign the defaults getter to the model

@@ -1095,4 +1095,202 @@ describe('ParserHtml', () => {
       expect(obj.parse(str).html).toEqual(result);
     });
   });
+
+  describe('with custom code parser', () => {
+    test('parses nodes from parserCode', () => {
+      em.Parser.addParserCode('custom-html', () => [{ nodeType: 1, tagName: 'section' }]);
+
+      expect(obj.parse('<div></div>', null, { parserCode: 'custom-html' }).html).toEqual([{ tagName: 'section' }]);
+    });
+
+    test('uses isParsedNode when available', () => {
+      em.Components.addType('parsed-cmp', {
+        isParsedNode: (node) => node.tagName === 'parsed-node' && { type: 'parsed-cmp', parsed: true },
+        isComponent: () => false,
+      });
+      obj.compTypes = em.Components.componentTypes;
+      em.Parser.addParserCode('custom-html', () => [{ nodeType: 1, tagName: 'parsed-node' }]);
+
+      expect(obj.parse('', null, { parserCode: 'custom-html' }).html).toEqual([
+        {
+          tagName: 'parsed-node',
+          type: 'parsed-cmp',
+          parsed: true,
+        },
+      ]);
+    });
+
+    test('falls back to synthetic element for legacy isComponent', () => {
+      em.Components.addType('legacy-cmp', {
+        isComponent: (el: any) =>
+          el.tagName === 'A'
+            ? {
+                type: 'legacy-cmp',
+                hrefProp: el.getAttribute('href'),
+                hasTextChild: !!el.childNodes.length,
+              }
+            : false,
+      });
+      obj.compTypes = em.Components.componentTypes;
+      em.Parser.addParserCode('custom-html', () => [
+        {
+          nodeType: 1,
+          tagName: 'a',
+          attributes: { href: 'https://grapesjs.com' },
+          childNodes: [{ nodeType: 3, textContent: 'Read more' }],
+        },
+      ]);
+
+      expect(obj.parse('', null, { parserCode: 'custom-html' }).html).toEqual([
+        {
+          tagName: 'a',
+          type: 'legacy-cmp',
+          hrefProp: 'https://grapesjs.com',
+          hasTextChild: true,
+          attributes: { href: 'https://grapesjs.com' },
+          components: {
+            type: 'textnode',
+            content: 'Read more',
+          },
+        },
+      ]);
+    });
+
+    test('supports custom synthetic element extensions', () => {
+      em.destroy();
+      em = new Editor({
+        parser: {
+          customSyntheticElement: (SyntheticElement) =>
+            class CustomSyntheticElement extends SyntheticElement {
+              get foo() {
+                return this.getAttribute('data-foo') || '';
+              }
+            },
+        },
+      });
+      em.Components.addType('custom-synthetic', {
+        isComponent: (el: any) => el.foo === 'bar' && { type: 'custom-synthetic' },
+      });
+      obj = ParserHtml(em, {
+        returnArray: true,
+      });
+      obj.compTypes = em.Components.componentTypes;
+      em.Parser.addParserCode('custom-html', () => [
+        {
+          nodeType: 1,
+          tagName: 'div',
+          attributes: { 'data-foo': 'bar' },
+        },
+      ]);
+
+      expect(obj.parse('', null, { parserCode: 'custom-html' }).html).toEqual([
+        {
+          tagName: 'div',
+          type: 'custom-synthetic',
+          attributes: { 'data-foo': 'bar' },
+        },
+      ]);
+    });
+
+    test('normalizes documents from parserCode', () => {
+      em.Parser.addParserCode('custom-html', () => [
+        {
+          nodeType: 1,
+          tagName: 'html',
+          attributes: { lang: 'en', class: 'cls-html' },
+          childNodes: [
+            {
+              nodeType: 1,
+              tagName: 'head',
+              childNodes: [{ nodeType: 1, tagName: 'title', childNodes: [{ nodeType: 3, textContent: 'Test' }] }],
+            },
+            {
+              nodeType: 1,
+              tagName: 'body',
+              attributes: { class: 'cls-body' },
+              childNodes: [{ nodeType: 1, tagName: 'h1', childNodes: [{ nodeType: 3, textContent: 'H1' }] }],
+            },
+          ],
+        },
+      ]);
+
+      expect(obj.parse('', null, { parserCode: 'custom-html', asDocument: true })).toEqual({
+        root: {
+          classes: ['cls-html'],
+          attributes: { lang: 'en' },
+        },
+        head: {
+          type: 'head',
+          tagName: 'head',
+          components: [
+            {
+              tagName: 'title',
+              type: 'text',
+              components: { type: 'textnode', content: 'Test' },
+            },
+          ],
+        },
+        html: {
+          tagName: 'body',
+          classes: ['cls-body'],
+          components: [
+            {
+              tagName: 'h1',
+              type: 'text',
+              components: { type: 'textnode', content: 'H1' },
+            },
+          ],
+        },
+      });
+    });
+
+    test('extracts styles, strips scripts, sanitizes attrs, and emits normalized root', () => {
+      let rootNode: any;
+      em.on(em.Parser.events.htmlRoot, ({ root }) => {
+        rootNode = root;
+      });
+      em.Parser.addParserCode('custom-html', () => [
+        {
+          nodeType: 1,
+          tagName: 'style',
+          childNodes: [{ nodeType: 3, textContent: '.cls { color: red }' }],
+        },
+        {
+          nodeType: 1,
+          tagName: 'a',
+          attributes: {
+            href: 'javascript:alert(1)',
+            onload: 'alert(1)',
+            'data-safe': 'yes',
+          },
+        },
+        {
+          nodeType: 1,
+          tagName: 'script',
+          childNodes: [{ nodeType: 3, textContent: 'alert(1)' }],
+        },
+      ]);
+
+      expect(obj.parse('', ParserCss(), { parserCode: 'custom-html' })).toEqual({
+        html: [
+          {
+            tagName: 'a',
+            type: 'link',
+            attributes: {
+              'data-safe': 'yes',
+            },
+          },
+        ],
+        css: [
+          {
+            selectors: ['cls'],
+            style: { color: 'red' },
+          },
+        ],
+      });
+      expect(rootNode.nodeType).toBe(11);
+      expect(rootNode.childNodes).toHaveLength(1);
+      expect(rootNode.childNodes?.[0].tagName).toBe('a');
+    });
+  });
 });

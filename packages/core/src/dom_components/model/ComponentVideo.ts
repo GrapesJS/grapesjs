@@ -396,7 +396,8 @@ export default class ComponentVideo extends ComponentImage {
   }
 
   static isComponent(el: HTMLVideoElement) {
-    const { tagName, src } = el;
+    const { tagName } = el;
+    const src = el.getAttribute?.('src') || '';
     const isYtProv = /youtube\.com\/embed/.test(src);
     const isYtncProv = /youtube-nocookie\.com\/embed/.test(src);
     const isViProv = /player\.vimeo\.com\/video/.test(src);

@@ -12,6 +12,7 @@ import Component from './Component';
 import Components from './Components';
 import { ToolbarButtonProps } from './ToolbarButton';
 import { ParseNodeOptions } from '../../parser/config/config';
+import { ParsedNode } from '../../parser/types';
 
 export type DragMode = 'translate' | 'absolute' | '';
 
@@ -32,6 +33,7 @@ export interface ResetComponentsOptions extends UpdateComponentsOptions {
 interface ComponentWithCheck<C extends Component> {
   new (props: any, opt: ComponentOptions): C;
   isComponent(node: HTMLElement, opts?: ParseNodeOptions): ComponentDefinitionDefined | undefined | boolean;
+  isParsedNode?(node: ParsedNode, opts?: ParseNodeOptions): ComponentDefinitionDefined | undefined | boolean;
 }
 
 export interface ComponentStackItem<C extends Component = Component, CV extends ComponentView<C> = ComponentView<C>> {
