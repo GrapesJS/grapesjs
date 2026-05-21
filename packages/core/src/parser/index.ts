@@ -46,9 +46,9 @@ export default class ParserModule extends Module<ParserConfig & { name?: string 
     const { config } = this;
     this.parserCss = ParserCss(em, config);
     this.parserHtml = ParserHtml(em, config);
-    const initialParserCode = config.parserCode;
+    const parserCode = config.parserCode || '';
     Object.entries(config.parsersCode || {}).forEach(([id, parser]) => this.addParserCode(id, parser));
-    initialParserCode !== undefined && (this.parserCode = initialParserCode || '');
+    this.parserCode = parserCode;
   }
 
   get parserCode() {
