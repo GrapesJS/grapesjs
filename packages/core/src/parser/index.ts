@@ -35,7 +35,7 @@ import ParserHtml from './model/ParserHtml';
 import { CustomParserCode, CustomParserCodeFunction, ParserEvents } from './types';
 
 export default class ParserModule extends Module<ParserConfig & { name?: string }> {
-  parserHtml: ReturnType<typeof ParserHtml>;
+  parserHtml: ParserHtml;
   parserCss: ReturnType<typeof ParserCss>;
   parsersCode = new Map<string, CustomParserCode>();
   events = ParserEvents;
@@ -45,7 +45,7 @@ export default class ParserModule extends Module<ParserConfig & { name?: string 
     super(em, 'Parser', defConfig());
     const { config } = this;
     this.parserCss = ParserCss(em, config);
-    this.parserHtml = ParserHtml(em, config);
+    this.parserHtml = new ParserHtml(em, config);
     const { parserCode } = config;
     Object.entries(config.parsersCode || {}).forEach(([id, parser]) => this.addParserCode(id, parser));
     if (parserCode !== undefined) {

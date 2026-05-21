@@ -25,7 +25,7 @@ export interface UpdateStyleOptions extends SetOptions, DataWatchersOptions {
 
 export type StyleableView = ComponentView | CssRuleView;
 
-const parserHtml = ParserHtml();
+const parserHtml = new ParserHtml();
 
 export const getLastStyleValue = (value: string | string[]) => {
   return isArray(value) ? value[value.length - 1] : value;

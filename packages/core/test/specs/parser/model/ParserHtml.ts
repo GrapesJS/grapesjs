@@ -5,13 +5,13 @@ import Editor from '../../../../src/editor/model/Editor';
 import { CSS_BG_OBJ, CSS_BG_STR } from './ParserCss';
 
 describe('ParserHtml', () => {
-  let obj: ReturnType<typeof ParserHtml>;
+  let obj: ParserHtml;
   let em: Editor;
 
   beforeEach(() => {
     em = new Editor({});
     const dom = new DomComponents(em);
-    obj = ParserHtml(em, {
+    obj = new ParserHtml(em, {
       textTags: ['br', 'b', 'i', 'u'],
       textTypes: ['text', 'textnode', 'comment'],
       returnArray: true,
@@ -910,7 +910,7 @@ describe('ParserHtml', () => {
         },
       });
 
-      obj = ParserHtml(em, {
+      obj = new ParserHtml(em, {
         textTags: ['br', 'b', 'i', 'u'],
         textTypes: ['text', 'textnode', 'comment'],
         returnArray: true,
@@ -964,7 +964,7 @@ describe('ParserHtml', () => {
         },
       });
 
-      obj = ParserHtml(em, {
+      obj = new ParserHtml(em, {
         returnArray: true,
         optionsHtml: { convertDataGjsAttributesHyphens: true },
       });
@@ -1059,7 +1059,7 @@ describe('ParserHtml', () => {
 
   describe('with keepEmptyTextNodes ON', () => {
     beforeEach(() => {
-      obj = ParserHtml(em, {
+      obj = new ParserHtml(em, {
         returnArray: true,
         optionsHtml: { keepEmptyTextNodes: true },
       });
@@ -1171,7 +1171,7 @@ describe('ParserHtml', () => {
       em.Components.addType('custom-synthetic', {
         isComponent: (el: any) => el.foo === 'bar' && { type: 'custom-synthetic' },
       });
-      obj = ParserHtml(em, {
+      obj = new ParserHtml(em, {
         returnArray: true,
       });
       obj.compTypes = em.Components.componentTypes;
