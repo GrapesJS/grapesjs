@@ -15,27 +15,6 @@ export const getDomChildNodes = (node: Node) => {
   return Array.from(childNodes);
 };
 
-export const cloneParsedNode = (node: ParsedNode): ParsedNodeMeta => {
-  const cloned: ParsedNodeMeta = {
-    nodeType: node.nodeType,
-  };
-
-  node.tagName && (cloned.tagName = node.tagName);
-  node.namespaceURI && (cloned.namespaceURI = node.namespaceURI);
-  node.textContent !== undefined && (cloned.textContent = node.textContent);
-  node.attributes && (cloned.attributes = { ...node.attributes });
-  node.childNodes && (cloned.childNodes = node.childNodes.map((child) => cloneParsedNode(child)));
-
-  const meta = node as ParsedNodeMeta & { doctype?: string; selfClosing?: boolean };
-  meta.__doctype && (cloned.__doctype = meta.__doctype);
-  meta.doctype && (cloned.__doctype = meta.doctype);
-  meta.__selfClosing && (cloned.__selfClosing = meta.__selfClosing);
-  meta.selfClosing && (cloned.__selfClosing = meta.selfClosing);
-  meta.__boolAttributes && (cloned.__boolAttributes = [...meta.__boolAttributes]);
-
-  return cloned;
-};
-
 export const createElementNode = (tagName: string, childNodes: ParsedNodeMeta[] = []): ParsedNodeMeta => ({
   nodeType: ParsedNodeType.element,
   tagName,
@@ -43,9 +22,9 @@ export const createElementNode = (tagName: string, childNodes: ParsedNodeMeta[] 
   childNodes,
 });
 
-export const createFragmentRoot = (nodes: ParsedNode[]): ParsedNodeMeta => ({
+export const createFragmentRoot = (childNodes: ParsedNode[]): ParsedNodeMeta => ({
   nodeType: ParsedNodeType.fragment,
-  childNodes: nodes.map((node) => cloneParsedNode(node)),
+  childNodes,
 });
 
 export const appendChildElement = (node: ParsedNodeMeta, tagName: string) => {
@@ -174,9 +153,9 @@ export const domRootToFragmentParsedNode = (root: HTMLElement): ParsedNodeMeta =
 });
 
 export const normalizeDocumentRoot = (nodes: ParsedNode[]) => {
-  const flatNodes = nodes
-    .map((node) => cloneParsedNode(node))
-    .flatMap((node) => (node.nodeType === ParsedNodeType.fragment ? getNodeChildNodes(node) : [node]));
+  const flatNodes = nodes.flatMap((node) =>
+    node.nodeType === ParsedNodeType.fragment ? getNodeChildNodes(node) : [node],
+  );
   const documentNode = flatNodes.find((node) => node.nodeType === ParsedNodeType.document);
   if (documentNode) {
     return documentNode;
