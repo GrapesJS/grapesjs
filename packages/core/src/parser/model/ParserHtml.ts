@@ -259,14 +259,12 @@ export default class ParserHtml {
         for (let i = 0; i < compTypes.length; i++) {
           const compType = compTypes[i];
           const { model } = compType;
-          let obj;
+          let obj = model.isParsedNode ? model.isParsedNode(node, opts) : undefined;
 
-          if (opts.__parsedMode) {
-            obj = model.isParsedNode
-              ? model.isParsedNode(node, opts)
-              : model.isComponent(this.__getSyntheticNode(node, opts) as any, opts);
-          } else {
-            obj = model.isComponent(getSourceNode(node), opts);
+          if (!model.isParsedNode) {
+            obj = opts.__parsedMode
+              ? model.isComponent(this.__getSyntheticNode(node, opts) as any, opts)
+              : model.isComponent(getSourceNode(node), opts);
           }
 
           if (obj) {

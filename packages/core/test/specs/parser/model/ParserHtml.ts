@@ -1103,6 +1103,22 @@ describe('ParserHtml', () => {
       expect(obj.parse('<div></div>', null, { parserCode: 'custom-html' }).html).toEqual([{ tagName: 'section' }]);
     });
 
+    test('prefers isParsedNode even on DOM parser runs', () => {
+      em.Components.addType('parsed-dom-cmp', {
+        isParsedNode: (node) => node.tagName === 'DIV' && { type: 'parsed-dom-cmp', parsed: true },
+        isComponent: () => ({ type: 'legacy-dom-cmp' }),
+      });
+      obj.compTypes = em.Components.componentTypes;
+
+      expect(obj.parse('<div></div>').html).toEqual([
+        {
+          tagName: 'div',
+          type: 'parsed-dom-cmp',
+          parsed: true,
+        },
+      ]);
+    });
+
     test('uses isParsedNode when available', () => {
       em.Components.addType('parsed-cmp', {
         isParsedNode: (node) => node.tagName === 'parsed-node' && { type: 'parsed-cmp', parsed: true },
