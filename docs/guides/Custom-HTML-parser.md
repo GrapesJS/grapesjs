@@ -13,7 +13,7 @@ This is useful for:
 - cases where component recognition should not depend on browser DOM nodes
 
 ::: warning
-This guide requires GrapesJS v0.22.17 or higher
+This guide requires GrapesJS v0.23.1 or higher
 :::
 
 [[toc]]

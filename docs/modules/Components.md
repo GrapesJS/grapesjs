@@ -93,7 +93,7 @@ As we mentioned before, when you pass an HTML string as a component to the edito
 
 <img :src="$withBase('/component-type-stack.svg')" class="img-ctr">
 
-When you use a custom HTML code parser via `Parser.parserCode`, component recognition can also rely on `isParsedNode`, which receives the normalized parsed node instead of a DOM element.
+Component recognition can also rely on `isParsedNode`, which receives the normalized parsed node instead of a DOM element. If a component defines both `isParsedNode` and `isComponent`, `isParsedNode` is preferred.
 
 ::: tip
 If you're importing big string chunks of HTML code you might want to improve the performances by skipping the parsing and the component recognition steps by passing directly Component Definition objects or using the JSX syntax.
@@ -256,6 +256,10 @@ To understand better how Traits work you should read its [dedicated page](Traits
 
 ### isComponent
 
+::: warning
+From `v0.23.1`, prefer `isParsedNode` over `isComponent` for new component types. It is the recommended API and avoids relying on DOM-specific behavior during component recognition.
+:::
+
 Let's see in detail what we have done so far. The first thing to notice is the `isComponent` function, we have already mentioned its usage in [this](#component-recognition-and-component-type-stack) section and we need it to make the editor understand `<input>` during the component recognition step.
 It receives only the `el` argument, which is the parsed HTMLElement node and expects a truthy value in case the element satisfies your logic condition. So, if we add this HTML string as component
 
@@ -343,7 +347,7 @@ If you define the Component Type without using `isComponent`, the only way for t
 
 ### isParsedNode
 
-If your HTML is parsed through a custom code parser, you can avoid DOM dependencies completely by using `isParsedNode`.
+If you want to avoid DOM dependencies during component recognition, you can use `isParsedNode`.
 
 ```js
 editor.Components.addType('my-input-type', {
@@ -359,9 +363,9 @@ editor.Components.addType('my-input-type', {
 ```
 
 The method receives a normalized parsed node and can return the same kind of values accepted by `isComponent`.
-If both `isParsedNode` and `isComponent` are provided, `isParsedNode` has priority while `parserCode` is active.
+If both `isParsedNode` and `isComponent` are provided, `isParsedNode` always has priority.
 
-Existing `isComponent` definitions continue to work in headless parsing too. In that case GrapesJS provides a read-only synthetic element with common DOM-like properties such as `tagName`, `childNodes`, `children`, `getAttribute`, and `textContent`.
+Existing `isComponent` definitions continue to work in headless parsing too. When a custom HTML code parser is active, GrapesJS provides a read-only synthetic element with common DOM-like properties such as `tagName`, `childNodes`, `children`, `getAttribute`, and `textContent`.
 
 If one of your legacy checks needs extra helpers, extend the synthetic element globally:
 
