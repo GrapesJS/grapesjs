@@ -11,7 +11,6 @@ export const createPluginAdded = (): PluginAdded => ({
   styleTypes: [],
   assetTypes: [],
   styleSectors: [],
-  styleProperties: [],
 });
 
 export interface PluginProperties {

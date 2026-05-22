@@ -10,6 +10,8 @@ import PluginModel from './model/Plugin';
 
 export type PluginOptions = Record<string, any>;
 
+export type PluginTarget = string | Plugin<any> | PluginModel;
+
 export interface PluginAdded {
   blocks: string[];
   commands: string[];
@@ -20,7 +22,6 @@ export interface PluginAdded {
   styleTypes: string[];
   assetTypes: string[];
   styleSectors: string[];
-  styleProperties: Array<{ sectorId: string; id: string }>;
 }
 
 export type PluginCleanup = () => void;

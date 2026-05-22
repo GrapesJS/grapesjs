@@ -4,14 +4,13 @@ import BlocksEvents from '../block_manager/types';
 import { ComponentsEvents } from '../dom_components/types';
 import DeviceEvents from '../device_manager/types';
 import EditorModel from '../editor/model/Editor';
+import type { EditorEvent, EditorEventCallbacks } from '../editor/types';
 import { KeymapsEvents } from '../keymaps/types';
 import { StyleManagerEvents } from '../style_manager/types';
 import PluginModel, { createPluginAdded } from './model/Plugin';
 import Plugins from './model/Plugins';
-import { Plugin, PluginCleanup, PluginInput, PluginOptions, PluginsEvents } from './types';
+import { Plugin, PluginCleanup, PluginInput, PluginOptions, PluginsEvents, PluginTarget } from './types';
 import { getPluginId, getPlugin, isPluginDescriptor, isPluginFunction, logPluginWarn, unwrapPluginMeta } from './utils';
-
-type PluginTarget = string | Plugin<any> | PluginModel;
 
 export default class PluginManager extends ItemManagerModule<ModuleConfig, Plugins> {
   events = PluginsEvents;
@@ -84,54 +83,48 @@ export default class PluginManager extends ItemManagerModule<ModuleConfig, Plugi
     const added = createPluginAdded();
     const cleanup: PluginCleanup[] = [];
     const { editor } = this;
-    const listeners: Array<[string, (...args: any[]) => void]> = [];
-    const listen = (event: string, callback: (...args: any[]) => void) => {
-      editor.on(event, callback);
+    const listeners: Array<[EditorEvent, (...args: any[]) => void]> = [];
+    const listen = <E extends EditorEvent & keyof EditorEventCallbacks>(
+      event: E,
+      callback: (...args: EditorEventCallbacks[E]) => void,
+    ) => {
+      editor.on(event, callback as any);
       listeners.push([event, callback]);
     };
 
-    listen(BlocksEvents.add, (block: any) => {
-      const id = block.get?.('id');
+    listen(BlocksEvents.add, (block) => {
+      const id = block.get('id');
       if (!id || added.blocks.includes(id)) return;
       added.blocks.push(id);
       cleanup.push(() => editor.Blocks.remove(id));
     });
 
-    listen(KeymapsEvents.add, (keymap: any) => {
+    listen(KeymapsEvents.add, (keymap) => {
       const id = keymap.id;
       if (!id || added.keymaps.includes(id)) return;
       added.keymaps.push(id);
       cleanup.push(() => editor.Keymaps.remove(id));
     });
 
-    listen(ComponentsEvents.typeAdd, (type: any) => {
-      const id = type?.id;
+    listen(ComponentsEvents.typeAdd, (type) => {
+      const id = type.id;
       if (!id || added.componentTypes.includes(id)) return;
       added.componentTypes.push(id);
       cleanup.push(() => editor.Components.removeType(id));
     });
 
-    listen(DeviceEvents.add, (device: any) => {
-      const id = device?.id || device?.get?.('id');
+    listen(DeviceEvents.add, (device) => {
+      const id = device.get('id');
       if (!id || added.devices.includes(id)) return;
       added.devices.push(id);
       cleanup.push(() => editor.Devices.remove(id));
     });
 
-    listen(StyleManagerEvents.sectorAdd, (sector: any) => {
-      const id = sector?.id || sector?.get?.('id');
+    listen(StyleManagerEvents.sectorAdd, (sector) => {
+      const id = sector.get('id');
       if (!id || added.styleSectors.includes(id)) return;
       added.styleSectors.push(id);
       cleanup.push(() => editor.StyleManager.removeSector(id));
-    });
-
-    listen(StyleManagerEvents.propertyAdd, (property: any) => {
-      const sectorId = property?.collection?.sector?.get?.('id');
-      const id = property?.get?.('property') || property?.get?.('id');
-      const alreadyAdded = added.styleProperties.some((item) => item.sectorId === sectorId && item.id === id);
-      if (!sectorId || !id || alreadyAdded) return;
-      added.styleProperties.push({ sectorId, id });
-      cleanup.push(() => editor.StyleManager.removeProperty(sectorId, id));
     });
 
     return {
