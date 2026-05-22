@@ -8,42 +8,8 @@ import { KeymapsEvents } from '../keymaps/types';
 import { StyleManagerEvents } from '../style_manager/types';
 import PluginModel, { createPluginAdded } from './model/Plugin';
 import Plugins from './model/Plugins';
-import {
-  Plugin,
-  PluginAdded,
-  PluginCleanup,
-  PluginCleanupHandler,
-  PluginDescriptor,
-  PluginInput,
-  PluginOptions,
-  PluginWithMeta,
-  PluginsEvents,
-} from './types';
-import {
-  addLegacyPlugin,
-  getLegacyPlugin,
-  getLegacyPlugins,
-  getPluginId,
-  getPlugin,
-  isPluginDescriptor,
-  isPluginFunction,
-  logPluginWarn,
-  legacyGlobalPlugins,
-  unwrapPluginMeta,
-  usePlugin,
-} from './utils';
-
-export type {
-  Plugin,
-  PluginAdded,
-  PluginCleanup,
-  PluginCleanupHandler,
-  PluginDescriptor,
-  PluginInput,
-  PluginOptions,
-  PluginWithMeta,
-};
-export { addLegacyPlugin, getLegacyPlugin, getLegacyPlugins, getPlugin, legacyGlobalPlugins, logPluginWarn, usePlugin };
+import { Plugin, PluginCleanup, PluginInput, PluginOptions, PluginsEvents } from './types';
+import { getPluginId, getPlugin, isPluginDescriptor, isPluginFunction, logPluginWarn, unwrapPluginMeta } from './utils';
 
 type PluginTarget = string | Plugin<any> | PluginModel;
 

@@ -2,8 +2,7 @@ import grapesjs, { Component, Editor, usePlugin } from '../../../src';
 import CssRule from '../../../src/css_composer/model/CssRule';
 import ComponentWrapper from '../../../src/dom_components/model/ComponentWrapper';
 import { EditorConfig } from '../../../src/editor/config/config';
-import type { Plugin } from '../../../src/plugin_manager';
-import PluginsEvents from '../../../src/plugin_manager/types';
+import PluginsEvents, { Plugin } from '../../../src/plugin_manager/types';
 import { StorageManagerConfig } from '../../../src/storage_manager/config/config';
 import { fixJsDom, fixJsDomIframe, waitEditorEvent } from '../../common';
 

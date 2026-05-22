@@ -1,7 +1,8 @@
 import { isElement } from 'underscore';
 import Editor from './editor';
 import { EditorConfig } from './editor/config/config';
-import { PluginInput, legacyGlobalPlugins, usePlugin as pluginUsePlugin } from './plugin_manager';
+import { PluginInput } from './plugin_manager/types';
+import { legacyGlobalPlugins, usePlugin as pluginUsePlugin } from './plugin_manager/utils';
 import $ from './utils/cash-dom';
 import polyfills from './utils/polyfills';
 
