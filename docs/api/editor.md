@@ -444,7 +444,8 @@ Execute command
 ### Parameters
 
 *   `id` **[string][18]** Command ID
-*   `options` **[Object][16]** Custom options (optional, default `{}`)
+*   `args` **...CommandRunArgs\<TId>**&#x20;
+*   `options` **[Object][16]** Custom options
 
 ### Examples
 
@@ -461,7 +462,8 @@ Stop the command if stop method was provided
 ### Parameters
 
 *   `id` **[string][18]** Command ID
-*   `options` **[Object][16]** Custom options (optional, default `{}`)
+*   `args` **...CommandStopArgs\<TId>**&#x20;
+*   `options` **[Object][16]** Custom options
 
 ### Examples
 
