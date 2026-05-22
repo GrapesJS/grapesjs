@@ -1,8 +1,8 @@
 import { isFunction, isString } from 'underscore';
 import { ItemManagerModule, ModuleConfig } from '../abstract/Module';
 import BlocksEvents from '../block_manager/types';
-import { ComponentsEvents } from '../dom_components/types';
 import DeviceEvents from '../device_manager/types';
+import { ComponentsEvents } from '../dom_components/types';
 import EditorModel from '../editor/model/Editor';
 import type { EditorEvent, EditorEventCallbacks } from '../editor/types';
 import { KeymapsEvents } from '../keymaps/types';
@@ -10,7 +10,7 @@ import { StyleManagerEvents } from '../style_manager/types';
 import PluginModel, { createPluginAdded } from './model/Plugin';
 import Plugins from './model/Plugins';
 import { Plugin, PluginCleanup, PluginInput, PluginOptions, PluginsEvents, PluginTarget } from './types';
-import { getPluginId, getPlugin, isPluginDescriptor, isPluginFunction, logPluginWarn, unwrapPluginMeta } from './utils';
+import { getPlugin, getPluginId, isPluginDescriptor, isPluginFunction, logPluginWarn, unwrapPluginMeta } from './utils';
 
 export default class PluginManager extends ItemManagerModule<ModuleConfig, Plugins> {
   events = PluginsEvents;

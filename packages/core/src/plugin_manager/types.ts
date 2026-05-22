@@ -1,4 +1,3 @@
-import type Editor from '../editor';
 import {
   EventCallbackAdd,
   EventCallbackAll,
@@ -6,6 +5,7 @@ import {
   EventCallbackRemoveBefore,
   EventCallbackUpdate,
 } from '../common';
+import type Editor from '../editor';
 import PluginModel from './model/Plugin';
 
 export type PluginOptions = Record<string, any>;

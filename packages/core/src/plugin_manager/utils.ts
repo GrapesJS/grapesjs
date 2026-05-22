@@ -1,6 +1,5 @@
 import { isFunction, isString } from 'underscore';
 import type Editor from '../editor';
-import EditorModel from '../editor/model/Editor';
 import { getGlobal } from '../utils/mixins';
 import type { Plugin, PluginDescriptor, PluginOptions, PluginWithMeta } from './types';
 
@@ -39,7 +38,7 @@ export const clearLegacyPlugins = () => legacyPlugins.clear();
 
 export const addLegacyPlugin = <T extends PluginOptions>(id: string, plugin: Plugin<T>) => {
   console.error(LEGACY_PLUGIN_ERROR);
-  legacyPlugins.set(id, plugin as Plugin<any>);
+  legacyPlugins.set(id, plugin);
   return plugin;
 };
 
@@ -75,44 +74,37 @@ export const getPluginId = (plugin: Plugin<any>) =>
 export const getPluginById = (pluginId: string) => {
   const legacy = getLegacyPlugin(pluginId);
 
-  if (legacy) {
-    return legacy;
-  }
+  if (legacy) return legacy;
 
   const globalPlugin = (getGlobal() as any)[pluginId];
   return globalPlugin?.default || globalPlugin;
 };
 
-export const getPlugin = (plugin: string | Plugin<any>) => {
+export const getPlugin = (plugin: string | Plugin<any>): Plugin<any> | undefined => {
   const { plugin: unwrapped } = unwrapPluginMeta(plugin);
   return isString(unwrapped)
     ? getPluginById(unwrapped)
     : (unwrapped as unknown as { default?: Plugin<any> })?.default || unwrapped;
 };
 
-export const logPluginWarn = (editor: { getModel(): EditorModel }, plugin: string) => {
-  editor.getModel().logWarning(`Plugin ${plugin} not found`, {
-    context: 'plugins',
-    plugin,
-  });
+export const logPluginWarn = (editor: Editor, plugin: string) => {
+  editor.getModel().logWarning(`Plugin ${plugin} not found`, { context: 'plugins', plugin });
 };
 
 export const usePlugin = <P extends Plugin<any> | string>(plugin: P, opts?: P extends Plugin<infer C> ? C : {}) => {
-  const wrapped = ((editor: Editor) => {
+  const options = opts || {};
+  const wrapped: PluginWithMeta<any> = (editor: Editor) => {
     const pluginResult = getPlugin(plugin);
 
     if (pluginResult) {
-      pluginResult(editor, opts || {});
+      pluginResult(editor, options);
     } else {
-      logPluginWarn(editor as { getModel(): EditorModel }, plugin as string);
+      logPluginWarn(editor, plugin as string);
     }
-  }) as PluginWithMeta<any>;
-
-  wrapped.__gjsPluginMeta = {
-    plugin,
-    options: (opts || {}) as Record<string, any>,
-    id: typeof plugin === 'string' ? plugin : plugin.__gjsPluginId,
   };
+
+  const id = typeof plugin === 'string' ? plugin : plugin.__gjsPluginId;
+  wrapped.__gjsPluginMeta = { id, plugin, options };
 
   return wrapped;
 };
