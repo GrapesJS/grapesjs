@@ -94,6 +94,76 @@ grapesjs.init({
 });
 ```
 
+## Dynamic plugin management
+
+::: warning
+Available from GrapesJS v0.23.1
+:::
+
+Plugins can also be added and removed dynamically at runtime via `editor.Plugins`.
+
+This is useful when:
+
+- you want to enable/disable editor features on demand
+- you need to inspect which plugins are currently active
+- you want automatic cleanup of editor-level registrations added by a plugin
+
+```ts
+const editor = grapesjs.init({
+  // ...
+  plugins: [
+    // Load plugin with id...
+    { id: 'my-plugin', plugin: usePlugin(myPlugin, { opt1: 'A' }) }
+  ],
+});
+
+// ... or add it dynamically
+const plugin = editor.Plugins.add({
+  id: 'my-plugin',
+  plugin: usePlugin(myPlugin, { opt1: 'A' }),
+});
+
+const hasPlugin = !!editor.Plugins.get('my-plugin');
+editor.Plugins.getAll();
+editor.Plugins.remove('my-plugin');
+```
+
+GrapesJS stores active plugins inside `editor.Plugins` module, so the plugin can be identified and removed later.
+
+For this reason, the object descriptor form requires an explicit `id`.
+
+```ts
+editor.Plugins.add({
+  id: 'my-plugin',
+  plugin: usePlugin(myPlugin, { opt1: 'A' }),
+});
+```
+
+If you don't need the descriptor form, plain plugin functions still work as before.
+
+```ts
+editor.Plugins.add(myPlugin);
+```
+
+When possible, GrapesJS also tracks editor-level entities added during plugin execution and removes them automatically when the plugin is removed. This currently applies to runtime/editor configuration features such as blocks, component types, keymaps, etc.
+
+The automatic cleanup is intentionally limited to editor-level registrations. It does not remove project data such as pages, components already added to the canvas, or any other persisted content.
+
+If a plugin needs additional teardown logic, it can return a cleanup function.
+
+```ts
+const myPlugin: Plugin = (editor) => {
+  const interval = setInterval(() => {
+    // ...
+  }, 1000);
+
+  return ({ cleanup }) => {
+    cleanup();
+    clearInterval(interval);
+  };
+};
+```
+
 ## Boilerplate
 
 For fast plugin development, we highly recommend using [grapesjs-cli](https://github.com/GrapesJS/cli) which helps to avoid the hassle of setting up all the dependencies and configurations for development and building (no need to touch Webpack or Babel configurations). For more information check the repository.
