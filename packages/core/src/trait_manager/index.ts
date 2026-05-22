@@ -171,6 +171,13 @@ export default class TraitManager extends Module<TraitManagerConfigModule> {
     this.types[name] = baseView.extend(methods);
   }
 
+  removeType(name: string) {
+    const type = this.getType(name);
+    if (!type) return;
+    delete this.types[name];
+    return type;
+  }
+
   /**
    * Get trait type
    * @param {string} name Type name

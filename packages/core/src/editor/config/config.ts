@@ -15,7 +15,7 @@ import { RichTextEditorConfig } from '../../rich_text_editor/config/config';
 import { SelectorManagerConfig } from '../../selector_manager/config/config';
 import { StorageManagerConfig } from '../../storage_manager/config/config';
 import { UndoManagerConfig } from '../../undo_manager/config';
-import { Plugin } from '../../plugin_manager';
+import { PluginInput } from '../../plugin_manager';
 import { TraitManagerConfig } from '../../trait_manager/config/config';
 import { CommandsConfig } from '../../commands/config/config';
 import { StyleManagerConfig } from '../../style_manager/config/config';
@@ -48,7 +48,7 @@ export interface EditorConfig {
    * Array of plugins to execute on start.
    * @default []
    */
-  plugins?: (string | Plugin<any>)[];
+  plugins?: PluginInput[];
 
   /**
    * Custom options for plugins

@@ -3,6 +3,7 @@ import CssRule from '../../../src/css_composer/model/CssRule';
 import ComponentWrapper from '../../../src/dom_components/model/ComponentWrapper';
 import { EditorConfig } from '../../../src/editor/config/config';
 import type { Plugin } from '../../../src/plugin_manager';
+import PluginsEvents from '../../../src/plugin_manager/types';
 import { StorageManagerConfig } from '../../../src/storage_manager/config/config';
 import { fixJsDom, fixJsDomIframe, waitEditorEvent } from '../../common';
 
@@ -61,12 +62,7 @@ describe('GrapesJS', () => {
     });
 
     afterEach(() => {
-      var plugins = grapesjs.plugins.getAll();
-      for (let id in plugins) {
-        if (plugins.hasOwnProperty(id)) {
-          delete plugins[id];
-        }
-      }
+      grapesjs.plugins.clear();
     });
 
     test('Main object should be loaded', () => {
@@ -501,6 +497,16 @@ describe('GrapesJS', () => {
     });
 
     describe('Plugins', () => {
+      let consoleErrorSpy: jest.SpyInstance;
+
+      beforeEach(() => {
+        consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+      });
+
+      afterEach(() => {
+        consoleErrorSpy.mockRestore();
+      });
+
       test('Adds new storage as plugin and store data there', async () => {
         (config.storageManager as StorageManagerConfig).type = storageId;
         config.plugins = [(e) => e.StorageManager.add(storageId, storageMock)];
@@ -593,6 +599,102 @@ describe('GrapesJS', () => {
         expect(editor.getModel().get('customValue')).toEqual('TEST');
       });
 
+      test('Descriptor plugin requires explicit id and accepts wrapped plugin', () => {
+        const inlinePlugin: TestPlugin = (edt, opts) => {
+          edt.getModel().set('customValue', opts.cVal);
+        };
+        const editor = grapesjs.init({
+          ...config,
+          plugins: [{ id: 'descriptor-plugin', plugin: usePlugin(inlinePlugin, { cVal: 'DESC' }) }],
+        });
+        const plugin = editor.Plugins.get('descriptor-plugin')!;
+        expect(editor.getModel().get('customValue')).toEqual('DESC');
+        expect(plugin.get('options')).toEqual({ cVal: 'DESC' });
+      });
+
+      test('Plugin id is resolved from __gjsPluginId', () => {
+        const inlinePlugin: TestPlugin = () => {};
+        inlinePlugin.__gjsPluginId = 'inline-plugin-id';
+        const editor = grapesjs.init({
+          ...config,
+          plugins: [inlinePlugin],
+        });
+
+        expect(editor.Plugins.get('inline-plugin-id')).toBeTruthy();
+      });
+
+      test('Legacy plugin collector prints deprecation error on add', () => {
+        grapesjs.plugins.add('legacy-plugin', () => {});
+        expect(consoleErrorSpy).toHaveBeenCalled();
+      });
+
+      test('Editor-scoped plugin manager stores plugins in the all collection', () => {
+        const editor = grapesjs.init({
+          ...config,
+          plugins: [{ id: 'scoped-plugin', plugin: () => {} }],
+        });
+
+        expect(editor.Plugins.all.length).toBe(1);
+        expect(editor.Plugins.get('scoped-plugin')).toBe(editor.Plugins.all.at(0));
+      });
+
+      test('Editor-scoped plugin manager triggers plugin events', () => {
+        const result: string[] = [];
+        const editor = grapesjs.init(config);
+        editor.on(PluginsEvents.add, (plugin) => result.push(`add:${plugin.id}`));
+        editor.on(PluginsEvents.remove, (plugin) => result.push(`remove:${plugin.id}`));
+        editor.Plugins.add({ id: 'evt-plugin', plugin: () => {} });
+        editor.Plugins.remove('evt-plugin');
+        expect(result).toEqual(['add:evt-plugin', 'remove:evt-plugin']);
+      });
+
+      test('Plugin manager removes tracked entities on cleanup', () => {
+        const editor = grapesjs.init({
+          ...config,
+          plugins: [
+            {
+              id: 'cleanup-plugin',
+              plugin: (edt) => {
+                edt.Blocks.add('cleanup-block', { label: 'Cleanup', content: '<div>cleanup</div>' });
+                edt.Components.addType('cleanup-type', { model: { defaults: { tagName: 'div' } } });
+              },
+            },
+          ],
+        });
+
+        expect(editor.Blocks.get('cleanup-block')).toBeTruthy();
+        expect(editor.Components.getType('cleanup-type')).toBeTruthy();
+
+        editor.Plugins.remove('cleanup-plugin');
+
+        expect(editor.Blocks.get('cleanup-block')).toBeFalsy();
+        expect(editor.Components.getType('cleanup-type')).toBeFalsy();
+      });
+
+      test('Plugin manager runs custom cleanup once', () => {
+        const cleanupSpy = jest.fn();
+        const editor = grapesjs.init({
+          ...config,
+          plugins: [
+            {
+              id: 'custom-cleanup-plugin',
+              plugin: (edt) => {
+                edt.Blocks.add('custom-cleanup-block', { label: 'Cleanup', content: '<div>cleanup</div>' });
+                return ({ cleanup }) => {
+                  cleanup();
+                  cleanupSpy();
+                };
+              },
+            },
+          ],
+        });
+
+        editor.Plugins.remove('custom-cleanup-plugin');
+
+        expect(cleanupSpy).toHaveBeenCalledTimes(1);
+        expect(editor.Blocks.get('custom-cleanup-block')).toBeFalsy();
+      });
+
       // Problems with iframe loading
       test('Init new editor with custom plugin overrides default commands', () => {
         var editor,
@@ -620,6 +722,20 @@ describe('GrapesJS', () => {
           grapesjs.init({
             ...config,
             plugins: [usePlugin(pluginName, { cVal: optionValue })],
+          });
+          expect(varToTest).toEqual(optionValue);
+        });
+
+        test('Execute named plugin from plugin descriptor', () => {
+          let varToTest = '';
+          const optionValue = 'TEST-DESC';
+          const pluginName = 'descriptor-plugin-name';
+          grapesjs.plugins.add(pluginName, (edt, opts = {}) => {
+            varToTest = opts.cVal || '';
+          });
+          grapesjs.init({
+            ...config,
+            plugins: [{ id: pluginName, plugin: usePlugin(pluginName, { cVal: optionValue }) }],
           });
           expect(varToTest).toEqual(optionValue);
         });

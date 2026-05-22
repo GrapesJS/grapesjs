@@ -142,6 +142,16 @@ const TypeableCollection = {
       this.getTypes().unshift(definition);
     }
   },
+
+  removeType(id) {
+    const type = this.getType(id);
+    if (!type) return;
+
+    const index = this.getTypes().indexOf(type);
+    index >= 0 && this.getTypes().splice(index, 1);
+
+    return type;
+  },
 };
 
 export default TypeableCollection;

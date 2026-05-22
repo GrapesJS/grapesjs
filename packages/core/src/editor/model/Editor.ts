@@ -32,6 +32,7 @@ import CodeManagerModule from '../../code_manager';
 import UndoManagerModule from '../../undo_manager';
 import RichTextEditorModule from '../../rich_text_editor';
 import CommandsModule from '../../commands';
+import PluginManager from '../../plugin_manager';
 import StyleManager from '../../style_manager';
 import CssRule from '../../css_composer/model/CssRule';
 import { HTMLGeneratorBuildOptions } from '../../code_manager/model/HtmlGenerator';
@@ -68,6 +69,7 @@ const deps: (new (em: EditorModel) => IModule)[] = [
   LayerManager,
   CanvasModule,
   CommandsModule,
+  PluginManager,
   BlockManager,
   DataSourceManager,
 ];
@@ -157,6 +159,10 @@ export default class EditorModel extends Model {
 
   get Commands(): CommandsModule {
     return this.get('Commands');
+  }
+
+  get Plugins(): PluginManager {
+    return this.get('PluginManager');
   }
 
   get Keymaps(): KeymapsModule {

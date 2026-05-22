@@ -1,7 +1,7 @@
 import { isElement } from 'underscore';
 import Editor from './editor';
 import { EditorConfig } from './editor/config/config';
-import PluginManager, { Plugin, getPlugin, logPluginWarn } from './plugin_manager';
+import { PluginInput, legacyGlobalPlugins, usePlugin as pluginUsePlugin } from './plugin_manager';
 import $ from './utils/cash-dom';
 import polyfills from './utils/polyfills';
 
@@ -11,27 +11,15 @@ export interface InitEditorConfig extends EditorConfig {
 
 polyfills();
 
-const plugins = new PluginManager();
 const editors: Editor[] = [];
-
-export const usePlugin = <P extends Plugin<any> | string>(plugin: P, opts?: P extends Plugin<infer C> ? C : {}) => {
-  let pluginResult = getPlugin(plugin, plugins);
-
-  return (editor: Editor) => {
-    if (pluginResult) {
-      pluginResult(editor, opts || {});
-    } else {
-      logPluginWarn(editor, plugin as string);
-    }
-  };
-};
+export const usePlugin = pluginUsePlugin;
 
 export const grapesjs = {
   $,
 
   editors,
 
-  plugins,
+  plugins: legacyGlobalPlugins,
 
   usePlugin,
 
@@ -71,16 +59,7 @@ export const grapesjs = {
     em.initModules();
 
     // Load plugins
-    initConfig.plugins!.forEach((pluginId) => {
-      const plugin = getPlugin(pluginId, plugins);
-      const plgOptions = initConfig.pluginsOpts![pluginId as string] || {};
-
-      if (plugin) {
-        plugin(editor, plgOptions);
-      } else {
-        logPluginWarn(editor, pluginId as string);
-      }
-    });
+    initConfig.plugins?.forEach((pluginInput) => editor.Plugins.add(pluginInput as PluginInput));
 
     // Execute `onLoad` on modules once all plugins are initialized.
     // A plugin might have extended/added some custom type so this
@@ -97,16 +76,16 @@ export const grapesjs = {
  * @deprecated Changed to CategoryProperties
  */
 export type { CategoryProperties as BlockCategoryProperties } from './abstract/ModuleCategory';
-export type { ComponentDragEventProps } from './commands/view/ComponentDrag';
 export type { CommandRegistryRun, CommandRegistryStop } from './commands/registry';
+export type { ComponentDragEventProps } from './commands/view/ComponentDrag';
 
 // Exports for TS
+export type { default as Categories } from './abstract/ModuleCategories';
+export type { default as Category } from './abstract/ModuleCategory';
 export type { default as Asset } from './asset_manager/model/Asset';
 export type { default as Assets } from './asset_manager/model/Assets';
 export type { default as Block } from './block_manager/model/Block';
 export type { default as Blocks } from './block_manager/model/Blocks';
-export type { default as Categories } from './abstract/ModuleCategories';
-export type { default as Category } from './abstract/ModuleCategory';
 export type { default as Canvas } from './canvas/model/Canvas';
 export type { default as CanvasSpot } from './canvas/model/CanvasSpot';
 export type { default as CanvasSpots } from './canvas/model/CanvasSpots';
@@ -114,6 +93,30 @@ export type { default as Frame } from './canvas/model/Frame';
 export type { default as Frames } from './canvas/model/Frames';
 export type { default as CssRule } from './css_composer/model/CssRule';
 export type { default as CssRules } from './css_composer/model/CssRules';
+export type { default as DataSourceManager } from './data_sources';
+export type { default as ComponentDataVariable } from './data_sources/model/ComponentDataVariable';
+export type { default as ComponentWithCollectionsState } from './data_sources/model/ComponentWithCollectionsState';
+export type { ComponentWithDataResolver } from './data_sources/model/ComponentWithDataResolver';
+export type { default as ComponentDataCondition } from './data_sources/model/conditional_variables/ComponentDataCondition';
+export type {
+  DataCondition,
+  DataConditionProps,
+  ExpressionProps,
+  LogicGroupProps,
+} from './data_sources/model/conditional_variables/DataCondition';
+export type { default as ComponentDataCollection } from './data_sources/model/data_collection/ComponentDataCollection';
+export type { default as DataRecord } from './data_sources/model/DataRecord';
+export type { default as DataRecords } from './data_sources/model/DataRecords';
+export type { default as DataSource } from './data_sources/model/DataSource';
+export type { default as DataSources } from './data_sources/model/DataSources';
+export type { default as DataVariable } from './data_sources/model/DataVariable';
+export type {
+  DataBindingImportAction,
+  DataBindingImportContext,
+  DataBindingImportPolicy,
+  DataBindingImportSource,
+  DataBindingKind,
+} from './data_sources/types';
 export type { default as Device } from './device_manager/model/Device';
 export type { default as Devices } from './device_manager/model/Devices';
 export type { default as ComponentManager } from './dom_components';
@@ -133,47 +136,23 @@ export type {
   CustomParserCodeContext,
   CustomParserCodeFunction,
   HTMLParseResult,
-  ParsedNode,
   ParsedCssRule,
+  ParsedNode,
 } from './parser/types';
 export type { default as Selector } from './selector_manager/model/Selector';
 export type { default as Selectors } from './selector_manager/model/Selectors';
 export type { default as State } from './selector_manager/model/State';
 export type { default as Properties } from './style_manager/model/Properties';
 export type { default as Property } from './style_manager/model/Property';
+export type { default as PropertyComposite } from './style_manager/model/PropertyComposite';
+export type { default as PropertyNumber } from './style_manager/model/PropertyNumber';
 export type { default as PropertyRadio } from './style_manager/model/PropertyRadio';
 export type { default as PropertySelect } from './style_manager/model/PropertySelect';
-export type { default as PropertyNumber } from './style_manager/model/PropertyNumber';
 export type { default as PropertySlider } from './style_manager/model/PropertySlider';
-export type { default as PropertyComposite } from './style_manager/model/PropertyComposite';
 export type { default as PropertyStack } from './style_manager/model/PropertyStack';
 export type { default as Sector } from './style_manager/model/Sector';
 export type { default as Sectors } from './style_manager/model/Sectors';
 export type { default as Trait } from './trait_manager/model/Trait';
 export type { default as Traits } from './trait_manager/model/Traits';
-export type { default as DataSourceManager } from './data_sources';
-export type { default as DataSources } from './data_sources/model/DataSources';
-export type { default as DataSource } from './data_sources/model/DataSource';
-export type { default as DataRecord } from './data_sources/model/DataRecord';
-export type { default as DataRecords } from './data_sources/model/DataRecords';
-export type { default as DataVariable } from './data_sources/model/DataVariable';
-export type { default as ComponentDataVariable } from './data_sources/model/ComponentDataVariable';
-export type { default as ComponentWithCollectionsState } from './data_sources/model/ComponentWithCollectionsState';
-export type { ComponentWithDataResolver } from './data_sources/model/ComponentWithDataResolver';
-export type { default as ComponentDataCollection } from './data_sources/model/data_collection/ComponentDataCollection';
-export type { default as ComponentDataCondition } from './data_sources/model/conditional_variables/ComponentDataCondition';
-export type {
-  DataCondition,
-  LogicGroupProps,
-  DataConditionProps,
-  ExpressionProps,
-} from './data_sources/model/conditional_variables/DataCondition';
-export type {
-  DataBindingImportAction,
-  DataBindingImportContext,
-  DataBindingImportPolicy,
-  DataBindingImportSource,
-  DataBindingKind,
-} from './data_sources/types';
 
 export default grapesjs;

@@ -67,6 +67,7 @@ import ModalModule from '../modal_dialog';
 import LayerManager from '../navigator';
 import PageManager from '../pages';
 import PanelManager from '../panels';
+import PluginManager from '../plugin_manager';
 import ParserModule from '../parser';
 import { CustomParserCss } from '../parser/config/config';
 import RichTextEditorModule from '../rich_text_editor';
@@ -131,6 +132,9 @@ export default class Editor implements IBaseModule<EditorConfig> {
   }
   get Commands(): CommandsModule {
     return this.em.Commands;
+  }
+  get Plugins(): PluginManager {
+    return this.em.Plugins;
   }
   get Keymaps(): KeymapsModule {
     return this.em.Keymaps;

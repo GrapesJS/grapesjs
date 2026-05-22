@@ -636,6 +636,10 @@ export default class StyleManager extends ItemManagerModule<
     this.properties.addType(id, definition);
   }
 
+  removeType(id: string) {
+    return this.properties.removeType(id);
+  }
+
   /**
    * Get type
    * @param {string} id Type ID

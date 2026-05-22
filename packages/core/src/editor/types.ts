@@ -12,6 +12,7 @@ import { ModalEvent, ModalEventCallback } from '../modal_dialog/types';
 import { LayerEvent, LayerEventCallback } from '../navigator/types';
 import { PageEvent, PagesEventCallback } from '../pages/types';
 import { ParserEvent, ParserEventCallback } from '../parser/types';
+import { PluginEvent, PluginsEventCallback } from '../plugin_manager/types';
 import { RichTextEditorEvent, RichTextEditorEventCallback } from '../rich_text_editor';
 import { SelectorEvent, SelectorEventCallback } from '../selector_manager/types';
 import type { ProjectData } from '../storage_manager';
@@ -41,6 +42,7 @@ type EditorBuiltInEvents =
   | LayerEvent
   | PageEvent
   | ParserEvent
+  | PluginEvent
   | StyleManagerEvent
   | StorageEvent
   | CanvasEvent
@@ -109,6 +111,7 @@ export interface EditorEventCallbacks
     ModalEventCallback,
     PagesEventCallback,
     ParserEventCallback,
+    PluginsEventCallback,
     RichTextEditorEventCallback,
     SelectorEventCallback,
     StorageEventCallback,

@@ -285,6 +285,10 @@ export default class AssetManager extends ItemManagerModule<AssetManagerConfig, 
     this.getAll().addType(id, definition);
   }
 
+  removeType(id: string) {
+    return this.getAll().removeType(id);
+  }
+
   /**
    * Get type
    * @param {string} id Type ID

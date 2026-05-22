@@ -1,83 +1,264 @@
-import { isString } from 'underscore';
-import Editor from '../editor';
-import { getGlobal } from '../utils/mixins';
+import { isFunction, isString } from 'underscore';
+import { ItemManagerModule, ModuleConfig } from '../abstract/Module';
+import BlocksEvents from '../block_manager/types';
+import { ComponentsEvents } from '../dom_components/types';
+import DeviceEvents from '../device_manager/types';
+import EditorModel from '../editor/model/Editor';
+import { KeymapsEvents } from '../keymaps/types';
+import { StyleManagerEvents } from '../style_manager/types';
+import PluginModel, { createPluginAdded } from './model/Plugin';
+import Plugins from './model/Plugins';
+import {
+  Plugin,
+  PluginAdded,
+  PluginCleanup,
+  PluginCleanupHandler,
+  PluginDescriptor,
+  PluginInput,
+  PluginOptions,
+  PluginWithMeta,
+  PluginsEvents,
+} from './types';
+import {
+  addLegacyPlugin,
+  getLegacyPlugin,
+  getLegacyPlugins,
+  getPluginId,
+  getPlugin,
+  isPluginDescriptor,
+  isPluginFunction,
+  logPluginWarn,
+  legacyGlobalPlugins,
+  unwrapPluginMeta,
+  usePlugin,
+} from './utils';
 
-type PluginOptions = Record<string, any>;
+export type {
+  Plugin,
+  PluginAdded,
+  PluginCleanup,
+  PluginCleanupHandler,
+  PluginDescriptor,
+  PluginInput,
+  PluginOptions,
+  PluginWithMeta,
+};
+export { addLegacyPlugin, getLegacyPlugin, getLegacyPlugins, getPlugin, legacyGlobalPlugins, logPluginWarn, usePlugin };
 
-export type Plugin<T extends PluginOptions = {}> = (editor: Editor, config: T) => void;
+type PluginTarget = string | Plugin<any> | PluginModel;
 
-const getPluginById = (pluginId: string, plugins: PluginManager) => {
-  let result = plugins.get(pluginId);
+export default class PluginManager extends ItemManagerModule<ModuleConfig, Plugins> {
+  events = PluginsEvents;
+  storageKey = '';
 
-  // Try to search in global context
-  if (!result) {
-    const wplg = (getGlobal() as any)[pluginId];
-    result = wplg?.default || wplg;
+  constructor(em: EditorModel) {
+    super(em, 'PluginManager', new Plugins(), PluginsEvents, {});
   }
 
-  return result;
-};
+  get editor() {
+    return this.em.getEditor();
+  }
 
-export const getPlugin = (plugin: string | Plugin<any>, plugins: PluginManager) => {
-  return isString(plugin)
-    ? getPluginById(plugin, plugins)
-    : (plugin as unknown as { default: Plugin<any> })?.default || plugin;
-};
+  private getConfigPluginOptions(id: string, sourcePlugin: string | Plugin<any>) {
+    const pluginsOpts = this.editor.getConfig().pluginsOpts || {};
+    const inlineKey = isFunction(sourcePlugin) ? sourcePlugin.toString() : '';
+    return pluginsOpts[id] || (inlineKey ? pluginsOpts[inlineKey] || {} : {});
+  }
 
-export const logPluginWarn = (editor: Editor, plugin: string) => {
-  editor.getModel().logWarning(`Plugin ${plugin} not found`, {
-    context: 'plugins',
-    plugin,
-  });
-};
+  private generatePluginId() {
+    return `gjs-plugin:${this._createId(8)}`;
+  }
 
-export default class PluginManager {
-  plugins: Record<string, Plugin> = {};
+  private resolvePluginId(input: string | Plugin<any>, plugin: Plugin<any>, explicitId?: string) {
+    return explicitId || (isString(input) ? input : '') || getPluginId(plugin) || this.generatePluginId();
+  }
 
-  /**
-   * Add new plugin. Plugins could not be overwritten
-   * @param {string} id Plugin ID
-   * @param {Function} plugin Function which contains all plugin logic
-   * @return {Function} The plugin function
-   * @deprecated Don't use named plugins, create plugins as simple functions. More about [Plugins](https://grapesjs.com/docs/modules/Plugins.html)
-   * @example
-   * PluginManager.add('some-plugin', function(editor) {
-   *   editor.Commands.add('new-command', {
-   *     run:  function(editor, senderBtn){
-   *       console.log('Executed new-command');
-   *     }
-   *   })
-   * });
-   */
-  add<T extends PluginOptions>(id: string, plugin: Plugin<T>) {
-    const plg = this.get(id);
+  private resolvePluginTarget(target: PluginTarget) {
+    if (target instanceof PluginModel) return target;
 
-    if (plg) {
-      return plg;
+    if (isString(target)) return this.get(target);
+
+    const { plugin } = unwrapPluginMeta(target);
+    if (!isPluginFunction(plugin)) return;
+
+    return this.getAll().find((item) => item.get('plugin') === plugin);
+  }
+
+  private normalizePlugin(input: PluginInput, options: PluginOptions = {}) {
+    const descriptor = isPluginDescriptor(input) ? input : undefined;
+    const sourcePlugin = (descriptor ? descriptor.plugin : input) as string | Plugin<any>;
+    const explicitId = descriptor?.id || '';
+    const unwrapped = unwrapPluginMeta(sourcePlugin);
+    const resolvedPlugin = getPlugin(unwrapped.plugin);
+    let normalized;
+
+    if (!resolvedPlugin || !isPluginFunction(resolvedPlugin)) {
+      const pluginId = isString(unwrapped.plugin) ? unwrapped.plugin : getPluginId(unwrapped.plugin) || explicitId;
+      if (explicitId) {
+        throw new Error(`Plugin ${explicitId} not found`);
+      }
+      logPluginWarn(this.editor, pluginId || 'unknown');
+    } else {
+      const id = explicitId || this.resolvePluginId(sourcePlugin, resolvedPlugin);
+      normalized = {
+        id,
+        plugin: resolvedPlugin,
+        options: {
+          ...this.getConfigPluginOptions(id, sourcePlugin),
+          ...unwrapped.options,
+          ...options,
+        },
+      };
     }
 
-    // @ts-ignore
-    this.plugins[id] = plugin;
+    return normalized;
+  }
 
+  private createAddedTracker() {
+    const added = createPluginAdded();
+    const cleanup: PluginCleanup[] = [];
+    const { editor } = this;
+    const listeners: Array<[string, (...args: any[]) => void]> = [];
+    const listen = (event: string, callback: (...args: any[]) => void) => {
+      editor.on(event, callback);
+      listeners.push([event, callback]);
+    };
+
+    listen(BlocksEvents.add, (block: any) => {
+      const id = block.get?.('id');
+      if (!id || added.blocks.includes(id)) return;
+      added.blocks.push(id);
+      cleanup.push(() => editor.Blocks.remove(id));
+    });
+
+    listen(KeymapsEvents.add, (keymap: any) => {
+      const id = keymap.id;
+      if (!id || added.keymaps.includes(id)) return;
+      added.keymaps.push(id);
+      cleanup.push(() => editor.Keymaps.remove(id));
+    });
+
+    listen(ComponentsEvents.typeAdd, (type: any) => {
+      const id = type?.id;
+      if (!id || added.componentTypes.includes(id)) return;
+      added.componentTypes.push(id);
+      cleanup.push(() => editor.Components.removeType(id));
+    });
+
+    listen(DeviceEvents.add, (device: any) => {
+      const id = device?.id || device?.get?.('id');
+      if (!id || added.devices.includes(id)) return;
+      added.devices.push(id);
+      cleanup.push(() => editor.Devices.remove(id));
+    });
+
+    listen(StyleManagerEvents.sectorAdd, (sector: any) => {
+      const id = sector?.id || sector?.get?.('id');
+      if (!id || added.styleSectors.includes(id)) return;
+      added.styleSectors.push(id);
+      cleanup.push(() => editor.StyleManager.removeSector(id));
+    });
+
+    listen(StyleManagerEvents.propertyAdd, (property: any) => {
+      const sectorId = property?.collection?.sector?.get?.('id');
+      const id = property?.get?.('property') || property?.get?.('id');
+      const alreadyAdded = added.styleProperties.some((item) => item.sectorId === sectorId && item.id === id);
+      if (!sectorId || !id || alreadyAdded) return;
+      added.styleProperties.push({ sectorId, id });
+      cleanup.push(() => editor.StyleManager.removeProperty(sectorId, id));
+    });
+
+    return {
+      added,
+      stop: () => listeners.forEach(([event, callback]) => editor.off(event, callback)),
+      cleanup: () => {
+        cleanup
+          .slice()
+          .reverse()
+          .forEach((cb) => cb());
+      },
+    };
+  }
+
+  add(input: PluginInput, options: PluginOptions = {}) {
+    const normalized = this.normalizePlugin(input, options);
+    if (!normalized) return;
+
+    const existing = this.get(normalized.id);
+    if (existing) return existing;
+
+    const tracking = this.createAddedTracker();
+    let result: unknown;
+
+    try {
+      result = normalized.plugin(this.editor, normalized.options);
+    } catch (error) {
+      tracking.stop();
+      tracking.cleanup();
+      throw error;
+    }
+
+    tracking.stop();
+
+    const plugin = new PluginModel({
+      id: normalized.id,
+      plugin: normalized.plugin,
+      options: normalized.options,
+      added: tracking.added,
+      cleanup: () => {},
+    });
+
+    let cleaned = false;
+    const builtInCleanup = () => {
+      if (cleaned) return;
+      cleaned = true;
+      tracking.cleanup();
+    };
+
+    const cleanup = () => {
+      if (cleaned) return;
+      const customCleanup = isFunction(result) ? result : null;
+
+      if (customCleanup) {
+        customCleanup({
+          cleanup: builtInCleanup,
+          editor: this.editor,
+          plugin,
+        });
+      } else {
+        builtInCleanup();
+      }
+    };
+
+    plugin.set('cleanup', cleanup);
+    this.all.add(plugin);
     return plugin;
   }
 
-  /**
-   * Returns plugin by ID
-   * @param  {string} id Plugin ID
-   * @return {Function|undefined} Plugin
-   * @example
-   * var plugin = PluginManager.get('some-plugin');
-   * plugin(editor);
-   */
-  get<T extends PluginOptions>(id: string): Plugin<T> | undefined {
-    return this.plugins[id];
+  get(id: string): PluginModel | undefined {
+    return this.all.get(id);
   }
 
-  /**
-   * Returns object with all plugins
-   */
   getAll() {
-    return this.plugins;
+    return [...this.all.models] as PluginModel[];
+  }
+
+  remove(target: PluginTarget, opts: Record<string, any> = {}) {
+    const plugin = this.resolvePluginTarget(target);
+    if (!plugin) return;
+
+    const { em, events } = this;
+    const rm = () => {
+      plugin.get('cleanup')?.();
+      this.all.remove(plugin, opts);
+      return plugin;
+    };
+
+    !opts.silent && em.trigger(events.removeBefore, plugin, rm, opts);
+    return !opts.abort ? rm() : undefined;
+  }
+
+  destroy() {
+    this.__destroy();
   }
 }
