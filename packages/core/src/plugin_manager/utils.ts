@@ -63,8 +63,12 @@ export const findGlobalPluginId = (plugin: Plugin<any>) => {
   const globalPlugins = getGlobal() as Record<string, any>;
 
   return Object.keys(globalPlugins).find((id) => {
-    const globalPlugin = globalPlugins[id];
-    return globalPlugin === plugin || globalPlugin?.default === plugin;
+    try {
+      const globalPlugin = globalPlugins[id];
+      return globalPlugin === plugin || globalPlugin?.default === plugin;
+    } catch (error) {
+      return false;
+    }
   });
 };
 

@@ -307,9 +307,9 @@ export abstract class ItemManagerModule<
 
   __onAllEvent() {}
 
-  _createId(len = 16) {
+  _createId(len = 16, increase?: number) {
     const all = this.getAll();
-    const ln = all.length + len;
+    const ln = (increase ?? all.length) + len;
     const allMap = this.getAllMap();
     let id;
 

@@ -31,7 +31,7 @@ export default class PluginManager extends ItemManagerModule<ModuleConfig, Plugi
   }
 
   private generatePluginId() {
-    return `gjs-plugin:${this._createId(8)}`;
+    return `gjs-plugin:${this._createId(16, 0)}`;
   }
 
   private resolvePluginId(input: string | Plugin<any>, plugin: Plugin<any>, explicitId?: string) {
