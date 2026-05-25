@@ -62,6 +62,8 @@ import {
   ComponentAdd,
   ComponentDefinition,
   ComponentDefinitionDefined,
+  ComponentFindOptions,
+  ComponentMatcher,
   ComponentOptions,
   ComponentProperties,
   DragMode,
@@ -78,6 +80,11 @@ export interface CheckIdOptions {
   idMap?: PrevToNewIdMap;
   updatedIds?: Record<string, ComponentDefinitionDefined[]>;
 }
+
+const getComponentMatcher = (query: ComponentMatcher) => (isString(query) ? (cmp: Component) => cmp.is(query) : query);
+
+const getComponentFindMax = ({ max }: ComponentFindOptions = {}) =>
+  typeof max === 'number' && isFinite(max) && max > 0 ? Math.max(1, Math.floor(max)) : undefined;
 
 const escapeRegExp = (str: string) => {
   return str.replace(/[|\\{}()[\]^$+*?.]/g, '\\$&');
@@ -620,19 +627,40 @@ export default class Component extends StyleableModel<ComponentProperties> {
    * Find all inner components by component type.
    * The advantage of this method over `find` is that you can use it
    * also before rendering the component
-   * @param {String} type Component type
+   * @param {String|Function} query Component type or matcher function
+   * @param {Object} [opts={}] Search options
+   * @param {Number} [opts.max] Maximum number of matches before exiting
    * @returns {Array<Component>}
    * @example
    * const allImages = component.findType('image');
    * console.log(allImages[0]) // prints the first found component
+   * const someComponents = component.findType((cmp) => cmp.getType() === 'something', { max: 2 });
    */
-  findType(type: string) {
+  findType(query: ComponentMatcher, opts: ComponentFindOptions = {}) {
     const result: Component[] = [];
-    const find = (components: Components) =>
+    const matcher = getComponentMatcher(query);
+    const max = getComponentFindMax(opts);
+    const find = (components: Components) => {
+      let stop = false;
+
       components.forEach((item) => {
-        item.is(type) && result.push(item);
-        find(item.components());
+        if (stop) return;
+
+        if (matcher(item)) {
+          result.push(item);
+
+          if (max && result.length >= max) {
+            stop = true;
+            return;
+          }
+        }
+
+        stop = find(item.components()) || stop;
       });
+
+      return stop;
+    };
+
     find(this.components());
     return result;
   }
@@ -640,16 +668,17 @@ export default class Component extends StyleableModel<ComponentProperties> {
   /**
    * Find the first inner component by component type.
    * If no component is found, it returns `undefined`.
-   * @param {String} type Component type
+   * @param {String|Function} query Component type or matcher function
    * @returns {Component|undefined}
    * @example
    * const image = component.findFirstType('image');
    * if (image) {
    *  console.log(image);
    * }
+   * const firstImage = component.findFirstType((cmp) => cmp.is('image'));
    */
-  findFirstType(type: string): Component | undefined {
-    return this.findType(type).at(0);
+  findFirstType(query: ComponentMatcher): Component | undefined {
+    return this.findType(query, { max: 1 }).at(0);
   }
 
   /**
@@ -670,16 +699,18 @@ export default class Component extends StyleableModel<ComponentProperties> {
    * Find the closest parent component by its type.
    * The advantage of this method over `closest` is that you can use it
    * also before rendering the component
-   * @param {String} type Component type
+   * @param {String|Function} query Component type or matcher function
    * @returns {Component} Found component, otherwise `undefined`
    * @example
    * const Section = component.closestType('section');
    * console.log(Section);
+   * const namedSection = component.closestType((cmp) => cmp.getName() === 'Section');
    */
-  closestType(type: string) {
+  closestType(query: ComponentMatcher) {
+    const matcher = getComponentMatcher(query);
     let parent = this.parent();
 
-    while (parent && !parent.is(type)) {
+    while (parent && !matcher(parent)) {
       parent = parent.parent();
     }
 

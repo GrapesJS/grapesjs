@@ -273,6 +273,63 @@ describe('Component', () => {
     expect(result.class).toEqual(undefined);
   });
 
+  test('findType returns all matching components in depth-first order', () => {
+    const image1 = new ComponentImage({}, compOpts);
+    const group = new Component({ type: 'group' }, compOpts);
+    const text = new ComponentText({}, compOpts);
+    const image2 = new ComponentImage({}, compOpts);
+
+    group.append([text, image2]);
+    obj.append([image1, group]);
+
+    expect(obj.findType('image')).toEqual([image1, image2]);
+  });
+
+  test('findType accepts a predicate matcher', () => {
+    const target1 = new Component({ type: 'something' }, compOpts);
+    const group = new Component({ type: 'group' }, compOpts);
+    const target2 = new Component({ type: 'something' }, compOpts);
+    const text = new ComponentText({}, compOpts);
+
+    group.append([text, target2]);
+    obj.append([target1, group]);
+
+    expect(obj.findType((cmp) => cmp.getType() === 'something')).toEqual([target1, target2]);
+  });
+
+  test('findType supports max occurrences', () => {
+    const target1 = new Component({ type: 'something' }, compOpts);
+    const group = new Component({ type: 'group' }, compOpts);
+    const target2 = new Component({ type: 'something' }, compOpts);
+    const target3 = new Component({ type: 'something' }, compOpts);
+
+    group.append(target2);
+    obj.append([target1, group, target3]);
+
+    expect(obj.findType((cmp) => cmp.getType() === 'something', { max: 2 })).toEqual([target1, target2]);
+  });
+
+  test('findType stops traversing once max occurrences are reached', () => {
+    const target = new Component({ type: 'something' }, compOpts);
+    const nested = new Component({ type: 'nested' }, compOpts);
+    const sibling = new Component({ type: 'other' }, compOpts);
+    let calls = 0;
+
+    target.append(nested);
+    obj.append([target, sibling]);
+
+    const result = obj.findType(
+      (cmp) => {
+        calls++;
+        return cmp.getType() === 'something';
+      },
+      { max: 1 },
+    );
+
+    expect(result).toEqual([target]);
+    expect(calls).toBe(1);
+  });
+
   test('findFirstType returns first component of specified type', () => {
     const image1 = new ComponentImage({}, compOpts);
     const text = new ComponentText({}, compOpts);
@@ -297,6 +354,47 @@ describe('Component', () => {
   test('findFirstType returns undefined for empty component', () => {
     const result = obj.findFirstType('div');
     expect(result).toBeUndefined();
+  });
+
+  test('findFirstType accepts a predicate matcher', () => {
+    const text = new ComponentText({}, compOpts);
+    const image = new ComponentImage({}, compOpts);
+
+    obj.append([text, image]);
+
+    expect(obj.findFirstType((cmp) => cmp.is('image'))).toBe(image);
+  });
+
+  test('findFirstType returns undefined for a missing predicate match', () => {
+    const text = new ComponentText({}, compOpts);
+
+    obj.append(text);
+
+    expect(obj.findFirstType((cmp) => cmp.is('image'))).toBeUndefined();
+  });
+
+  test('closestType accepts a predicate matcher', () => {
+    const section = new Component({ type: 'section' }, compOpts);
+    const group = new Component({ type: 'group' }, compOpts);
+    const image = new ComponentImage({}, compOpts);
+
+    group.append(image);
+    section.append(group);
+    obj.append(section);
+
+    expect(image.closestType((cmp) => cmp.getType() === 'section')).toBe(section);
+  });
+
+  test('closestType still accepts a string matcher', () => {
+    const section = new Component({ type: 'section' }, compOpts);
+    const group = new Component({ type: 'group' }, compOpts);
+    const image = new ComponentImage({}, compOpts);
+
+    group.append(image);
+    section.append(group);
+    obj.append(section);
+
+    expect(image.closestType('section')).toBe(section);
   });
 
   test('setAttributes', () => {

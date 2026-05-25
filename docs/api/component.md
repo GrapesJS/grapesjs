@@ -177,13 +177,17 @@ also before rendering the component
 
 ### Parameters
 
-*   `type` **[String][1]** Component type
+*   `query` **([String][1] | Function)** Component type or matcher function
+*   `opts` **[Object][2]?** Search options
+*   `opts.max` **[Number][12]?** Maximum number of matches before exiting
 
 ### Examples
 
 ```javascript
 const allImages = component.findType('image');
 console.log(allImages[0]) // prints the first found component
+
+const someComponents = component.findType((cmp) => cmp.getType() === 'something', { max: 2 });
 ```
 
 Returns **[Array][5]\<Component>**&#x20;
@@ -195,7 +199,7 @@ If no component is found, it returns `undefined`.
 
 ### Parameters
 
-*   `type` **[String][1]** Component type
+*   `query` **([String][1] | Function)** Component type or matcher function
 
 ### Examples
 
@@ -204,6 +208,8 @@ const image = component.findFirstType('image');
 if (image) {
  console.log(image);
 }
+
+const firstImage = component.findFirstType((cmp) => cmp.is('image'));
 ```
 
 Returns **(Component | [undefined][11])**&#x20;
@@ -234,13 +240,15 @@ also before rendering the component
 
 ### Parameters
 
-*   `type` **[String][1]** Component type
+*   `query` **([String][1] | Function)** Component type or matcher function
 
 ### Examples
 
 ```javascript
 const Section = component.closestType('section');
 console.log(Section);
+
+const namedSection = component.closestType((cmp) => cmp.getName() === 'Section');
 ```
 
 Returns **Component** Found component, otherwise `undefined`

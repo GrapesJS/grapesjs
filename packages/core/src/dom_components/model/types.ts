@@ -17,6 +17,11 @@ import { ParsedNode } from '../../parser/types';
 export type DragMode = 'translate' | 'absolute' | '';
 
 export type DraggableDroppableFn = (source: Component, target: Component, index?: number) => boolean | void;
+export type ComponentMatcher = string | ((cmp: Component) => boolean);
+
+export interface ComponentFindOptions {
+  max?: number;
+}
 
 export interface AddComponentsOption extends AddOptions, OptionAsDocument {}
 
