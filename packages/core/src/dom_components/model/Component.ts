@@ -641,24 +641,24 @@ export default class Component extends StyleableModel<ComponentProperties> {
     const matcher = getComponentMatcher(query);
     const max = getComponentFindMax(opts);
     const find = (components: Components) => {
-      let stop = false;
+      const { models } = components;
 
-      components.forEach((item) => {
-        if (stop) return;
-
+      for (let i = 0; i < models.length; i++) {
+        const item = models[i];
         if (matcher(item)) {
           result.push(item);
 
           if (max && result.length >= max) {
-            stop = true;
-            return;
+            return true;
           }
         }
 
-        stop = find(item.components()) || stop;
-      });
+        if (find(item.components())) {
+          return true;
+        }
+      }
 
-      return stop;
+      return false;
     };
 
     find(this.components());
