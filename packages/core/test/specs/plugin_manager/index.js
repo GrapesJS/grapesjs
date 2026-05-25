@@ -1,18 +1,23 @@
-import PluginManager from 'plugin_manager';
+import { setupTestEditor } from '../../common';
 
 describe('PluginManager', () => {
   describe('Main', () => {
-    var obj;
-    var val;
-    var testPlugin = (e) => {
-      val = e;
+    let editor;
+    let obj;
+    let val;
+    const testPlugin = (ed) => {
+      val = ed;
     };
 
     beforeEach(() => {
-      obj = new PluginManager();
+      val = null;
+      ({ editor } = setupTestEditor());
+      obj = editor.Plugins;
     });
 
     afterEach(() => {
+      editor?.destroy();
+      editor = null;
       obj = null;
     });
 
@@ -21,19 +26,17 @@ describe('PluginManager', () => {
     });
 
     test('No plugins inside', () => {
-      expect(obj.getAll()).toEqual({});
+      expect(obj.getAll()).toEqual([]);
     });
 
     test('Add new plugin', () => {
-      obj.add('test', testPlugin);
+      obj.add({ id: 'test', plugin: testPlugin });
       expect(obj.get('test')).toBeTruthy();
     });
 
     test('Added plugin is working', () => {
-      obj.add('test', testPlugin);
-      var plugin = obj.get('test');
-      plugin('tval');
-      expect(val).toEqual('tval');
+      obj.add({ id: 'test', plugin: testPlugin });
+      expect(val).toBe(editor);
     });
   });
 });
