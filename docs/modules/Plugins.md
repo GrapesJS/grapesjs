@@ -112,20 +112,20 @@ This is useful when:
 const editor = grapesjs.init({
   // ...
   plugins: [
-    // Load plugin with id...
-    { id: 'my-plugin', plugin: usePlugin(myPlugin, { opt1: 'A' }) }
+    // Load plugin on init...
+    { id: 'my-plugin-1', plugin: usePlugin(myPlugin, { opt1: 'A' }) }
   ],
 });
 
 // ... or add it dynamically
 const plugin = editor.Plugins.add({
-  id: 'my-plugin',
+  id: 'my-plugin-2',
   plugin: usePlugin(myPlugin, { opt1: 'A' }),
 });
 
-const hasPlugin = !!editor.Plugins.get('my-plugin');
+const hasPlugin = !!editor.Plugins.get('my-plugin-2');
 editor.Plugins.getAll();
-editor.Plugins.remove('my-plugin');
+editor.Plugins.remove('my-plugin-2');
 ```
 
 GrapesJS stores active plugins inside `editor.Plugins` module, so the plugin can be identified and removed later.
@@ -137,12 +137,6 @@ editor.Plugins.add({
   id: 'my-plugin',
   plugin: usePlugin(myPlugin, { opt1: 'A' }),
 });
-```
-
-If you don't need the descriptor form, plain plugin functions still work as before.
-
-```ts
-editor.Plugins.add(myPlugin);
 ```
 
 When possible, GrapesJS also tracks editor-level entities added during plugin execution and removes them automatically when the plugin is removed. This currently applies to runtime/editor configuration features such as blocks, component types, keymaps, etc.
