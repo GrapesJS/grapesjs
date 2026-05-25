@@ -4,13 +4,11 @@ import {
   EventCallbackRemove,
   EventCallbackRemoveBefore,
   EventCallbackUpdate,
+  Model,
 } from '../common';
 import type Editor from '../editor';
-import PluginModel from './model/Plugin';
 
 export type PluginOptions = Record<string, any>;
-
-export type PluginTarget = string | Plugin<any> | PluginModel;
 
 export interface PluginAdded {
   blocks: string[];
@@ -25,8 +23,6 @@ export interface PluginAdded {
 }
 
 export type PluginCleanup = () => void;
-
-export type PluginCleanupHandler = (ctx: { cleanup: PluginCleanup; plugin: PluginModel }) => void;
 
 export type PluginResult = void | PluginCleanupHandler | object | null | undefined;
 
@@ -49,6 +45,20 @@ export interface PluginWithMeta<T extends PluginOptions = {}> extends Plugin<T> 
 }
 
 export type PluginInput = string | Plugin<any> | PluginDescriptor;
+
+export interface PluginItemProps {
+  id: string;
+  plugin: Plugin<any>;
+  options: Record<string, any>;
+  added: PluginAdded;
+  cleanup: PluginCleanup;
+}
+
+export type PluginItem = Model<PluginItemProps>;
+
+export type PluginTarget = string | Plugin<any> | PluginItem;
+
+export type PluginCleanupHandler = (ctx: { cleanup: PluginCleanup; plugin: PluginItem }) => void;
 
 export type PluginEvent = `${PluginsEvents}`;
 
@@ -92,11 +102,11 @@ export enum PluginsEvents {
 /**{END_EVENTS}*/
 
 export interface PluginsEventCallback {
-  [PluginsEvents.add]: EventCallbackAdd<PluginModel>;
-  [PluginsEvents.remove]: EventCallbackRemove<PluginModel>;
-  [PluginsEvents.removeBefore]: EventCallbackRemoveBefore<PluginModel>;
-  [PluginsEvents.update]: EventCallbackUpdate<PluginModel>;
-  [PluginsEvents.all]: EventCallbackAll<PluginEvent, PluginModel>;
+  [PluginsEvents.add]: EventCallbackAdd<PluginItem>;
+  [PluginsEvents.remove]: EventCallbackRemove<PluginItem>;
+  [PluginsEvents.removeBefore]: EventCallbackRemoveBefore<PluginItem>;
+  [PluginsEvents.update]: EventCallbackUpdate<PluginItem>;
+  [PluginsEvents.all]: EventCallbackAll<PluginEvent, PluginItem>;
 }
 
 export default PluginsEvents;

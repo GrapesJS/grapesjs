@@ -1,5 +1,5 @@
 import { Model } from '../../common';
-import { Plugin as PluginFn, PluginAdded, PluginCleanup } from '../types';
+import type { PluginItemProps, PluginAdded } from '../types';
 
 export const createPluginAdded = (): PluginAdded => ({
   blocks: [],
@@ -13,19 +13,11 @@ export const createPluginAdded = (): PluginAdded => ({
   styleSectors: [],
 });
 
-export interface PluginProperties {
-  id: string;
-  plugin: PluginFn<any>;
-  options: Record<string, any>;
-  added: PluginAdded;
-  cleanup: PluginCleanup;
-}
-
-export default class Plugin extends Model<PluginProperties> {
-  defaults(): PluginProperties {
+export default class PluginModel extends Model<PluginItemProps> {
+  defaults(): PluginItemProps {
     return {
       id: '',
-      plugin: (() => {}) as PluginFn<any>,
+      plugin: (() => {}) as PluginItemProps['plugin'],
       options: {},
       added: createPluginAdded(),
       cleanup: () => {},

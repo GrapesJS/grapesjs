@@ -9,7 +9,7 @@ import { KeymapsEvents } from '../keymaps/types';
 import { StyleManagerEvents } from '../style_manager/types';
 import PluginModel, { createPluginAdded } from './model/Plugin';
 import Plugins from './model/Plugins';
-import { Plugin, PluginCleanup, PluginInput, PluginOptions, PluginsEvents, PluginTarget } from './types';
+import { Plugin, PluginCleanup, PluginInput, PluginItem, PluginOptions, PluginsEvents, PluginTarget } from './types';
 import { getPlugin, getPluginId, isPluginDescriptor, isPluginFunction, logPluginWarn, unwrapPluginMeta } from './utils';
 
 export default class PluginManager extends ItemManagerModule<ModuleConfig, Plugins> {
@@ -43,7 +43,7 @@ export default class PluginManager extends ItemManagerModule<ModuleConfig, Plugi
 
     if (isString(target)) return this.get(target);
 
-    const { plugin } = unwrapPluginMeta(target);
+    const { plugin } = unwrapPluginMeta(target as Plugin<any>);
     if (!isPluginFunction(plugin)) return;
 
     return this.getAll().find((item) => item.get('plugin') === plugin);
@@ -139,7 +139,7 @@ export default class PluginManager extends ItemManagerModule<ModuleConfig, Plugi
     };
   }
 
-  add(input: PluginInput, options: PluginOptions = {}) {
+  add(input: PluginInput, options: PluginOptions = {}): PluginItem | undefined {
     const normalized = this.normalizePlugin(input, options);
     if (!normalized) return;
 
@@ -194,15 +194,15 @@ export default class PluginManager extends ItemManagerModule<ModuleConfig, Plugi
     return plugin;
   }
 
-  get(id: string): PluginModel | undefined {
+  get(id: string): PluginItem | undefined {
     return this.all.get(id);
   }
 
-  getAll() {
-    return [...this.all.models] as PluginModel[];
+  getAll(): PluginItem[] {
+    return [...this.all.models];
   }
 
-  remove(target: PluginTarget, opts: Record<string, any> = {}) {
+  remove(target: PluginTarget, opts: Record<string, any> = {}): PluginItem | undefined {
     const plugin = this.resolvePluginTarget(target);
     if (!plugin) return;
 

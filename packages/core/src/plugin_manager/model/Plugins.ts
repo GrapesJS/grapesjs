@@ -1,6 +1,6 @@
 import { Collection } from '../../common';
-import Plugin from './Plugin';
+import PluginModel from './Plugin';
 
-export default class Plugins extends Collection<Plugin> {}
+export default class Plugins extends Collection<PluginModel> {}
 
-Plugins.prototype.model = Plugin;
+Plugins.prototype.model = PluginModel;
