@@ -1,7 +1,7 @@
 import EditorModel from '../editor/model/Editor';
 import { DataComponentTypes, DataResolver, DataResolverProps, ResolverFromProps } from './types';
 import { DataCollectionStateMap } from './model/data_collection/types';
-import { DataConditionType, DataCondition } from './model/conditional_variables/DataCondition';
+import { DataConditionType, DataCondition, DataConditionProps } from './model/conditional_variables/DataCondition';
 import DataVariable, { DataVariableProps, DataVariableType } from './model/DataVariable';
 import { ComponentDefinition, ComponentOptions } from '../dom_components/model/types';
 import { serialize } from '../utils/mixins';
@@ -10,20 +10,26 @@ import Component from '../dom_components/model/Component';
 
 export const DEF_DATA_FIELD_ID = 'id';
 
-export function isDataResolverProps(value: any): value is DataResolverProps {
-  return typeof value === 'object' && [DataVariableType, DataConditionType].includes(value?.type);
+type DataVariableTypedProps = DataVariableProps & { type: typeof DataVariableType };
+type DataConditionTypedProps = DataConditionProps & { type: typeof DataConditionType };
+type DataResolverTypedProps = DataVariableTypedProps | DataConditionTypedProps;
+
+const isTypedObject = (value: unknown): value is { type?: unknown } => typeof value === 'object' && value !== null;
+
+export function isDataResolverProps(value: unknown): value is DataResolverTypedProps {
+  return isTypedObject(value) && (value.type === DataVariableType || value.type === DataConditionType);
 }
 
-export function isDataResolver(value: any): value is DataResolver {
+export function isDataResolver(value: unknown): value is DataResolver {
   return value instanceof DataVariable || value instanceof DataCondition;
 }
 
-export function isDataVariable(variable: any): variable is DataVariableProps {
-  return variable?.type === DataVariableType;
+export function isDataVariable(variable: unknown): variable is DataVariableTypedProps {
+  return isTypedObject(variable) && variable.type === DataVariableType;
 }
 
-export function isDataCondition(variable: any) {
-  return variable?.type === DataConditionType;
+export function isDataCondition(variable: unknown): variable is DataConditionTypedProps {
+  return isTypedObject(variable) && variable.type === DataConditionType;
 }
 
 export function valueOrResolve(variable: any, opts: { em: EditorModel; collectionsStateMap: DataCollectionStateMap }) {
