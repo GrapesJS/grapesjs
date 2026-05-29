@@ -582,6 +582,31 @@ describe('Component', () => {
     );
   });
 
+  test('resetFromString re-parents a reused component when its wrapper is removed', () => {
+    const wrapper = dcomp.getWrapper()!;
+    wrapper.components().resetFromString(`<div id="i5y6"><p id="i8sd">Insert your text here</p></div>`);
+
+    const div = wrapper.components().at(0);
+    const paragraph = div.components().at(0);
+    expect(div.getId()).toBe('i5y6');
+    expect(paragraph.getId()).toBe('i8sd');
+    expect(paragraph.parent()).toBe(div);
+
+    // Remove the wrapping div, promoting the reused <p> to a direct child of the wrapper.
+    wrapper.components().resetFromString(`<p id="i8sd">Insert your text here</p>`);
+
+    const allById = dcomp.allById();
+    // The same <p> model instance is reused, not rebuilt.
+    expect(wrapper.components().at(0)).toBe(paragraph);
+    expect(allById['i8sd']).toBe(paragraph);
+    // The removed div is gone from the global registry.
+    expect(allById['i5y6']).toBeUndefined();
+    // The reused <p> reports the wrapper as its parent, not the removed div.
+    expect(paragraph.parent()).toBe(wrapper);
+    expect(paragraph.collection).toBe(wrapper.components());
+    expect(em.getHtml()).toBe('<body><p id="i8sd">Insert your text here</p></body>');
+  });
+
   test('Ability to stop/change propagation chain', () => {
     obj.append({
       removable: false,

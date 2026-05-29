@@ -70,6 +70,8 @@ const getComponentsFromDefs = (
           result = all[id] as any;
           const { onAttributes, onStyle } = updateOptions;
           const component = result as unknown as Component;
+          // Detach the reused model from its old container so re-inserting it updates `collection`/`parent`
+          component.collection?.remove(component, { silent: true } as any);
           const htmlImportOpts = { ...opts, parsedImportSource: 'html' as const };
           tagName && component.set({ tagName }, { ...htmlImportOpts, silent: true });
 
