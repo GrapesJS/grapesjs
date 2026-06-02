@@ -279,7 +279,6 @@ export default class CommandsModule extends Module<CommandsConfig & { pStylePref
       const noStop = prototype.stop === CommandAbstract.prototype.stop;
 
       prototype.noStop = noStop;
-      prototype.id = id;
       this.commands[id] = command;
 
       return this;
@@ -329,7 +328,11 @@ export default class CommandsModule extends Module<CommandsConfig & { pStylePref
     if (isFunction(command)) {
       command = new command(this.config);
       this.commands[id] = command;
-    } else if (!command) {
+    }
+
+    if (command) {
+      command.id = id;
+    } else {
       this.em.logWarning(`'${id}' command not found`);
     }
 

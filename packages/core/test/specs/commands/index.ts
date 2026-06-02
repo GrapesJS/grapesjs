@@ -2,6 +2,7 @@ import type { Editor } from '../../../src';
 import EditorModel from '../../../src/editor/model/Editor';
 import type Commands from '../../../src/commands';
 import type { Command, CommandFunction, CommandOptions } from '../../../src/commands/view/CommandAbstract';
+import CommandAbstract from '../../../src/commands/view/CommandAbstract';
 
 describe('Commands', () => {
   describe('Main', () => {
@@ -169,6 +170,48 @@ describe('Commands', () => {
       // Run the command with default options
       result = obj.run(commName, customOptions);
       expect(result).toEqual({ ...customOptions, ...defaultOptions });
+    });
+
+    test('Command constructor aliases keep independent ids and events', () => {
+      class SharedCommand extends CommandAbstract {
+        run() {
+          return commResultRun;
+        }
+
+        stop() {
+          return commResultStop;
+        }
+      }
+
+      const runSpy = jest.fn();
+      const stopSpy = jest.fn();
+
+      obj.add('core:test', SharedCommand);
+      obj.add('test', SharedCommand);
+
+      expect(obj.get('core:test')?.id).toBe('core:test');
+      expect(obj.get('test')?.id).toBe('test');
+
+      em.on('command:run:core:test', runSpy);
+      em.on('command:stop:core:test', stopSpy);
+
+      obj.run('core:test');
+      expect(obj.isActive('core:test')).toBe(true);
+      expect(obj.isActive('test')).toBe(false);
+      expect(runSpy).toHaveBeenCalledTimes(1);
+
+      obj.stop('core:test');
+      expect(obj.isActive('core:test')).toBe(false);
+      expect(stopSpy).toHaveBeenCalledTimes(1);
+    });
+
+    test('Default command aliases keep their registered ids', () => {
+      expect(obj.get('core:preview')?.id).toBe('core:preview');
+      expect(obj.get('preview')?.id).toBe('preview');
+      expect(obj.get('core:fullscreen')?.id).toBe('core:fullscreen');
+      expect(obj.get('fullscreen')?.id).toBe('fullscreen');
+      expect(obj.get('core:component-outline')?.id).toBe('core:component-outline');
+      expect(obj.get('sw-visibility')?.id).toBe('sw-visibility');
     });
   });
 });
