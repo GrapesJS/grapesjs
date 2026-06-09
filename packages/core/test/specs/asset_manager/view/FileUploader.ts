@@ -1,4 +1,26 @@
-import FileUploader from '../../../../src/asset_manager/view/FileUploader';
+import FileUploader, { isFileAccepted } from '../../../../src/asset_manager/view/FileUploader';
+
+const f = (type: string, name = 'x') => ({ type, name }) as File;
+
+describe('isFileAccepted (#6032)', () => {
+  test('allows everything when accept is empty or */*', () => {
+    expect(isFileAccepted(f('video/mp4', 'a.mp4'), '')).toBe(true);
+    expect(isFileAccepted(f('video/mp4', 'a.mp4'), '*/*')).toBe(true);
+    expect(isFileAccepted(f('video/mp4', 'a.mp4'), undefined)).toBe(true);
+  });
+  test('matches MIME wildcard (image/*)', () => {
+    expect(isFileAccepted(f('image/png', 'a.png'), 'image/*')).toBe(true);
+    expect(isFileAccepted(f('video/mp4', 'a.mp4'), 'image/*')).toBe(false);
+  });
+  test('matches exact MIME and comma lists', () => {
+    expect(isFileAccepted(f('image/png'), 'image/png,image/jpeg')).toBe(true);
+    expect(isFileAccepted(f('image/gif'), 'image/png,image/jpeg')).toBe(false);
+  });
+  test('matches file extensions', () => {
+    expect(isFileAccepted(f('', 'photo.PNG'), '.png')).toBe(true);
+    expect(isFileAccepted(f('', 'clip.mp4'), '.png,.jpg')).toBe(false);
+  });
+});
 
 describe('File Uploader', () => {
   let obj: FileUploader;
@@ -70,6 +92,33 @@ describe('File Uploader', () => {
       view.render();
       expect(view.$el.find('input[type=file]').prop('disabled')).toEqual(false);
       expect(view.uploadFile).toEqual(FileUploader.embedAsBase64);
+    });
+  });
+
+  describe('Drag-drop respects accept (#6032)', () => {
+    const makeView = () => {
+      const customFetch = jest.fn(() => Promise.resolve('[]'));
+      // headers:{} is REQUIRED: direct construction does NOT merge the module's config
+      // defaults, and uploadFile reads `config.headers` before fetching - a missing
+      // headers object throws before customFetch is ever reached.
+      const view = new FileUploader({ config: { upload: 'http://localhost/up', headers: {}, customFetch } });
+      document.body.innerHTML = '<div id="fx"></div>';
+      document.body.querySelector('#fx')!.appendChild(view.render().el);
+      view.$el.find('input[type=file]').attr('accept', 'image/*'); // what OpenAssets sets for images
+      return { view, customFetch };
+    };
+    const drop = (view: FileUploader, file: File) =>
+      view.uploadFile({ dataTransfer: { files: [file] }, preventDefault() {} } as any);
+
+    test('rejects a dropped video (no upload triggered)', () => {
+      const { view, customFetch } = makeView();
+      drop(view, new File(['x'], 'clip.mp4', { type: 'video/mp4' }));
+      expect(customFetch).not.toHaveBeenCalled();
+    });
+    test('still uploads a dropped image', () => {
+      const { view, customFetch } = makeView();
+      drop(view, new File(['x'], 'pic.png', { type: 'image/png' }));
+      expect(customFetch).toHaveBeenCalledTimes(1);
     });
   });
 });

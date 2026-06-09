@@ -6,6 +6,26 @@ import html from '../../utils/html';
 import { AssetManagerConfig } from '../config/config';
 import { UploadFileClb, UploadFileOptions } from '../types';
 
+/**
+ * Check if a file matches an `accept` attribute value.
+ * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/file#accept
+ * Allows everything when empty or a bare wildcard; otherwise supports MIME
+ * wildcards (`image/*`), exact MIME (`image/png`), and extensions (`.png`).
+ */
+export function isFileAccepted(file: File, accept?: string | null): boolean {
+  const acc = (accept || '').trim();
+  if (!acc || acc === '*' || acc === '*/*') return true;
+  const type = (file.type || '').toLowerCase();
+  const name = (file.name || '').toLowerCase();
+  return acc.split(',').some((raw) => {
+    const token = raw.trim().toLowerCase();
+    if (!token) return false;
+    if (token.startsWith('.')) return name.endsWith(token); // extension
+    if (token.endsWith('/*')) return type.startsWith(token.slice(0, -1)); // e.g. "image/"
+    return type === token; // exact MIME
+  });
+}
+
 type FileUploaderTemplateProps = {
   pfx: string;
   title: string;
@@ -141,7 +161,14 @@ export default class FileUploaderView extends View {
    * */
   uploadFile(e: DragEvent, clb?: UploadFileClb, opts?: UploadFileOptions) {
     opts; // Options are not used here but can be used by the custom uploadFile function
-    const files = e.dataTransfer ? e.dataTransfer.files : ((e.target as any)?.files as FileList);
+    const allFiles = e.dataTransfer ? e.dataTransfer.files : ((e.target as any)?.files as FileList);
+    // #6032: the `accept` attribute is not enforced by browsers on drag-drop, so filter here.
+    const accept = this.$el.find('input[type=file]').attr('accept');
+    const files = Array.prototype.filter.call(allFiles || [], (f: File) => isFileAccepted(f, accept)) as File[];
+
+    // All dropped files rejected (e.g. a video on an image upload) -> do nothing.
+    if (allFiles && allFiles.length && !files.length) return;
+
     const { config } = this;
     const { beforeUpload } = config;
 
