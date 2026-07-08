@@ -52,8 +52,10 @@ editor.addComponents([
     components: [
       {
         type: 'data-variable',
-        defaultValue: 'default',
-        path: 'my-datasource.id1.content',
+        dataResolver: {
+          defaultValue: 'default',
+          path: 'my-datasource.id1.content',
+        },
       },
     ],
   },
@@ -76,8 +78,10 @@ editor.addComponents([
     components: [
       {
         type: 'data-variable',
-        defaultValue: 'default',
-        path: 'my-datasource.id1.content',
+        dataResolver: {
+          defaultValue: 'default',
+          path: 'my-datasource.id1.content',
+        },
       },
     ],
     style: {
@@ -261,8 +265,10 @@ editor.addComponents([
     components: [
       {
         type: 'data-variable',
-        defaultValue: 'default',
-        path: 'my-datasource.id1.counter',
+        dataResolver: {
+          defaultValue: 'default',
+          path: 'my-datasource.id1.counter',
+        },
       },
     ],
   },
