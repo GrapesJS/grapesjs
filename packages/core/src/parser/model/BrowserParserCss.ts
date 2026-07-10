@@ -215,7 +215,7 @@ export const parseNode = (el: CSSStyleSheet | CSSRule) => {
       singleAtRule = true;
       atRuleType = AT_RULE_NAMES[type];
       condition = parseCondition(node);
-    } else if (AT_RULE_KEYS.indexOf(`${type}`) >= 0 || (!type && getNestableAtRule(node))) {
+    } else if (AT_RULE_KEYS.indexOf(`${type}`) >= 0 || getNestableAtRule(node)) {
       const subRules = parseNode(node);
       const subAtRuleType = AT_RULE_NAMES[type] || getNestableAtRule(node);
       condition = parseCondition(node);

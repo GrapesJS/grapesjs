@@ -375,8 +375,7 @@ describe('ParserCss', () => {
     expect(obj.parse(str)).toEqual([result]);
   });
 
-  // Unsupported by CSSOM parser
-  test.skip('Parse rule with @container at-rule', () => {
+  test('Parse rule with @container at-rule', () => {
     const atRuleType = 'container';
     const atRuleText = 'somename (min-width: 300px)';
     const input = `@${atRuleType} ${atRuleText} {
@@ -386,17 +385,32 @@ describe('ParserCss', () => {
     const output = [
       {
         selectors: ['cls1'],
-        selectorsAdd: '',
         atRuleType,
         mediaText: atRuleText,
         style: { height: '100px' },
       },
       {
         selectors: ['cls2'],
-        selectorsAdd: '',
         atRuleType,
         mediaText: atRuleText,
         style: { height: '200px' },
+      },
+    ];
+    expect(obj.parse(input)).toEqual(output);
+  });
+
+  test('Parse rule with anonymous @container at-rule', () => {
+    const atRuleType = 'container';
+    const atRuleText = '(min-width: 300px)';
+    const input = `@${atRuleType} ${atRuleText} {
+      .cls1{ height: 100px }
+    }`;
+    const output = [
+      {
+        selectors: ['cls1'],
+        atRuleType,
+        mediaText: atRuleText,
+        style: { height: '100px' },
       },
     ];
     expect(obj.parse(input)).toEqual(output);

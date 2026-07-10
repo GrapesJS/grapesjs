@@ -97,6 +97,16 @@ describe('CssRule', () => {
     expect(obj.toCSS()).toEqual(`@media ${media}{.test1{color:red;}}`);
   });
 
+  test('toCSS keeps the space in a named container rule', () => {
+    const containerText = 'somename (min-width: 300px)';
+    obj.set('atRuleType', 'container');
+    obj.set('mediaText', containerText);
+    obj.getSelectors().add({ name: 'test1' });
+    obj.setStyle({ height: '100px' });
+    expect(obj.getAtRule()).toEqual(`@container ${containerText}`);
+    expect(obj.toCSS()).toEqual(`@container ${containerText}{.test1{height:100px;}}`);
+  });
+
   test('toCSS with a generic at-rule', () => {
     obj.set('atRuleType', 'supports');
     obj.getSelectors().add({ name: 'test1' });
