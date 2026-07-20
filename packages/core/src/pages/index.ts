@@ -276,7 +276,7 @@ export default class PageManager extends ItemManagerModule<PageManagerConfig, Pa
   }
 
   store() {
-    return this.getProjectData();
+    return this.getProjectData(this.getAll().filter((page) => !page.get('skipFromStorage')));
   }
 
   load(data: any) {

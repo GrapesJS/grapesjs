@@ -36,6 +36,10 @@ export default class Frames extends ModuleCollection<Frame> {
     this.forEach((frame) => frame.initRefs());
   }
 
+  toJSON(opts?: Parameters<Frame['toJSON']>[0]) {
+    return this.filter((frame) => !frame.get('skipFromStorage')).map((frame) => frame.toJSON(opts));
+  }
+
   itemLoaded() {
     this.loadedItems++;
 

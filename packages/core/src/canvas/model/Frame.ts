@@ -3,6 +3,7 @@ import CanvasModule from '..';
 import { ModuleModel } from '../../abstract';
 import { BoxRect, PrevToNewIdMap } from '../../common';
 import ComponentWrapper from '../../dom_components/model/ComponentWrapper';
+import { ComponentDefinition } from '../../dom_components/model/types';
 import Page from '../../pages/model/Page';
 import { createId, isComponent, isObject } from '../../utils/mixins';
 import FrameView from '../view/FrameView';
@@ -12,6 +13,21 @@ import CanvasEvents from '../types';
 
 const keyAutoW = '__aw';
 const keyAutoH = '__ah';
+
+export interface FrameProperties {
+  id?: string;
+  component?: string | ComponentDefinition | ComponentDefinition[] | ComponentWrapper;
+  width?: string | number | null;
+  height?: string | number | null;
+  x?: number;
+  y?: number;
+  attributes?: Record<string, unknown>;
+  head?: { tag: string; attributes: any }[];
+  styles?: string | CssRuleJSON[];
+  refFrame?: string | Frame | null;
+  skipFromStorage?: boolean;
+  [key: string]: unknown;
+}
 
 const getDimension = (frame: Frame, type: 'width' | 'height') => {
   const dim = frame.get(type);
@@ -58,7 +74,7 @@ export default class Frame extends ModuleModel<CanvasModule> {
   /**
    * @hideconstructor
    */
-  constructor(module: CanvasModule, attr: any) {
+  constructor(module: CanvasModule, attr: FrameProperties) {
     super(module, attr);
     const { em } = this;
     const { styles, component } = this.attributes;
@@ -254,6 +270,7 @@ export default class Frame extends ModuleModel<CanvasModule> {
     const defaults = result(this, 'defaults');
 
     if (opts.fromUndo) delete obj.component;
+    delete obj.skipFromStorage;
     delete obj.styles;
     delete obj.changesCount;
     obj[keyAutoW] && delete obj.width;

@@ -1,5 +1,6 @@
 import { forEach, result } from 'underscore';
 import { PageManagerConfig } from '../types';
+import type { FrameProperties } from '../../canvas/model/Frame';
 import Frames from '../../canvas/model/Frames';
 import { Model } from '../../common';
 import ComponentWrapper from '../../dom_components/model/ComponentWrapper';
@@ -29,10 +30,20 @@ export interface PageProperties {
    */
   styles?: string | CssRuleJSON[];
 
+  /**
+   * Frames to load with the page.
+   */
+  frames?: FrameProperties[];
+
+  /**
+   * Skip page from project storage.
+   */
+  skipFromStorage?: boolean;
+
   [key: string]: unknown;
 }
 
-export interface PagePropertiesDefined extends Pick<PageProperties, 'id' | 'name'> {
+export interface PagePropertiesDefined extends Pick<PageProperties, 'id' | 'name' | 'skipFromStorage'> {
   frames: Frames;
   [key: string]: unknown;
 }
@@ -47,17 +58,17 @@ export default class Page extends Model<PagePropertiesDefined> {
   }
   em: EditorModel;
 
-  constructor(props: any, opts: { em?: EditorModel; config?: PageManagerConfig } = {}) {
-    super(props, opts);
+  constructor(props: PageProperties, opts: { em?: EditorModel; config?: PageManagerConfig } = {}) {
+    super(props as any, opts);
     const { em } = opts;
-    const defFrame: any = {};
+    const defFrame: FrameProperties = {};
     this.em = em!;
     if (!props.frames) {
       defFrame.component = props.component;
       defFrame.styles = props.styles;
       ['component', 'styles'].map((i) => this.unset(i));
     }
-    const frms: any[] = props.frames || [defFrame];
+    const frms: FrameProperties[] = props.frames || [defFrame];
     const frames = new Frames(em!.Canvas, frms);
     frames.page = this;
     this.set('frames', frames);
@@ -134,6 +145,8 @@ export default class Page extends Model<PagePropertiesDefined> {
   toJSON(opts = {}) {
     const obj = Model.prototype.toJSON.call(this, opts);
     const defaults = result(this, 'defaults');
+
+    delete obj.skipFromStorage;
 
     // Remove private keys
     forEach(obj, (value, key) => {

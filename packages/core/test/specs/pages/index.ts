@@ -281,6 +281,131 @@ describe('Managing pages', () => {
     expect(rule2.getSelectorsString()).toBe(idSel2);
     expect(rule2.getStyle()).toEqual({ color: 'blue' });
   });
+
+  test('Skip pages from project storage while keeping runtime models', () => {
+    const storedPage = pm.add({
+      id: 'stored-page',
+      component: '<div>Stored page</div>',
+    })!;
+    const skippedPage = pm.add({
+      id: 'skipped-page',
+      skipFromStorage: true,
+      frames: [
+        {
+          id: 'skipped-page-frame',
+          component: '<div>Skipped page frame</div>',
+        },
+      ],
+    })!;
+    const storedPage2 = pm.add({
+      id: 'stored-page-2',
+      component: '<div>Stored page 2</div>',
+    })!;
+
+    expect(pm.getAll().map((page) => page.getId())).toEqual([
+      pm.getMain().getId(),
+      storedPage.getId(),
+      skippedPage.getId(),
+      storedPage2.getId(),
+    ]);
+    expect(skippedPage.getFrames().length).toBe(1);
+
+    const storedPages = editor.getProjectData().pages;
+    expect(storedPages.map((page: any) => page.id)).toEqual([
+      pm.getMain().getId(),
+      storedPage.getId(),
+      storedPage2.getId(),
+    ]);
+    expect(storedPages.find((page: any) => page.id === skippedPage.getId())).toBeUndefined();
+    expect(storedPages.every((page: any) => !('skipFromStorage' in page))).toBe(true);
+  });
+
+  test('Skip frames from project storage while keeping runtime models', () => {
+    const page = pm.add({
+      id: 'frames-page',
+      frames: [
+        {
+          id: 'frame-1',
+          component: '<div>Frame 1</div>',
+        },
+        {
+          id: 'frame-2',
+          component: '<div>Frame 2</div>',
+          skipFromStorage: true,
+        },
+        {
+          id: 'frame-3',
+          component: '<div>Frame 3</div>',
+        },
+      ],
+    })!;
+
+    expect(page.getFrames().map((frame) => frame.id)).toEqual(['frame-1', 'frame-2', 'frame-3']);
+
+    const storedPage = editor.getProjectData().pages.find((item: any) => item.id === page.getId());
+    expect(storedPage.frames.map((frame: any) => frame.id)).toEqual(['frame-1', 'frame-3']);
+    expect(storedPage.frames.every((frame: any) => !('skipFromStorage' in frame))).toBe(true);
+    expect(storedPage.frames[0].component).toBeTruthy();
+    expect(storedPage.frames[1].component).toBeTruthy();
+  });
+
+  test('Load project data with skipped pages and frames but omit them on the next store', () => {
+    editor.loadProjectData({
+      assets: [],
+      pages: [
+        {
+          id: 'page-stored',
+          frames: [
+            {
+              id: 'frame-stored',
+              component: '<div>Stored frame</div>',
+            },
+            {
+              id: 'frame-skipped',
+              component: '<div>Skipped frame</div>',
+              skipFromStorage: true,
+            },
+          ],
+        },
+        {
+          id: 'page-skipped',
+          skipFromStorage: true,
+          frames: [
+            {
+              id: 'frame-on-skipped-page',
+              component: '<div>Skipped page frame</div>',
+            },
+          ],
+        },
+      ],
+      styles: [],
+    } as any);
+
+    expect(pm.getAll().map((page) => page.getId())).toEqual(['page-stored', 'page-skipped']);
+    expect(pm.get('page-stored')?.getFrames().map((frame) => frame.id)).toEqual(['frame-stored', 'frame-skipped']);
+    expect(pm.get('page-skipped')?.getFrames().map((frame) => frame.id)).toEqual(['frame-on-skipped-page']);
+
+    const storedPages = editor.getProjectData().pages;
+    expect(storedPages.map((page: any) => page.id)).toEqual(['page-stored']);
+    expect(storedPages[0].frames.map((frame: any) => frame.id)).toEqual(['frame-stored']);
+  });
+
+  test('Do not leak skipFromStorage in direct page/frame serialization', () => {
+    const page = pm.add({
+      id: 'serialized-page',
+      skipFromStorage: false,
+      frames: [
+        {
+          id: 'serialized-frame',
+          component: '<div>Serialized frame</div>',
+          skipFromStorage: false,
+        },
+      ],
+    })!;
+
+    expect(page.toJSON()).not.toHaveProperty('skipFromStorage');
+    expect(page.getMainFrame().toJSON()).not.toHaveProperty('skipFromStorage');
+  });
 });
 
 describe('Pages in canvas', () => {
