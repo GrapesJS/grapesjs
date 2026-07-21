@@ -2,6 +2,7 @@ import { forEach, isEmpty, isNumber, isString, keys, result } from 'underscore';
 import CanvasModule from '..';
 import { ModuleModel } from '../../abstract';
 import { BoxRect, PrevToNewIdMap } from '../../common';
+import type Component from '../../dom_components/model/Component';
 import ComponentWrapper from '../../dom_components/model/ComponentWrapper';
 import { ComponentDefinition } from '../../dom_components/model/types';
 import Page from '../../pages/model/Page';
@@ -16,7 +17,7 @@ const keyAutoH = '__ah';
 
 export interface FrameProperties {
   id?: string;
-  component?: string | ComponentDefinition | ComponentDefinition[] | ComponentWrapper;
+  component?: string | ComponentDefinition | ComponentDefinition[] | Component;
   width?: string | number | null;
   height?: string | number | null;
   x?: number;
@@ -25,6 +26,7 @@ export interface FrameProperties {
   head?: { tag: string; attributes: any }[];
   styles?: string | CssRuleJSON[];
   refFrame?: string | Frame | null;
+  refComponent?: string | Component | null;
   skipFromStorage?: boolean;
   [key: string]: unknown;
 }
@@ -87,7 +89,7 @@ export default class Frame extends ModuleModel<CanvasModule> {
     if (!isComponent(component)) {
       const wrp = isObject(component) ? component : { components: component };
       !wrp.type && (wrp.type = 'wrapper');
-      const Wrapper = domc.getType('wrapper')!.model;
+      const Wrapper = (domc.getType(wrp.type as string) || domc.getType('wrapper')!).model;
       this.set('component', new Wrapper(wrp, modOpts));
     }
 
@@ -128,16 +130,24 @@ export default class Frame extends ModuleModel<CanvasModule> {
     return this.get('refFrame');
   }
 
+  get refComponent(): Component | undefined {
+    return this.get('refComponent');
+  }
+
   get root() {
     const { refFrame } = this;
     return refFrame?.getComponent() || this.getComponent();
   }
 
   initRefs() {
-    const { refFrame } = this;
+    const { refFrame, refComponent, em } = this;
     if (isString(refFrame)) {
       const frame = this.module.framesById[refFrame];
       frame && this.set({ refFrame: frame }, { silent: true });
+    }
+    if (isString(refComponent)) {
+      const component = em.Components.getById(refComponent);
+      component && this.set({ refComponent: component }, { silent: true });
     }
   }
 
@@ -154,7 +164,7 @@ export default class Frame extends ModuleModel<CanvasModule> {
   }
 
   onRemove() {
-    !this.refFrame && this.getComponent().remove({ root: 1 });
+    !this.refFrame && !this.refComponent && this.getComponent().remove({ root: 1 });
   }
 
   changesUp(opt: any = {}) {
@@ -271,6 +281,7 @@ export default class Frame extends ModuleModel<CanvasModule> {
 
     if (opts.fromUndo) delete obj.component;
     delete obj.skipFromStorage;
+    delete obj.refComponent;
     delete obj.styles;
     delete obj.changesCount;
     obj[keyAutoW] && delete obj.width;

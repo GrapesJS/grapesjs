@@ -1,6 +1,6 @@
 import { bindAll, debounce, isFunction, isString } from 'underscore';
 import { ModuleView } from '../../abstract';
-import { BoxRect, ObjectAny } from '../../common';
+import { BoxRect } from '../../common';
 import CssRulesView from '../../css_composer/view/CssRulesView';
 import { type as typeHead } from '../../dom_components/model/ComponentHead';
 import ComponentView from '../../dom_components/view/ComponentView';
@@ -36,6 +36,7 @@ export default class FrameView extends ModuleView<Frame, HTMLIFrameElement> {
   private tools: { [key: string]: HTMLElement } = {};
   private wrapper?: ComponentWrapperView;
   private headView?: ComponentView;
+  private refComponentView?: ComponentView;
   private frameWrapView?: FrameWrapView;
 
   constructor(model: Frame, view?: FrameWrapView) {
@@ -145,8 +146,12 @@ export default class FrameView extends ModuleView<Frame, HTMLIFrameElement> {
     return this.getDoc().querySelector('body') as HTMLBodyElement;
   }
 
+  getRootType() {
+    return this.model.root.get('type') || 'wrapper';
+  }
+
   getWrapper() {
-    return this.getBody().querySelector('[data-gjs-type=wrapper]') as HTMLElement;
+    return (this.wrapper?.el || this.getBody().querySelector(`[data-gjs-type="${this.getRootType()}"]`)) as HTMLElement;
   }
 
   getJsContainer() {
@@ -175,6 +180,19 @@ export default class FrameView extends ModuleView<Frame, HTMLIFrameElement> {
 
   getOffsetViewerEl() {
     return this._getTool('[data-offset]');
+  }
+
+  getComponentView(component: any) {
+    const { Components } = this.em;
+    const type = component.get('type') || 'default';
+    const dt = Components.getTypes();
+    const { view = ComponentView } = Components.getType(type) || Components.getType('default') || {};
+
+    if (!view.getEvents) {
+      view.getEvents = ComponentView.getEvents;
+    }
+
+    return { dt, view };
   }
 
   getRect() {
@@ -220,6 +238,8 @@ export default class FrameView extends ModuleView<Frame, HTMLIFrameElement> {
   remove(...args: any) {
     this._toggleEffects(false);
     this.tools = {};
+    this.refComponentView?.remove();
+    this.refComponentView = undefined;
     this.wrapper?.remove();
     ModuleView.prototype.remove.apply(this, args);
     return this;
@@ -350,6 +370,7 @@ export default class FrameView extends ModuleView<Frame, HTMLIFrameElement> {
     this.renderStyles({ prev: [] });
 
     const colorWarn = '#ffca6f';
+    const rootType = this.getRootType();
 
     append(
       body,
@@ -358,7 +379,7 @@ export default class FrameView extends ModuleView<Frame, HTMLIFrameElement> {
 
       ${hasAutoHeight ? 'body { overflow: hidden }' : ''}
 
-      [data-gjs-type="wrapper"] {
+      [data-gjs-type="${rootType}"] {
         ${!hasAutoHeight ? 'min-height: 100vh;' : ''}
         padding-top: 0.001em;
       }
@@ -426,7 +447,7 @@ export default class FrameView extends ModuleView<Frame, HTMLIFrameElement> {
     </style>`,
     );
     const { root } = model;
-    const { view } = em?.Components?.getType('wrapper') || {};
+    const { view } = this.getComponentView(root);
 
     if (!view) return;
     if (isFunction(config.customRenderer)) {
@@ -497,8 +518,32 @@ export default class FrameView extends ModuleView<Frame, HTMLIFrameElement> {
       this.droppable = new Droppable(em, this.wrapper?.el);
     }
 
+    this.renderRefComponent(rootView);
     this.loaded = true;
     model.trigger('loaded');
+  }
+
+  renderRefComponent(rootView: ComponentView) {
+    const frame = this.model;
+    const refComponent = frame.refComponent;
+    if (!refComponent) return;
+
+    const { dt, view: viewClass } = this.getComponentView(refComponent);
+
+    const view =
+      refComponent.getView(frame) ||
+      new viewClass({
+        model: refComponent,
+        config: {
+          ...refComponent.config,
+          em: this.em,
+          frameView: this,
+        },
+        componentTypes: dt,
+      });
+
+    this.refComponentView = view.render();
+    rootView.getChildrenContainer().appendChild(view.el);
   }
 
   _toggleEffects(enable: boolean) {

@@ -382,8 +382,18 @@ describe('Managing pages', () => {
     } as any);
 
     expect(pm.getAll().map((page) => page.getId())).toEqual(['page-stored', 'page-skipped']);
-    expect(pm.get('page-stored')?.getFrames().map((frame) => frame.id)).toEqual(['frame-stored', 'frame-skipped']);
-    expect(pm.get('page-skipped')?.getFrames().map((frame) => frame.id)).toEqual(['frame-on-skipped-page']);
+    expect(
+      pm
+        .get('page-stored')
+        ?.getFrames()
+        .map((frame) => frame.id),
+    ).toEqual(['frame-stored', 'frame-skipped']);
+    expect(
+      pm
+        .get('page-skipped')
+        ?.getFrames()
+        .map((frame) => frame.id),
+    ).toEqual(['frame-on-skipped-page']);
 
     const storedPages = editor.getProjectData().pages;
     expect(storedPages.map((page: any) => page.id)).toEqual(['page-stored']);
@@ -473,5 +483,83 @@ describe('Pages in canvas', () => {
     expect(page).toBe(pm.getSelected());
     await waitEditorEvent(em, CanvasEvents.frameLoadBody);
     expect(getPageContent()).toEqual('Page 2');
+  });
+
+  test('Page with refComponent renders the same model and keeps original ownership', async () => {
+    const mainPage = pm.getMain();
+    const mainWrapper = mainPage.getMainComponent();
+    const target = mainWrapper.append({
+      attributes: { id: 'isolated-component' },
+      content: 'Original content',
+    })[0];
+
+    const tempPage = pm.add(
+      {
+        id: 'temp-page',
+        frames: [{ refComponent: target }],
+        skipFromStorage: true,
+      },
+      { select: true },
+    )!;
+
+    await waitEditorEvent(em, CanvasEvents.frameLoadBody);
+    expect(canvas.getBody().querySelector('#isolated-component')?.textContent).toBe('Original content');
+    expect(target.parent()).toBe(mainWrapper);
+
+    target.set('content', 'Updated content');
+    expect(canvas.getBody().querySelector('#isolated-component')?.textContent).toBe('Updated content');
+
+    pm.select(mainPage);
+    await waitEditorEvent(em, CanvasEvents.frameLoadBody);
+    expect(canvas.getBody().querySelector('#isolated-component')?.textContent).toBe('Updated content');
+
+    pm.remove(tempPage);
+    expect(mainWrapper.components().models).toContain(target);
+    expect(target.parent()).toBe(mainWrapper);
+  });
+
+  test('Page supports a custom wrapper type for frames', async () => {
+    editor.Components.addType('wrapper-component', {
+      extend: 'wrapper',
+      model: {
+        defaults: { customWrapperFlag: true },
+        getCustomWrapperFlag() {
+          return this.get('customWrapperFlag');
+        },
+      },
+      view: {
+        onRender() {
+          this.el.setAttribute('data-custom-wrapper', 'true');
+        },
+      },
+    });
+
+    const mainWrapper = pm.getMain().getMainComponent();
+    const target = mainWrapper.append({
+      attributes: { id: 'custom-wrapper-target' },
+      content: 'Custom wrapper target',
+    })[0];
+
+    const tempPage = pm.add(
+      {
+        id: 'temp-page-custom-wrapper',
+        skipFromStorage: true,
+        frames: [
+          {
+            component: { type: 'wrapper-component' },
+            refComponent: target,
+          },
+        ],
+      },
+      { select: true },
+    )!;
+
+    await waitEditorEvent(em, CanvasEvents.frameLoadBody);
+
+    const tempWrapper = tempPage.getMainComponent() as any;
+    expect(tempWrapper.is('wrapper-component')).toBe(true);
+    expect(tempWrapper.getCustomWrapperFlag()).toBe(true);
+    expect(canvas.getBody().querySelector('[data-custom-wrapper="true"]')).toBeTruthy();
+    expect(canvas.getBody().querySelector('#custom-wrapper-target')?.textContent).toBe('Custom wrapper target');
   });
 });

@@ -610,6 +610,7 @@ export default class ComponentManager extends ItemManagerModule<DomComponentsCon
         ...view,
         ...getExtendedObj(extendFnView, view, viewToExt),
       });
+      // Object.setPrototypeOf(methods.view, viewToExt);
     }
 
     if (compType) {
