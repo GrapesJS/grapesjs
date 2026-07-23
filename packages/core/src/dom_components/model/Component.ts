@@ -1025,7 +1025,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
    * Returns component's classes as an array of strings
    * @return {Array}
    */
-  getClasses() {
+  getClasses(): string[] {
     const attr = this.getAttributes();
     const classStr = attr.class;
     return classStr ? classStr.split(' ') : [];
@@ -1520,7 +1520,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
    * @param {Boolean} [opts.noCustom] Avoid custom name assigned to the component.
    * @returns {String}
    * */
-  getName(opts: { noCustom?: boolean } = {}) {
+  getName(opts: { noCustom?: boolean } = {}): string {
     const { em } = this;
     const { type, tagName, name } = this.attributes;
     const defName = type || tagName;
