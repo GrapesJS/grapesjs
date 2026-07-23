@@ -12,6 +12,14 @@ import CommandAbstract from './CommandAbstract';
 
 let showOffsets: boolean;
 
+export interface SelectComponentCommandOptions {
+  onClick?: (ev: Event) => boolean | void;
+}
+
+export interface SelectComponentCommandStopOptions {
+  preserveSelected?: boolean;
+}
+
 export interface SelectComponentCommandRegistryRun {
   'core:component-select': CommandPublicFnFromHandler<CommandSelectComponent['run']>;
   'select-comp': CommandPublicFnFromHandler<CommandSelectComponent['run']>;
@@ -41,9 +49,13 @@ export interface SelectComponentCommandRegistryStop {
  * so those elements are inside the Local Tools box
  *
  */
-export default class CommandSelectComponent extends CommandAbstract {
+export default class CommandSelectComponent extends CommandAbstract<
+  SelectComponentCommandOptions,
+  SelectComponentCommandStopOptions
+> {
   [key: string]: any;
   activeResizer = false;
+  opts: SelectComponentCommandOptions = {};
 
   init() {
     this._upToolbar = debounce(() => {
@@ -281,8 +293,16 @@ export default class CommandSelectComponent extends CommandAbstract {
   }
 
   onClick(ev: Event): void {
-    ev.stopPropagation();
-    ev.preventDefault();
+    const customHandler = this.opts.onClick;
+
+    if (customHandler) {
+      const handlerResult = customHandler(ev);
+      if (handlerResult !== true) return;
+    } else {
+      ev.stopPropagation();
+      ev.preventDefault();
+    }
+
     const { em } = this;
 
     if (em.get('_cmpDrag')) {
@@ -597,15 +617,17 @@ export default class CommandSelectComponent extends CommandAbstract {
     return this.canvas.getWindow();
   }
 
-  run(editor: any) {
+  run(editor: any, s?: any, opts: SelectComponentCommandOptions = {}) {
     if (!hasWin()) return;
+    this.opts = opts;
     this.editor = editor && editor.get('Editor');
     this.enable();
   }
 
-  stop(ed?: any, sender?: any, opts: any = {}) {
+  stop(ed?: any, s?: any, opts: SelectComponentCommandStopOptions = {}) {
     if (!hasWin()) return;
     const { em, editor } = this;
+    this.opts = {};
     this.onHovered();
     this.stopSelectComponent();
     !opts.preserveSelected && em.setSelected();
