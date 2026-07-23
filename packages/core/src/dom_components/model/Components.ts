@@ -5,12 +5,14 @@ import { DomComponentsConfig } from '../config/config';
 import EditorModel from '../../editor/model/Editor';
 import ComponentManager from '..';
 import CssRule from '../../css_composer/model/CssRule';
+import type Frame from '../../canvas/model/Frame';
 
 import {
   ComponentAdd,
   ComponentAddType,
   ComponentDefinition,
   ComponentDefinitionDefined,
+  ComponentOptions,
   ComponentProperties,
 } from './types';
 import ComponentText from './ComponentText';
@@ -113,10 +115,9 @@ const getComponentsFromDefs = (
   });
 };
 
-export interface ComponentsOptions {
-  em: EditorModel;
-  config?: DomComponentsConfig;
+export interface ComponentsOptions extends Omit<ComponentOptions, 'config'> {
   domc?: ComponentManager;
+  config?: DomComponentsConfig;
 }
 
 interface AddComponentOptions extends AddOptions {
@@ -402,10 +403,19 @@ Component> {
     return model;
   }
 
+  updateFrameRefs(model: Component, frame?: Frame) {
+    if (!frame || model.frame === frame) return;
+    model.opt.frame = frame;
+    model.components().forEach((child) => this.updateFrameRefs(child, frame));
+  }
+
   onAdd(model: Component, c?: any, opts: { temporary?: boolean } = {}) {
     const { domc, em } = this;
     const avoidInline = em.config.avoidInlineStyle;
     const allById = domc?.allById();
+    const frame = this.parent?.frame || this.opt.frame;
+
+    this.updateFrameRefs(model, frame);
     allById?.[model.getId()] !== model && domc?.Component.ensureInList(model);
 
     if (!avoidInline && em.config.forceClass && !opts.temporary) {

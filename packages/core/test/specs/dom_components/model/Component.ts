@@ -471,6 +471,19 @@ describe('Component', () => {
     expect(result[0].em).toEqual(em);
   });
 
+  test('append() assigns the destination frame to added component trees', () => {
+    const wrapper = em.getWrapper()!;
+    const frame = em.Pages.getMain().getMainFrame();
+    const added = wrapper.append({
+      tagName: 'section',
+      components: [{ tagName: 'span', content: 'Child' }],
+    })[0];
+    const child = added.components().at(0);
+
+    expect(added.frame).toBe(frame);
+    expect(child?.frame).toBe(frame);
+  });
+
   test('components() set new collection', () => {
     obj.append([{}, {}]);
     obj.components('<span>test</div>');

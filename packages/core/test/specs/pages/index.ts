@@ -518,6 +518,31 @@ describe('Pages in canvas', () => {
     expect(target.parent()).toBe(mainWrapper);
   });
 
+  test('Moving a component tree across page frames updates its frame reference', () => {
+    const mainFrame = pm.getMain().getMainFrame();
+    const mainWrapper = mainFrame.getComponent();
+    const page = pm.add({
+      id: 'frame-target-page',
+      component: [],
+    })!;
+    const targetFrame = page.getMainFrame();
+    const targetWrapper = targetFrame.getComponent();
+    const target = mainWrapper.append({
+      tagName: 'section',
+      components: [{ tagName: 'span', content: 'Inner child' }],
+    })[0];
+    const child = target.components().at(0);
+
+    expect(target.frame).toBe(mainFrame);
+    expect(child?.frame).toBe(mainFrame);
+
+    targetWrapper.append(target);
+
+    expect(target.frame).toBe(targetFrame);
+    expect(child?.frame).toBe(targetFrame);
+    expect(target.parent()).toBe(targetWrapper);
+  });
+
   test('Page supports a custom wrapper type for frames', async () => {
     editor.Components.addType('wrapper-component', {
       extend: 'wrapper',
