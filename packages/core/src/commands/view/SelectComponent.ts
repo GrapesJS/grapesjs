@@ -617,10 +617,10 @@ export default class CommandSelectComponent extends CommandAbstract<
     return this.canvas.getWindow();
   }
 
-  run(editor: any, s?: any, opts: SelectComponentCommandOptions = {}) {
+  run(ed: any, s?: any, opts: SelectComponentCommandOptions = {}) {
     if (!hasWin()) return;
     this.opts = opts;
-    this.editor = editor && editor.get('Editor');
+    this.editor = this.em.Editor;
     this.enable();
   }
 

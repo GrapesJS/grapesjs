@@ -977,10 +977,14 @@ export default class EditorModel extends Model {
    * @private
    */
   runDefault(opts = {}) {
-    const command = this.Commands.get(this.config.defaultCommand!);
+    const { Commands, config } = this;
+    const defCmd = config.defaultCommand!;
+    const command = Commands.get(defCmd);
+
     if (!command || this.defaultRunning) return;
-    command.stop!(this as any, this, opts);
-    command.run!(this as any, this, opts);
+
+    Commands.stop(defCmd, opts);
+    Commands.run(defCmd, opts);
     this.defaultRunning = true;
   }
 
@@ -990,11 +994,13 @@ export default class EditorModel extends Model {
    * @private
    */
   stopDefault(opts = {}) {
-    const commands = this.Commands;
-    if (!commands) return;
-    const command = commands.get(this.config.defaultCommand!);
+    const { Commands, config } = this;
+    const defCmd = config.defaultCommand!;
+    const command = Commands?.get(defCmd);
+
     if (!command || !this.defaultRunning) return;
-    command.stop!(this as any, this, opts);
+
+    Commands.stop(defCmd, opts);
     this.defaultRunning = false;
   }
 
