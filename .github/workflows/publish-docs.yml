@@ -22,32 +22,42 @@ jobs:
       - name: Build and Deploy Docs
         env:
           GRAPESJS_BOT_TOKEN: ${{ secrets.GRAPESJS_BOT_TOKEN }}
+          GH_TOKEN: ${{ secrets.GRAPESJS_BOT_TOKEN }}
         working-directory: ./docs
         run: |
           # abort on errors
           set -e
-          # navigate into the build output directory
-          cd .vuepress/dist
+          WEBSITE_REPO='GrapesJS/website'
+          DEPLOY_BRANCH="deploy-docs-${GITHUB_SHA}"
+          SITE_REPO_DIR="$(mktemp -d)"
 
-          # Need to deploy all the documentation inside docs folder
-          mkdir docs-new
-
-          # move all the files from the current directory in docs
-          mv `ls -1 ./ | grep -v docs-new` ./docs-new
-
-          # fetch the current site, remove the old docs dir and make current the new one
-          git clone -b main https://github.com/GrapesJS/website.git tmp
-          mv tmp/[^.]* . # Move all non-hidden files
-          mv tmp/.[^.]* . 2>/dev/null || true # Move hidden files, ignore errors if none exist
-          rm -rf tmp
-          rm -fR public/docs
-          mv ./docs-new ./public/docs
+          # fetch the current site and prepare a PR branch with the new docs build
+          git clone https://x-access-token:${GRAPESJS_BOT_TOKEN}@github.com/$WEBSITE_REPO.git "$SITE_REPO_DIR"
+          cd "$SITE_REPO_DIR"
+          git checkout -B "$DEPLOY_BRANCH" origin/main
+          rm -rf public/docs
+          mkdir -p public/docs
+          cp -a /home/runner/work/grapesjs/grapesjs/docs/.vuepress/dist/. ./public/docs
 
           # stage all and commit
           git add -A
-          git commit -m 'deploy docs'
+          if git diff --cached --quiet; then
+            echo 'No docs changes to deploy'
+            exit 0
+          fi
+          git commit -m "Deploy GrapesJS docs for ${GITHUB_SHA}"
 
-          # Push using PAT
-          git push https://$GRAPESJS_BOT_TOKEN@github.com/GrapesJS/website.git main
+          # Push the branch and open/update a PR as direct pushes to main are blocked
+          git push --force-with-lease origin "$DEPLOY_BRANCH"
+
+          EXISTING_PR="$(gh pr list --repo "$WEBSITE_REPO" --head "$DEPLOY_BRANCH" --base main --json number --jq '.[0].number')"
+          PR_TITLE="Deploy GrapesJS docs for ${GITHUB_SHA}"
+          PR_BODY="Automated docs update from GrapesJS/grapesjs@${GITHUB_SHA}."
+
+          if [ -n "$EXISTING_PR" ]; then
+            gh pr edit "$EXISTING_PR" --repo "$WEBSITE_REPO" --title "$PR_TITLE" --body "$PR_BODY"
+          else
+            gh pr create --repo "$WEBSITE_REPO" --base main --head "$DEPLOY_BRANCH" --title "$PR_TITLE" --body "$PR_BODY"
+          fi
 
           cd -
