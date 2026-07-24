@@ -7,6 +7,7 @@ import ComponentWrapper from '../../dom_components/model/ComponentWrapper';
 import EditorModel from '../../editor/model/Editor';
 import { CssRuleJSON } from '../../css_composer/model/CssRule';
 import { ComponentDefinition } from '../../dom_components/model/types';
+import Frame from '../../canvas/model/Frame';
 
 /** @private */
 export interface PageProperties {
@@ -119,7 +120,7 @@ export default class Page extends Model<PagePropertiesDefined> {
    * @example
    * const arrayOfFrames = page.getAllFrames();
    */
-  getAllFrames() {
+  getAllFrames(): Frame[] {
     return this.getFrames().models || [];
   }
 
@@ -129,7 +130,7 @@ export default class Page extends Model<PagePropertiesDefined> {
    * @example
    * const mainFrame = page.getMainFrame();
    */
-  getMainFrame() {
+  getMainFrame(): Frame {
     return this.getFrames().at(0);
   }
 
