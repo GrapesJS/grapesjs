@@ -5,6 +5,7 @@ import { BoxRect, PrevToNewIdMap } from '../../common';
 import type Component from '../../dom_components/model/Component';
 import ComponentWrapper from '../../dom_components/model/ComponentWrapper';
 import { ComponentDefinition } from '../../dom_components/model/types';
+import { ComponentsEvents } from '../../dom_components/types';
 import Page from '../../pages/model/Page';
 import { createId, isComponent, isObject } from '../../utils/mixins';
 import FrameView from '../view/FrameView';
@@ -17,6 +18,7 @@ const keyAutoH = '__ah';
 
 export interface FrameProperties {
   id?: string;
+  page?: Page;
   component?: string | ComponentDefinition | ComponentDefinition[] | Component;
   width?: string | number | null;
   height?: string | number | null;
@@ -55,6 +57,7 @@ const getDimension = (frame: Frame, type: 'width' | 'height') => {
  *
  */
 export default class Frame extends ModuleModel<CanvasModule> {
+  page?: Page;
   defaults() {
     return {
       x: 0,
@@ -77,7 +80,10 @@ export default class Frame extends ModuleModel<CanvasModule> {
    * @hideconstructor
    */
   constructor(module: CanvasModule, attr: FrameProperties) {
+    const page = attr.page;
+    delete attr.page;
     super(module, attr);
+    this.page = page;
     const { em } = this;
     const { styles, component } = this.attributes;
     const domc = em.Components;
@@ -91,6 +97,9 @@ export default class Frame extends ModuleModel<CanvasModule> {
       !wrp.type && (wrp.type = 'wrapper');
       const Wrapper = (domc.getType(wrp.type as string) || domc.getType('wrapper')!).model;
       this.set('component', new Wrapper(wrp, modOpts));
+    } else {
+      this.updateComponentFrame(component);
+      this.emitComponentAdd(component);
     }
 
     if (!styles) {
@@ -132,6 +141,19 @@ export default class Frame extends ModuleModel<CanvasModule> {
 
   get refComponent(): Component | undefined {
     return this.get('refComponent');
+  }
+
+  updateComponentFrame(component: Component) {
+    if (component.frame !== this) {
+      component.opt.frame = this;
+    }
+
+    component.components().forEach((child) => this.updateComponentFrame(child));
+  }
+
+  emitComponentAdd(component: Component, opts: Record<string, any> = {}) {
+    this.em.trigger(ComponentsEvents.add, component, opts);
+    component.components().forEach((child) => this.emitComponentAdd(child, opts));
   }
 
   get root() {
@@ -250,7 +272,7 @@ export default class Frame extends ModuleModel<CanvasModule> {
   }
 
   getPage(): Page | undefined {
-    return (this.collection as unknown as Frames)?.page;
+    return this.page || (this.collection as unknown as Frames)?.page;
   }
 
   _emitUpdated(data = {}) {

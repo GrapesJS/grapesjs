@@ -414,6 +414,7 @@ Component> {
     const avoidInline = em.config.avoidInlineStyle;
     const allById = domc?.allById();
     const frame = this.parent?.frame || this.opt.frame;
+    const skipAddEvent = !!this.parent && !frame;
 
     this.updateFrameRefs(model, frame);
     allById?.[model.getId()] !== model && domc?.Component.ensureInList(model);
@@ -431,7 +432,7 @@ Component> {
 
     model.__postAdd({ recursive: true });
 
-    if (em && !opts.temporary) {
+    if (em && !opts.temporary && !skipAddEvent) {
       const triggerAdd = (model: Component) => {
         em.trigger(ComponentsEvents.add, model, opts);
         model.components().forEach((comp) => triggerAdd(comp));
