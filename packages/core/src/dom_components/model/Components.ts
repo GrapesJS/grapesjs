@@ -209,6 +209,7 @@ Component> {
       sels.remove(rulesRemoved.map((rule) => rule.getSelectors().at(0)));
 
       if (!removed.opt.temporary) {
+        em.removeSelected(removed);
         em.Commands.run('core:component-style-clear', { target: removed });
         removed.views.forEach((view) => {
           view.scriptContainer &&

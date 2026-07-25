@@ -165,6 +165,50 @@ describe('Editor', () => {
     expect(editor.getSelectedAll().length).toBe(0);
   });
 
+  test('Removing a selected component removes it from the selection', () => {
+    const wrapper = editor.getWrapper()!;
+    const added = wrapper.append('<div>Component 1</div>');
+    editor.select(added[0]);
+    expect(editor.getSelectedAll().length).toBe(1);
+
+    added[0].remove();
+    expect(editor.getSelectedAll().length).toBe(0);
+  });
+
+  test('Replacing a selected component removes it from the selection', () => {
+    const wrapper = editor.getWrapper()!;
+    const added = wrapper.append('<div>Component 1</div>');
+    editor.select(added[0]);
+
+    added[0].replaceWith('<span>Replacement</span>');
+    expect(editor.getSelectedAll().length).toBe(0);
+  });
+
+  test('Undo after replaceWith inside component:selected restores content without orphan selection', () => {
+    const um = editor.UndoManager;
+    const wrapper = editor.getWrapper()!;
+    wrapper.append('<div data-id="a">A</div><div data-id="b">B</div>');
+    um.clear();
+
+    let replaced = false;
+    editor.on('component:selected', (cmp) => {
+      if (replaced) return;
+      replaced = true;
+      cmp.replaceWith('<span data-id="c">C</span>');
+    });
+
+    editor.select(wrapper.components().at(0));
+    expect(replaced).toBe(true);
+    expect(wrapper.getInnerHTML()).toBe('<span data-id="c">C</span><div data-id="b">B</div>');
+
+    um.undo();
+    expect(wrapper.getInnerHTML()).toBe('<div data-id="a">A</div><div data-id="b">B</div>');
+    // Whatever selection the undo restored must reference components still in the tree
+    editor.getSelectedAll().forEach((cmp) => {
+      expect(cmp.parent()).toBeTruthy();
+    });
+  });
+
   test.skip('Shift key selecting a component that is being edited should not clear any text selections', () => {
     const all = editor.Components.allById();
     const em = editor.em;
