@@ -42,6 +42,8 @@ type lastMoveData<NodeType> = {
   placement?: Placement;
   /** The mouse event, used if we want to move placeholder with scrolling. */
   mouseEvent?: MouseEvent;
+  /** Whether the mouse was within the hovered node's drop bounds during the last move. */
+  hoveredWithinBounds?: boolean;
 
   placeholderDimensions?: Dimension;
 };
@@ -161,6 +163,7 @@ export class DropLocationDeterminer<T, NodeType extends SortableTreeNode<T>> ext
       mouseEvent,
       index,
       hoveredIndex,
+      hoveredWithinBounds: hoveredNode.isWithinDropBounds(mouseX, mouseY),
       placement,
       placeholderDimensions,
     };
@@ -372,7 +375,7 @@ export class DropLocationDeterminer<T, NodeType extends SortableTreeNode<T>> ext
       targetNode: lastTargetNode,
       hoveredNode: lastHoveredNode,
       hoveredIndex: lastHoveredIndex,
-      mouseEvent: lastMouseEvent,
+      hoveredWithinBounds: lastHoveredWithinBounds,
     } = this.lastMoveData;
 
     const sameHoveredNode = targetNode.equals(lastHoveredNode);
@@ -380,10 +383,7 @@ export class DropLocationDeterminer<T, NodeType extends SortableTreeNode<T>> ext
     const hoverIndex = this.getIndexInParent(targetNode, targetNode.nodeDimensions!, mouseX, mouseY);
     const sameHoveredIndex = hoverIndex === lastHoveredIndex;
     const isWithinDropArea = targetNode.isWithinDropBounds(mouseX, mouseY);
-    const sameHoverPosition =
-      sameHoveredNode &&
-      sameHoveredIndex &&
-      isWithinDropArea === targetNode.isWithinDropBounds(lastMouseEvent?.clientX ?? 0, lastMouseEvent?.clientY ?? 0);
+    const sameHoverPosition = sameHoveredNode && sameHoveredIndex && isWithinDropArea === lastHoveredWithinBounds;
 
     if (sameHoverPosition && lastTargetNode) return lastTargetNode;
 
