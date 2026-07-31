@@ -56,6 +56,13 @@ export default class DataRecord<T extends DataRecordProps = DataRecordProps> ext
     return this.cl.indexOf(this);
   }
 
+  getContext() {
+    const attributes = { ...this.attributes };
+    delete attributes.__p;
+
+    return attributes;
+  }
+
   /**
    * Handles changes to the record's attributes.
    * This method triggers a change event for each property that has been altered.

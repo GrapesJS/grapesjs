@@ -1,4 +1,4 @@
-import { Collection } from '../../common';
+import { Collection, collectionEvents } from '../../common';
 import EditorModel from '../../editor/model/Editor';
 import { DataRecordProps, DataSourceProps } from '../types';
 import DataSource from './DataSource';
@@ -14,5 +14,7 @@ export default class DataSources extends Collection<DataSource> {
     this.model = (props: DataSourceProps, opts = {}) => {
       return new DataSource(props, { ...opts, em });
     };
+
+    this.on(collectionEvents, () => em.DataSources.invalidateContextCache());
   }
 }

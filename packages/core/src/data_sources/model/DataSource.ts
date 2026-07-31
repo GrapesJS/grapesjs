@@ -171,7 +171,11 @@ export default class DataSource<DRProps extends DataRecordProps = DataRecordProp
    * @name getRecord
    */
   getRecord(id: string | number): DataRecord | undefined {
-    return this.records.get(id);
+    return this.records.getRecord(id);
+  }
+
+  isRecordIndex(id: string | number) {
+    return this.records.isIndexKey(id);
   }
 
   /**
@@ -183,6 +187,16 @@ export default class DataSource<DRProps extends DataRecordProps = DataRecordProp
    */
   getRecords() {
     return [...this.records.models].map((record) => this.getRecord(record.id)!);
+  }
+
+  getContext() {
+    return this.records.reduce(
+      (acc, dataRecord, index) => {
+        acc[dataRecord.id || index] = dataRecord.getContext();
+        return acc;
+      },
+      {} as Record<string, Partial<DRProps>>,
+    );
   }
 
   /**
@@ -317,7 +331,9 @@ export default class DataSource<DRProps extends DataRecordProps = DataRecordProp
   }
 
   private handleChanges(dataRecord: any, c: any, o: any) {
+    const { em } = this;
     const options = o || c;
-    this.em.changesUp(options, { dataRecord, options });
+    em.DataSources.invalidateContextCache();
+    em.changesUp(options, { dataRecord, options });
   }
 }

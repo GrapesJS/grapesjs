@@ -82,6 +82,34 @@ describe('DataSourceManager', () => {
       expect(dsm.getValue(`ds1.id4.metadata.roles`)).toEqual(roles);
       expect(dsm.getValue(`ds1.id4.metadata.roles[1]`)).toEqual(roles[1]);
     });
+
+    test('with index-based record path', () => {
+      dsm.add({
+        id: 'recordsByIndex',
+        records: [{ name: 'First item' }, { name: 'Second item' }] as any,
+      });
+
+      expect(dsm.getValue('recordsByIndex.0.name')).toBe('First item');
+      expect(dsm.getValue('recordsByIndex.1.name')).toBe('Second item');
+    });
+  });
+
+  describe('getContext', () => {
+    test('memoizes until data changes', () => {
+      const ds = addDataSource();
+
+      const contextA = dsm.getContext();
+      const contextB = dsm.getContext();
+
+      expect(contextA).toBe(contextB);
+
+      ds.getRecord('id1')?.set({ name: 'Name1 updated' });
+
+      const contextC = dsm.getContext();
+
+      expect(contextC).not.toBe(contextA);
+      expect(contextC.ds1.id1.name).toBe('Name1 updated');
+    });
   });
 
   describe('setValue', () => {

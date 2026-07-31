@@ -158,6 +158,38 @@ describe('StyleDataVariable', () => {
     expect(updatedStyle).toHaveProperty('color', 'blue');
   });
 
+  test('component style binding ignores unrelated record add/remove churn', () => {
+    dsm.add({
+      id: 'style-churn',
+      records: [
+        { id: 'bound-record', color: 'red' },
+        { id: 'other-record', color: 'blue' },
+      ],
+    });
+
+    const cmp = cmpRoot.append({
+      tagName: 'h1',
+      type: 'text',
+      content: 'Hello World',
+      style: {
+        color: {
+          type: DataVariableType,
+          defaultValue: 'black',
+          path: 'style-churn.bound-record.color',
+        },
+      },
+    })[0];
+
+    const addStyleSpy = jest.spyOn(cmp, 'addStyle');
+    const ds = dsm.get('style-churn');
+
+    ds.addRecord({ id: 'new-record', color: 'green' });
+    ds.removeRecord('other-record');
+
+    expect(addStyleSpy).not.toHaveBeenCalled();
+    expect(cmp.getStyle()).toHaveProperty('color', 'red');
+  });
+
   describe('Component style manipulations', () => {
     test('adding a new dynamic style with addStyle', () => {
       dsm.add({ id: 'data1', records: [{ id: 'rec1', color: 'red' }] });

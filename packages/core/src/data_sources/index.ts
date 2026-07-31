@@ -58,6 +58,7 @@ export default class DataSourceManager extends ItemManagerModule<DataSourcesConf
     number: NumberOperation,
     string: StringOperation,
   };
+  private contextCache?: ObjectAny;
   destroy(): void {}
 
   constructor(em: EditorModel) {
@@ -114,7 +115,11 @@ export default class DataSourceManager extends ItemManagerModule<DataSourcesConf
    * const value = dsm.getValue('ds_id.record_id.propName', 'defaultValue');
    */
   getValue(path: string | string[], defValue?: any, opts?: { context?: Record<string, any> }) {
-    return get(opts?.context || this.getContext(), path, defValue);
+    if (opts?.context) return get(opts.context, path, defValue);
+
+    const value = this.getValueFromDataSources(path);
+
+    return value === undefined ? defValue : value;
   }
 
   /**
@@ -140,18 +145,15 @@ export default class DataSourceManager extends ItemManagerModule<DataSourcesConf
   }
 
   getContext() {
-    return this.all.reduce((acc, ds) => {
-      acc[ds.id] = ds.records.reduce((accR, dr, i) => {
-        const dataRecord = dr;
+    if (!this.contextCache) {
+      this.contextCache = this.all.reduce((acc, ds) => {
+        acc[ds.id] = ds.getContext();
 
-        const attributes = { ...dataRecord.attributes };
-        delete attributes.__p;
-        accR[dataRecord.id || i] = attributes;
-
-        return accR;
+        return acc;
       }, {} as ObjectAny);
-      return acc;
-    }, {} as ObjectAny);
+    }
+
+    return this.contextCache;
   }
 
   /**
@@ -182,7 +184,7 @@ export default class DataSourceManager extends ItemManagerModule<DataSourcesConf
     const result: [DataSource?, DataRecord?, string?] = [];
     const [dsId, drId, ...resPath] = stringToPath(path || '');
     const dataSource = this.get(dsId);
-    const dataRecord = dataSource?.records.get(drId);
+    const dataRecord = drId !== undefined && dataSource?.getRecord(drId);
     dataSource && result.push(dataSource);
 
     if (dataRecord) {
@@ -191,6 +193,28 @@ export default class DataSourceManager extends ItemManagerModule<DataSourcesConf
     }
 
     return result;
+  }
+
+  invalidateContextCache = () => {
+    this.contextCache = undefined;
+  };
+
+  private getValueFromDataSources(path: string | string[]) {
+    const pathParts = Array.isArray(path) ? path : stringToPath(path || '');
+    if (!pathParts.length) return undefined;
+
+    const [dsId, drId, ...resPath] = pathParts;
+    const dataSource = this.get(dsId);
+
+    if (!dataSource) return undefined;
+    if (drId === undefined) return dataSource.getContext();
+
+    const dataRecord = dataSource.getRecord(drId);
+    if (!dataRecord) return undefined;
+
+    const recordContext = dataRecord.getContext();
+
+    return resPath.length ? get(recordContext, resPath) : recordContext;
   }
 
   /**
