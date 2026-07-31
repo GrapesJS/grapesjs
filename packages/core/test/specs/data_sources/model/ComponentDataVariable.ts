@@ -165,6 +165,40 @@ describe('ComponentDataVariable', () => {
     expect(cmp.getInnerHTML()).toContain('default');
   });
 
+  test('component updates on record id rename and rebinds when the original id returns', () => {
+    dsm.add({
+      id: 'dsRename',
+      records: [{ id: 'id1', name: 'Name1' }],
+    });
+
+    const cmp = cmpRoot.append({
+      tagName: 'div',
+      type: 'default',
+      components: [
+        {
+          type: DataVariableType,
+          dataResolver: { defaultValue: 'default', path: 'dsRename.id1.name' },
+        },
+      ],
+    })[0];
+
+    expect(cmp.getEl()?.innerHTML).toContain('Name1');
+    expect(cmp.getInnerHTML()).toContain('Name1');
+
+    const ds = dsm.get('dsRename');
+    const record = ds.getRecord('id1');
+
+    record?.set({ id: 'id2' as any });
+
+    expect(cmp.getEl()?.innerHTML).toContain('default');
+    expect(cmp.getInnerHTML()).toContain('default');
+
+    ds.addRecord({ id: 'id1', name: 'Name1 rebound' });
+
+    expect(cmp.getEl()?.innerHTML).toContain('Name1 rebound');
+    expect(cmp.getInnerHTML()).toContain('Name1 rebound');
+  });
+
   test('component initializes and updates with data-variable for nested object', () => {
     const dataSource = {
       id: 'dsNestedObject',
