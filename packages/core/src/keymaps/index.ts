@@ -38,6 +38,7 @@ import { isFunction, isString } from 'underscore';
 import { Module } from '../abstract';
 import EditorModel from '../editor/model/Editor';
 import keymaster from '../utils/keymaster';
+import { preventDefault } from '../utils/dom';
 import { hasWin } from '../utils/mixins';
 import defConfig, { Keymap, KeymapOptions, KeymapsConfig } from './config';
 import { KeymapsEvents } from './types';
@@ -99,9 +100,6 @@ export default class KeymapsModule extends Module<KeymapsConfig & { name?: strin
    */
   add(id: Keymap['id'], keys: Keymap['keys'], handler: Keymap['handler'], opts: KeymapOptions = {}) {
     const { em, events } = this;
-    const cmd = em.Commands;
-    const editor = em.getEditor();
-    const canvas = em.Canvas;
     const keymap: Keymap = { id, keys, handler };
     const pk = this.keymaps[id];
     pk && this.remove(id);
@@ -110,11 +108,15 @@ export default class KeymapsModule extends Module<KeymapsConfig & { name?: strin
       keys,
       (e: any, h: any) => {
         // It's safer putting handlers resolution inside the callback
+        const cmd = em.Commands;
+        const editor = em.getEditor();
         const opt = { event: e, h };
         const handlerRes = isString(handler) ? cmd.get(handler) : handler;
-        const ableTorun = !em.isEditing() && !editor.Canvas.isInputFocused();
+        const ableTorun = !em.isEditing() && !em.Canvas.isInputFocused();
         if (ableTorun || opts.force) {
-          opts.prevent && canvas.getCanvasView()?.preventDefault(e);
+          // Prevent as soon as possible, the default action of the key has to be
+          // avoided even if the handler is missing or throws.
+          opts.prevent && preventDefault(e);
           isFunction(handlerRes) ? handlerRes(editor, 0, opt) : cmd.runCommand(handlerRes, opt);
           const args = [id, h.shortcut, e];
           // @ts-ignore

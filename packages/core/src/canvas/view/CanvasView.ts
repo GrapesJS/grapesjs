@@ -12,6 +12,7 @@ import {
   isTextNode,
   off,
   on,
+  preventDefault,
 } from '../../utils/dom';
 import { getComponentView, getElement, getUiClass } from '../../utils/mixins';
 import Canvas from '../model/Canvas';
@@ -145,10 +146,7 @@ export default class CanvasView extends ModuleView<Canvas> {
   }
 
   preventDefault(ev: Event) {
-    if (ev) {
-      ev.preventDefault();
-      (ev as any)._parentEvent?.preventDefault();
-    }
+    preventDefault(ev);
   }
 
   toggleListeners(enable: boolean) {
