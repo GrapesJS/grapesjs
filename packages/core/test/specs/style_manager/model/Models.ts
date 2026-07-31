@@ -111,6 +111,67 @@ describe('Sector', () => {
     expect(propTop.get('name')).toEqual('Top');
     expect(propTop.get('type')).toEqual('number');
   });
+
+  test('Extend nested properties on extended composite properties', () => {
+    obj = sm.addSector('test', {
+      name: 'test',
+      properties: [
+        {
+          extend: 'border-radius',
+          // @ts-ignore
+          properties: [
+            {
+              extend: 'border-top-left-radius',
+              id: 'border-top-left-radius-custom',
+            },
+            {
+              extend: 'border-bottom-left-radius',
+            },
+          ],
+        },
+      ],
+    });
+    const prop0 = obj.getProperties()[0];
+    const propProps = prop0.get('properties' as any);
+
+    expect(propProps.length).toEqual(2);
+    expect(propProps.at(0).get('id')).toEqual('border-top-left-radius-custom');
+    expect(propProps.at(0).get('type')).toEqual('number');
+    expect(propProps.at(1).get('property')).toEqual('border-bottom-left-radius');
+    expect(propProps.at(1).get('type')).toEqual('number');
+  });
+
+  test('Extend nested properties on stack properties', () => {
+    obj = sm.addSector('test', {
+      name: 'test',
+      properties: [
+        {
+          type: 'stack',
+          property: 'my-shadow',
+          // @ts-ignore
+          properties: [
+            {
+              extend: 'text-shadow-h',
+              property: 'my-shadow-h',
+            },
+            {
+              extend: 'text-shadow-v',
+              property: 'my-shadow-v',
+            },
+          ],
+        },
+      ],
+    });
+    const prop0 = obj.getProperties()[0];
+    const propProps = prop0.get('properties' as any);
+
+    expect(propProps.length).toEqual(2);
+    expect(propProps.at(0).get('property')).toEqual('my-shadow-h');
+    expect(propProps.at(0).get('type')).toEqual('number');
+    expect(propProps.at(0).get('units')).toEqual(['px', 'em', 'rem', 'vh', 'vw']);
+    expect(propProps.at(1).get('property')).toEqual('my-shadow-v');
+    expect(propProps.at(1).get('type')).toEqual('number');
+  });
 });
 
 describe('Property', () => {

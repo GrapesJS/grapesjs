@@ -200,14 +200,19 @@ export default class Sector extends Model<SectorProperties> {
 
   checkExtend(prop: any): PropertyTypes {
     const { extend, ...rest } = (isString(prop) ? { extend: prop } : prop) || {};
-    if (extend) {
-      return {
-        ...(this.buildProperties([extend])[0] || {}),
-        ...rest,
-      };
-    } else {
-      return prop;
+    const result = extend
+      ? {
+          ...(this.buildProperties([extend])[0] || {}),
+          ...rest,
+        }
+      : prop;
+    const properties = result?.properties;
+
+    if (properties?.length) {
+      result.properties = properties.map((nestedProp: PropertyTypes) => this.checkExtend(nestedProp));
     }
+
+    return result;
   }
 
   /**
