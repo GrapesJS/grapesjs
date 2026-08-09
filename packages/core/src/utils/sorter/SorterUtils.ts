@@ -144,7 +144,7 @@ export function closest(el: HTMLElement, selector: string): HTMLElement | undefi
  * @private
  */
 export function isStyleInFlow(el: HTMLElement, parent: HTMLElement): boolean {
-  if (isTextNode(el)) return false;
+  if (!el || isTextNode(el)) return false;
 
   const elementStyles = el.style || {};
   const $el = $(el);
