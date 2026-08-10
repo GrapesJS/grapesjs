@@ -519,10 +519,7 @@ describe('GrapesJS', () => {
       });
 
       test('Allows retrying store after a storage failure', async () => {
-        const store = jest
-          .fn()
-          .mockRejectedValueOnce(new Error('store failed'))
-          .mockResolvedValueOnce(undefined);
+        const store = jest.fn().mockRejectedValueOnce(new Error('store failed')).mockResolvedValueOnce(undefined);
 
         (config.storageManager as StorageManagerConfig).type = storageId;
         config.plugins = [
