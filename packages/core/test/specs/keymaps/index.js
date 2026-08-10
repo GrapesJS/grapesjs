@@ -13,6 +13,11 @@ describe('Keymaps', () => {
       obj = editor.Keymaps;
     });
 
+    afterEach(() => {
+      // Bindings are kept in a module-level registry, shared between editors
+      obj.removeAll();
+    });
+
     test('Object exists', () => {
       expect(obj).toBeTruthy();
     });
@@ -54,6 +59,51 @@ describe('Keymaps', () => {
       const model = obj.add('tes', 'ctrl+a');
       const removed = obj.remove('tes');
       expect(called).toEqual(1);
+    });
+
+    describe('Prevent option', () => {
+      const dispatchKey = (props = {}) => {
+        const keyboardEvent = new KeyboardEvent('keydown', {
+          keyCode: 83,
+          which: 83,
+          ctrlKey: true,
+          cancelable: true,
+          bubbles: true,
+        });
+        Object.assign(keyboardEvent, props);
+        document.dispatchEvent(keyboardEvent);
+        return keyboardEvent;
+      };
+
+      beforeEach(() => {
+        em.setEditing(0);
+      });
+
+      it('Should prevent the default action', () => {
+        const handler = jest.fn();
+        obj.add('test', 'ctrl+s', handler, { prevent: true });
+        const event = dispatchKey();
+
+        expect(handler).toHaveBeenCalled();
+        expect(event.defaultPrevented).toBe(true);
+      });
+
+      it('Should prevent the default action of the event coming from the frame', () => {
+        obj.add('test', 'ctrl+s', () => {}, { prevent: true });
+        // Events triggered inside the canvas frame are re-dispatched on the main
+        // document, the original one is kept in `_parentEvent`.
+        const parentEvent = new KeyboardEvent('keydown', { cancelable: true });
+        dispatchKey({ _parentEvent: parentEvent });
+
+        expect(parentEvent.defaultPrevented).toBe(true);
+      });
+
+      it('Should not prevent the default action without the option', () => {
+        obj.add('test', 'ctrl+s', () => {});
+        const event = dispatchKey();
+
+        expect(event.defaultPrevented).toBe(false);
+      });
     });
 
     describe('Given the edit is not on edit mode', () => {
