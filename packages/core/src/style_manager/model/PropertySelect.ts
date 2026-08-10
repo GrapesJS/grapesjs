@@ -3,7 +3,7 @@ import { ObjectAny } from '../../common';
 import { isDef } from '../../utils/mixins';
 import Property, { PropertyProps } from './Property';
 
-type SelectOption = {
+interface SelectOption {
   id: string;
   value?: string;
   label?: string;
@@ -12,7 +12,7 @@ type SelectOption = {
   title?: string;
   style?: string;
   propValue?: ObjectAny;
-};
+}
 
 /** @private */
 export interface PropertySelectProps extends PropertyProps {

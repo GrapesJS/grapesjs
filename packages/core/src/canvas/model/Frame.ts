@@ -200,6 +200,10 @@ export default class Frame extends ModuleModel<CanvasModule> {
     return this.get('component');
   }
 
+  getMainComponent(): Component {
+    return this.refComponent || this.root;
+  }
+
   getStyles() {
     return this.get('styles');
   }

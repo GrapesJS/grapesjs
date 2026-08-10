@@ -4,6 +4,7 @@ import ComponentWrapper from '../../../src/dom_components/model/ComponentWrapper
 import { EditorConfig } from '../../../src/editor/config/config';
 import PluginsEvents, { Plugin } from '../../../src/plugin_manager/types';
 import { StorageManagerConfig } from '../../../src/storage_manager/config/config';
+import { wait } from '../../../src/utils/mixins';
 import { fixJsDom, fixJsDomIframe, waitEditorEvent } from '../../common';
 
 type TestPlugin = Plugin<{ cVal: string }>;
@@ -515,6 +516,28 @@ describe('GrapesJS', () => {
         await editor.store();
         const data = await editor.load();
         expect(data).toEqual(projectData);
+      });
+
+      test('Allows retrying store after a storage failure', async () => {
+        const store = jest.fn().mockRejectedValueOnce(new Error('store failed')).mockResolvedValueOnce(undefined);
+
+        (config.storageManager as StorageManagerConfig).type = storageId;
+        config.plugins = [
+          (e) =>
+            e.StorageManager.add(storageId, {
+              store,
+              async load() {
+                return {};
+              },
+            }),
+        ];
+        const editor = initTestEditor(config);
+
+        await expect(editor.store()).rejects.toThrow('store failed');
+        await wait(2);
+        await editor.store();
+
+        expect(store).toHaveBeenCalledTimes(2);
       });
 
       test('Adds a new storage and fetch correctly data from it', async () => {

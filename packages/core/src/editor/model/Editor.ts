@@ -909,11 +909,14 @@ export default class EditorModel extends Model {
       this.clearDirtyCount();
     }, 1);
     const data = this.storeData();
-    await this.Storage.store(data, options);
-    setTimeout(() => {
-      this._isStoring = false;
-    }, 1);
-    return data;
+    try {
+      await this.Storage.store(data, options);
+      return data;
+    } finally {
+      setTimeout(() => {
+        this._isStoring = false;
+      }, 1);
+    }
   }
 
   /**
