@@ -5,6 +5,7 @@ import Component from '../../dom_components/model/Component';
 import ComponentView from '../../dom_components/view/ComponentView';
 import {
   createEl,
+  createStyleEl,
   getDocumentScroll,
   getElRect,
   getKeyChar,
@@ -58,7 +59,6 @@ export default class CanvasView extends ModuleView<Canvas> {
         <div class="${pfx}canvas__spots" data-spots></div>
       </div>
       <div id="${pfx}tools" class="${pfx}canvas__tools" data-tools></div>
-      <style data-canvas-style></style>
     `;
   }
   /*get className(){
@@ -694,7 +694,10 @@ export default class CanvasView extends ModuleView<Canvas> {
     this.fixedOffsetEl = el.querySelector(`.${ppfx}offset-fixed-v`)!;
     this.toolsGlobEl = el.querySelector(`.${ppfx}tools-gl`)!;
     this.spotsEl = el.querySelector('[data-spots]')!;
-    this.cvStyle = el.querySelector('[data-canvas-style]')!;
+    // Created here instead of in the template, so that the CSP nonce is in
+    // place before the element enters the document
+    this.cvStyle = createStyleEl('', em.getConfig().cspNonce, { 'data-canvas-style': '' });
+    el.appendChild(this.cvStyle);
     el.className = getUiClass(em, this.className);
     if (config.scrollableCanvas === true) {
       el.style.overflow = 'auto';

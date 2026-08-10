@@ -7,7 +7,7 @@ import ComponentView from '../../dom_components/view/ComponentView';
 import ComponentWrapperView from '../../dom_components/view/ComponentWrapperView';
 import AutoScroller from '../../utils/AutoScroller';
 import Droppable from '../../utils/Droppable';
-import { append, appendVNodes, createCustomEvent, createEl, motionsEv, off, on } from '../../utils/dom';
+import { append, appendVNodes, createCustomEvent, createEl, createStyleEl, motionsEv, off, on } from '../../utils/dom';
 import { hasDnd, setViewEl } from '../../utils/mixins';
 import Canvas from '../model/Canvas';
 import Frame from '../model/Frame';
@@ -374,7 +374,8 @@ export default class FrameView extends ModuleView<Frame, HTMLIFrameElement> {
 
     append(
       body,
-      `<style>
+      createStyleEl(
+        `
       ${conf.baseCss || config.frameStyle || ''}
 
       ${hasAutoHeight ? 'body { overflow: hidden }' : ''}
@@ -444,7 +445,9 @@ export default class FrameView extends ModuleView<Frame, HTMLIFrameElement> {
 
       ${conf.canvasCss || ''}
       ${conf.protectedCss || ''}
-    </style>`,
+    `,
+        conf.cspNonce,
+      ),
     );
     const { root } = model;
     const { view } = this.getComponentView(root);

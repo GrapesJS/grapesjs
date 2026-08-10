@@ -29,7 +29,7 @@ export default class ParserCss {
     const { input } = inputOptions;
 
     try {
-      nodes = parserCss ? parserCss(input, editor!) : BrowserCssParser(input);
+      nodes = parserCss ? parserCss(input, editor!) : BrowserCssParser(input, this.em?.getConfig().cspNonce);
     } catch (err) {
       error = err;
       if (opts.throwOnError) throw err;

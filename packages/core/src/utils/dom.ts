@@ -83,6 +83,28 @@ export const createEl = (tag: string, attrs: ObjectAny = {}, child?: ChildHTML) 
 
 export const createText = (str: string) => document.createTextNode(str);
 
+/**
+ * Set the CSP nonce on an element.
+ * The nonce has to be in place before the element is inserted in the document,
+ * otherwise a strict `style-src`/`script-src` policy blocks it.
+ */
+export const setNonce = <T extends HTMLElement>(el: T, nonce?: string) => {
+  nonce && el.setAttribute('nonce', nonce);
+  return el;
+};
+
+/**
+ * Create a detached `<style>` element, optionally carrying a CSP nonce.
+ * Attributes (nonce included) are set while the element is still detached, so
+ * the style block is already trusted by the time the caller appends it.
+ */
+export const createStyleEl = (css = '', nonce?: string, attributes: ObjectAny = {}) => {
+  const el = createEl('style', attributes) as HTMLStyleElement;
+  setNonce(el, nonce);
+  if (css) el.innerHTML = css;
+  return el;
+};
+
 // Unfortunately just creating `KeyboardEvent(e.type, e)` is not enough,
 // the keyCode/which will be always `0`. Even if it's an old/deprecated
 // property keymaster (and many others) still use it... using `defineProperty`
