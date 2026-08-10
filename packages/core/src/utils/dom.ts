@@ -105,6 +105,67 @@ export const createStyleEl = (css = '', nonce?: string, attributes: ObjectAny = 
   return el;
 };
 
+/**
+ * Split a CSS declaration string on the top-level `;`, ignoring the ones nested
+ * in functions or strings (eg. `background: url(data:image/png;base64,...)`).
+ */
+const splitDeclarations = (style: string) => {
+  const result: string[] = [];
+  let current = '';
+  let depth = 0;
+  let quote = '';
+
+  for (let i = 0; i < style.length; i++) {
+    const char = style[i];
+
+    if (quote) {
+      char === quote && (quote = '');
+    } else if (char === '"' || char === "'") {
+      quote = char;
+    } else if (char === '(') {
+      depth++;
+    } else if (char === ')') {
+      depth = Math.max(0, depth - 1);
+    } else if (char === ';' && !depth) {
+      result.push(current);
+      current = '';
+      continue;
+    }
+
+    current += char;
+  }
+
+  result.push(current);
+
+  return result;
+};
+
+const IMPORTANT_RE = /!\s*important\s*$/i;
+
+/**
+ * Apply a CSS declaration string to an element through the CSSOM, replacing any
+ * style previously set on it.
+ * Unlike writing the `style` attribute, CSSOM updates are not subject to the
+ * `style-src-attr` CSP directive, so this keeps the editor usable on pages
+ * served with a strict policy.
+ */
+export const setStyleText = <T extends HTMLElement>(el: T, style?: string) => {
+  el.removeAttribute('style');
+
+  splitDeclarations(style || '').forEach((declaration) => {
+    const index = declaration.indexOf(':');
+    if (index < 0) return;
+    const prop = declaration.slice(0, index).trim();
+    if (!prop) return;
+    let value = declaration.slice(index + 1).trim();
+    const important = IMPORTANT_RE.test(value);
+    important && (value = value.replace(IMPORTANT_RE, '').trim());
+    el.style.setProperty(prop, value, important ? 'important' : '');
+  });
+
+  return el;
+};
+
 // Unfortunately just creating `KeyboardEvent(e.type, e)` is not enough,
 // the keyCode/which will be always `0`. Even if it's an old/deprecated
 // property keymaster (and many others) still use it... using `defineProperty`

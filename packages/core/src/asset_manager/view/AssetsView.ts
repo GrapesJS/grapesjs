@@ -20,7 +20,7 @@ export default class AssetsView extends View {
               <input placeholder="${em?.t('assetManager.inputPlh')}"/>
             </div>
             <button class="${ppfx}btn-prim">${em?.t('assetManager.addButton')}</button>
-            <div style="clear:both"></div>
+            <div class="${ppfx}clear-float"></div>
           </form>
       `;
     }
@@ -31,7 +31,7 @@ export default class AssetsView extends View {
         ${form}
       </div>
       <div class="${pfx}assets" data-el="assets"></div>
-      <div style="clear:both"></div>
+      <div class="${ppfx}clear-float"></div>
     </div>
     `;
   }

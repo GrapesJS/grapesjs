@@ -82,7 +82,7 @@ export default class PropertyView extends View<Property> {
   }
 
   templateLabel(model: Property) {
-    const { pfx, em } = this;
+    const { pfx, ppfx, em } = this;
     const { parent } = model;
     const { icon = '', info = '' } = model.attributes;
     const icons = em?.getConfig().icons;
@@ -92,7 +92,7 @@ export default class PropertyView extends View<Property> {
       <span class="${pfx}icon ${icon}" title="${info}">
         ${model.getLabel()}
       </span>
-      ${!parent ? `<div class="${pfx}clear" style="display: none" ${clearProp}>${iconClose}</div>` : ''}
+      ${!parent ? `<div class="${pfx}clear ${ppfx}hidden" ${clearProp}>${iconClose}</div>` : ''}
     `;
   }
 
@@ -123,13 +123,13 @@ export default class PropertyView extends View<Property> {
     const computedCls = `${ppfx}color-warn`;
     const labelEl = this.$el.children(`.${pfx}label`);
     const clearStyleEl = this.getClearEl();
-    const clearStyle = clearStyleEl ? clearStyleEl.style : ({} as CSSStyleDeclaration);
+    const hiddenCls = `${ppfx}hidden`;
     labelEl.removeClass(`${updatedCls} ${computedCls}`);
-    clearStyle.display = 'none';
+    clearStyleEl?.classList.add(hiddenCls);
 
     if (model.hasValue({ noParent: true }) && config.highlightChanged) {
       labelEl.addClass(updatedCls);
-      config.clearProperties && (clearStyle.display = '');
+      config.clearProperties && clearStyleEl?.classList.remove(hiddenCls);
     } else if (model.hasValue() && config.highlightComputed) {
       labelEl.addClass(computedCls);
     }

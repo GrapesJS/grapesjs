@@ -668,16 +668,16 @@ export default class CanvasView extends ModuleView<Canvas> {
     const toolsWrp = $el.find('[data-tools]');
     this.toolsWrapper = toolsWrp.get(0);
     toolsWrp.append(`
-      <div class="${ppfx}tools ${ppfx}tools-gl" style="pointer-events:none">
+      <div class="${ppfx}tools ${ppfx}tools-gl ${ppfx}no-pointer-events">
         <div class="${ppfx}placeholder">
           <div class="${ppfx}placeholder-int"></div>
         </div>
       </div>
-      <div id="${ppfx}tools" style="pointer-events:none">
+      <div id="${ppfx}tools" class="${ppfx}no-pointer-events">
         ${config.extHl ? `<div class="${ppfx}highlighter-sel"></div>` : ''}
         <div class="${ppfx}badge"></div>
         <div class="${ppfx}ghost"></div>
-        <div class="${ppfx}toolbar" style="pointer-events:all"></div>
+        <div class="${ppfx}toolbar ${ppfx}pointer-events-all"></div>
         <div class="${ppfx}resizer"></div>
         <div class="${ppfx}offset-v"></div>
         <div class="${ppfx}offset-fixed-v"></div>
