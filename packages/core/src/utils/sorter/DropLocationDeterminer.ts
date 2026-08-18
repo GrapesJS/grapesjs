@@ -151,7 +151,7 @@ export class DropLocationDeterminer<T, NodeType extends SortableTreeNode<T>> ext
     const { index, placement, placeholderDimensions } = this.getDropPosition(targetNode, mouseX, mouseY);
 
     const placeHolderMoved =
-      !placeholderDimensions.equals(this.lastMoveData.placeholderDimensions) ||
+      !placeholderDimensions?.equals(this.lastMoveData.placeholderDimensions) ||
       placement !== this.lastMoveData.placement;
     if (placeHolderMoved) {
       this.eventHandlers.onPlaceholderPositionChange?.(placeholderDimensions!, placement!);
@@ -252,9 +252,9 @@ export class DropLocationDeterminer<T, NodeType extends SortableTreeNode<T>> ext
     let placeholderDimensions = nodeDimensions.clone(),
       index = 0,
       placement = 'inside' as Placement;
-    if (nodeHasChildren) {
+    if (nodeHasChildren && childrenDimensions.length > 0) {
       ({ index, placement } = findPosition(childrenDimensions, mouseX, mouseY));
-      placeholderDimensions = childrenDimensions[index].clone();
+      placeholderDimensions = childrenDimensions[index]?.clone() ?? nodeDimensions.clone();
       index = index + (placement == 'after' ? 1 : 0);
     }
 
@@ -486,6 +486,9 @@ export class DropLocationDeterminer<T, NodeType extends SortableTreeNode<T>> ext
       const el = sortableTreeNode.element;
       if (!el) return;
 
+      // Original logic: include if it's a text node OR matches the item selector
+      // The issue is that sometimes elements exist in the children array but their
+      // DOM elements don't match the selector due to timing/state issues
       if (!isTextNode(el) && !matches(el, this.containerContext.itemSel)) {
         return;
       }
