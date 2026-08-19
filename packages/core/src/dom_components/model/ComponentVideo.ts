@@ -35,7 +35,6 @@ export default class ComponentVideo extends ComponentImage {
       list: '',
       src: '',
       rel: 1, // YT related videos
-      modestbranding: 0, // YT modest branding
       sources: [],
       attributes: { allowfullscreen: 'allowfullscreen' },
     };
@@ -132,7 +131,6 @@ export default class ComponentVideo extends ComponentImage {
         parseInt(qr.controls) === 0 && this.set('controls', false);
         hasParam(qr.color) && this.set('color', qr.color);
         qr.rel === '0' && this.set('rel', 0);
-        qr.modestbranding === '1' && this.set('modestbranding', 1);
         qr.muted === '1' && this.set('muted', true);
         break;
       default:
@@ -256,12 +254,6 @@ export default class ComponentVideo extends ComponentImage {
         name: 'rel',
         changeProp: true,
       },
-      {
-        type: 'checkbox',
-        label: 'Modest',
-        name: 'modestbranding',
-        changeProp: true,
-      },
       this.getMutedTrait(),
     ];
   }
@@ -364,7 +356,6 @@ export default class ComponentVideo extends ComponentImage {
     url += !this.get('controls') ? '&controls=0&showinfo=0' : '';
     url += this.get('loop') ? `&loop=1&playlist=${id}` : '';
     url += this.get('rel') ? '' : '&rel=0';
-    url += this.get('modestbranding') ? '&modestbranding=1' : '';
     return url;
   }
 
