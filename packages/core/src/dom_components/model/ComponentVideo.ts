@@ -131,7 +131,8 @@ export default class ComponentVideo extends ComponentImage {
         parseInt(qr.controls) === 0 && this.set('controls', false);
         hasParam(qr.color) && this.set('color', qr.color);
         qr.rel === '0' && this.set('rel', 0);
-        qr.muted === '1' && this.set('muted', true);
+        // YouTube uses "mute" param, Vimeo uses "muted"
+        (qr.mute === '1' || qr.muted === '1') && this.set('muted', true);
         break;
       default:
     }
