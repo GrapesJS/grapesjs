@@ -1,7 +1,7 @@
 import { bindAll } from 'underscore';
 
 import { View } from '../../common';
-import { createEl } from '../../utils/dom';
+import { createEl, createStyleEl } from '../../utils/dom';
 import CssRuleView from './CssRuleView';
 import CssGroupRuleView from './CssGroupRuleView';
 import EditorModel from '../../editor/model/Editor';
@@ -66,7 +66,7 @@ export default class CssRulesView extends View {
       let atRuleEl = this.atRules[atRule];
 
       if (!atRuleEl) {
-        const styleEl = document.createElement('style');
+        const styleEl = createStyleEl('', this.em?.getConfig().cspNonce);
         atRuleEl = document.createTextNode('');
         styleEl.appendChild(document.createTextNode(`${atRule}{`));
         styleEl.appendChild(atRuleEl);

@@ -16,7 +16,7 @@ describe('PropertySelectView', () => {
   const propValue = 'test1value';
   const defValue = 'test2value';
   let options: any = [
-    { id: 'test1value', style: 'test:style' },
+    { id: 'test1value', style: 'color: red' },
     { id: 'test2', value: 'test2value' },
   ];
 
@@ -69,7 +69,8 @@ describe('PropertySelectView', () => {
     expect((children[1] as any).value).toEqual(options[1].id);
     expect(children[0].textContent).toEqual(options[0].id);
     expect(children[1].textContent).toEqual(options[1].id);
-    expect(children[0].getAttribute('style')).toEqual(options[0].style);
+    // Applied through the CSSOM, never written as a `style` attribute
+    expect((children[0] as HTMLElement).style.color).toEqual('red');
     expect(children[1].getAttribute('style')).toEqual(null);
   });
 
