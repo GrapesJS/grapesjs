@@ -1,4 +1,5 @@
 import { PropertyTypes } from '..';
+import type { PropertyParseValue } from '../model/Property';
 import { SectorProperties } from '../model/Sector';
 
 export interface StyleManagerConfig {
@@ -6,6 +7,16 @@ export interface StyleManagerConfig {
    * Default sectors and properties
    */
   sectors?: (Omit<SectorProperties, 'properties'> & { properties?: (string | PropertyTypes)[] })[];
+
+  /**
+   * Pass a custom function to parse property values globally.
+   *
+   * @example
+   * parseValue: ({ value, parse }) => {
+   *  return value.startsWith('var(--') ? { value, unit: '' } : parse();
+   * }
+   */
+  parseValue?: PropertyParseValue;
 
   /**
    * Specify the element to use as a container, string (query) or HTMLElement.

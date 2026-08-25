@@ -250,4 +250,40 @@ describe('PropertyNumber', () => {
     expect(obj.parseValue('200px')).toEqual(result);
     expect(obj.parseValue('95px')).toEqual({ value: 95, unit: 'px' });
   });
+
+  test('supports per-property parseValue overrides', () => {
+    obj = new PropertyNumber({
+      units: ['px'],
+      property: 'width',
+      parseValue: ({ value, parse }) => (value.startsWith('var(--') ? { value, unit: '' } : parse()),
+    });
+
+    expect(obj.__parseValue('var(--size)', {})).toEqual({ value: 'var(--size)', unit: '' });
+    expect(obj.__parseValue('20px', {})).toEqual({ value: 20, unit: 'px' });
+  });
+
+  test('supports global styleManager parseValue overrides', () => {
+    const em = new Editor({
+      styleManager: {
+        parseValue: ({ value, parse }) => (value.startsWith('var(--') ? { value, unit: '' } : parse()),
+      },
+    });
+    const sm = em.Styles;
+    sm.onLoad();
+    sm.addSector('test', {
+      name: 'Test',
+      properties: [{ type: 'number', property: 'width', units: ['px'] }],
+    });
+    obj = sm.getProperty('test', 'width') as PropertyNumber;
+
+    obj.upValue('var(--size)', { noTarget: true });
+    expect(obj.get('value')).toEqual('var(--size)');
+    expect(obj.get('unit')).toEqual('');
+
+    obj.upValue('20px', { noTarget: true });
+    expect(obj.get('value')).toEqual(20);
+    expect(obj.get('unit')).toEqual('px');
+
+    em.destroy();
+  });
 });

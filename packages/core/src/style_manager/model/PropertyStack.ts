@@ -452,14 +452,16 @@ export default class PropertyStack extends PropertyComposite<PropertyStackProps>
   }
 
   __parseValue(value: string) {
-    const result = this.parseValue(value);
-    result.__layers = value
-      .split(VALUES_REG)
-      .map((v) => v.trim())
-      .map((v) => this.__parseLayer(v))
-      .filter(Boolean);
+    return this.__parseValueCustom(value, () => {
+      const result = this.parseValue(value);
+      result.__layers = value
+        .split(VALUES_REG)
+        .map((v) => v.trim())
+        .map((v) => this.__parseLayer(v))
+        .filter(Boolean);
 
-    return result;
+      return result;
+    });
   }
 
   __parseLayer(value: string) {

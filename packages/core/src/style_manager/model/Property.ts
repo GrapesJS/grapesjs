@@ -1,6 +1,7 @@
 import { isUndefined, isString, isArray, result, keys, each, includes, isFunction } from 'underscore';
 import { Model } from '../../common';
 import Component from '../../dom_components/model/Component';
+import type Editor from '../../editor';
 import EditorModel from '../../editor/model/Editor';
 import { capitalize, camelCase, hasWin } from '../../utils/mixins';
 import Sector from './Sector';
@@ -14,6 +15,13 @@ export type IsVisibleFn = (props: {
   target: StyleTarget;
   component?: Component;
 }) => boolean | void;
+
+export type PropertyParseValue<T extends PropertyPropsCustom = PropertyPropsCustom> = (props: {
+  property: Property<T>;
+  editor?: Editor;
+  parse: () => Partial<T>;
+  value: string;
+}) => Partial<T>;
 
 /** @private */
 export interface PropertyProps {
@@ -33,6 +41,15 @@ export interface PropertyProps {
   fixedValues?: string[];
   className?: string;
   extend?: string;
+  /**
+   * Pass a custom function to parse the property value.
+   *
+   * @example
+   * parseValue: ({ value, parse }) => {
+   *  return value.startsWith('var(--') ? { value, unit: '' } : parse();
+   * }
+   */
+  parseValue?: PropertyParseValue;
   onChange?: (data: {
     property: Property;
     from: PartialPropertyProps;
@@ -373,7 +390,20 @@ export default class Property<T extends PropertyPropsCustom = PropertyPropsCusto
   }
 
   __parseValue(value: string, opts: any) {
-    return this.parseValue(value, opts);
+    return this.__parseValueCustom(value, () => this.parseValue(value, opts));
+  }
+
+  __parseValueCustom(value: string, parse: () => Partial<T>) {
+    const customValueParser = this.get('parseValue') || this.em?.Styles.getConfig().parseValue;
+
+    return customValueParser
+      ? customValueParser({
+          property: this,
+          editor: this.em?.getEditor(),
+          parse,
+          value,
+        })
+      : parse();
   }
 
   __getClearProps() {
@@ -388,11 +418,11 @@ export default class Property<T extends PropertyPropsCustom = PropertyPropsCusto
    * @private
    */
   setValue(value: string, complete = true, opts = {}) {
-    const parsed = this.parseValue(value);
+    const parsed = this.__parseValue(value, { complete });
     const avoidStore = !complete;
     // @ts-ignore
     !avoidStore && this.set({ value: undefined }, { avoidStore, silent: true });
-    this.set(parsed, { avoidStore, ...opts });
+    this.set(parsed as any, { avoidStore, ...opts });
   }
 
   /**
