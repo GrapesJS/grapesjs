@@ -7,7 +7,7 @@ on:
 
 jobs:
   publish:
-    if: "contains(github.event.head_commit.message, 'Release GrapesJS core latest:')"
+    if: "startsWith(github.event.head_commit.message, 'Release GrapesJS core latest:')"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
