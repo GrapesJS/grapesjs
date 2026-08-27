@@ -173,7 +173,7 @@ export default class Sorter<T, NodeType extends SortableTreeNode<T>> {
   private ensurePlaceholderElement() {
     const el = this.placeholder.el;
     const container = this.containerContext.container;
-    if (!el.ownerDocument.contains(el)) {
+    if (!el.isConnected) {
       container.append(this.placeholder.el);
     }
   }
