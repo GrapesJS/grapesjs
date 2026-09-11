@@ -117,6 +117,19 @@ describe('DOM Components', () => {
       expect(obj.getComponents().length).toEqual(1);
     });
 
+    test('Emits changed properties on component update', () => {
+      const component = obj.addComponent({ tagName: 'div' }) as Component;
+      const onUpdate = jest.fn();
+      em.on('component:update', onUpdate);
+
+      component.set('tagName', 'section');
+
+      expect(onUpdate).toHaveBeenCalledWith(
+        component,
+        expect.objectContaining({ component, changed: { tagName: 'section' } }),
+      );
+    });
+
     test('Add more components at once', () => {
       obj.addComponent([{}, {}]);
       expect(obj.getComponents().length).toEqual(2);

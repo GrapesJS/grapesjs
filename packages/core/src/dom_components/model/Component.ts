@@ -452,6 +452,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
     ['status', 'open', 'toolbar', 'traits'].forEach((name) => delete changed[name]);
     // Propagate component prop changes
     if (!isEmptyObj(changed)) {
+      this.em?.trigger(keyUpdate, this, { component: this, changed, options: opts });
       this.__changesUp(opts, { changed });
       this.__propSelfToParent({ component: this, changed, options: opts });
     }
