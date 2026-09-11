@@ -74,9 +74,9 @@ export enum ComponentsEvents {
   create = 'component:create',
 
   /**
-   * @event `component:update` Component is updated. The callback receives the component and its changed properties.
+   * @event `component:update` Component is updated.
    * @example
-   * editor.on('component:update', (component, { changed, options }) => { ... });
+   * editor.on('component:update', (component) => { ... });
    */
   update = 'component:update',
   updateProperty = 'component:update:',
@@ -356,7 +356,7 @@ export interface ComponentsEventCallback {
   [ComponentsEvents.removed]: [Component, ComponentRemovedEventData | undefined];
   [ComponentsEvents.clone]: [Component];
   [ComponentsEvents.create]: [Component, ComponentOptions];
-  [ComponentsEvents.update]: [Component, ComponentUpdateEventData?];
+  [ComponentsEvents.update]: [Component];
   [ComponentsEvents.updateInside]: [ComponentUpdateEventData];
   [ComponentsEvents.styleUpdate]: [Component, ComponentStyleUpdateEventData];
   [ComponentsEvents.select]: [Component, ObjectAny];

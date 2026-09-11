@@ -30,6 +30,7 @@ import { Module } from '../abstract';
 import EditorModel from '../editor/model/Editor';
 import defConfig, { UndoManagerConfig } from './config';
 import { EditorEvents } from '../editor/types';
+import ProjectUpdates from './ProjectUpdates';
 
 export interface UndoGroup {
   index: number;
@@ -46,9 +47,11 @@ const changedMap = new WeakMap();
 export default class UndoManagerModule extends Module<UndoManagerConfig & { name?: string; _disable?: boolean }> {
   beforeCache?: any;
   um: any;
+  projectUpdates: ProjectUpdates;
 
   constructor(em: EditorModel) {
     super(em, 'UndoManager', defConfig());
+    this.projectUpdates = new ProjectUpdates(em);
 
     if (this.config._disable) {
       this.config.maximumStackLength = 0;
@@ -173,6 +176,7 @@ export default class UndoManagerModule extends Module<UndoManagerConfig & { name
    * um.add(someModelOrCollection);
    */
   add(entity: any) {
+    this.projectUpdates.add(entity);
     if (this.isDisabled) return this;
     this.um.register(entity);
     return this;
@@ -186,6 +190,7 @@ export default class UndoManagerModule extends Module<UndoManagerConfig & { name
    * um.remove(someModelOrCollection);
    */
   remove(entity: any) {
+    this.projectUpdates.remove(entity);
     if (this.isDisabled) return this;
     this.um.unregister(entity);
     return this;
@@ -198,6 +203,7 @@ export default class UndoManagerModule extends Module<UndoManagerConfig & { name
    * um.removeAll();
    */
   removeAll() {
+    this.projectUpdates.removeAll();
     if (this.isDisabled) return this;
     this.um.unregisterAll();
     return this;

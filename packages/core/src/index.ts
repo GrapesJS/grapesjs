@@ -125,6 +125,15 @@ export type { default as Component } from './dom_components/model/Component';
 export type { default as Components } from './dom_components/model/Components';
 export type { default as ComponentView } from './dom_components/view/ComponentView';
 export type { default as Editor } from './editor';
+export type {
+  ProjectUpdateAddOperation,
+  ProjectUpdateChangeOperation,
+  ProjectUpdateOperation,
+  ProjectUpdateRemoveOperation,
+  ProjectUpdateResetOperation,
+  ProjectUpdateTarget,
+  ProjectUpdateTransaction
+} from './undo_manager/ProjectUpdates';
 export type { default as Modal } from './modal_dialog/model/Modal';
 export type { default as Page } from './pages/model/Page';
 export type { default as Pages } from './pages/model/Pages';
