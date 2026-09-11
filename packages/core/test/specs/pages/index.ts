@@ -251,6 +251,41 @@ describe('Managing pages', () => {
     expect(event).toHaveBeenCalledWith(page, up, opts);
   });
 
+  test('Add frame event', () => {
+    const event = jest.fn();
+    const opts = { at: 1 };
+    const frames = pm.getMain().getFrames();
+    em.on(pm.events.frameAdd, event);
+
+    const frame = frames.add({ id: 'frame-add' }, opts);
+
+    expect(event).toHaveBeenCalledWith(frame, expect.objectContaining(opts));
+  });
+
+  test('Update frame event', () => {
+    const event = jest.fn();
+    const frame = pm.getMain().getFrames().add({ id: 'frame-update' });
+    const changes = { width: 320 };
+    const opts = { avoidStore: true };
+    em.on(pm.events.frameUpdate, event);
+
+    frame.set(changes, opts);
+
+    expect(event).toHaveBeenCalledWith(frame, changes, opts);
+  });
+
+  test('Remove frame event', () => {
+    const event = jest.fn();
+    const frames = pm.getMain().getFrames();
+    const frame = frames.add({ id: 'frame-remove' });
+    const opts = { silent: false };
+    em.on(pm.events.frameRemove, event);
+
+    frames.remove(frame, opts);
+
+    expect(event).toHaveBeenCalledWith(frame, expect.objectContaining(opts));
+  });
+
   test('Prevent duplicate ids in components and styles', () => {
     const id = 'myid';
     const idSel = `#${id}`;

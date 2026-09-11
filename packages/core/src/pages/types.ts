@@ -4,9 +4,11 @@ import {
   EventCallbackRemoveBefore,
   EventCallbackUpdate,
   ObjectAny,
+  RemoveOptions,
   SetOptions,
 } from '../common';
 import { ModuleConfig } from '../abstract/Module';
+import type Frame from '../canvas/model/Frame';
 import Page from './model/Page';
 import { PageProperties } from './model/Page';
 
@@ -67,6 +69,27 @@ export enum PagesEvents {
   update = 'page:update',
 
   /**
+   * @event `page:frame:add` Frame added to a page. The frame and options are passed as arguments to the callback.
+   * @example
+   * editor.on('page:frame:add', (frame, options) => { ... });
+   */
+  frameAdd = 'page:frame:add',
+
+  /**
+   * @event `page:frame:remove` Frame removed from a page. The frame and options are passed as arguments to the callback.
+   * @example
+   * editor.on('page:frame:remove', (frame, options) => { ... });
+   */
+  frameRemove = 'page:frame:remove',
+
+  /**
+   * @event `page:frame:update` Frame updated. The frame, changed properties, and options are passed as arguments to the callback.
+   * @example
+   * editor.on('page:frame:update', (frame, changes, options) => { ... });
+   */
+  frameUpdate = 'page:frame:update',
+
+  /**
    * @event `page` Catch-all event for all the events mentioned above. An object containing all the available data about the triggered event is passed as an argument to the callback.
    * @example
    * editor.on('page', ({ event, model, ... }) => { ... });
@@ -89,6 +112,9 @@ export interface PagesEventCallback {
   [PagesEvents.select]: [Page, Page | undefined];
   [PagesEvents.selectBefore]: [Page, SetOptions];
   [PagesEvents.update]: EventCallbackUpdate<Page>;
+  [PagesEvents.frameAdd]: [Frame, AddOptions];
+  [PagesEvents.frameRemove]: [Frame, RemoveOptions];
+  [PagesEvents.frameUpdate]: [Frame, ObjectAny, SetOptions];
   [PagesEvents.all]: [{ event: string; page: Page; options: ObjectAny }];
 }
 
