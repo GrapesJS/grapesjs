@@ -48,6 +48,7 @@ import {
 export default class DataSourceManager extends ItemManagerModule<DataSourcesConfig & ModuleConfig, DataSources> {
   storageKey = 'dataSources';
   events = DataSourcesEvents;
+  classes = { DataSource, DataSources };
   dataComponentTypes = DataComponentTypes;
   dataCollectionKeys = DataCollectionKeys;
   dataCollectionStateTypes = DataCollectionStateType;

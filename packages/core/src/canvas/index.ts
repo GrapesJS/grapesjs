@@ -40,6 +40,7 @@ import Canvas from './model/Canvas';
 import CanvasSpot, { CanvasSpotBuiltInTypes, CanvasSpotProps } from './model/CanvasSpot';
 import CanvasSpots from './model/CanvasSpots';
 import Frame from './model/Frame';
+import Frames from './model/Frames';
 import { CanvasEvents, CanvasRefreshOptions, SetZoomOptions, ToWorldOption } from './types';
 import CanvasView, { FitViewportOptions } from './view/CanvasView';
 import FrameView from './view/FrameView';
@@ -69,6 +70,7 @@ export default class CanvasModule extends Module<CanvasConfig> {
   model: Canvas;
   spots: CanvasSpots;
   events = CanvasEvents;
+  classes = { Frame, Frames };
   framesById: Record<string, Frame | undefined> = {};
   private canvasView?: CanvasView;
 

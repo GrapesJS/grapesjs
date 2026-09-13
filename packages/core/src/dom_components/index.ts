@@ -325,6 +325,8 @@ export default class ComponentManager extends ItemManagerModule<DomComponentsCon
 
   Components = Components;
 
+  classes = { Component, Components };
+
   ComponentView = ComponentView;
 
   ComponentsView = ComponentsView;

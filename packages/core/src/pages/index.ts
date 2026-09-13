@@ -45,6 +45,7 @@ const typeMain = 'main';
 
 export default class PageManager extends ItemManagerModule<PageManagerConfig, Pages> {
   events = PagesEvents;
+  classes = { Page, Pages };
   storageKey = 'pages';
 
   get pages() {

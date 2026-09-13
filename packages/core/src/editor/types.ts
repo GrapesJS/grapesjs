@@ -22,7 +22,6 @@ import { TraitEvent, TraitEventCallback } from '../trait_manager/types';
 import { EditorConfig } from './config/config';
 import type EditorModel from './model/Editor';
 import type { EditorLoadOptions } from './model/Editor';
-import type { ProjectUpdateTransaction } from '../undo_manager/ProjectUpdates';
 
 type EditorLogEvent =
   | `${EditorEvents.log}:${string}`
@@ -73,8 +72,6 @@ export interface EditorProjectGetEventData {
   project: ProjectData;
 }
 
-export type { ProjectUpdateTransaction } from '../undo_manager/ProjectUpdates';
-
 export interface EditorLogEventOptions extends ObjectAny {
   ns?: string;
   level?: string;
@@ -89,7 +86,6 @@ export interface EditorEventCoreCallbacks {
   [EditorEvents.projectLoad]: [EditorProjectLoadEventData];
   [EditorEvents.projectLoaded]: [EditorProjectEventData];
   [EditorEvents.projectGet]: [EditorProjectGetEventData];
-  [EditorEvents.projectUpdate]: [ProjectUpdateTransaction];
   [EditorEvents.log]: [string, EditorLogEventOptions];
   [EditorEvents.telemetryInit]: [];
   [EditorEvents.destroy]: [];
@@ -182,13 +178,6 @@ export enum EditorEvents {
    * editor.on('project:get', ({ project }) => { project.myCustomKey = 'value' });
    */
   projectGet = 'project:get',
-
-  /**
-   * @event `project:update` A synchronous project mutation batch.
-   * @example
-   * editor.on('project:update', ({ operations }) => { ... });
-   */
-  projectUpdate = 'project:update',
 
   /**
    * @event `log` Log message triggered.
