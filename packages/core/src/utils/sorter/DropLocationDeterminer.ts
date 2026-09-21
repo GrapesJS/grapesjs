@@ -4,7 +4,7 @@ import EditorModel from '../../editor/model/Editor';
 import { isTextNode, off, on } from '../dom';
 import { SortableTreeNode } from './SortableTreeNode';
 import { Placement, PositionOptions, DragDirection, SorterEventHandlers, CustomTarget, DragSource } from './types';
-import { bindAll, each } from 'underscore';
+import { bindAll, each, isFunction } from 'underscore';
 import { matches, findPosition, offset, isStyleInFlow } from './SorterUtils';
 import { RateLimiter } from './RateLimiter';
 import Dimension from './Dimension';
@@ -287,9 +287,24 @@ export class DropLocationDeterminer<T, NodeType extends SortableTreeNode<T>> ext
     return newHoveredNode;
   }
 
+  /**
+   * Resolves the root to run the hit-test against.
+   *
+   * `Document.elementFromPoint` doesn't pierce shadow boundaries, so when the container lives
+   * inside a shadow root it would always return the host element instead of the hovered item.
+   * `ShadowRoot` implements the same `DocumentOrShadowRoot` mixin and resolves within its own tree.
+   */
+  private getContainerContextRoot(): DocumentOrShadowRoot {
+    const root = this.containerContext.container?.getRootNode() as Partial<DocumentOrShadowRoot> | undefined;
+    if (isFunction(root?.elementFromPoint)) {
+      return root as DocumentOrShadowRoot;
+    }
+    return this.containerContext.document;
+  }
+
   private getMouseTargetElement(mouseEvent: MouseEvent) {
     const customTarget = this.containerContext.customTarget;
-    let mouseTarget = this.containerContext.document.elementFromPoint(
+    let mouseTarget = this.getContainerContextRoot().elementFromPoint(
       mouseEvent.clientX,
       mouseEvent.clientY,
     ) as HTMLElement;
