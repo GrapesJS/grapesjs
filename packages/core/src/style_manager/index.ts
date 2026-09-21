@@ -79,6 +79,8 @@ export default class StyleManager extends ItemManagerModule<
 > {
   builtIn: PropertyFactory;
   upAll: Debounced;
+  private upProps: Debounced & (() => void);
+  private trgCustom: Debounced & (() => void);
   properties: typeof Properties;
   events = StyleManagerEvents;
   sectors: Sectors;
@@ -121,15 +123,15 @@ export default class StyleManager extends ItemManagerModule<
     model.listenTo(em, ComponentsEvents.toggled, this.__clearStateTarget);
 
     // Triggers only for properties (avoid selection refresh)
-    const upProps = debounce(() => {
+    this.upProps = debounce(() => {
       this.__upProps();
       this.__trgCustom();
     }, 0);
-    model.listenTo(em, 'styleable:change undo redo', upProps);
+    model.listenTo(em, 'styleable:change undo redo', this.upProps);
 
     // Triggers only custom event
-    const trgCustom = debounce(() => this.__trgCustom(), 0);
-    model.listenTo(em, `${events.layerSelect} ${events.target}`, trgCustom);
+    this.trgCustom = debounce(() => this.__trgCustom(), 0);
+    model.listenTo(em, `${events.layerSelect} ${events.target}`, this.trgCustom);
 
     // Other listeners
     model.on('change:lastTarget', () => em.trigger(events.target, this.getSelected()));
@@ -836,5 +838,7 @@ export default class StyleManager extends ItemManagerModule<
     this.SectView?.remove();
     this.model.stopListening();
     this.upAll.cancel();
+    this.upProps.cancel();
+    this.trgCustom.cancel();
   }
 }
