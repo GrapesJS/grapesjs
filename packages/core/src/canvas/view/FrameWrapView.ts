@@ -204,7 +204,7 @@ export default class FrameWrapView extends ModuleView<Frame> {
           ${model.get('name') || ''}
         </div>
         <div class="${ppfx}frame-wrapper__top-r">
-          <div class="${ppfx}frame-wrapper__icon" data-action-remove style="display: none">
+          <div class="${ppfx}frame-wrapper__icon ${ppfx}hidden" data-action-remove>
             <svg viewBox="0 0 24 24"><path d="M19 4h-3.5l-1-1h-5l-1 1H5v2h14M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12z"></path></svg>
           </div>
         </div>
@@ -218,8 +218,7 @@ export default class FrameWrapView extends ModuleView<Frame> {
     const elTools = createEl(
       'div',
       {
-        class: `${ppfx}tools`,
-        style: 'pointer-events:none; display: none',
+        class: `${ppfx}tools ${ppfx}no-pointer-events`,
       },
       `
       <div class="${ppfx}highlighter" data-hl></div>
@@ -228,7 +227,7 @@ export default class FrameWrapView extends ModuleView<Frame> {
         <div class="${ppfx}placeholder-int"></div>
       </div>
       <div class="${ppfx}ghost"></div>
-      <div class="${ppfx}toolbar" style="pointer-events:all"></div>
+      <div class="${ppfx}toolbar ${ppfx}pointer-events-all"></div>
       <div class="${ppfx}resizer"></div>
       <div class="${ppfx}offset-v" data-offset>
         <div class="gjs-marginName" data-offset-m>
@@ -247,6 +246,9 @@ export default class FrameWrapView extends ModuleView<Frame> {
       <div class="${ppfx}offset-fixed-v"></div>
     `,
     );
+    // Kept on the CSSOM instead of a class, `toggleToolsEl` shows it back by
+    // resetting the inline display
+    elTools.style.display = 'none';
     this.elTools = elTools;
     const twrp = cv?.toolsWrapper;
     twrp && twrp.appendChild(elTools); // TODO remove on frame remove

@@ -245,6 +245,21 @@ export interface EditorConfig {
   avoidInlineStyle?: boolean;
 
   /**
+   * CSP nonce to set on every `<style>` element created by the editor.
+   * Required when the page is served with a strict `style-src`/`style-src-elem`
+   * policy, as the editor injects stylesheets at runtime (canvas styles, frame
+   * base styles and one `<style>` per CSS rule).
+   *
+   * The value has to match the `nonce-...` source of the policy sent with the
+   * document. Note that it does not cover inline `style` attributes, which are
+   * governed by `style-src-attr`.
+   * @default undefined
+   * @example
+   * cspNonce: 'r4nd0m'
+   */
+  cspNonce?: string;
+
+  /**
    * Avoid default properties from storable JSON data, like `components` and `styles`.
    * With this option enabled your data will be smaller (usefull if need to
    * save some storage space).
@@ -467,6 +482,7 @@ const config: () => EditorConfig = () => ({
   optsHtml: {},
   optsCss: {},
   avoidInlineStyle: true,
+  cspNonce: undefined,
   avoidDefaults: true,
   clearStyles: false,
   listenToEl: [],

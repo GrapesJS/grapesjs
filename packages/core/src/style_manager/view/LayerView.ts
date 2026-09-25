@@ -36,7 +36,7 @@ export default class LayerView extends View<Layer> {
           ${iconMove}
         </div>
         <div id="${pfx}label" data-label></div>
-        <div id="${pfx}preview-box" class="${pfx}layer-preview" style="display: none" data-preview-box>
+        <div id="${pfx}preview-box" class="${pfx}layer-preview" data-preview-box>
           <div id="${pfx}preview" class="${pfx}layer-preview-cnt" data-preview></div>
         </div>
         <div id="${pfx}close-layer" class="${pfx}btn-close" data-close-layer>
@@ -104,10 +104,8 @@ export default class LayerView extends View<Layer> {
     if (model.hasPreview()) {
       const prvEl = this.getPreviewEl();
       const style = model.getStylePreview({ number: { min: -3, max: 3 } });
-      const styleStr = keys(style)
-        .map((k) => `${k}:${style[k]}`)
-        .join(';');
-      prvEl.setAttribute('style', styleStr);
+      prvEl.removeAttribute('style');
+      keys(style).forEach((k) => prvEl.style.setProperty(k, `${style[k]}`));
     }
   }
 
@@ -124,9 +122,8 @@ export default class LayerView extends View<Layer> {
     const { el, pfx, model } = this;
     el.innerHTML = this.template();
     el.className = `${pfx}layer`;
-    if (model.hasPreview()) {
-      (el.querySelector('[data-preview-box]') as HTMLElement).style.display = '';
-    }
+    const previewBoxEl = el.querySelector('[data-preview-box]') as HTMLElement;
+    previewBoxEl.style.display = model.hasPreview() ? '' : 'none';
     this.updateLabel();
     this.updateVisibility();
     return this;

@@ -4,7 +4,7 @@
 import { isString } from 'underscore';
 import RichTextEditorModule from '..';
 import EditorModel from '../../editor/model/Editor';
-import { getPointerEvent, off, on } from '../../utils/dom';
+import { getPointerEvent, off, on, setStyleText } from '../../utils/dom';
 import { getComponentModel } from '../../utils/mixins';
 
 export interface RichTextEditorAction {
@@ -369,7 +369,9 @@ export default class RichTextEditor {
       action.btn = btn;
 
       for (let key in attr) {
-        btn.setAttribute(key, attr[key]);
+        // `style` goes through the CSSOM, writing the attribute would be
+        // blocked by a strict `style-src-attr` policy
+        key === 'style' ? setStyleText(btn, attr[key]) : btn.setAttribute(key, attr[key]);
       }
 
       if (typeof icon == 'string') {
