@@ -62,6 +62,12 @@ export interface ResizerOptions {
   ratioDefault?: boolean;
 
   /**
+   * Indicate if the resizer should allow the ratio to change.
+   * @default false
+   */
+  ratioLock?: boolean;
+
+  /**
    * On resize start callback.
    */
   onStart?: (ev: PointerEvent, opts: CallbackOptions) => void;
@@ -299,6 +305,7 @@ export default class Resizer {
   constructor(opts: ResizerOptions = {}) {
     this.defOpts = {
       ratioDefault: false,
+      ratioLock: false,
       onUpdateContainer: () => {},
       step: 1,
       minDim: 10,
@@ -751,10 +758,18 @@ export default class Resizer {
     }
 
     // Enforce aspect ratio (unless shift key is being held)
-    var ratioActive = opts.ratioDefault ? !data.keys!.shift : data.keys!.shift;
+    var ratioActive = opts.ratioLock || opts.ratioDefault ? !data.keys!.shift : data.keys!.shift;
     if (attr.indexOf('c') < 0 && ratioActive) {
       var ratio = startDim.w / startDim.h;
       if (box.w / box.h > ratio) {
+        box.h = Math.round(box.w / ratio);
+      } else {
+        box.w = Math.round(box.h * ratio);
+      }
+    } else if (opts.ratioLock) {
+      // Enforce aspect ratio for center resizer
+      var ratio = startDim.w / startDim.h;
+      if (['cl', 'cr'].indexOf(attr) >= 0) {
         box.h = Math.round(box.w / ratio);
       } else {
         box.w = Math.round(box.h * ratio);
