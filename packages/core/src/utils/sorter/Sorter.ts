@@ -71,6 +71,11 @@ export default class Sorter<T, NodeType extends SortableTreeNode<T>> {
     });
   }
 
+  updateContainerContext(container: HTMLElement) {
+    this.containerContext.container = container;
+    this.containerContext.document = container.ownerDocument;
+  }
+
   /**
    * Picking components to move
    * @param {HTMLElement[]} sources[]
