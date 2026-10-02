@@ -19,9 +19,13 @@ export default class ModalView extends ModuleView<Modal> {
   events() {
     return {
       click: 'onClick',
+      mousedown: 'onMouseDown',
+      mouseup: 'onMouseUp',
       'click [data-close-modal]': 'hide',
     };
   }
+
+  private ignoreBackdropClick = false;
 
   $title?: JQuery<HTMLElement>;
   $content?: JQuery<HTMLElement>;
@@ -35,9 +39,18 @@ export default class ModalView extends ModuleView<Modal> {
     this.listenTo(model, 'change:content', this.updateContent);
   }
 
+  onMouseDown(e: Event) {
+    this.ignoreBackdropClick = e.target !== this.el;
+  }
+
+  onMouseUp(e: Event) {
+    this.ignoreBackdropClick = this.ignoreBackdropClick || e.target !== this.el;
+  }
+
   onClick(e: Event) {
-    const bkd = this.config.backdrop;
-    bkd && e.target === this.el && this.hide();
+    const isBackdropClick = e.target === this.el && !this.ignoreBackdropClick;
+    this.ignoreBackdropClick = false;
+    this.config.backdrop && isBackdropClick && this.hide();
   }
 
   /**
