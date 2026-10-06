@@ -11,7 +11,7 @@ export default class PropertyFileView extends PropertyView {
   }
 
   templateInput() {
-    const { pfx, em } = this;
+    const { pfx, ppfx, em } = this;
     const icons = this.em?.getConfig().icons;
     const iconClose = icons?.close;
 
@@ -23,7 +23,7 @@ export default class PropertyFileView extends PropertyView {
               ${em.t('styleManager.fileButton')}
             </button>
           </div>
-          <div style="clear:both;"></div>
+          <div class="${ppfx}clear-float"></div>
         </div>
         <div id="${pfx}preview-box" class="${pfx}preview-file" data-preview-box>
           <div id="${pfx}preview-file" class="${pfx}preview-file-cnt" data-preview></div>

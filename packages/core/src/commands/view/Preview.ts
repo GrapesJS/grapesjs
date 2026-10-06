@@ -102,7 +102,9 @@ export default class CommandPreview extends CommandAbstract {
     panels.forEach((panel) => panel.set('visible', true));
 
     const canvas = editor.Canvas.getElement();
-    canvas.setAttribute('style', '');
+    // Removing beats writing an empty `style`, which a strict `style-src-attr`
+    // policy would still report
+    canvas.removeAttribute('style');
     selected && editor.select(selected);
     delete this.selected;
 

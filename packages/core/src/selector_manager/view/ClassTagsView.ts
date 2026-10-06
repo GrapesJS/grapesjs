@@ -32,7 +32,7 @@ export default class ClassTagsView extends View<Selector> {
         <div id="${pfx}tags-c" data-selectors></div>
         <input id="${pfx}new" data-input />
         <span id="${pfx}add-tag" class="${pfx}tags-btn ${pfx}tags-btn__add" data-add> $${iconAdd} </span>
-        <span class="${pfx}tags-btn ${pfx}tags-btn__sync" style="display: none" data-sync-style> $${iconSync} </span>
+        <span class="${pfx}tags-btn ${pfx}tags-btn__sync" data-sync-style> $${iconSync} </span>
       </div>
       <div class="${pfx}sels-info">
         <div class="${pfx}label-sel">${labelInfo}:</div>
@@ -436,6 +436,8 @@ export default class ClassTagsView extends View<Selector> {
     this.$classes = $el.find('#' + pfx + 'tags-c');
     this.$btnSyncEl = $el.find('[data-sync-style]');
     this.$input.hide();
+    // Hidden through the CSSOM, `updateSelector` brings it back with `show()`
+    this.$btnSyncEl.hide();
     this.renderStates();
     this.renderClasses();
     $el.attr('class', `${this.className} ${ppfx}one-bg ${ppfx}two-color`);

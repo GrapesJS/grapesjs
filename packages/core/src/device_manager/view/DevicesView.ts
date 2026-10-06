@@ -25,7 +25,7 @@ export default class DevicesView extends View {
           <div class="${ppfx}d-s-arrow"></div>
         </div>
       </div>
-      <button style="display:none" class="${ppfx}add-trasp" data-add-trasp>+</button>
+      <button class="${ppfx}add-trasp ${ppfx}hidden" data-add-trasp>+</button>
     `;
   }
 

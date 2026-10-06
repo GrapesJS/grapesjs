@@ -10,10 +10,10 @@ export default class ModalView extends ModuleView<Modal> {
       </div>
       <div class="${pfx}content">
         <div id="${pfx}c">${content}</div>
-        <div style="clear:both"></div>
+        <div class="${ppfx}clear-float"></div>
       </div>
     </div>
-    <div class="${pfx}collector" style="display: none"></div>`;
+    <div class="${pfx}collector ${ppfx}hidden"></div>`;
   }
 
   events() {

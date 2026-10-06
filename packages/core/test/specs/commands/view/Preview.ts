@@ -43,6 +43,7 @@ describe('Preview command', () => {
         getElement: jest.fn().mockReturnValue({
           style: {},
           setAttribute: jest.fn(),
+          removeAttribute: jest.fn(),
         }),
       },
 

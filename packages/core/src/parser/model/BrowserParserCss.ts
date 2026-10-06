@@ -1,6 +1,7 @@
 import { keys } from 'underscore';
 import { CssRuleJSON } from '../../css_composer/model/CssRule';
 import { ObjectStrings } from '../../common';
+import { createStyleEl } from '../../utils/dom';
 
 /** @see https://developer.mozilla.org/en-US/docs/Web/API/CSSRule/type */
 const CSS_RULE_TYPES = {
@@ -271,11 +272,12 @@ export const parseNode = (el: CSSStyleSheet | CSSRule) => {
 /**
  * Parse CSS string and return the array of objects
  * @param  {String} str CSS string
+ * @param  {String} [nonce] CSP nonce, required under a strict `style-src` policy,
+ *  otherwise the style block is blocked and `el.sheet` stays empty
  * @return {Array<Object>} Array of objects for the definition of CSSRules
  */
-export default (str: string) => {
-  const el = document.createElement('style');
-  el.innerHTML = str;
+export default (str: string, nonce?: string) => {
+  const el = createStyleEl(str, nonce);
 
   // There is no .sheet before adding it to the <head>
   document.head.appendChild(el);
