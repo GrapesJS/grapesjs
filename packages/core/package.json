@@ -63,6 +63,7 @@
     "builder"
   ],
   "scripts": {
+    "prepublishOnly": "ts-node ../../scripts/checkCorePackage.ts",
     "build": "npm run build-all",
     "build-all": "run-s build:*",
     "build:js": "node node_modules/grapesjs-cli/dist/cli.js build --patch=false --targets=\"defaults\" --statsOutput=\"stats.json\" --localePath=\"src/i18n/locale\"",
