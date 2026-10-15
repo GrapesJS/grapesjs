@@ -15,7 +15,7 @@ describe('StyleManager pending updates on destroy', () => {
     const em = editor.getModel();
     em.Pages.onLoad();
     const component = editor.addComponents({ type: 'text', content: 'Text', style: { padding: '5px' } })[0];
-    em.Styles.select(component);
+    editor.select(component);
     jest.runOnlyPendingTimers();
     const update = jest.spyOn(em.Styles, '__upProps');
     component.setStyle({ padding: '10px' });
