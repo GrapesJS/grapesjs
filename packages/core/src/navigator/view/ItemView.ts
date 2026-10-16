@@ -49,8 +49,6 @@ export default class ItemView extends View {
     const clsTitle = `${this.clsTitle} ${addClass}`;
     const clsTitleC = `${this.clsTitleC}`;
     const clsInput = `${this.inputNameCls} ${clsNoEdit} ${ppfx}no-app`;
-    const level = opt.level || 0;
-    const gut = `${level * 10}px`;
     const name = model.getName();
     const icon = model.getIcon();
     const clsBase = `${pfx}layer`;
@@ -69,7 +67,7 @@ export default class ItemView extends View {
               : ''
           }
           <div class="${clsTitleC}">
-            <div class="${clsTitle}" style="padding-left: ${gut}">
+            <div class="${clsTitle}" data-title-indent>
               <div class="${pfx}layer-title-inn" title="${name}">
                 <i class="${this.clsCaret}" data-toggle-open>${chevron}</i>
                   ${icon ? `<span class="${clsBase}__icon">${icon}</span>` : ''}
@@ -433,6 +431,11 @@ export default class ItemView extends View {
       el.html(this.template(model));
       el.find(`.${this.clsChildren}`).append(children);
     }
+
+    // Set through the CSSOM, a `style` attribute would be blocked by a strict
+    // `style-src-attr` policy
+    const titleEl = this.el.querySelector('[data-title-indent]') as HTMLElement;
+    titleEl && (titleEl.style.paddingLeft = `${(opt.level || 0) * 10}px`);
 
     !module.isVisible(model) && (this.className += ` ${pfx}hide`);
     hidden && (this.className += ` ${ppfx}hidden`);

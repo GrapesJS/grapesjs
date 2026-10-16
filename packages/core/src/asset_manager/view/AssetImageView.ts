@@ -5,12 +5,21 @@ import html from '../../utils/html';
 
 export default class AssetImageView extends AssetView<AssetImage> {
   getPreview() {
-    const { pfx, ppfx, model } = this;
-    const src = model.get('src');
+    const { pfx, ppfx } = this;
     return html`
-      <div class="${pfx}preview" style="background-image: url('${src}');"></div>
+      <div class="${pfx}preview" data-preview></div>
       <div class="${pfx}preview-bg ${ppfx}checker-bg"></div>
     `;
+  }
+
+  render() {
+    super.render();
+    // Set through the CSSOM, a `style` attribute would be blocked by a strict
+    // `style-src-attr` policy
+    const previewEl = this.el.querySelector('[data-preview]') as HTMLElement;
+    const src = this.model.get('src');
+    previewEl && previewEl.style.setProperty('background-image', src ? `url(${JSON.stringify(src)})` : '');
+    return this;
   }
 
   getInfo() {

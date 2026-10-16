@@ -5,6 +5,7 @@
 // https://github.com/bgrins/spectrum
 // Author: Brian Grinstead
 // License: MIT
+import { setStyleText } from './dom';
 import { hasWin } from './mixins';
 
 export interface ColorPickerOptions {
@@ -159,6 +160,16 @@ export default function ($, undefined?: any) {
       ].join('');
     })();
 
+  // Swatch colors are known only at runtime, so they are carried by a data
+  // attribute and moved to the CSSOM once in the DOM: writing them as a `style`
+  // attribute would be blocked by a strict `style-src-attr` policy.
+  function applySwatchStyles($container) {
+    $container.find('[data-swatch-style]').each(function (i, el) {
+      setStyleText(el, el.getAttribute('data-swatch-style'));
+      el.removeAttribute('data-swatch-style');
+    });
+  }
+
   function paletteTemplate(p, color, className, opts) {
     var html = [];
     for (var i = 0; i < p.length; i++) {
@@ -176,20 +187,15 @@ export default function ($, undefined?: any) {
             tiny.toRgbString() +
             '" class="' +
             c +
-            '"><span class="sp-thumb-inner" style="' +
+            '"><span class="sp-thumb-inner" data-swatch-style="' +
             swatchStyle +
-            ';"></span></span>',
+            '"></span></span>',
         );
       } else {
         var cls = 'sp-clear-display';
         html.push(
           $('<div />')
-            .append(
-              $('<span data-color="" style="background-color:transparent;" class="' + cls + '"></span>').attr(
-                'title',
-                opts.noColorSelectedText,
-              ),
-            )
+            .append($('<span data-color="" class="' + cls + '"></span>').attr('title', opts.noColorSelectedText))
             .html(),
         );
       }
@@ -598,6 +604,7 @@ export default function ($, undefined?: any) {
       }
 
       paletteContainer.html(html.join(''));
+      applySwatchStyles(paletteContainer);
     }
 
     function drawInitial() {
@@ -605,6 +612,7 @@ export default function ($, undefined?: any) {
         var initial = colorOnShow;
         var current = get();
         initialColorContainer.html(paletteTemplate([initial, current], current, 'sp-palette-row-initial', opts));
+        applySwatchStyles(initialColorContainer);
       }
     }
 

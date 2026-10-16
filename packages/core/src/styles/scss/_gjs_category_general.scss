@@ -57,6 +57,14 @@
   pointer-events: none;
 }
 
+.#{gjs_vars.$app-prefix}pointer-events-all {
+  pointer-events: all;
+}
+
+.#{gjs_vars.$app-prefix}clear-float {
+  clear: both;
+}
+
 .no-select {
   @include gjs_main_mixins.user-select(none);
 }

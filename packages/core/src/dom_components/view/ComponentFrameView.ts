@@ -1,5 +1,5 @@
 import ComponentView from './ComponentView';
-import { createEl, find, attrUp } from '../../utils/dom';
+import { createEl, find, attrUp, setStyleText } from '../../utils/dom';
 import ComponentFrame from '../model/ComponentFrame';
 
 export default class ComponentFrameView extends ComponentView<ComponentFrame> {
@@ -21,9 +21,11 @@ export default class ComponentFrameView extends ComponentView<ComponentFrame> {
     super.render();
     const frame = createEl('iframe', {
       class: `${this.ppfx}no-pointer`,
-      style: 'width: 100%; height: 100%; border: none',
       src: this.__getSrc(),
     });
+    // Set through the CSSOM, a `style` attribute would be blocked by a strict
+    // `style-src-attr` policy
+    setStyleText(frame, 'width: 100%; height: 100%; border: none');
     this.el.appendChild(frame);
     return this;
   }

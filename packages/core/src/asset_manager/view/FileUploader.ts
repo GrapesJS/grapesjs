@@ -48,6 +48,7 @@ export default class FileUploaderView extends View {
   uploadForm?: HTMLFormElement | null;
 
   template({ pfx, title, uploadId, disabled, multiUpload }: FileUploaderTemplateProps) {
+    const { ppfx } = this;
     return html`
       <form>
         <div id="${pfx}title">${title}</div>
@@ -60,7 +61,7 @@ export default class FileUploaderView extends View {
           ${disabled ? 'disabled' : ''}
           ${multiUpload ? 'multiple' : ''}
         />
-        <div style="clear:both;"></div>
+        <div class="${ppfx}clear-float"></div>
       </form>
     `;
   }

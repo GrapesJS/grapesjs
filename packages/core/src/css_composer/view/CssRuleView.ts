@@ -1,6 +1,7 @@
 import FrameView from '../../canvas/view/FrameView';
 import { View } from '../../common';
 import EditorModel from '../../editor/model/Editor';
+import { setNonce } from '../../utils/dom';
 import CssRule from '../model/CssRule';
 import { CssEvents } from '../types';
 
@@ -46,6 +47,9 @@ export default class CssRuleView extends View<CssRule> {
     const css = model.toCSS({ important });
     const mountProps = { rule: model, ruleView: this, css };
     em?.trigger(CssEvents.mountBefore, mountProps);
+    // Has to be set before the style block is filled, otherwise a strict
+    // `style-src` policy blocks the rule
+    setNonce(el as HTMLElement, em?.getConfig().cspNonce);
     el.innerHTML = mountProps.css;
     em?.trigger(CssEvents.mount, mountProps);
     return this;
