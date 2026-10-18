@@ -434,6 +434,18 @@ describe('Component', () => {
     });
   });
 
+  test('move initial inline style to the default rule regardless of the selected device and state', () => {
+    em.Devices.add({ id: 'tablet', name: 'Tablet', width: '770px', widthMedia: '992px' });
+    em.set('device', 'tablet');
+    em.set('state', 'hover');
+    const cmp = em.getWrapper()!.append({ style: { color: 'red' } })[0];
+    const id = cmp.getId();
+
+    expect(em.Css.getIdRule(id, { state: '', mediaText: '' })?.getStyle()).toEqual({ color: 'red' });
+    expect(em.Css.getIdRule(id)).toBeFalsy();
+    expect(cmp.getStyle({ inline: true })).toEqual({});
+  });
+
   test('get proper style from style with multiple values of the same key', () => {
     obj.setAttributes({ style: CSS_BG_STR }, { inline: true });
     expect(obj.getAttributes()).toEqual({
