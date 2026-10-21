@@ -1,6 +1,5 @@
 import { result, forEach, keys } from 'underscore';
 import { Model } from '../../common';
-import type Component from '../../dom_components/model/Component';
 import EditorModel from '../../editor/model/Editor';
 import { SelectorManagerConfig } from '../config/config';
 
@@ -52,7 +51,6 @@ export default class Selector extends Model<SelectorPropsCustom> {
   static readonly TYPE_ID = TYPE_ID;
 
   em?: EditorModel;
-  component?: Component;
 
   /**
    * @hideconstructor

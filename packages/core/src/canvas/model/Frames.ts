@@ -42,7 +42,12 @@ export default class Frames extends ModuleCollection<Frame> {
   onAdd(frame: Frame, _collection: Frames, options: AddOptions = {}) {
     this.registerFrame(frame);
     const { page, em, pageEvents } = this;
-    page && em.trigger(pageEvents.frameAdd, frame, options);
+    page &&
+      em.Pages.__emitAll({
+        event: pageEvents.frameAdd,
+        data: { page, frame, options },
+        before: ({ emit, data }) => emit(pageEvents.frameAdd, data.frame, data.options),
+      });
   }
 
   onReset(_collection: Frames, options: RemoveOptions & { previousModels?: Frame[] } = {}) {
@@ -54,12 +59,22 @@ export default class Frames extends ModuleCollection<Frame> {
     const { page, em, pageEvents, module } = this;
     frame.onRemove();
     delete module.framesById[frame.id];
-    page && em.trigger(pageEvents.frameRemove, frame, options);
+    page &&
+      em.Pages.__emitAll({
+        event: pageEvents.frameRemove,
+        data: { page, frame, options },
+        before: ({ emit, data }) => emit(pageEvents.frameRemove, data.frame, data.options),
+      });
   }
 
   onUpdate(frame: Frame, options: SetOptions = {}) {
     const { page, em, pageEvents } = this;
-    page && em.trigger(pageEvents.frameUpdate, frame, frame.changedAttributes() || {}, options);
+    page &&
+      em.Pages.__emitAll({
+        event: pageEvents.frameUpdate,
+        data: { page, frame, changes: frame.changedAttributes() || {}, options },
+        before: ({ emit, data }) => emit(pageEvents.frameUpdate, data.frame, data.changes, data.options),
+      });
   }
 
   initRefs() {

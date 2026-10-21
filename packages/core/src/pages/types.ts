@@ -91,8 +91,9 @@ export enum PagesEvents {
 
   /**
    * @event `page` Catch-all event for all the events mentioned above. An object containing all the available data about the triggered event is passed as an argument to the callback.
+   * Frame events use their `page:frame:*` names and include the frame and, for updates, the changed properties.
    * @example
-   * editor.on('page', ({ event, model, ... }) => { ... });
+   * editor.on('page', ({ event, page, frame, changes, options }) => { ... });
    */
   all = 'page',
 }
@@ -115,7 +116,7 @@ export interface PagesEventCallback {
   [PagesEvents.frameAdd]: [Frame, AddOptions];
   [PagesEvents.frameRemove]: [Frame, RemoveOptions];
   [PagesEvents.frameUpdate]: [Frame, ObjectAny, SetOptions];
-  [PagesEvents.all]: [{ event: string; page: Page; options: ObjectAny }];
+  [PagesEvents.all]: [{ event: string; page: Page; options: ObjectAny; frame?: Frame; changes?: ObjectAny }];
 }
 
 // need this to avoid the TS documentation generator to break

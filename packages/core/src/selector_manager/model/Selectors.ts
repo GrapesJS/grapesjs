@@ -20,17 +20,8 @@ export interface FullNameOptions {
 export default class Selectors extends Collection<Selector> {
   component?: Component;
 
-  initialize() {
-    this.on('add', (selector: Selector) => {
-      selector.component = this.component;
-    });
-  }
-
   setComponent(component: Component) {
     this.component = component;
-    this.forEach((selector) => {
-      selector.component = component;
-    });
     return this;
   }
 
