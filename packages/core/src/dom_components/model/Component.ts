@@ -342,7 +342,6 @@ export default class Component extends StyleableModel<ComponentProperties> {
     this.listenTo(this, 'change:tagName', this.tagUpdated);
     this.listenTo(this, 'change:attributes', this.attrUpdated);
     this.listenTo(this, 'change:attributes:id', this._idUpdated);
-    this.on('change:toolbar', this.__emitUpdateTlb);
     this.on('change', this.__onChange);
     this.on(keyUpdateInside, this.__propToParent);
     this.set('status', '');
@@ -502,10 +501,6 @@ export default class Component extends StyleableModel<ComponentProperties> {
   __propToParent(props: any) {
     const parent = this.parent();
     parent && parent.trigger(keyUpdateInside, props);
-  }
-
-  __emitUpdateTlb() {
-    this.emitUpdate('toolbar');
   }
 
   __getAllById() {

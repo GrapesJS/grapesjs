@@ -2,6 +2,7 @@ import { bindAll } from 'underscore';
 import CanvasModule from '..';
 import { ModuleCollection } from '../../abstract';
 import type { AddOptions, RemoveOptions, SetOptions } from '../../common';
+import type EditorModel from '../../editor/model/Editor';
 import type Page from '../../pages/model/Page';
 import Frame from './Frame';
 
@@ -29,7 +30,7 @@ export default class Frames extends ModuleCollection<Frame> {
     return this.module.em.Pages.events;
   }
 
-  get em() {
+  get em(): EditorModel {
     return this.module.em;
   }
 
