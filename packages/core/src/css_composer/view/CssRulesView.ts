@@ -40,9 +40,11 @@ export default class CssRulesView extends View {
   }
 
   remove() {
+    // Detach the whole rules tree before removing its individual stylesheets.
+    super.remove();
     this.clearRuleViews();
     this.ruleContainers = {};
-    return super.remove();
+    return this;
   }
 
   /**
@@ -133,6 +135,8 @@ export default class CssRulesView extends View {
   }
 
   render() {
+    // Remove the containers together so per-rule cleanup runs off the live canvas.
+    this.$el.empty();
     this.clearRuleViews();
     this.renderStarted = true;
     this.atRules = {};
@@ -140,8 +144,6 @@ export default class CssRulesView extends View {
     const { em, $el, collection } = this;
     const cls = this.className!;
     const frag = document.createDocumentFragment();
-    $el.empty();
-
     // Create devices related DOM structure, ensure also to have a default container
     const prs = em.Devices.getAll().pluck('priority').sort(this.sortRules) as number[];
     prs.every((pr) => pr) && prs.unshift(0);
