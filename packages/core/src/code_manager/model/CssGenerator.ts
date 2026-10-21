@@ -51,16 +51,16 @@ type CssGeneratorBuildOptionsProps = CssGeneratorBuildOptions & {
 type AtRules = Record<string, CssRule[]>;
 
 export default class CssGenerator extends Model {
-  compCls: string[];
-  ids: string[];
+  compCls: Set<string>;
+  ids: Set<string>;
   model?: Component;
   em?: EditorModel;
 
   constructor() {
     super();
     bindAll(this, 'sortRules');
-    this.compCls = [];
-    this.ids = [];
+    this.compCls = new Set();
+    this.ids = new Set();
   }
 
   /**
@@ -74,10 +74,10 @@ export default class CssGenerator extends Model {
     const avoidInline = em && em.getConfig().avoidInlineStyle;
     const style = model.styleToString();
     const classes = model.classes;
-    this.ids.push(`#${model.getId()}`);
+    this.ids.add(`#${model.getId()}`);
 
     // Let's know what classes I've found
-    classes.forEach((model: any) => this.compCls.push(model.getFullName()));
+    classes.forEach((model: any) => this.compCls.add(model.getFullName()));
 
     if (!avoidInline && style) {
       code = `#${model.getId()}{${style}}`;
@@ -93,8 +93,8 @@ export default class CssGenerator extends Model {
     const em = opts.em;
     const cssc = opts.cssc || em?.Css;
     this.em = em;
-    this.compCls = [];
-    this.ids = [];
+    this.compCls = new Set();
+    this.ids = new Set();
     this.model = model;
     const codeJson: CssRule[] = [];
     let code = model ? this.buildFromModel(model, opts) : '';
@@ -180,7 +180,7 @@ export default class CssGenerator extends Model {
     // This will not render a rule if there is no its component
     rule.get('selectors')?.forEach((selector) => {
       const name = selector.getFullName();
-      if (this.compCls.indexOf(name) >= 0 || this.ids.indexOf(name) >= 0 || opts.keepUnusedStyles) {
+      if (this.compCls.has(name) || this.ids.has(name) || opts.keepUnusedStyles) {
         found = 1;
       }
     });

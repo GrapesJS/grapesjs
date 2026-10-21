@@ -35,6 +35,7 @@ export default class FrameView extends ModuleView<Frame, HTMLIFrameElement> {
   private jsContainer?: HTMLElement;
   private tools: { [key: string]: HTMLElement } = {};
   private wrapper?: ComponentWrapperView;
+  private cssRulesView?: CssRulesView;
   private headView?: ComponentView;
   private refComponentView?: ComponentView;
   private frameWrapView?: FrameWrapView;
@@ -241,6 +242,8 @@ export default class FrameView extends ModuleView<Frame, HTMLIFrameElement> {
     this.refComponentView?.remove();
     this.refComponentView = undefined;
     this.wrapper?.remove();
+    this.cssRulesView?.remove();
+    this.cssRulesView = undefined;
     ModuleView.prototype.remove.apply(this, args);
     return this;
   }
@@ -479,17 +482,16 @@ export default class FrameView extends ModuleView<Frame, HTMLIFrameElement> {
     const doc = this.getDoc();
     const body = doc.body;
     append(body, rootView.el);
-    append(
-      body,
-      new CssRulesView({
-        collection: model.getStyles(),
-        //@ts-ignore
-        config: {
-          ...em.Css.getConfig(),
-          frameView: this,
-        },
-      }).render().el,
-    );
+    this.cssRulesView?.remove();
+    this.cssRulesView = new CssRulesView({
+      collection: model.getStyles(),
+      //@ts-ignore
+      config: {
+        ...em.Css.getConfig(),
+        frameView: this,
+      },
+    });
+    append(body, this.cssRulesView.render().el);
     append(body, this.getJsContainer());
     // em.trigger('loaded'); // I need to manage only the first one maybe
     //this.updateOffset(); // TOFIX (check if I need it)
