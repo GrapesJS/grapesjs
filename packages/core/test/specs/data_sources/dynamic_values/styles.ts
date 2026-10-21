@@ -73,6 +73,30 @@ describe('StyleDataVariable', () => {
     expect(updatedStyle).toHaveProperty('color', 'blue');
   });
 
+  test('initial inline styles preserve data bindings in the base rule with a device and state selected', () => {
+    const source = dsm.add({
+      id: 'initial-style-data',
+      records: [{ id: 'id1', color: 'red', background: 'white' }],
+    });
+    const color = { type: DataVariableType, path: 'initial-style-data.id1.color' };
+    const background = { type: DataVariableType, path: 'initial-style-data.id1.background' };
+    const id = 'initial-style';
+    const baseOpts = { state: '', mediaText: '' };
+    const baseRule = em.Css.setIdRule(id, { color }, baseOpts);
+    em.Devices.add({ id: 'tablet', name: 'Tablet', width: '770px', widthMedia: '992px' });
+    em.set({ device: 'tablet', state: 'hover' });
+
+    cmpRoot.append({ attributes: { id }, style: { background } });
+
+    expect(baseRule.getStyle('', { skipResolve: true })).toEqual({ color, background });
+    expect(baseRule.getStyle()).toEqual({ color: 'red', background: 'white' });
+
+    source.getRecord('id1')!.set({ color: 'blue', background: 'black' });
+
+    expect(baseRule.getStyle()).toEqual({ color: 'blue', background: 'black' });
+    expect(em.Css.getIdRule(id, { state: 'hover' })).toBeFalsy();
+  });
+
   test('component updates to defaultValue on record removal', () => {
     const styleDataSource = {
       id: 'colors-data-removal',
