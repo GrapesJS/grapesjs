@@ -34,6 +34,7 @@ import { NumberOperation } from './model/conditional_variables/operators/NumberO
 import { StringOperation } from './model/conditional_variables/operators/StringOperator';
 import { DataCollectionStateType } from './model/data_collection/types';
 import DataRecord from './model/DataRecord';
+import DataRecords from './model/DataRecords';
 import DataSource from './model/DataSource';
 import DataSources from './model/DataSources';
 import {
@@ -48,6 +49,7 @@ import {
 export default class DataSourceManager extends ItemManagerModule<DataSourcesConfig & ModuleConfig, DataSources> {
   storageKey = 'dataSources';
   events = DataSourcesEvents;
+  classes = { DataSource, DataSources, DataRecord, DataRecords };
   dataComponentTypes = DataComponentTypes;
   dataCollectionKeys = DataCollectionKeys;
   dataCollectionStateTypes = DataCollectionStateType;

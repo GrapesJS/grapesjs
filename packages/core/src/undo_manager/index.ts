@@ -31,6 +31,12 @@ import EditorModel from '../editor/model/Editor';
 import defConfig, { UndoManagerConfig } from './config';
 import { EditorEvents } from '../editor/types';
 
+export enum UndoManagerEvents {
+  addBefore = 'um:add:before',
+  removeBefore = 'um:remove:before',
+  removeAllBefore = 'um:removeAll:before',
+}
+
 export interface UndoGroup {
   index: number;
   actions: any[];
@@ -46,6 +52,7 @@ const changedMap = new WeakMap();
 export default class UndoManagerModule extends Module<UndoManagerConfig & { name?: string; _disable?: boolean }> {
   beforeCache?: any;
   um: any;
+  events = UndoManagerEvents;
 
   constructor(em: EditorModel) {
     super(em, 'UndoManager', defConfig());
@@ -173,6 +180,7 @@ export default class UndoManagerModule extends Module<UndoManagerConfig & { name
    * um.add(someModelOrCollection);
    */
   add(entity: any) {
+    this.em.trigger(this.events.addBefore, entity);
     if (this.isDisabled) return this;
     this.um.register(entity);
     return this;
@@ -186,6 +194,7 @@ export default class UndoManagerModule extends Module<UndoManagerConfig & { name
    * um.remove(someModelOrCollection);
    */
   remove(entity: any) {
+    this.em.trigger(this.events.removeBefore, entity);
     if (this.isDisabled) return this;
     this.um.unregister(entity);
     return this;
@@ -198,6 +207,7 @@ export default class UndoManagerModule extends Module<UndoManagerConfig & { name
    * um.removeAll();
    */
   removeAll() {
+    this.em.trigger(this.events.removeAllBefore);
     if (this.isDisabled) return this;
     this.um.unregisterAll();
     return this;

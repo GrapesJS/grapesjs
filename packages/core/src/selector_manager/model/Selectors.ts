@@ -1,5 +1,6 @@
 import { filter } from 'underscore';
 import { Collection } from '../../common';
+import type Component from '../../dom_components/model/Component';
 import Selector from './Selector';
 
 const combine = (tail: string[], curr: string): string[] => {
@@ -17,6 +18,13 @@ export interface FullNameOptions {
 }
 
 export default class Selectors extends Collection<Selector> {
+  component?: Component;
+
+  setComponent(component: Component) {
+    this.component = component;
+    return this;
+  }
+
   modelId(attr: any) {
     return `${attr.name}_${attr.type || Selector.TYPE_CLASS}`;
   }

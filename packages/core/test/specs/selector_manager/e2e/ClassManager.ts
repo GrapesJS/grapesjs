@@ -49,6 +49,26 @@ describe('ClassManager E2E tests', () => {
       expect(clModel).toEqual(clModel2);
     });
 
+    test('Shared selectors keep component ownership on their collections', () => {
+      const first = components.add({ classes: ['shared'] });
+      const second = components.add({ classes: ['shared'] });
+      const firstSelectors = first.getSelectors();
+      const secondSelectors = second.getSelectors();
+      const selector = firstSelectors.at(0);
+
+      expect(secondSelectors.at(0)).toBe(selector);
+      expect(firstSelectors.component).toBe(first);
+      expect(secondSelectors.component).toBe(second);
+      expect(selector).not.toHaveProperty('component');
+
+      module.selected.add(selector);
+
+      expect(firstSelectors.component).toBe(first);
+      expect(secondSelectors.component).toBe(second);
+      expect(module.selected.component).toBeUndefined();
+      expect(selector).not.toHaveProperty('component');
+    });
+
     test('Can assign only one time the same class on selected component and the class viewer', () => {
       const model = components.add({}) as unknown as Component;
       gjs.select(model);

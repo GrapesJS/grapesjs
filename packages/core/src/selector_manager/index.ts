@@ -89,6 +89,8 @@ export default class SelectorManager extends ItemManagerModule<SelectorManagerCo
 
   Selectors = Selectors;
 
+  classes = { Selector, Selectors };
+
   model: Model;
   states: Collection<State>;
   selectorTags?: ClassTagsView;

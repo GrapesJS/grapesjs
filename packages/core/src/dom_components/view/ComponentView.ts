@@ -74,7 +74,6 @@ TComp> {
     this.listenTo(model, 'change:status change:locked', this.updateStatus);
     this.listenTo(model, 'change:script rerender', this.reset);
     this.listenTo(model, 'change:content', this.updateContent);
-    this.listenTo(model, 'change', this.handleChange);
     this.listenTo(model, 'active', this.onActive);
     this.listenTo(model, 'disable', this.onDisable);
     $el.data('model', model);
@@ -199,21 +198,6 @@ TComp> {
       !opts.avoidRender && this.renderChildren();
       // @ts-ignore
       this.listenTo(...toListen);
-    }
-  }
-
-  /**
-   * Handle any property change
-   * @private
-   */
-  handleChange() {
-    const { model } = this;
-    const chgArr = keys(model.changed);
-    if (chgArr.length === 1 && chgArr[0] === 'status') return;
-    model.emitUpdate();
-
-    for (let prop in model.changed) {
-      model.emitUpdate(prop);
     }
   }
 

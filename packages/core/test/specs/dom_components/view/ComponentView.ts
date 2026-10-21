@@ -44,6 +44,37 @@ describe('ComponentView', () => {
     );
   });
 
+  test.each([1, 2])('Emits one component update with %s rendered views', (viewCount) => {
+    const extraView = viewCount === 2 ? new ComponentView({ ...compViewOpst, model }) : undefined;
+    extraView && fixtures.appendChild(extraView.render().el);
+    const editorUpdate = jest.fn();
+    const modelUpdate = jest.fn();
+    const editorPropertyUpdate = jest.fn();
+    const modelPropertyUpdate = jest.fn();
+    const updated = jest.spyOn(model, 'updated');
+    const changes = { content: 'Updated content', customProperty: 'value' };
+    const options = { avoidStore: true };
+    em.on('component:update', editorUpdate);
+    em.on('component:update:content', editorPropertyUpdate);
+    model.on('component:update', modelUpdate);
+    model.on('component:update:content', modelPropertyUpdate);
+
+    try {
+      model.set(changes, options);
+
+      expect(editorUpdate).toHaveBeenNthCalledWith(1, model);
+      expect(modelUpdate).toHaveBeenNthCalledWith(1, { component: model, changed: changes, options });
+      expect(editorPropertyUpdate).toHaveBeenNthCalledWith(1, model);
+      expect(modelPropertyUpdate).toHaveBeenNthCalledWith(1);
+      expect(updated).toHaveBeenNthCalledWith(1, 'content', changes.content, '');
+      expect(updated).toHaveBeenNthCalledWith(2, 'customProperty', changes.customProperty, undefined);
+      expect(view.el.innerHTML).toBe(changes.content);
+      extraView && expect(extraView.el.innerHTML).toBe(changes.content);
+    } finally {
+      extraView?.remove();
+    }
+  });
+
   test('Clean form helper state', () => {
     em.setSelected(model);
     em.setState('test');

@@ -1,5 +1,5 @@
 import { isElement, isUndefined, isString } from 'underscore';
-import { Collection, Debounced, Model, View } from '../common';
+import { Collection, Debounced, Model, ObjectAny, View } from '../common';
 import { EditorConfigKeys } from '../editor/config/config';
 import EditorModel from '../editor/model/Editor';
 import { ProjectData } from '../storage_manager/model/IStorage';
@@ -286,11 +286,26 @@ export abstract class ItemManagerModule<
     return !opts.abort && rm();
   }
 
-  __catchAllEvent(event: any, model: any, coll: any, opts?: any) {
+  __emitAll<T extends ObjectAny>({
+    event,
+    data,
+    before,
+  }: {
+    event: string;
+    data: T;
+    before?: (options: { emit: EditorModel['trigger']; event: string; data: T }) => void;
+  }) {
     const { em, events } = this;
-    const options = opts || coll;
-    em && events.all && em.trigger(events.all, { event, model, options });
+    if (em) {
+      const emit = em.trigger.bind(em);
+      before?.({ emit, event, data });
+      events.all && emit(events.all, { event, ...data });
+    }
     this.__onAllEvent();
+  }
+
+  __catchAllEvent(event: any, model: any, coll: any, opts?: any) {
+    this.__emitAll({ event, data: { model, options: opts || coll } });
   }
 
   __appendTo(renderProps?: any) {

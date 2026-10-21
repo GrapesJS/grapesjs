@@ -40,6 +40,60 @@ describe('Component', () => {
     expect(obj.components().length).toEqual(0);
   });
 
+  test('Emits editor and model updates once without a view', () => {
+    const editorUpdate = jest.fn();
+    const modelUpdate = jest.fn();
+    const propertyUpdate = jest.fn();
+    const updated = jest.spyOn(obj, 'updated');
+    const changes = { content: 'Updated content' };
+    const options = { avoidStore: true };
+    em.on('component:update', editorUpdate);
+    em.on('component:update:content', propertyUpdate);
+    obj.on('component:update', modelUpdate);
+
+    obj.set(changes, options);
+
+    expect(editorUpdate).toHaveBeenNthCalledWith(1, obj);
+    expect(modelUpdate).toHaveBeenNthCalledWith(1, { component: obj, changed: changes, options });
+    expect(propertyUpdate).toHaveBeenNthCalledWith(1, obj);
+    expect(updated).toHaveBeenNthCalledWith(1, 'content', changes.content, '');
+  });
+
+  test('Propagates component updates to the parent once', () => {
+    const child = obj.append({})[0];
+    const parentUpdate = jest.fn();
+    const changes = { content: 'Updated content' };
+    const options = { avoidStore: true };
+    obj.on('component:update-inside', parentUpdate);
+
+    child.set(changes, options);
+
+    expect(parentUpdate).toHaveBeenNthCalledWith(1, { component: child, changed: changes, options });
+  });
+
+  test.each([
+    { property: 'status', value: 'selected' },
+    { property: 'open', value: true },
+    { property: 'toolbar', value: [] },
+    { property: 'traits', value: [] },
+  ])('Updates $property once without a generic component update', ({ property, value }) => {
+    const editorUpdate = jest.fn();
+    const modelUpdate = jest.fn();
+    const propertyUpdate = jest.fn();
+    const updated = jest.spyOn(obj, 'updated');
+    const previous = obj.get(property);
+    em.on('component:update', editorUpdate);
+    em.on(`component:update:${property}`, propertyUpdate);
+    obj.on('component:update', modelUpdate);
+
+    obj.set(property, value);
+
+    expect(editorUpdate).not.toHaveBeenCalled();
+    expect(modelUpdate).not.toHaveBeenCalled();
+    expect(propertyUpdate).toHaveBeenNthCalledWith(1, obj);
+    expect(updated).toHaveBeenNthCalledWith(1, property, obj.get(property), previous);
+  });
+
   test('Clones correctly', () => {
     const sAttr = obj.attributes;
     const cloned = obj.clone();

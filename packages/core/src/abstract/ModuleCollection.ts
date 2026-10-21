@@ -9,8 +9,8 @@ export default class ModuleCollection<TModel extends ModuleModel = ModuleModel> 
   module!: ModuleExt<TModel>;
   private newModel!: ModelConstructor<TModel>;
 
-  add(model: Array<Record<string, any>> | TModel, options?: AddOptions): TModel;
-  add(models: Array<Array<Record<string, any>> | TModel>, options?: AddOptions): TModel[];
+  add(model: Record<string, any> | TModel, options?: AddOptions): TModel;
+  add(models: Array<Record<string, any> | TModel>, options?: AddOptions): TModel[];
   add(model?: unknown, options?: AddOptions): any {
     //Note: the undefined case needed because backbonejs not handle the reset() correctly
     var models = isArray(model) ? model : !isUndefined(model) ? [model] : undefined;

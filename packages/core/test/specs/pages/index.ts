@@ -251,6 +251,86 @@ describe('Managing pages', () => {
     expect(event).toHaveBeenCalledWith(page, up, opts);
   });
 
+  test('Add frame event', () => {
+    const event = jest.fn();
+    const allEvent = jest.fn();
+    const opts = { at: 1 };
+    const page = pm.getMain();
+    const frames = page.getFrames();
+    em.on(pm.events.frameAdd, event);
+    editor.on(pm.events.all, allEvent);
+
+    const frame = frames.add({ id: 'frame-add' }, opts);
+
+    expect(event).toHaveBeenCalledTimes(1);
+    expect(event).toHaveBeenCalledWith(frame, expect.objectContaining(opts));
+    expect(allEvent).toHaveBeenCalledTimes(1);
+    expect(event.mock.invocationCallOrder[0]).toBeLessThan(allEvent.mock.invocationCallOrder[0]);
+    expect(allEvent).toHaveBeenCalledWith({
+      event: pm.events.frameAdd,
+      page,
+      frame,
+      options: expect.objectContaining(opts),
+    });
+  });
+
+  test('Update frame event', () => {
+    const event = jest.fn();
+    const allEvent = jest.fn();
+    const page = pm.getMain();
+    const frame = page.getFrames().add({ id: 'frame-update' });
+    const changes = { width: 320 };
+    const opts = { avoidStore: true };
+    em.on(pm.events.frameUpdate, event);
+    editor.on(pm.events.all, allEvent);
+
+    frame.set(changes, opts);
+
+    expect(event).toHaveBeenCalledTimes(1);
+    expect(event).toHaveBeenCalledWith(frame, changes, opts);
+    expect(allEvent).toHaveBeenCalledTimes(1);
+    expect(event.mock.invocationCallOrder[0]).toBeLessThan(allEvent.mock.invocationCallOrder[0]);
+    expect(allEvent).toHaveBeenCalledWith({ event: pm.events.frameUpdate, page, frame, changes, options: opts });
+  });
+
+  test('Remove frame event', () => {
+    const event = jest.fn();
+    const allEvent = jest.fn();
+    const page = pm.getMain();
+    const frames = page.getFrames();
+    const frame = frames.add({ id: 'frame-remove' });
+    const opts = { silent: false };
+    em.on(pm.events.frameRemove, event);
+    editor.on(pm.events.all, allEvent);
+
+    frames.remove(frame, opts);
+
+    expect(event).toHaveBeenCalledTimes(1);
+    expect(event).toHaveBeenCalledWith(frame, expect.objectContaining(opts));
+    expect(allEvent.mock.calls.filter(([data]) => data.event === pm.events.frameRemove)).toHaveLength(1);
+    expect(allEvent).toHaveBeenCalledWith({
+      event: pm.events.frameRemove,
+      page,
+      frame,
+      options: expect.objectContaining(opts),
+    });
+  });
+
+  test('Silent frame changes do not trigger page events', () => {
+    const event = jest.fn();
+    const allEvent = jest.fn();
+    const frames = pm.getMain().getFrames();
+    em.on(`${pm.events.frameAdd} ${pm.events.frameUpdate} ${pm.events.frameRemove}`, event);
+    editor.on(pm.events.all, allEvent);
+
+    const frame = frames.add({ id: 'frame-silent' }, { silent: true });
+    frame.set({ width: 320 }, { silent: true });
+    frames.remove(frame, { silent: true });
+
+    expect(event).not.toHaveBeenCalled();
+    expect(allEvent).not.toHaveBeenCalled();
+  });
+
   test('Prevent duplicate ids in components and styles', () => {
     const id = 'myid';
     const idSel = `#${id}`;

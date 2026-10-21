@@ -45,6 +45,7 @@ const typeMain = 'main';
 
 export default class PageManager extends ItemManagerModule<PageManagerConfig, Pages> {
   events = PagesEvents;
+  classes = { Page, Pages };
   storageKey = 'pages';
 
   get pages() {
@@ -83,9 +84,7 @@ export default class PageManager extends ItemManagerModule<PageManagerConfig, Pa
   }
 
   __onChange(event: string, page: Page, coll: Pages, opts?: any) {
-    const { em, events } = this;
-    const options = opts || coll;
-    em.trigger(events.all, { event, page, options });
+    this.__emitAll({ event, data: { page, options: opts || coll } });
   }
 
   __onReset() {

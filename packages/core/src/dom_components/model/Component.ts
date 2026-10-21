@@ -13,7 +13,7 @@ import {
   result,
 } from 'underscore';
 import Frame from '../../canvas/model/Frame';
-import { AddOptions, ExtractMethods, ObjectAny, PrevToNewIdMap, SetOptions } from '../../common';
+import { AddOptions, ExtractMethods, ObjectAny, PrevToNewIdMap, RemoveOptions, SetOptions } from '../../common';
 import CssRule, { CssRuleJSON } from '../../css_composer/model/CssRule';
 import { DataCollectionStateMap } from '../../data_sources/model/data_collection/types';
 import { DataCollectionKeys } from '../../data_sources/types';
@@ -342,7 +342,6 @@ export default class Component extends StyleableModel<ComponentProperties> {
     this.listenTo(this, 'change:tagName', this.tagUpdated);
     this.listenTo(this, 'change:attributes', this.attrUpdated);
     this.listenTo(this, 'change:attributes:id', this._idUpdated);
-    this.on('change:toolbar', this.__emitUpdateTlb);
     this.on('change', this.__onChange);
     this.on(keyUpdateInside, this.__propToParent);
     this.set('status', '');
@@ -423,11 +422,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
     const um = em?.UndoManager;
     const comps = this.components();
 
-    if (!um || this.__hasUm) {
-      return;
-    }
-
-    if (um) {
+    if (!this.__hasUm && um) {
       um.add(comps);
       um.add(this.getSelectors());
       this.__hasUm = true;
@@ -452,6 +447,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
     ['status', 'open', 'toolbar', 'traits'].forEach((name) => delete changed[name]);
     // Propagate component prop changes
     if (!isEmptyObj(changed)) {
+      this.em?.trigger(keyUpdate, this);
       this.__changesUp(opts, { changed });
       this.__propSelfToParent({ component: this, changed, options: opts });
     }
@@ -505,10 +501,6 @@ export default class Component extends StyleableModel<ComponentProperties> {
   __propToParent(props: any) {
     const parent = this.parent();
     parent && parent.trigger(keyUpdateInside, props);
-  }
-
-  __emitUpdateTlb() {
-    this.emitUpdate('toolbar');
   }
 
   __getAllById() {
@@ -974,9 +966,9 @@ export default class Component extends StyleableModel<ComponentProperties> {
    * model.addClass(['class1', 'class2']);
    * // -> [SelectorObject, ...]
    */
-  addClass(classes: string | string[]) {
+  addClass(classes: string | string[], opts: AddOptions = {}) {
     const added = this.em.Selectors.addClass(classes);
-    return this.classes.add(added);
+    return this.classes.add(added, opts);
   }
 
   /**
@@ -989,9 +981,9 @@ export default class Component extends StyleableModel<ComponentProperties> {
    * model.setClass(['class1', 'class2']);
    * // -> [SelectorObject, ...]
    */
-  setClass(classes: string | string[]) {
-    this.classes.reset();
-    return this.addClass(classes);
+  setClass(classes: string | string[], opts: AddOptions = {}) {
+    this.classes.reset([], opts);
+    return this.addClass(classes, opts);
   }
 
   /**
@@ -1004,7 +996,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
    * model.removeClass(['class1', 'class2']);
    * // -> [SelectorObject, ...]
    */
-  removeClass(classes: string | string[]) {
+  removeClass(classes: string | string[], opts: RemoveOptions = {}) {
     const removed: Selector[] = [];
     classes = isArray(classes) ? classes : [classes];
     const selectors = this.classes;
@@ -1014,7 +1006,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
       const classes = classe.split(' ');
       classes.forEach((name) => {
         const selector = selectors.where({ name, type })[0];
-        selector && removed.push(selectors.remove(selector));
+        selector && removed.push(selectors.remove(selector, opts));
       });
     });
 
@@ -1040,6 +1032,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
     this.stopListening(...toListen);
     const classes = this.normalizeClasses(clsArr);
     const selectors = new Selectors([]);
+    selectors.setComponent(this);
     this.set('classes', selectors, opts);
     selectors.add(classes);
     selectors.on('add remove reset', this.__upSymbCls);

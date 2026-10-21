@@ -73,8 +73,7 @@ export default class Page extends Model<PagePropertiesDefined> {
     frms.forEach((frame) => {
       frame.page = this;
     });
-    const frames = new Frames(em!.Canvas, frms);
-    frames.page = this;
+    const frames = new Frames(em!.Canvas, frms, { page: this });
     this.set('frames', frames);
     !this.getId() && this.set('id', em?.Pages._createId());
     em?.UndoManager.add(frames);
