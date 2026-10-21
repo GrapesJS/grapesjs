@@ -20,6 +20,66 @@ describe('Editor', () => {
     expect(editor).toBeTruthy();
   });
 
+  describe('Event subscriptions', () => {
+    test('sub forwards event arguments and returns a function to detach the listener', () => {
+      const callback = jest.fn();
+      const component = editor.getWrapper()!;
+      const options = { custom: true };
+      const unsub = editor.sub('component:selected', (component, options) => callback(component, options));
+
+      editor.trigger('component:selected', component, options);
+
+      expect(callback).toHaveBeenCalledTimes(1);
+      expect(callback).toHaveBeenCalledWith(component, options);
+      expect(unsub()).toBeUndefined();
+
+      editor.trigger('component:selected', component, options);
+
+      expect(callback).toHaveBeenCalledTimes(1);
+    });
+
+    test('sub supports custom events and preserves callback context', () => {
+      const callback = jest.fn();
+      const unsub = editor.sub('custom:event', callback);
+
+      editor.trigger('custom:event', 'value', 42);
+
+      expect(callback).toHaveBeenCalledWith('value', 42);
+      expect(callback.mock.contexts[0]).toBe(editor.getModel());
+      unsub();
+    });
+
+    test('sub detaches all space-separated event names', () => {
+      const callback = jest.fn();
+      const unsub = editor.sub('custom:first custom:second', callback);
+
+      editor.trigger('custom:first');
+      editor.trigger('custom:second');
+      expect(callback).toHaveBeenCalledTimes(2);
+
+      unsub();
+      editor.trigger('custom:first');
+      editor.trigger('custom:second');
+
+      expect(callback).toHaveBeenCalledTimes(2);
+    });
+
+    test('unsub can be called repeatedly and preserves other listeners', () => {
+      const callback = jest.fn();
+      const otherCallback = jest.fn();
+      expect(editor.on('custom:event', otherCallback)).toBe(editor);
+      const unsub = editor.sub('custom:event', callback);
+
+      unsub();
+      unsub();
+      editor.trigger('custom:event');
+
+      expect(callback).not.toHaveBeenCalled();
+      expect(otherCallback).toHaveBeenCalledTimes(1);
+      expect(editor.off('custom:event', otherCallback)).toBe(editor);
+    });
+  });
+
   test('Has no components', () => {
     const all = editor.Components.allById();
     const allKeys = keys(all);

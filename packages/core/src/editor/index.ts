@@ -730,6 +730,25 @@ export default class Editor implements IBaseModule<EditorConfig> {
   }
 
   /**
+   * Attach an event listener and return a function to detach it.
+   * @param {string} event Event name or space-separated event names
+   * @param {Function} callback Callback function
+   * @returns {Function} Function that detaches the listener
+   * @example
+   * const unsub = editor.sub('component:add', (component) => {
+   *   console.log('Component added', component);
+   * });
+   * // Detach the listener
+   * unsub();
+   */
+  sub<E extends EditorEvent>(event: E, callback: EditorEventHandler<E>): () => void {
+    this.on(event, callback);
+    return () => {
+      this.off(event, callback);
+    };
+  }
+
+  /**
    * Attach event and detach it after the first run
    * @param  {string} event Event name
    * @param  {Function} callback Callback function

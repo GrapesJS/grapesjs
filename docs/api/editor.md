@@ -707,6 +707,27 @@ Attach event
 
 Returns **this**&#x20;
 
+## sub
+
+Attach an event listener and return a function to detach it.
+
+### Parameters
+
+*   `event` **[string][18]** Event name or space-separated event names
+*   `callback` **[Function][23]** Callback function
+
+### Examples
+
+```javascript
+const unsub = editor.sub('component:add', (component) => {
+  console.log('Component added', component);
+});
+// Detach the listener
+unsub();
+```
+
+Returns **[Function][23]** Function that detaches the listener
+
 ## once
 
 Attach event and detach it after the first run
