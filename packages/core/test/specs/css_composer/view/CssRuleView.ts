@@ -1,5 +1,6 @@
 import CssRuleView from '../../../../src/css_composer/view/CssRuleView';
 import CssRule from '../../../../src/css_composer/model/CssRule';
+import EditorModel from '../../../../src/editor/model/Editor';
 
 describe('CssRuleView', () => {
   let obj: CssRuleView;
@@ -28,6 +29,22 @@ describe('CssRuleView', () => {
   test('On update of style always empty as there is no selectors', () => {
     obj.model.set('style', { prop: 'value' });
     expect(fixtures.innerHTML).toEqual('<style></style>');
+  });
+
+  test('Preserves CSS text supplied by the mount hook', () => {
+    const em = new EditorModel({});
+    const rule = em.Css.setRule('.test', { color: 'red' });
+    const view = new CssRuleView({ model: rule });
+    const css = '.test::before{content:"<span>&amp;</span>";}';
+    const mounted = jest.fn();
+    em.on('css:mount:before', (props) => (props.css = css));
+    em.on('css:mount', mounted);
+    view.render();
+    expect(view.el.textContent).toBe(css);
+    expect(view.el.childNodes).toHaveLength(1);
+    expect(mounted).toHaveBeenCalledWith({ rule, ruleView: view, css });
+    view.remove();
+    em.destroy();
   });
 
   describe('CssRuleView with selectors', () => {

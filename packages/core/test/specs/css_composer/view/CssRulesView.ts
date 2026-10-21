@@ -57,6 +57,7 @@ describe('CssRulesView', () => {
 
   beforeEach(() => {
     obj = buildEditor({
+      mediaCondition: 'max-width',
       deviceManager: {
         devices,
       },
@@ -64,6 +65,7 @@ describe('CssRulesView', () => {
   });
 
   afterEach(() => {
+    obj.remove();
     obj.collection.reset();
   });
 
@@ -150,5 +152,51 @@ describe('CssRulesView', () => {
   test('Render new rule', () => {
     obj.collection.add({});
     expect(obj.$el.find(`#${prefix}`).html()).toBeTruthy();
+  });
+
+  test('Places rules without searching the growing rule tree', () => {
+    const query = jest.spyOn(obj.el, 'querySelector');
+    obj.collection.add([
+      { selectorsAdd: '.first', style: { color: 'red' } },
+      { selectorsAdd: '.second', style: { color: 'blue' }, mediaText: '(max-width: 480px)' },
+    ]);
+    expect(query).not.toHaveBeenCalled();
+    expect(obj.el.querySelector(`#${prefix}`)!.textContent).toContain('.first{color:red;}');
+    expect(obj.el.querySelector(`#${prefix}-480`)!.textContent).toContain('.second{color:blue;}');
+  });
+
+  test('Releases old rule views when rendering again', () => {
+    const rule = obj.collection.add({ selectorsAdd: '.test', style: { color: 'red' } });
+    const previousView = rule.views[0];
+    obj.render();
+    expect(rule.views).toHaveLength(1);
+    expect(rule.views[0]).not.toBe(previousView);
+    rule.setStyle({ color: 'blue' });
+    expect(previousView.el.textContent).toBe('.test{color:red;}');
+    expect(obj.el.textContent).toBe('.test{color:blue;}');
+  });
+
+  test('Releases rule views on collection reset and view removal', () => {
+    const previous = obj.collection.add({ selectorsAdd: '.previous', style: { color: 'red' } });
+    obj.collection.reset([{ selectorsAdd: '.next', style: { color: 'blue' } }]);
+    expect(previous.views).toHaveLength(0);
+    const next = obj.collection.at(0);
+    expect(next.views).toHaveLength(1);
+    obj.remove();
+    expect(next.views).toHaveLength(0);
+    obj.collection.add({ selectorsAdd: '.removed', style: { color: 'green' } });
+    expect(obj.collection.at(1).views).toHaveLength(0);
+  });
+
+  test('Keeps other frames subscribed when a rules view is removed', () => {
+    const rule = obj.collection.add({ selectorsAdd: '.test', style: { color: 'red' } });
+    const other = new CssRulesView({ collection: obj.collection, config: obj.config }).render();
+    expect(rule.views).toHaveLength(2);
+    obj.remove();
+    expect(rule.views).toHaveLength(1);
+    rule.setStyle({ color: 'blue' });
+    expect(other.el.textContent).toBe('.test{color:blue;}');
+    other.remove();
+    expect(rule.views).toHaveLength(0);
   });
 });
