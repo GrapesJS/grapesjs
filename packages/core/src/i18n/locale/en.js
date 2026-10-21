@@ -17,6 +17,9 @@ export default {
       // 'category-id': 'Category Label',
     },
   },
+  canvas: {
+    frameTitle: 'Editor canvas',
+  },
   domComponents: {
     names: {
       '': 'Box',

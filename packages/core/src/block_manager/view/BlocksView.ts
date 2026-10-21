@@ -70,19 +70,21 @@ export default class BlocksView extends View {
     const { em } = this;
     if (!em) return;
 
+    const canvas = em.Canvas;
+    const body = canvas.getBody();
+
     if (!this.sorter) {
       const utils = em.Utils;
-      const canvas = em.Canvas;
       this.sorter = new utils.ComponentSorter({
         em,
         treeClass: CanvasNewComponentNode,
         containerContext: {
-          container: canvas.getBody(),
+          container: body,
           containerSel: '*',
           itemSel: '*',
           pfx: this.ppfx,
           placeholderElement: canvas.getPlacerEl()!,
-          document: canvas.getBody().ownerDocument,
+          document: body.ownerDocument,
         },
         dragBehavior: {
           dragDirection: DragDirection.BothDirections,
@@ -98,6 +100,8 @@ export default class BlocksView extends View {
           legacyOnMoveClb: this.onMove,
         },
       });
+    } else if (body) {
+      this.sorter.updateContainerContext(body);
     }
 
     return this.sorter;

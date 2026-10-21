@@ -286,6 +286,25 @@ export default class CommandResize extends CommandAbstract<
         if (!skipPositionUpdate && em.getDragMode(component)) {
           style.top = `${rect.t}px`;
           style.left = `${rect.l}px`;
+          const { transform, translate } = elComputedStyle;
+
+          if ((transform && transform !== 'none') || (translate && translate !== 'none')) {
+            const inlineStyle = el.style.cssText;
+
+            try {
+              // Resolve the visual offset at the new size: percentage translations depend on it.
+              [keyWidth, keyHeight].forEach((key) => {
+                if (key && style[key]) el.style.setProperty(key, `${style[key]}`, 'important');
+              });
+              const currentRect = resizer.getElementPos(el, { avoidFrameZoom: true, avoidFrameOffset: true });
+              const parentRect = resizer.getParentRect();
+              const computedStyle = getComputedStyle(el);
+              style.left = `${rect.l - currentRect.left + parentRect.left + (parseFloat(computedStyle.left) || 0)}px`;
+              style.top = `${rect.t - currentRect.top + parentRect.top + (parseFloat(computedStyle.top) || 0)}px`;
+            } finally {
+              el.style.cssText = inlineStyle;
+            }
+          }
         }
 
         let styleUpdated = false;

@@ -434,6 +434,64 @@ describe('Component', () => {
     });
   });
 
+  describe('initial inline styles', () => {
+    beforeEach(() => {
+      em.getConfig().mediaCondition = 'max-width';
+      em.Devices.add({ id: 'tablet', name: 'Tablet', width: '770px', widthMedia: '992px' });
+    });
+
+    test.each([
+      ['tablet', ''],
+      ['', 'hover'],
+      ['tablet', 'hover'],
+    ])('use the base rule with device "%s" and state "%s" selected', (device, state) => {
+      em.set({ device, state });
+      const cmp = em.getWrapper()!.append({ style: { color: 'red' } })[0];
+      const id = cmp.getId();
+      const selectedRuleOpts = { state, mediaText: em.getCurrentMedia() };
+
+      expect(em.Css.getIdRule(id, { state: '', mediaText: '' })?.getStyle()).toEqual({ color: 'red' });
+      expect(em.Css.getIdRule(id, selectedRuleOpts)).toBeFalsy();
+      expect(cmp.getStyle({ inline: true })).toEqual({});
+
+      cmp.setStyle({ color: 'blue' });
+
+      expect(em.Css.getIdRule(id, selectedRuleOpts)?.getStyle()).toEqual({ color: 'blue' });
+      expect(em.Css.getIdRule(id, { state: '', mediaText: '' })?.getStyle()).toEqual({ color: 'red' });
+    });
+
+    test('merge with existing base styles without copying the selected device and state styles', () => {
+      const id = 'initial-style';
+      const baseOpts = { state: '', mediaText: '' };
+      em.Css.setIdRule(id, { color: 'blue', padding: '10px' }, baseOpts);
+      em.set({ device: 'tablet', state: 'hover' });
+      const selectedRuleOpts = { state: 'hover', mediaText: em.getCurrentMedia() };
+      const selectedStyle = { color: 'green', display: 'none' };
+      em.Css.setIdRule(id, selectedStyle, selectedRuleOpts);
+
+      const cmp = em.getWrapper()!.append({ attributes: { id }, style: { color: 'red' } })[0];
+
+      expect(em.Css.getIdRule(id, baseOpts)?.getStyle()).toEqual({ color: 'red', padding: '10px' });
+      expect(em.Css.getIdRule(id, selectedRuleOpts)?.getStyle()).toEqual(selectedStyle);
+      expect(cmp.getStyle({ inline: true })).toEqual({});
+    });
+
+    test('keep imported responsive styles out of the base rule', () => {
+      em.set('device', 'tablet');
+      const cmp = em.getWrapper()!.append(`
+        <style>@media (max-width: 992px) { #example { display: none; } }</style>
+        <div id="example" style="color: red">Example</div>
+      `)[0];
+      const id = cmp.getId();
+
+      expect(em.Css.getIdRule(id, { state: '', mediaText: '' })?.getStyle()).toEqual({ color: 'red' });
+      expect(em.Css.getIdRule(id, { state: '', mediaText: '(max-width: 992px)' })?.getStyle()).toEqual({
+        display: 'none',
+      });
+      expect(cmp.getStyle({ inline: true })).toEqual({});
+    });
+  });
+
   test('get proper style from style with multiple values of the same key', () => {
     obj.setAttributes({ style: CSS_BG_STR }, { inline: true });
     expect(obj.getAttributes()).toEqual({

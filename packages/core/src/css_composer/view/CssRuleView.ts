@@ -46,7 +46,7 @@ export default class CssRuleView extends View<CssRule> {
     const css = model.toCSS({ important });
     const mountProps = { rule: model, ruleView: this, css };
     em?.trigger(CssEvents.mountBefore, mountProps);
-    el.innerHTML = mountProps.css;
+    el.textContent = mountProps.css;
     em?.trigger(CssEvents.mount, mountProps);
     return this;
   }

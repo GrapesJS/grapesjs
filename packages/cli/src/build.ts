@@ -124,18 +124,20 @@ export default (opts: BuildOptions = {}) => {
         log(result, '\n');
       }
 
+      if (errors) {
+        process.exitCode = 1;
+        printError(`Error during building`);
+        err && console.error(err);
+        return;
+      }
+
       await buildLocale(opts);
 
       if (dts !== 'skip') {
         await buildDeclaration(opts);
       }
 
-      if (errors) {
-        printError(`Error during building`);
-        console.error(err);
-      } else {
-        printRow('Building completed successfully!');
-      }
+      printRow('Building completed successfully!');
     });
   };
 

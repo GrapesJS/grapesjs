@@ -58,7 +58,6 @@ export default class Sorter<T, NodeType extends SortableTreeNode<T>> {
     this.em = sorterOptions.em;
     this.treeClass = sorterOptions.treeClass;
     this.updateOffset();
-    this.em.on(this.em.Canvas.events.refresh, this.updateOffset);
     this.placeholder = this.createPlaceholder();
 
     this.dropLocationDeterminer = new DropLocationDeterminer({
@@ -71,11 +70,17 @@ export default class Sorter<T, NodeType extends SortableTreeNode<T>> {
     });
   }
 
+  updateContainerContext(container: HTMLElement) {
+    this.containerContext.container = container;
+    this.containerContext.document = container.ownerDocument;
+  }
+
   /**
    * Picking components to move
    * @param {HTMLElement[]} sources[]
    * */
   startSort(sources: SorterSource<T>[]) {
+    this.em.on(this.em.Canvas.events.refresh, this.updateOffset);
     const { sourceNodes, sourcesWithModel } = this.getSourceNodes(sources);
     this.sourceNodes = sourceNodes;
     this.dropLocationDeterminer.startSort(sourceNodes);
@@ -173,7 +178,7 @@ export default class Sorter<T, NodeType extends SortableTreeNode<T>> {
   private ensurePlaceholderElement() {
     const el = this.placeholder.el;
     const container = this.containerContext.container;
-    if (!el.ownerDocument.contains(el)) {
+    if (!el.isConnected) {
       container.append(this.placeholder.el);
     }
   }
@@ -227,6 +232,7 @@ export default class Sorter<T, NodeType extends SortableTreeNode<T>> {
    * @private
    */
   protected finalizeMove(): void {
+    this.em.off(this.em.Canvas.events.refresh, this.updateOffset);
     this.cleanupEventListeners();
     this.placeholder.hide();
     delete this.sourceNodes;

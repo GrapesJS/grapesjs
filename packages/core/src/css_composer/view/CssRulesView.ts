@@ -15,6 +15,8 @@ export default class CssRulesView extends View {
   em: EditorModel;
   pfx: string;
   renderStarted?: boolean;
+  private ruleContainers: Record<string, HTMLElement> = {};
+  private ruleViews = new Map<string, CssRuleView>();
 
   constructor(o: any) {
     super(o);
@@ -28,7 +30,21 @@ export default class CssRulesView extends View {
     this.className = this.pfx + 'rules';
     const coll = this.collection;
     this.listenTo(coll, 'add', this.addTo);
+    this.listenTo(coll, 'remove', (model: CssRule) => this.ruleViews.delete(model.cid));
     this.listenTo(coll, 'reset', this.render);
+  }
+
+  private clearRuleViews() {
+    this.ruleViews.forEach((view) => view.remove());
+    this.ruleViews.clear();
+  }
+
+  remove() {
+    // Detach the whole rules tree before removing its individual stylesheets.
+    super.remove();
+    this.clearRuleViews();
+    this.ruleContainers = {};
+    return this;
   }
 
   /**
@@ -53,7 +69,6 @@ export default class CssRulesView extends View {
       return;
     }
 
-    const fragment = fragmentEl || null;
     const { config } = this;
     const opts = { model, config };
     let rendered, view;
@@ -82,6 +97,8 @@ export default class CssRulesView extends View {
       rendered = view.render().el;
     }
 
+    this.ruleViews.set(model.cid, view);
+
     const clsName = this.className!;
     const mediaText = model.get('mediaText');
     const defaultBlockId = getBlockId(clsName);
@@ -94,19 +111,7 @@ export default class CssRulesView extends View {
     }
 
     if (rendered) {
-      const container = fragment || this.el;
-      let contRules;
-
-      // Try to find a specific container for the rule (if it
-      // containes a media query), otherwise get the default one
-      try {
-        contRules = container.querySelector(`#${blockId}`);
-      } catch (e) {}
-
-      if (!contRules) {
-        contRules = container.querySelector(`#${defaultBlockId}`);
-      }
-
+      const contRules = this.ruleContainers[blockId] || this.ruleContainers[defaultBlockId];
       contRules?.appendChild(rendered);
     }
 
@@ -130,17 +135,24 @@ export default class CssRulesView extends View {
   }
 
   render() {
+    // Remove the containers together so per-rule cleanup runs off the live canvas.
+    this.$el.empty();
+    this.clearRuleViews();
     this.renderStarted = true;
     this.atRules = {};
+    this.ruleContainers = {};
     const { em, $el, collection } = this;
     const cls = this.className!;
     const frag = document.createDocumentFragment();
-    $el.empty();
-
     // Create devices related DOM structure, ensure also to have a default container
     const prs = em.Devices.getAll().pluck('priority').sort(this.sortRules) as number[];
     prs.every((pr) => pr) && prs.unshift(0);
-    prs.forEach((pr) => frag.appendChild(createEl('div', { id: getBlockId(cls, pr) })));
+    prs.forEach((pr) => {
+      const id = getBlockId(cls, pr);
+      const container = createEl('div', { id });
+      this.ruleContainers[id] = this.ruleContainers[id] || container;
+      frag.appendChild(container);
+    });
 
     collection.each((model) => this.addToCollection(model, frag));
     $el.append(frag);
