@@ -15,10 +15,11 @@ export const getModelContext = (): ModelContextLike | undefined => {
 const isThenable = (value: unknown): value is PromiseLike<unknown> =>
   !!value && typeof (value as any).then === 'function';
 
-interface RegisteredEntry {
-  name: string;
-  controller?: AbortController;
-  handle?: unknown;
+export interface ToolRegistration {
+  /** Resolves once the tool is registered. */
+  ready: Promise<void>;
+  /** Unregister the tool. Safe to call multiple times, also while the registration is pending. */
+  unregister: () => void;
 }
 
 export interface ToolsRegistration {
@@ -29,24 +30,21 @@ export interface ToolsRegistration {
 }
 
 /**
- * Register tools one by one (never replacing the whole page catalog) and return
- * a cleanup that removes only the tools registered here.
+ * Register a single tool and return its registration, used to remove only this tool.
  */
-export const registerTools = (modelContext: ModelContextLike, tools: WebMcpTool[]): ToolsRegistration => {
-  const entries: RegisteredEntry[] = [];
+export const registerTool = (modelContext: ModelContextLike, tool: WebMcpTool): ToolRegistration => {
+  const controller = typeof AbortController !== 'undefined' ? new AbortController() : undefined;
   let disposed = false;
+  let handle: unknown;
+  let ready: Promise<void>;
 
-  const unregisterEntry = (entry: RegisteredEntry) => {
-    // Current draft: aborting the signal unregisters the tool
-    entry.controller?.abort();
-
+  const unregisterLegacy = () => {
     try {
-      const { handle } = entry;
       // Legacy: registerTool returned a handle with `unregister`, or the context exposes `unregisterTool`
       if (handle && typeof (handle as any).unregister === 'function') {
         (handle as any).unregister();
       } else if (typeof modelContext.unregisterTool === 'function') {
-        const res = modelContext.unregisterTool(entry.name);
+        const res = modelContext.unregisterTool(tool.name);
         isThenable(res) && Promise.resolve(res).catch(() => {});
       }
     } catch {
@@ -54,28 +52,59 @@ export const registerTools = (modelContext: ModelContextLike, tools: WebMcpTool[
     }
   };
 
+  try {
+    const result = modelContext.registerTool(tool, { signal: controller?.signal });
+    ready = Promise.resolve(result).then((res) => {
+      handle = res;
+      // Unregistered while the registration was pending
+      disposed && unregisterLegacy();
+    });
+  } catch (error) {
+    return { ready: Promise.reject(error), unregister: () => {} };
+  }
+
+  let settled = false;
+  ready.then(
+    () => (settled = true),
+    () => (settled = true),
+  );
+
+  return {
+    ready,
+    unregister: () => {
+      if (disposed) return;
+      disposed = true;
+      // Current draft: aborting the signal unregisters the tool
+      controller?.abort();
+      settled && unregisterLegacy();
+    },
+  };
+};
+
+/**
+ * Register tools one by one (never replacing the whole page catalog) and return
+ * a cleanup that removes only the tools registered here.
+ */
+export const registerTools = (modelContext: ModelContextLike, tools: WebMcpTool[]): ToolsRegistration => {
+  const registrations: ToolRegistration[] = [];
+  let disposed = false;
+
   const unregister = () => {
     if (disposed) return;
     disposed = true;
-    entries.splice(0).reverse().forEach(unregisterEntry);
-  };
-
-  const registerOne = async (tool: WebMcpTool) => {
-    const controller = typeof AbortController !== 'undefined' ? new AbortController() : undefined;
-    const entry: RegisteredEntry = { name: tool.name, controller };
-    const result = modelContext.registerTool(tool, { signal: controller?.signal });
-    entries.push(entry);
-    entry.handle = isThenable(result) ? await result : result;
-
-    // Unregistered while the registration was pending
-    if (disposed) unregisterEntry(entry);
+    registrations
+      .splice(0)
+      .reverse()
+      .forEach((reg) => reg.unregister());
   };
 
   const ready = (async () => {
     try {
       for (const tool of tools) {
         if (disposed) return;
-        await registerOne(tool);
+        const registration = registerTool(modelContext, tool);
+        registrations.push(registration);
+        await registration.ready;
       }
     } catch (error) {
       unregister();

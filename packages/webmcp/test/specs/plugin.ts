@@ -1,5 +1,5 @@
 import grapesjs from 'grapesjs';
-import webMcpPlugin, { createDefaultTools, GetToolsContext, prepareTools, ToolNames, WebMcpTool } from '../../src';
+import webMcpPlugin, { createDefaultTools, GetToolsContext, ToolNames, WebMcpTool } from '../../src';
 import { createEditor, createModelContext, flush } from '../helpers';
 
 const customTool: WebMcpTool = {
@@ -111,7 +111,7 @@ describe('webMcpPlugin', () => {
     editor.getModel().trigger('load', editor);
     await flush();
     expect(mc.registerTool).not.toHaveBeenCalled();
-    expect(logs.join()).toContain('Duplicate tool name "grapesjs_say_hello"');
+    expect(logs.join()).toContain('Duplicate tool name "say_hello"');
     editor.destroy();
   });
 
@@ -233,12 +233,5 @@ describe('webMcpPlugin', () => {
     await flush();
     expect(mc.registerTool).not.toHaveBeenCalled();
     editor.destroy();
-  });
-
-  test('prepareTools validates tool definitions', () => {
-    expect(() => prepareTools([{ ...customTool, name: '' }])).toThrow('missing a name');
-    expect(() => prepareTools([{ ...customTool, description: '' }])).toThrow('missing a description');
-    expect(() => prepareTools([{ ...customTool, execute: undefined as any }])).toThrow('missing the execute');
-    expect(prepareTools([customTool], 'x_')[0].name).toBe('x_say_hello');
   });
 });

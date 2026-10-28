@@ -1,4 +1,5 @@
 import type { Editor } from 'grapesjs';
+import type { WebMcpManager } from './manager';
 
 /**
  * JSON Schema object describing the tool input.
@@ -106,4 +107,74 @@ export interface WebMcpToolsContext {
   toolPrefix: string;
   /** Project instructions, the guide tool is added only when provided. */
   instructions?: string;
+}
+
+/**{START_EVENTS}*/
+export enum WebMcpEvents {
+  /**
+   * @event `webmcp:tool:add` Tool added to the manager.
+   * @example
+   * editor.on('webmcp:tool:add', ({ tool }) => { ... });
+   */
+  toolAdd = 'webmcp:tool:add',
+
+  /**
+   * @event `webmcp:tool:remove` Tool removed from the manager.
+   * @example
+   * editor.on('webmcp:tool:remove', ({ tool }) => { ... });
+   */
+  toolRemove = 'webmcp:tool:remove',
+
+  /**
+   * @event `webmcp:tool:execute:before` Tool execution started (by an agent or via `executeTool`).
+   * @example
+   * editor.on('webmcp:tool:execute:before', ({ name, input }) => { ... });
+   */
+  toolExecuteBefore = 'webmcp:tool:execute:before',
+
+  /**
+   * @event `webmcp:tool:execute` Tool execution ended. `result` is what the agent receives,
+   * `error` is set when the execution failed.
+   * @example
+   * editor.on('webmcp:tool:execute', ({ name, input, result, error }) => { ... });
+   */
+  toolExecute = 'webmcp:tool:execute',
+}
+/**{END_EVENTS}*/
+
+export interface WebMcpToolEventData {
+  tool: WebMcpTool;
+}
+
+export interface WebMcpToolExecuteBeforeEventData {
+  /** Tool name (without the prefix). */
+  name: string;
+  input: any;
+}
+
+export interface WebMcpToolExecuteEventData extends WebMcpToolExecuteBeforeEventData {
+  result: unknown;
+  error?: unknown;
+}
+
+export interface WebMcpEventCallback {
+  [WebMcpEvents.toolAdd]: [WebMcpToolEventData];
+  [WebMcpEvents.toolRemove]: [WebMcpToolEventData];
+  [WebMcpEvents.toolExecuteBefore]: [WebMcpToolExecuteBeforeEventData];
+  [WebMcpEvents.toolExecute]: [WebMcpToolExecuteEventData];
+}
+
+/**
+ * Command returning the `WebMcpManager` of the editor.
+ * @example
+ * const webmcp = editor.runCommand('webMcpManager');
+ */
+export const WEBMCP_MANAGER_COMMAND = 'webMcpManager';
+
+declare module 'grapesjs' {
+  interface CommandRegistryRun {
+    [WEBMCP_MANAGER_COMMAND]: () => WebMcpManager;
+  }
+
+  interface EditorEventCallbacks extends WebMcpEventCallback {}
 }

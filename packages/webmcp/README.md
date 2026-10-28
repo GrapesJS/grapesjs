@@ -211,13 +211,72 @@ grapesjs.init({ container: '#body-editor', plugins: [(ed) => webMcpPlugin(ed, { 
 
 ### Reuse the tools
 
-`createDefaultTools`, `createTool`, `registerTools` and `getModelContext` are exported in case you need to build your own integration.
+`createDefaultTools`, `createTool`, `registerTool`, `registerTools` and `getModelContext` are exported in case you need to build your own integration.
+
+## Manage tools at runtime
+
+The plugin registers the `webMcpManager` command, which returns the `WebMcpManager` of the editor. Use it to add, remove and execute tools after the initialization.
+
+```js
+const webmcp = editor.runCommand('webMcpManager');
+
+webmcp.addTool({
+  name: 'save_project',
+  description: 'Save the project to the server.',
+  execute: async () => {
+    await editor.store();
+    return { saved: true };
+  },
+});
+
+webmcp.getTools(); // all tools (default and custom)
+webmcp.getTool('save_project');
+webmcp.removeTool('save_project');
+
+// Execute a tool as an agent would do (eg. from your own in-app assistant)
+const result = await webmcp.executeTool('get_component', { id: 'my-id' });
+```
+
+- Tool names are always without the `toolPrefix`, which is only applied to the names exposed via WebMCP.
+- `addTool`/`addTools` throw if a tool is invalid or its name is already used (`addTools` adds nothing in that case).
+- Tools added at runtime are registered in WebMCP right away (or once the editor is ready). Without WebMCP in the page, tools are still available via `executeTool`.
+- `executeTool` returns exactly what the agent receives: input validated (for tools created with `createTool`) and errors returned as data (`{ error: { code, message } }`). It throws only if the tool doesn't exist.
+
+## Events
+
+| Event                        | Description                                                                              | Data                              |
+| ---------------------------- | ---------------------------------------------------------------------------------------- | --------------------------------- |
+| `webmcp:tool:add`            | Tool added to the manager                                                                | `{ tool }`                        |
+| `webmcp:tool:remove`         | Tool removed from the manager                                                            | `{ tool }`                        |
+| `webmcp:tool:execute:before` | Tool execution started, by an agent or via `executeTool`                                 | `{ name, input }`                 |
+| `webmcp:tool:execute`        | Tool execution ended. `result` is what the agent receives, `error` is set when it failed | `{ name, input, result, error? }` |
+
+```js
+import { WebMcpEvents } from '@grapesjs/webmcp';
+
+editor.on(WebMcpEvents.toolExecuteBefore, ({ name }) => showAgentIndicator(name));
+editor.on(WebMcpEvents.toolExecute, ({ name, error }) => {
+  hideAgentIndicator();
+  error && console.warn(`Agent tool ${name} failed`, error);
+});
+```
+
+## TypeScript
+
+Importing the plugin extends the GrapesJS types (`CommandRegistryRun` and `EditorEventCallbacks`), so the command and the events are typed:
+
+```ts
+import '@grapesjs/webmcp';
+
+const webmcp = editor.runCommand('webMcpManager'); // WebMcpManager
+editor.on('webmcp:tool:execute', ({ name, result }) => {}); // typed event data
+```
 
 ## Lifecycle
 
-- Tools are registered one by one when the editor is ready, without replacing other tools of the page.
-- They are unregistered on `editor.destroy()` and when the plugin is removed (`editor.Plugins.remove`). Only the tools of that plugin instance are removed.
-- If a registration fails, the already registered tools of that instance are rolled back and the error is reported through the editor logger.
+- Tools are registered one by one, without replacing other tools of the page.
+- They are unregistered on `editor.destroy()` and when the plugin is removed (`editor.Plugins.remove`), which also removes the `webMcpManager` command. Only the tools of that plugin instance are removed.
+- If the registration of a tool fails, the error is reported through the editor logger. The other tools are not affected, and the tool is still available via `executeTool`.
 
 ## Browser setup
 
