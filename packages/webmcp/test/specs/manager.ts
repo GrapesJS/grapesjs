@@ -156,22 +156,23 @@ describe('WebMcpManager', () => {
 });
 
 describe('WebMcpManager lifecycle', () => {
-  test('Tools added before the editor is ready are registered once connected', async () => {
+  test('Tools are registered right away, before the editor is ready', async () => {
     const mc = createModelContext();
     const grapesjs = (await import('grapesjs')).default;
     const webMcpPlugin = (await import('../../src')).default;
     const editor = grapesjs.init({
       headless: true,
       storageManager: false,
-      plugins: [(ed) => webMcpPlugin(ed, { modelContext: mc.modelContext, getTools: () => [] })],
+      plugins: [
+        (ed) => webMcpPlugin(ed, { modelContext: mc.modelContext, getTools: () => [] }),
+        // Another plugin adding tools during the initialization
+        (ed) => void ed.runCommand('webMcpManager').addTool(helloTool),
+      ],
     });
-    editor.runCommand('webMcpManager').addTool(helloTool);
     await flush();
-    expect(mc.registerTool).not.toHaveBeenCalled();
-    editor.getModel().set('readyCanvas', true);
-    editor.getModel().trigger('load', editor);
-    await flush();
+    expect(editor.getModel().get('ready')).toBeFalsy();
     expect(mc.tools.has('grapesjs_say_hello')).toBe(true);
+    expect(await mc.call('grapesjs_say_hello')).toEqual({ message: 'Hello you' });
     editor.destroy();
     expect(mc.tools.size).toBe(0);
   });

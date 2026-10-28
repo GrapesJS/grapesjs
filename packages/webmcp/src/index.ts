@@ -45,20 +45,17 @@ export const webMcpPlugin: Plugin<WebMcpPluginOptions> = (editor: Editor, opts =
 
   editor.on('destroy', cleanup);
 
-  editor.onReady(() => {
-    if (disposed) return;
+  // Tools resolve the editor state on execution, so they can be registered right away
+  try {
+    const defaultTools = createDefaultTools({ editor, defaultLimit, toolPrefix, instructions });
+    const catalog = getTools ? getTools({ editor, tools: defaultTools }) : defaultTools;
+    if (!Array.isArray(catalog)) throw new Error('`getTools` must return an array of tools');
+    manager.addTools(catalog);
+  } catch (error) {
+    editor.log(`Unable to create WebMCP tools: ${(error as Error).message}`, { ns: 'webmcp', level: 'error' });
+  }
 
-    try {
-      const defaultTools = createDefaultTools({ editor, defaultLimit, toolPrefix, instructions });
-      const catalog = getTools ? getTools({ editor, tools: defaultTools }) : defaultTools;
-      if (!Array.isArray(catalog)) throw new Error('`getTools` must return an array of tools');
-      manager.addTools(catalog);
-    } catch (error) {
-      editor.log(`Unable to create WebMCP tools: ${(error as Error).message}`, { ns: 'webmcp', level: 'error' });
-    }
-
-    manager.connect();
-  });
+  manager.connect();
 
   // Plugin cleanup handler (used by `editor.Plugins.remove`)
   return ({ cleanup: builtInCleanup }) => {

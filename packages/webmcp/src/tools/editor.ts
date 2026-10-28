@@ -20,6 +20,7 @@ const getState = (editor: Editor) => {
     })),
     page: page ? serializePage(page, page) : null,
     device: device ? serializeDevice(device) : null,
+    ready: !!editor.getModel().get('ready'),
     dirtyCount: editor.getDirtyCount(),
     hasUndo: um.hasUndo(),
     hasRedo: um.hasRedo(),
@@ -34,7 +35,7 @@ export default (ctx: WebMcpToolsContext) => {
       name: ToolNames.getEditorState,
       title: 'Get editor state',
       description:
-        'Get the current editor state: selected components, active page and device, number of unsaved changes and undo/redo availability.' +
+        'Get the current editor state: readiness (whether the editor is loaded), selected components, active page and device, number of unsaved changes and undo/redo availability.' +
         guideHint(ctx),
       annotations: { readOnlyHint: true },
       execute: () => getState(editor),

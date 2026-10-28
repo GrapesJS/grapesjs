@@ -219,19 +219,18 @@ describe('webMcpPlugin', () => {
     editor.destroy();
   });
 
-  test('Plugin removal before editor load cancels the registration', async () => {
+  test('Plugin removal before editor load unregisters the tools', async () => {
     const mc = createModelContext();
     const editor = grapesjs.init({ headless: true, storageManager: false });
-    const Plugins = (editor as any).Plugins;
-    const plugin = Plugins.add({
+    const plugin = editor.Plugins.add({
       id: 'webmcp',
       plugin: (ed: any) => webMcpPlugin(ed, { modelContext: mc.modelContext }),
     });
-    Plugins.remove(plugin);
-    editor.getModel().set('readyCanvas', true);
-    editor.getModel().trigger('load', editor);
+    // Removed while the registrations are still pending
+    editor.Plugins.remove(plugin!);
     await flush();
-    expect(mc.registerTool).not.toHaveBeenCalled();
+    expect(mc.registerTool).toHaveBeenCalled();
+    expect(mc.tools.size).toBe(0);
     editor.destroy();
   });
 });

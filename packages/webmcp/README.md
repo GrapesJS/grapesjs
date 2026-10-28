@@ -1,8 +1,8 @@
 # GrapesJS WebMCP
 
-Expose the GrapesJS editor API as [WebMCP](https://webmachinelearning.github.io/webmcp/) tools, so AI agents running in the browser can inspect and edit any GrapesJS editor: read the component tree, insert blocks, update styles and traits, manage pages, undo changes and more.
+Expose the GrapesJS editor API as [WebMCP](https://webmachinelearning.github.io/webmcp/) tools, so AI agents running in the browser can inspect and edit any GrapesJS editor: read the component tree, insert blocks, update styles, manage pages and more.
 
-> **Experimental**: WebMCP is an evolving draft and browser support is limited. The plugin stays inactive when WebMCP isn't available in the page.
+> **Experimental**: WebMCP is an evolving draft and browser support is limited. When WebMCP isn't available in the page, nothing is registered, but tools can still be used via the `webMcpManager` command.
 
 ## Install
 
@@ -59,7 +59,7 @@ From a CDN (`window.grapesjsWebMcp`):
 
 | Option         | Description                                                                                                                        | Default                                                          |
 | -------------- | ---------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------- |
-| `toolPrefix`   | Prefix applied to every tool name, including custom tools. Use distinct prefixes when multiple editors live on the same page.      | `'grapesjs_'`                                                    |
+| `toolPrefix`   | Prefix applied to every tool name, including custom tools.      | `'grapesjs_'`                                                    |
 | `getTools`     | `({ editor, tools }) => WebMcpTool[]`. Receives the default tools and returns the complete catalog to register. `[]` disables all. | All the default tools                                            |
 | `defaultLimit` | Max number of items returned by list/search tools when the agent doesn't pass a `limit`.                                           | `50`                                                             |
 | `instructions` | Project-specific instructions for the agent. When provided, they are exposed through the `get_editor_guide` tool.                  |                                                                  |
@@ -72,23 +72,22 @@ Names are listed without the prefix (eg. `get_component_tree` is registered as `
 | Module     | Tools                                                                                                                                                                                                                                            |
 | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | Guide      | `get_editor_guide` (only with `instructions`)                                                                                                                                                                                                    |
-| Editor     | `get_editor_state` (selection, active page/device, unsaved changes count, undo/redo availability), `get_page_code`, `get_project_data`, `load_project_data`, `undo`, `redo`                                                                      |
-| Components | `get_component_tree`, `get_component`, `select_components`, `add_components`, `update_component` (attributes including `class`/`style`, content, name), `move_component`, `remove_components`, `get_component_traits`, `update_component_traits` |
-| CSS rules  | `get_css_rules`, `set_css_rules` (rule objects and/or raw CSS), `remove_css_rules` (with state and media/at-rule support)                                                                                                                        |
+| Editor     | `get_editor_state`, `get_page_code`, `get_project_data`, `load_project_data`, `undo`, `redo`                                                         |
+| Components | `get_component_tree`, `get_component`, `select_components`, `add_components`, `update_component`, `move_component`, `remove_components`, `get_component_traits`, `update_component_traits` |
+| CSS rules  | `get_css_rules`, `set_css_rules`, `remove_css_rules`                                                            |
 | Blocks     | `list_blocks`, `get_block`, `insert_block`                                                                                                                                                                                                       |
 | Pages      | `list_pages`, `add_page`, `rename_page`, `select_page`, `remove_page`                                                                                                                                                                            |
 | Devices    | `list_devices`, `select_device`                                                                                                                                                                                                                  |
-| Assets     | `list_assets`, `add_assets` (by URL), `remove_assets`                                                                                                                                                                                            |
+| Assets     | `list_assets`, `add_assets`, `remove_assets`                                                                                                                                                                                            |
 
 How the tools behave:
 
-- They use the public GrapesJS APIs, so changes go through the usual events, undo history and storage (eg. your autosave keeps working).
+- They use the public GrapesJS APIs, so changes go through the usual events, undo history and storage.
 - Components are addressed by the ids returned by the inspection tools. Ids are resolved on each call: stale ids (eg. removed components) return a clear error.
-- Inputs are validated (with [zod](https://zod.dev)) before any change. Adding and moving components respect their constraints (`draggable`, `droppable`, `removable`) and moving a component inside itself or its descendants is rejected.
-- Results are plain JSON. Lists are paginated (`limit`/`offset`, with `total` and `hasMore`) and the tree is bounded (`depth`/`maxNodes`, with `truncated`).
+- Inputs are validated before any change.
+- Results are plain JSON. Lists are paginated (`limit`/`offset`, with `total` and `hasMore`).
 - Read-only tools are marked with `readOnlyHint`, destructive ones (removals, project replacement) with `consequentialHint`.
 - Errors are returned as data, so the agent can read the reason and recover: `{ "error": { "code": "not_found", "message": "..." } }`.
-- Not included by default: arbitrary method calls, JavaScript evaluation, storage operations, publishing and file uploads. Add custom tools if you need them.
 
 ## Agent instructions
 
@@ -100,13 +99,9 @@ webMcpPlugin(editor, {
 });
 ```
 
-They are returned by a read-only `get_editor_guide` tool, and `get_editor_state` and `get_component_tree` (usually the first tools an agent calls) point to it in their descriptions. Without `instructions`, the tool isn't registered.
+They are returned by a read-only `get_editor_guide` tool. Without `instructions`, the tool isn't registered.
 
 ## Customize tools
-
-Default tool names (without the prefix) are available in the exported `ToolNames` enum, eg. `ToolNames.loadProjectData` is `'load_project_data'`. Prefer it over plain strings, so renamed or removed tools are caught by TypeScript.
-
-`getTools` runs once, when the editor is ready. Default tools are already bound to the editor and resolve the current editor state on every call.
 
 ### Filter
 
@@ -137,7 +132,7 @@ webMcpPlugin(editor, {
 });
 ```
 
-Default tools validate their input strictly (unknown properties are rejected). If you extend the `inputSchema` of a default tool with your own properties, remove them before calling the original `execute`:
+Default tools validate their input strictly. If you extend the `inputSchema` of a default tool with your own properties, remove them before calling the original `execute`:
 
 ```js
 execute: async ({ notify, ...input }, options) => {
@@ -166,35 +161,7 @@ webMcpPlugin(editor, {
 });
 ```
 
-A tool has `name`, `description`, `inputSchema` (JSON Schema), optional `title`/`annotations` and `execute(input, { signal })`. Thrown errors are returned to the agent as `{ error }`. Custom tools defined this way are not validated by the plugin, check the input in `execute`.
-
-#### With zod
-
-Optionally, use `createTool` with a [`zod/mini`](https://zod.dev/packages/mini) schema (the same approach used by the default tools): the `inputSchema` is generated from it, and the input is validated and typed before `execute` runs.
-
-```js
-import * as z from 'zod/mini';
-import webMcpPlugin, { createTool } from '@grapesjs/webmcp';
-
-webMcpPlugin(editor, {
-  getTools: ({ editor, tools }) => [
-    ...tools,
-    createTool({
-      name: 'save_project',
-      description: 'Save the project to the server.',
-      input: z.strictObject({
-        reason: z.optional(z.string().check(z.describe('Why the project is saved'))),
-      }),
-      execute: async ({ reason }) => {
-        await editor.store({ reason });
-        return { saved: true };
-      },
-    }),
-  ],
-});
-```
-
-Invalid inputs are returned to the agent as `{ error: { code: 'invalid_input', message: 'input.reason must be of type string' } }`.
+A tool has `name`, `description`, `inputSchema` (JSON Schema), optional `title`/`annotations` and `execute(input, { signal })`. Thrown errors are returned to the agent as `{ error }`.
 
 ### Disable all tools
 
@@ -202,20 +169,9 @@ Invalid inputs are returned to the agent as `{ error: { code: 'invalid_input', m
 webMcpPlugin(editor, { getTools: () => [] });
 ```
 
-### Multiple editors
-
-```js
-grapesjs.init({ container: '#header-editor', plugins: [(ed) => webMcpPlugin(ed, { toolPrefix: 'header_' })] });
-grapesjs.init({ container: '#body-editor', plugins: [(ed) => webMcpPlugin(ed, { toolPrefix: 'body_' })] });
-```
-
-### Reuse the tools
-
-`createDefaultTools`, `createTool`, `registerTool`, `registerTools` and `getModelContext` are exported in case you need to build your own integration.
-
 ## Manage tools at runtime
 
-The plugin registers the `webMcpManager` command, which returns the `WebMcpManager` of the editor. Use it to add, remove and execute tools after the initialization.
+The plugin registers the `webMcpManager` command. Use it to add, remove and execute tools after the initialization.
 
 ```js
 const webmcp = editor.runCommand('webMcpManager');
@@ -239,7 +195,7 @@ const result = await webmcp.executeTool('get_component', { id: 'my-id' });
 
 - Tool names are always without the `toolPrefix`, which is only applied to the names exposed via WebMCP.
 - `addTool`/`addTools` throw if a tool is invalid or its name is already used (`addTools` adds nothing in that case).
-- Tools added at runtime are registered in WebMCP right away (or once the editor is ready). Without WebMCP in the page, tools are still available via `executeTool`.
+- Tools are registered in WebMCP right away, also when added from another plugin during the editor initialization. Without WebMCP in the page, tools are still available via `executeTool`.
 - `executeTool` returns exactly what the agent receives: input validated (for tools created with `createTool`) and errors returned as data (`{ error: { code, message } }`). It throws only if the tool doesn't exist.
 
 ## Events
@@ -253,7 +209,7 @@ const result = await webmcp.executeTool('get_component', { id: 'my-id' });
 
 ```js
 import { WebMcpEvents } from '@grapesjs/webmcp';
-
+// ...
 editor.on(WebMcpEvents.toolExecuteBefore, ({ name }) => showAgentIndicator(name));
 editor.on(WebMcpEvents.toolExecute, ({ name, error }) => {
   hideAgentIndicator();
@@ -261,28 +217,15 @@ editor.on(WebMcpEvents.toolExecute, ({ name, error }) => {
 });
 ```
 
-## TypeScript
-
-Importing the plugin extends the GrapesJS types (`CommandRegistryRun` and `EditorEventCallbacks`), so the command and the events are typed:
-
-```ts
-import '@grapesjs/webmcp';
-
-const webmcp = editor.runCommand('webMcpManager'); // WebMcpManager
-editor.on('webmcp:tool:execute', ({ name, result }) => {}); // typed event data
-```
-
 ## Lifecycle
 
-- Tools are registered one by one, without replacing other tools of the page.
-- They are unregistered on `editor.destroy()` and when the plugin is removed (`editor.Plugins.remove`), which also removes the `webMcpManager` command. Only the tools of that plugin instance are removed.
-- If the registration of a tool fails, the error is reported through the editor logger. The other tools are not affected, and the tool is still available via `executeTool`.
+- Tools are registered one by one as soon as the plugin is loaded (without waiting for the editor to be ready), without replacing other tools of the page. Tools resolve the editor state when executed, and `get_editor_state` reports whether the editor is `ready`.
+- They are unregistered on `editor.destroy()` and when the plugin is removed (`editor.Plugins.remove`), which also removes the `webMcpManager` command.
 
 ## Browser setup
 
 - WebMCP requires a [secure context](https://developer.mozilla.org/en-US/docs/Web/Security/Secure_Contexts) (HTTPS or `localhost`) and a browser/agent supporting it.
 - Register the editor in the **top-level page**. Agents like the [ChatGPT browser](https://learn.chatgpt.com/docs/webmcp) only discover tools registered by the top-level document: if your editor lives inside an iframe, its tools won't be visible.
-- The plugin supports the current draft (`document.modelContext.registerTool(tool, { signal })`) and the earlier `navigator.modelContext` API with `unregisterTool`.
 
 ## Development
 
@@ -294,8 +237,6 @@ pnpm start        # demo at http://localhost:8080
 pnpm test
 pnpm build
 ```
-
-The demo (`index.html`) shows filtering and a custom tool. When the browser doesn't support WebMCP, it emulates `document.modelContext` so you can try the tools from a side panel (the plugin itself has no polyfill).
 
 ## License
 
