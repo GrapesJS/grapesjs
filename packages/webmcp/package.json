@@ -5,14 +5,15 @@
   "author": "Artur Arseniev",
   "license": "BSD-3-Clause",
   "homepage": "https://grapesjs.com",
-  "main": "dist/index.js",
-  "module": "dist/index.mjs",
-  "types": "dist/types/index.d.ts",
+  "main": "dist/index.cjs.js",
+  "module": "dist/index.es.js",
+  "types": "dist/index.d.ts",
   "exports": {
     ".": {
-      "types": "./dist/types/index.d.ts",
-      "import": "./dist/index.mjs",
-      "require": "./dist/index.js"
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.es.js",
+      "require": "./dist/index.cjs.js",
+      "umd": "./dist/index.umd.js"
     }
   },
   "files": [
@@ -33,22 +34,22 @@
     "agent"
   ],
   "scripts": {
-    "start": "node node_modules/grapesjs-cli/dist/cli.js serve",
-    "build": "run-s build:js build:mjs build:dts",
-    "build:js": "node node_modules/grapesjs-cli/dist/cli.js build --dts=skip --patch=false",
-    "build:mjs": "cross-env BUILD_MODULE=true node node_modules/grapesjs-cli/dist/cli.js build --dts=skip --patch=false",
+    "start": "vite",
+    "build": "run-s build:lib build:umd build:dts",
+    "build:lib": "vite build",
+    "build:umd": "vite build --mode umd",
+    "build:dts": "tsc -p tsconfig.build.json",
     "ts:check": "tsc --noEmit",
-    "test": "jest",
-    "build:dts": "tsc -p tsconfig.build.json"
+    "test": "jest"
   },
   "peerDependencies": {
     "grapesjs": "^0.23.1"
   },
   "devDependencies": {
     "grapesjs": "workspace:^",
-    "grapesjs-cli": "workspace:^",
     "jest-environment-jsdom": "30.4.1",
-    "npm-run-all": "4.1.5"
+    "npm-run-all": "4.1.5",
+    "vite": "8.3.4"
   },
   "dependencies": {
     "zod": "4.6.7"

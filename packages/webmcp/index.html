@@ -3,8 +3,6 @@
   <head>
     <meta charset="utf-8" />
     <title>GrapesJS WebMCP demo</title>
-    <link href="/grapesjs/css/grapes.min.css" rel="stylesheet" />
-    <script src="/grapesjs/grapes.min.js"></script>
     <style>
       body,
       html {
@@ -80,113 +78,114 @@
       </div>
     </div>
 
-    <script type="text/javascript">
-      // The plugin bundle is injected with `defer`
-      window.addEventListener('DOMContentLoaded', () => {
-        /**
-         * Demo-only fallback: when the browser doesn't provide WebMCP, emulate `document.modelContext`
-         * so the registered tools can be tried from the side panel.
-         * The plugin itself doesn't include any polyfill.
-         */
-        const isNative = typeof document.modelContext?.registerTool === 'function';
-        const demoTools = (window.demoTools = new Map());
+    <script type="module">
+      // The local GrapesJS build (packages/core/dist) and the plugin source
+      import grapesjs from 'grapesjs';
+      import 'grapesjs/dist/css/grapes.min.css';
+      import plugin, { ToolNames } from './src';
 
-        if (!isNative) {
-          document.modelContext = {
-            registerTool(tool, { signal } = {}) {
-              demoTools.set(tool.name, tool);
-              signal?.addEventListener('abort', () => demoTools.delete(tool.name));
-              renderTools();
-              return Promise.resolve();
-            },
-          };
-        }
+      const $ = (id) => document.getElementById(id);
 
-        const { default: plugin, ToolNames } = window.grapesjsWebMcp;
+      /**
+       * Demo-only fallback: when the browser doesn't provide WebMCP, emulate `document.modelContext`
+       * so the registered tools can be tried from the side panel.
+       * The plugin itself doesn't include any polyfill.
+       */
+      const isNative = typeof document.modelContext?.registerTool === 'function';
+      const demoTools = (window.demoTools = new Map());
 
-        window.editor = grapesjs.init({
-          container: '#gjs',
-          height: '100%',
-          storageManager: false,
-          components: `
-          <section class="hero">
-            <h1 class="hero__title">Hello WebMCP</h1>
-            <p>Ask your browser agent to edit this page.</p>
-            <a class="hero__cta" href="#">Get started</a>
-          </section>
-        `,
-          style: `
-          .hero { padding: 60px 20px; text-align: center; font-family: sans-serif; }
-          .hero__cta { display: inline-block; padding: 10px 20px; background: #222; color: #fff; }
-          @media (max-width: 480px) { .hero { padding: 30px 10px; } }
-        `,
-          plugins: [
-            (editor) => {
-              editor.Blocks.add('feature', {
-                label: 'Feature',
-                category: 'Sections',
-                content: '<div class="feature"><h3>Feature</h3><p>Describe the feature</p></div>',
-              });
-            },
-            (editor) =>
-              plugin(editor, {
-                // Project rules returned by the `get_editor_guide` tool
-                instructions:
-                  'Use the brand colors from grapesjs_get_brand_guidelines. Keep the hero section at the top.',
-                getTools: ({ tools }) => [
-                  // Filtering: don't let agents replace the whole project
-                  ...tools.filter((tool) => tool.name !== ToolNames.loadProjectData),
-                  // Custom tool
-                  {
-                    name: 'get_brand_guidelines',
-                    description: 'Get the brand colors and fonts to use when styling the page.',
-                    annotations: { readOnlyHint: true },
-                    execute: () => ({ colors: { primary: '#222', accent: '#e94e1b' }, font: 'system-ui' }),
-                  },
-                ],
-              }),
-          ],
-        });
+      if (!isNative) {
+        document.modelContext = {
+          registerTool(tool, { signal } = {}) {
+            demoTools.set(tool.name, tool);
+            signal?.addEventListener('abort', () => demoTools.delete(tool.name));
+            renderTools();
+            return Promise.resolve();
+          },
+        };
+      }
 
-        const $ = (id) => document.getElementById(id);
-        const status = $('status');
-        status.textContent = isNative
-          ? 'WebMCP detected: tools are exposed to the browser agent.'
-          : 'WebMCP not available in this browser: using the demo fallback, try the tools below.';
-        isNative && status.classList.add('demo__status--native');
-
-        function renderTools() {
-          const select = $('tool');
-          const current = select.value;
-          select.innerHTML = [...demoTools.keys()].map((name) => `<option>${name}</option>`).join('');
-          if (demoTools.has(current)) select.value = current;
-          renderDescription();
-        }
-
-        function renderDescription() {
-          const tool = demoTools.get($('tool').value);
-          $('description').textContent = tool ? tool.description : '';
-        }
-
-        $('tool').addEventListener('change', renderDescription);
-        $('run').addEventListener('click', async () => {
-          const tool = demoTools.get($('tool').value);
-          if (!tool) return;
-          try {
-            const result = await tool.execute(JSON.parse($('input').value || '{}'), {
-              signal: new AbortController().signal,
+      window.editor = grapesjs.init({
+        container: '#gjs',
+        height: '100%',
+        storageManager: false,
+        components: `
+        <section class="hero">
+          <h1 class="hero__title">Hello WebMCP</h1>
+          <p>Ask your browser agent to edit this page.</p>
+          <a class="hero__cta" href="#">Get started</a>
+        </section>
+      `,
+        style: `
+        .hero { padding: 60px 20px; text-align: center; font-family: sans-serif; }
+        .hero__cta { display: inline-block; padding: 10px 20px; background: #222; color: #fff; }
+        @media (max-width: 480px) { .hero { padding: 30px 10px; } }
+      `,
+        plugins: [
+          (editor) => {
+            editor.Blocks.add('feature', {
+              label: 'Feature',
+              category: 'Sections',
+              content: '<div class="feature"><h3>Feature</h3><p>Describe the feature</p></div>',
             });
-            $('output').textContent = JSON.stringify(result, null, 2);
-          } catch (error) {
-            $('output').textContent = String(error);
-          }
-        });
+          },
+          (editor) =>
+            plugin(editor, {
+              // Project rules returned by the `get_editor_guide` tool
+              instructions:
+                'Use the brand colors from grapesjs_get_brand_guidelines. Keep the hero section at the top.',
+              getTools: ({ tools }) => [
+                // Filtering: don't let agents replace the whole project
+                ...tools.filter((tool) => tool.name !== ToolNames.loadProjectData),
+                // Custom tool
+                {
+                  name: 'get_brand_guidelines',
+                  description: 'Get the brand colors and fonts to use when styling the page.',
+                  annotations: { readOnlyHint: true },
+                  execute: () => ({ colors: { primary: '#222', accent: '#e94e1b' }, font: 'system-ui' }),
+                },
+              ],
+            }),
+        ],
+      });
 
-        if (isNative) {
-          $('tool').closest('label').hidden = true;
-          ['input', 'run', 'output'].forEach((id) => ($(id).closest('label') || $(id)).setAttribute('hidden', ''));
+      const status = $('status');
+      status.textContent = isNative
+        ? 'WebMCP detected: tools are exposed to the browser agent.'
+        : 'WebMCP not available in this browser: using the demo fallback, try the tools below.';
+      isNative && status.classList.add('demo__status--native');
+
+      function renderTools() {
+        const select = $('tool');
+        const current = select.value;
+        select.innerHTML = [...demoTools.keys()].map((name) => `<option>${name}</option>`).join('');
+        if (demoTools.has(current)) select.value = current;
+        renderDescription();
+      }
+
+      function renderDescription() {
+        const tool = demoTools.get($('tool').value);
+        $('description').textContent = tool ? tool.description : '';
+      }
+
+      $('tool').addEventListener('change', renderDescription);
+      $('run').addEventListener('click', async () => {
+        const tool = demoTools.get($('tool').value);
+        if (!tool) return;
+        try {
+          const result = await tool.execute(JSON.parse($('input').value || '{}'), {
+            signal: new AbortController().signal,
+          });
+          $('output').textContent = JSON.stringify(result, null, 2);
+        } catch (error) {
+          $('output').textContent = String(error);
         }
       });
+
+      if (isNative) {
+        $('tool').closest('label').hidden = true;
+        ['input', 'run', 'output'].forEach((id) => ($(id).closest('label') || $(id)).setAttribute('hidden', ''));
+      }
     </script>
   </body>
 </html>

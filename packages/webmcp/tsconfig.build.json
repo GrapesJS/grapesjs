@@ -5,7 +5,7 @@
     "emitDeclarationOnly": true,
     "noEmit": false,
     "sourceMap": false,
-    "outDir": "./dist/types",
+    "outDir": "./dist",
     "types": []
   },
   "include": ["src"]

@@ -9,6 +9,10 @@ module.exports = {
   moduleNameMapper: {
     '^grapesjs$': '<rootDir>/../core/src',
   },
+  // Compile with the core Babel config, also used for the GrapesJS source
+  transform: {
+    '\\.[jt]s$': ['babel-jest', { configFile: require.resolve('../core/babel.config.js') }],
+  },
   setupFiles: ['<rootDir>/test/setup.js'],
   testMatch: ['<rootDir>/test/specs/**/*.(t|j)s'],
 };

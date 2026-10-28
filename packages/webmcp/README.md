@@ -46,7 +46,7 @@ From a CDN (`window.grapesjsWebMcp`):
 
 ```html
 <script src="https://unpkg.com/grapesjs"></script>
-<script src="https://unpkg.com/@grapesjs/webmcp"></script>
+<script src="https://unpkg.com/@grapesjs/webmcp/dist/index.umd.js"></script>
 <script>
   grapesjs.init({
     container: '#gjs',
@@ -233,7 +233,7 @@ editor.on(WebMcpEvents.toolExecute, ({ name, error }) => {
 pnpm install
 pnpm build:core   # the demo uses the local GrapesJS build
 cd packages/webmcp
-pnpm start        # demo at http://localhost:8080
+pnpm start        # demo at http://localhost:5173
 pnpm test
 pnpm build
 ```
