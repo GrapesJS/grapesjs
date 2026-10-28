@@ -1,0 +1,52 @@
+name: Publish package
+on:
+  push:
+    branches: [dev]
+    paths:
+      - 'packages/**'
+
+jobs:
+  publish:
+    # Commit created by `pnpm release:package <package> <latest|rc>`, eg. "Release package @grapesjs/webmcp rc: v0.1.1-rc.0"
+    if: "startsWith(github.event.head_commit.message, 'Release package ')"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-project
+      - name: Read the release
+        id: release
+        env:
+          COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
+        run: |
+          title=$(echo "$COMMIT_MESSAGE" | head -n 1)
+          if [[ ! "$title" =~ ^Release\ package\ ([^ ]+)\ (latest|rc):\ v([^ ]+) ]]; then
+            echo "Invalid release commit message: $title"
+            exit 1
+          fi
+          name="${BASH_REMATCH[1]}"
+          tag="${BASH_REMATCH[2]}"
+          version="${BASH_REMATCH[3]}"
+          path=$(pnpm ls -r --depth -1 --json | jq -r --arg name "$name" '.[] | select(.name == $name) | .path')
+          if [ -z "$path" ]; then
+            echo "Package $name not found in the workspace"
+            exit 1
+          fi
+          current=$(jq -r .version "$path/package.json")
+          if [ "$current" != "$version" ]; then
+            echo "Version mismatch: the commit releases v$version, $name is at v$current"
+            exit 1
+          fi
+          echo "name=$name" >> "$GITHUB_OUTPUT"
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+          echo "path=$path" >> "$GITHUB_OUTPUT"
+      - name: Check TS
+        run: pnpm --filter "${{ steps.release.outputs.name }}" run --if-present ts:check
+      - name: Test
+        run: pnpm --filter "${{ steps.release.outputs.name }}" run --if-present test
+      - name: Publish to npm
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.ORG_NPM_TOKEN }}
+        working-directory: ${{ steps.release.outputs.path }}
+        run: |
+          echo "//registry.npmjs.org/:_authToken=${NODE_AUTH_TOKEN}" >> .npmrc
+          pnpm publish --tag "${{ steps.release.outputs.tag }}" --access public --no-git-checks

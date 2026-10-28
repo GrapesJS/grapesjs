@@ -19,6 +19,7 @@
     "release:core:latest": "ts-node scripts/releaseCore latest",
     "release:cli:rc": "ts-node scripts/releaseCli rc",
     "release:cli:latest": "ts-node scripts/releaseCli latest",
+    "release:package": "ts-node scripts/releasePackage",
     "publish:core:rc": "cd packages/core && npm publish --tag rc --access public",
     "publish:core:latest": "cd packages/core && npm publish --access public",
     "build:core": "pnpm --filter grapesjs build",
