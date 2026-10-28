@@ -29,8 +29,8 @@ export enum ToolNames {
 
   // CSS rules
   getCssRules = 'get_css_rules',
-  setCssRule = 'set_css_rule',
-  removeCssRule = 'remove_css_rule',
+  setCssRules = 'set_css_rules',
+  removeCssRules = 'remove_css_rules',
 
   // Blocks
   listBlocks = 'list_blocks',

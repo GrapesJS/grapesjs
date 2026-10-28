@@ -9,7 +9,6 @@ import {
   offsetSchema,
   paginate,
   Style,
-  StyleInput,
   styleSchema,
   ToolError,
   toPlain,
@@ -69,40 +68,76 @@ export default ({ editor, defaultLimit }: WebMcpToolsContext) => [
     },
   }),
   createTool({
-    name: ToolNames.setCssRule,
-    title: 'Set CSS rule',
+    name: ToolNames.setCssRules,
+    title: 'Set CSS rules',
     description:
-      'Create or update a CSS rule. The selector can include a state (eg. ".btn:hover") and the rule can be wrapped in an at-rule (eg. atRuleParams "(max-width: 768px)" for a media query). Styles are merged by default.',
+      'Create or update CSS rules, passed as objects (`rules`) and/or as a raw CSS string (`css`). Selectors can include a state (eg. ".btn:hover") and rules can be wrapped in an at-rule (eg. a media query). Styles are merged into existing rules unless `replace` is true.',
     input: z.strictObject({
-      selector: z.string().check(z.describe('CSS selector, eg. ".btn", ".btn:hover", "#my-id"')),
-      style: styleSchema,
-      ...atRuleProps,
-      replace: z.optional(z.boolean().check(z.describe('Replace the whole rule style instead of merging it'))),
+      rules: z.optional(
+        z
+          .array(
+            z.strictObject({
+              selector: z.string().check(z.describe('CSS selector, eg. ".btn", ".btn:hover", "#my-id"')),
+              style: styleSchema,
+              ...atRuleProps,
+            }),
+          )
+          .check(z.describe('Rules to create or update')),
+      ),
+      css: z.optional(
+        z
+          .string()
+          .check(
+            z.describe(
+              'Raw CSS with the rules to create or update, eg. ".btn { color: red } @media (max-width: 768px) { .btn { padding: 0 } }"',
+            ),
+          ),
+      ),
+      replace: z.optional(
+        z.boolean().check(z.describe('Replace the whole style of existing rules instead of merging it')),
+      ),
     }),
-    execute: ({ selector, style, replace, ...rest }) => {
-      if (!selector.trim()) throw new ToolError('The selector is empty', 'invalid_input');
-      const opts = getRuleOpts(rest);
-      const current = editor.Css.getRule(selector, opts);
-      const currentStyle = (current && !replace ? toPlain(current.getStyle()) : {}) as Style;
-      const rule = editor.Css.setRule(selector, mergeStyle(currentStyle, style), opts);
+    execute: ({ rules = [], css, replace }) => {
+      if (!rules.length && !css?.trim()) throw new ToolError('Provide `rules` and/or `css`', 'invalid_input');
+      const emptyIndex = rules.findIndex((rule) => !rule.selector.trim());
+      if (emptyIndex >= 0) throw new ToolError(`input.rules[${emptyIndex}].selector is empty`, 'invalid_input');
 
-      return { rule: serializeRule(rule) };
+      const result = rules.map(({ selector, style, ...rest }) => {
+        const opts = getRuleOpts(rest);
+        const current = editor.Css.getRule(selector, opts);
+        const currentStyle = (current && !replace ? toPlain(current.getStyle()) : {}) as Style;
+        return editor.Css.setRule(selector, mergeStyle(currentStyle, style), opts);
+      });
+
+      if (css?.trim()) {
+        result.push(...editor.Css.addCollection(css, { extend: !replace }));
+      }
+
+      return { rules: result.map(serializeRule) };
     },
   }),
   createTool({
-    name: ToolNames.removeCssRule,
-    title: 'Remove CSS rule',
-    description: 'Remove a CSS rule matching the exact selector and at-rule.',
+    name: ToolNames.removeCssRules,
+    title: 'Remove CSS rules',
+    description: 'Remove CSS rules matching the exact selector and at-rule.',
     annotations: { consequentialHint: true },
     input: z.strictObject({
-      selector: z.string().check(z.describe('CSS selector, eg. ".btn:hover"')),
-      ...atRuleProps,
+      rules: z
+        .array(
+          z.strictObject({
+            selector: z.string().check(z.describe('CSS selector, eg. ".btn:hover"')),
+            ...atRuleProps,
+          }),
+        )
+        .check(z.minLength(1), z.describe('Rules to remove')),
     }),
-    execute: ({ selector, ...rest }) => {
-      const rule = editor.Css.getRule(selector, getRuleOpts(rest));
-      if (!rule) throw new ToolError(`CSS rule "${selector}" not found`, 'not_found');
-      const removed = serializeRule(rule);
-      editor.Css.remove(rule);
+    execute: ({ rules }) => {
+      const found = rules.map(({ selector, ...rest }) => editor.Css.getRule(selector, getRuleOpts(rest)));
+      const missing = rules.filter((_, index) => !found[index]).map((rule) => `"${rule.selector}"`);
+      if (missing.length) throw new ToolError(`CSS rules not found: ${missing.join(', ')}`, 'not_found');
+
+      const removed = found.map((rule) => serializeRule(rule!));
+      found.forEach((rule) => editor.Css.remove(rule!));
       return { removed };
     },
   }),

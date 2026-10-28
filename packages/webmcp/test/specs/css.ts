@@ -30,28 +30,80 @@ describe('CSS rule tools', () => {
     expect(base.items).toEqual([expect.objectContaining({ atRuleParams: '', style: { color: 'red' } })]);
   });
 
-  test('set_css_rule with state and media', async () => {
-    let res = await call('set_css_rule', { selector: '.card:hover', style: { color: 'black' } });
-    expect(res.rule).toMatchObject({ selector: '.card:hover', state: 'hover', style: { color: 'black' } });
-
-    res = await call('set_css_rule', {
-      selector: '.card',
-      style: { 'font-weight': 'bold' },
-      atRuleParams: '(max-width: 768px)',
+  test('set_css_rules with state and media', async () => {
+    const res = await call('set_css_rules', {
+      rules: [
+        { selector: '.card:hover', style: { color: 'black' } },
+        { selector: '.card', style: { 'font-weight': 'bold' }, atRuleParams: '(max-width: 768px)' },
+      ],
     });
-    expect(res.rule.style).toEqual({ color: 'blue', 'font-weight': 'bold' });
+    expect(res.rules[0]).toMatchObject({ selector: '.card:hover', state: 'hover', style: { color: 'black' } });
+    expect(res.rules[1].style).toEqual({ color: 'blue', 'font-weight': 'bold' });
     expect(editor.getCss()).toContain('@media (max-width: 768px){.card{color:blue;font-weight:bold;}}');
 
-    res = await call('set_css_rule', { selector: '.card', style: { margin: 0 }, replace: true });
-    expect(res.rule.style).toEqual({ margin: '0' });
+    const replaced = await call('set_css_rules', {
+      rules: [{ selector: '.card', style: { margin: 0 } }],
+      replace: true,
+    });
+    expect(replaced.rules[0].style).toEqual({ margin: '0' });
   });
 
-  test('remove_css_rule', async () => {
-    await call('set_css_rule', { selector: '.card:hover', style: { color: 'black' } });
-    expect((await call('remove_css_rule', { selector: '.card:hover' })).removed.selector).toBe('.card:hover');
-    expect(await call('remove_css_rule', { selector: '.card:hover' })).toMatchObject({ error: { code: 'not_found' } });
-    await call('remove_css_rule', { selector: '.card', atRuleParams: '(max-width: 768px)' });
+  test('set_css_rules with raw CSS', async () => {
+    const res = await call('set_css_rules', {
+      css: '.card { font-size: 12px } .btn:hover { color: white } section .title { font-weight: bold } @media (max-width: 768px) { .card { opacity: 0.5 } }',
+    });
+    // Merged into the existing rules by default
+    expect(res.rules.map((r: any) => r.css)).toEqual([
+      '.card{color:red;font-size:12px;}',
+      '.btn:hover{color:white;}',
+      'section .title{font-weight:bold;}',
+      '@media (max-width: 768px){.card{color:blue;opacity:0.5;}}',
+    ]);
+    expect(editor.Css.getRule('.btn:hover')).toBeTruthy();
+
+    const replaced = await call('set_css_rules', { css: '.card { opacity: 1 }', replace: true });
+    expect(replaced.rules[0].css).toBe('.card{opacity:1;}');
+  });
+
+  test('set_css_rules with rules and CSS together', async () => {
+    const res = await call('set_css_rules', {
+      rules: [{ selector: '.a', style: { color: 'red' } }],
+      css: '.b { color: blue }',
+    });
+    expect(res.rules.map((r: any) => r.css)).toEqual(['.a{color:red;}', '.b{color:blue;}']);
+  });
+
+  test('set_css_rules input errors', async () => {
+    expect(await call('set_css_rules', {})).toMatchObject({ error: { code: 'invalid_input' } });
+    expect(await call('set_css_rules', { css: '  ' })).toMatchObject({ error: { code: 'invalid_input' } });
+    expect(
+      await call('set_css_rules', {
+        rules: [
+          { selector: '.ok', style: {} },
+          { selector: ' ', style: {} },
+        ],
+      }),
+    ).toEqual({
+      error: { code: 'invalid_input', message: 'input.rules[1].selector is empty' },
+    });
+    expect(editor.Css.getRule('.ok')).toBeFalsy();
+  });
+
+  test('remove_css_rules', async () => {
+    await call('set_css_rules', { rules: [{ selector: '.card:hover', style: { color: 'black' } }] });
+    const res = await call('remove_css_rules', {
+      rules: [{ selector: '.card:hover' }, { selector: '.card', atRuleParams: '(max-width: 768px)' }],
+    });
+    expect(res.removed.map((r: any) => r.selector)).toEqual(['.card:hover', '.card']);
     expect(editor.getCss()).not.toContain('@media');
+    expect(editor.getCss()).not.toContain(':hover');
     expect(editor.getCss()).toContain('.card{color:red;}');
+  });
+
+  test('remove_css_rules removes nothing if a rule is missing', async () => {
+    const res = await call('remove_css_rules', { rules: [{ selector: '.card' }, { selector: '.nope' }] });
+    expect(res).toEqual({ error: { code: 'not_found', message: 'CSS rules not found: ".nope"' } });
+    expect(editor.getCss()).toContain('.card{color:red;}');
+    expect(await call('remove_css_rules', { rules: [] })).toMatchObject({ error: { code: 'invalid_input' } });
   });
 });
