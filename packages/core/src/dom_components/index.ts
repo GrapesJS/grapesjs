@@ -738,7 +738,8 @@ export default class ComponentManager extends ItemManagerModule<DomComponentsCon
         const events = [keyUpdate, keyUpdateInside].join(' ');
         shallow.on(
           events,
-          debounce(() => shallow?.components(''), 100),
+          // Reset only if needed, the reset itself triggers an update which would schedule it again
+          debounce(() => shallow?.components().length && shallow.components(''), 100),
         );
       }
       this.shallow = shallow;

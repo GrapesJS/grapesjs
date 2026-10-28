@@ -479,6 +479,24 @@ describe('DOM Components', () => {
         expect(result.result).toBe(false);
         expect(result.reason).toBe(CanMoveReason.TargetReject);
       });
+
+      test('canMove with a definition cleans the shallow wrapper without looping', async () => {
+        const target = obj.addComponent({ tagName: 'div' }) as Component;
+        expect(obj.canMove(target, { tagName: 'p' }).result).toBe(true);
+        const shallow = obj.getShallowWrapper()!;
+        expect(shallow.components().length).toBe(1);
+        const onReset = jest.fn();
+        shallow.components().on('reset', onReset);
+
+        // The temporary component is removed once, without scheduling new resets
+        await wait(500);
+        expect(shallow.components().length).toBe(0);
+        expect(onReset).toHaveBeenCalledTimes(1);
+
+        em.destroy();
+        await wait(300);
+        expect(onReset).toHaveBeenCalledTimes(1);
+      });
     });
   });
 
