@@ -1,20 +1,19 @@
-import type { Block, Trait } from 'grapesjs';
+import type { Block } from 'grapesjs';
 import type { WebMcpToolsContext } from '../types';
 import { ToolNames } from './names';
 import {
   checkIndex,
   createTool,
   ensureCanMove,
-  getComponent,
   getParentComponent,
   idSchema,
   limitSchema,
   offsetSchema,
   paginate,
   serializeComponentSummary,
-  toPlain,
   ToolError,
   toolRef,
+  toPlain,
 } from '../utils';
 
 const serializeBlock = (block: Block) => ({
@@ -34,27 +33,10 @@ const getBlockContent = (block: Block) => {
   return typeof content === 'string' ? content : toPlain(content);
 };
 
-const serializeTrait = (trait: Trait) => {
-  const options = trait.getOptions();
-  return {
-    name: trait.getName(),
-    id: trait.getId(),
-    type: trait.getType(),
-    label: trait.getLabel(),
-    value: toPlain(trait.getValue()),
-    ...(trait.getCategoryLabel?.() ? { category: trait.getCategoryLabel() } : {}),
-    ...(options.length
-      ? { options: options.map((opt) => ({ id: trait.getOptionId(opt), label: trait.getOptionLabel(opt) })) }
-      : {}),
-    ...(trait.get('changeProp') ? { changeProp: true } : {}),
-  };
-};
-
 export default (ctx: WebMcpToolsContext) => {
   const { editor, defaultLimit } = ctx;
 
   return [
-    // Blocks
     createTool<{ category?: string; limit?: number; offset?: number }>({
       name: ToolNames.listBlocks,
       title: 'List blocks',
@@ -76,7 +58,6 @@ export default (ctx: WebMcpToolsContext) => {
         return paginate(blocks, input, defaultLimit, serializeBlock);
       },
     }),
-
     createTool<{ id: string }>({
       name: ToolNames.getBlock,
       title: 'Get block',
@@ -93,7 +74,6 @@ export default (ctx: WebMcpToolsContext) => {
         return { ...serializeBlock(block), content: getBlockContent(block) ?? null };
       },
     }),
-
     createTool<{ id: string; parentId?: string; at?: number; select?: boolean }>({
       name: ToolNames.insertBlock,
       title: 'Insert block',
@@ -124,56 +104,6 @@ export default (ctx: WebMcpToolsContext) => {
         select && editor.select(addedList);
 
         return { added: addedList.map(serializeComponentSummary) };
-      },
-    }),
-
-    // Traits
-    createTool<{ id: string }>({
-      name: ToolNames.getComponentTraits,
-      title: 'Get component traits',
-      description:
-        'Get the traits (settings) of a component: name, type, label, current value and options (for select-like traits).',
-      annotations: { readOnlyHint: true },
-      inputSchema: {
-        type: 'object',
-        properties: { id: idSchema() },
-        required: ['id'],
-        additionalProperties: false,
-      },
-      execute: ({ id }) => ({ id, traits: getComponent(editor, id).getTraits().map(serializeTrait) }),
-    }),
-
-    createTool<{ id: string; values: Record<string, any> }>({
-      name: ToolNames.updateComponentTraits,
-      title: 'Update component traits',
-      description: 'Update trait values of a component, eg. { "href": "/about", "target": "_blank" }.',
-      inputSchema: {
-        type: 'object',
-        properties: {
-          id: idSchema(),
-          values: { type: 'object', description: 'Trait names with their new values' },
-        },
-        required: ['id', 'values'],
-        additionalProperties: false,
-      },
-      execute: ({ id, values }) => {
-        const cmp = getComponent(editor, id);
-        const entries = Object.keys(values).map((name) => {
-          const trait = cmp.getTrait(name);
-          if (!trait) throw new ToolError(`Trait "${name}" not found in component "${id}"`, 'not_found');
-          const options = trait.getOptions();
-          const value = values[name];
-          if (options.length && !options.some((opt) => trait.getOptionId(opt) === `${value}`)) {
-            throw new ToolError(
-              `Invalid value for trait "${name}", allowed: ${options.map((opt) => trait.getOptionId(opt)).join(', ')}`,
-              'invalid_input',
-            );
-          }
-          return { trait, value };
-        });
-
-        entries.forEach(({ trait, value }) => trait.setValue(value));
-        return { id, traits: cmp.getTraits().map(serializeTrait) };
       },
     }),
   ];

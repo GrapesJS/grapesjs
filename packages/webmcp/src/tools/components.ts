@@ -12,13 +12,18 @@ import {
   guideHint,
   idSchema,
   limitSchema,
+  mergeStyle,
   offsetSchema,
   paginate,
   queryComponents,
   serializeComponent,
   serializeComponentSummary,
+  Style,
+  StyleInput,
+  styleSchema,
   ToolError,
   toolRef,
+  toPlain,
 } from '../utils';
 
 const atSchema = {
@@ -83,7 +88,6 @@ export default (ctx: WebMcpToolsContext) => {
         return { tree, nodeCount: count, truncated };
       },
     }),
-
     createTool<{ id: string; includeHtml?: boolean }>({
       name: ToolNames.getComponent,
       title: 'Get component',
@@ -101,7 +105,6 @@ export default (ctx: WebMcpToolsContext) => {
       },
       execute: ({ id, includeHtml }) => serializeComponent(editor, getComponent(editor, id), { html: includeHtml }),
     }),
-
     createTool<{
       rootId?: string;
       selector?: string;
@@ -167,7 +170,6 @@ export default (ctx: WebMcpToolsContext) => {
         return paginate(matches, input, defaultLimit, serializeComponentSummary);
       },
     }),
-
     createTool({
       name: ToolNames.listComponentTypes,
       title: 'List component types',
@@ -177,7 +179,6 @@ export default (ctx: WebMcpToolsContext) => {
         types: editor.Components.getTypes().map((type) => type.id),
       }),
     }),
-
     createTool<{ ids: string[] }>({
       name: ToolNames.selectComponents,
       title: 'Select components',
@@ -196,7 +197,6 @@ export default (ctx: WebMcpToolsContext) => {
         return { selected: editor.getSelectedAll().map((cmp) => cmp.getId()) };
       },
     }),
-
     createTool<{ parentId?: string; at?: number; components: any; select?: boolean }>({
       name: ToolNames.addComponents,
       title: 'Add components',
@@ -229,7 +229,6 @@ export default (ctx: WebMcpToolsContext) => {
         return { added: addedList.map(serializeComponentSummary) };
       },
     }),
-
     createTool<{
       id: string;
       attributes?: Record<string, any>;
@@ -286,7 +285,6 @@ export default (ctx: WebMcpToolsContext) => {
         return serializeComponent(editor, cmp);
       },
     }),
-
     createTool<{ id: string; parentId?: string; at?: number }>({
       name: ToolNames.cloneComponent,
       title: 'Clone component',
@@ -317,7 +315,6 @@ export default (ctx: WebMcpToolsContext) => {
         return { clone: serializeComponentSummary(clone) };
       },
     }),
-
     createTool<{ id: string; parentId: string; at?: number }>({
       name: ToolNames.moveComponent,
       title: 'Move component',
@@ -343,7 +340,6 @@ export default (ctx: WebMcpToolsContext) => {
         return { moved: serializeComponentSummary(cmp), parentId: parent.getId(), index: cmp.index() };
       },
     }),
-
     createTool<{ ids: string[] }>({
       name: ToolNames.removeComponents,
       title: 'Remove components',
@@ -367,6 +363,59 @@ export default (ctx: WebMcpToolsContext) => {
 
         cmps.forEach((cmp) => cmp.remove());
         return { removed: ids };
+      },
+    }),
+    createTool<{ id: string; style: StyleInput; replace?: boolean }>({
+      name: ToolNames.setComponentStyle,
+      title: 'Set component style',
+      description:
+        'Update the style of a single component (merged with the current one by default). ' +
+        `For states (eg. hover) or media queries use ${toolRef(ctx, ToolNames.setCssRule)} with the "#<componentId>" selector, for shared styles prefer classes.`,
+      inputSchema: {
+        type: 'object',
+        properties: {
+          id: idSchema(),
+          style: styleSchema,
+          replace: { type: 'boolean', description: 'Replace the whole style instead of merging it' },
+        },
+        required: ['id', 'style'],
+        additionalProperties: false,
+      },
+      execute: ({ id, style, replace }) => {
+        const cmp = getComponent(editor, id);
+        const current = (toPlain(cmp.getStyle()) || {}) as Style;
+        const next = mergeStyle(replace ? {} : current, style);
+        cmp.setStyle(next);
+        return { id, style: toPlain(cmp.getStyle()) || {} };
+      },
+    }),
+    createTool<{ id: string; add?: string[]; remove?: string[]; set?: string[] }>({
+      name: ToolNames.updateComponentClasses,
+      title: 'Update component classes',
+      description: 'Add, remove or replace the CSS classes of a component.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          id: idSchema(),
+          set: { type: 'array', items: { type: 'string' }, description: 'Replace all classes with these ones' },
+          add: { type: 'array', items: { type: 'string' }, description: 'Classes to add' },
+          remove: { type: 'array', items: { type: 'string' }, description: 'Classes to remove' },
+        },
+        required: ['id'],
+        additionalProperties: false,
+      },
+      execute: ({ id, set, add, remove }) => {
+        const cmp = getComponent(editor, id);
+        const invalid = [...(set || []), ...(add || [])].find((cls) => !cls || /[\s.#]/.test(cls));
+        if (invalid !== undefined) {
+          throw new ToolError(`Invalid class name "${invalid}", pass names without dots or spaces`, 'invalid_input');
+        }
+
+        set && cmp.setClass(set);
+        add?.length && cmp.addClass(add);
+        remove?.length && cmp.removeClass(remove);
+
+        return { id, classes: cmp.getClasses() };
       },
     }),
   ];

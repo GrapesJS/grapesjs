@@ -1,9 +1,14 @@
 import type { WebMcpTool, WebMcpToolsContext } from '../types';
+import assetTools from './assets';
+import blockTools from './blocks';
 import componentTools from './components';
-import contentTools from './content';
+import cssTools from './css';
+import deviceTools from './devices';
+import editorTools from './editor';
 import guideTool from './guide';
-import projectTools from './project';
-import styleTools from './styles';
+import pageTools from './pages';
+import traitTools from './traits';
+import undoManagerTools from './undo_manager';
 
 /**
  * Create the default tool catalog, bound to the editor.
@@ -16,9 +21,14 @@ export const createDefaultTools = (
 
   return [
     ...(ctx.instructions ? [guideTool(ctx)] : []),
+    ...editorTools(ctx),
     ...componentTools(ctx),
-    ...styleTools(ctx),
-    ...contentTools(ctx),
-    ...projectTools(ctx),
+    ...cssTools(ctx),
+    ...blockTools(ctx),
+    ...traitTools(ctx),
+    ...pageTools(ctx),
+    ...deviceTools(ctx),
+    ...assetTools(ctx),
+    ...undoManagerTools(ctx),
   ];
 };

@@ -134,6 +134,25 @@ export const toolRef = ({ toolPrefix }: Pick<WebMcpToolsContext, 'toolPrefix'>, 
 export const guideHint = (ctx: WebMcpToolsContext) =>
   ctx.instructions ? ` If you haven't yet, call ${toolRef(ctx, ToolNames.getEditorGuide)} first.` : '';
 
+export type Style = Record<string, string>;
+export type StyleInput = Record<string, string | number | null>;
+
+/**
+ * Merge style updates, empty values remove the property.
+ */
+export const mergeStyle = (current: Style, update: StyleInput) => {
+  const result: Style = { ...current };
+  Object.keys(update).forEach((prop) => {
+    const value = update[prop];
+    if (value === '' || value === null) {
+      delete result[prop];
+    } else {
+      result[prop] = `${value}`;
+    }
+  });
+  return result;
+};
+
 // Common schema pieces
 
 export const limitSchema = { type: 'integer', minimum: 1, maximum: 1000, description: 'Max number of items to return' };
@@ -343,19 +362,4 @@ export const checkIndex = (parent: Component, at?: number) => {
   if (at === undefined) return;
   const max = parent.components().length;
   if (at > max) throw new ToolError(`Index ${at} is out of range, the target has ${max} children`, 'invalid_input');
-};
-
-// CSS rules
-
-export const serializeRule = (rule: CssRule) => {
-  const atRuleType = rule.get('atRuleType') || (rule.get('mediaText') ? 'media' : '');
-
-  return {
-    selector: rule.selectorsToString(),
-    state: rule.get('state') || '',
-    atRuleType,
-    atRuleParams: rule.get('mediaText') || '',
-    style: toPlain(rule.getStyle()) || {},
-    css: rule.toCSS(),
-  };
 };
