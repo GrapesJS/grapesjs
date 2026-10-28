@@ -2,7 +2,8 @@
 module.exports = {
   env: {
     test: {
-      presets: [['@babel/preset-env', { targets: { node: 'current' } }], '@babel/preset-typescript'],
+      // Same as the core, also used to compile the GrapesJS source in tests
+      presets: ['@babel/preset-env', '@babel/preset-typescript'],
     },
   },
 };
