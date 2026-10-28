@@ -1,5 +1,6 @@
 import type { Component } from 'grapesjs';
 import type { WebMcpToolsContext } from '../types';
+import { ToolNames } from './names';
 import {
   checkIndex,
   componentContentSchema,
@@ -17,6 +18,7 @@ import {
   serializeComponent,
   serializeComponentSummary,
   ToolError,
+  toolRef,
 } from '../utils';
 
 const atSchema = {
@@ -34,7 +36,7 @@ export default (ctx: WebMcpToolsContext) => {
 
   return [
     createTool<{ id?: string; depth?: number; maxNodes?: number }>({
-      name: 'get_component_tree',
+      name: ToolNames.getComponentTree,
       title: 'Get component tree',
       description:
         'Get the component tree of the selected page (or of a specific component). Nodes beyond `depth` or `maxNodes` are not expanded: their `childCount` is still reported and `truncated` is true, call the tool again with the node id to expand them.' +
@@ -83,7 +85,7 @@ export default (ctx: WebMcpToolsContext) => {
     }),
 
     createTool<{ id: string; includeHtml?: boolean }>({
-      name: 'get_component',
+      name: ToolNames.getComponent,
       title: 'Get component',
       description:
         'Get details of a component: type, tag, attributes, classes, inline style, parent, position, direct children and editing flags.',
@@ -111,7 +113,7 @@ export default (ctx: WebMcpToolsContext) => {
       limit?: number;
       offset?: number;
     }>({
-      name: 'find_components',
+      name: ToolNames.findComponents,
       title: 'Find components',
       description:
         'Search components in the selected page (or inside a root component). All provided filters must match. `selector` is a CSS selector applied to the component tree.',
@@ -167,7 +169,7 @@ export default (ctx: WebMcpToolsContext) => {
     }),
 
     createTool({
-      name: 'list_component_types',
+      name: ToolNames.listComponentTypes,
       title: 'List component types',
       description: 'List the component types registered in the editor (usable as `type` in component definitions).',
       annotations: { readOnlyHint: true },
@@ -177,7 +179,7 @@ export default (ctx: WebMcpToolsContext) => {
     }),
 
     createTool<{ ids: string[] }>({
-      name: 'select_components',
+      name: ToolNames.selectComponents,
       title: 'Select components',
       description: 'Select components in the canvas. Pass an empty array to clear the selection.',
       inputSchema: {
@@ -196,7 +198,7 @@ export default (ctx: WebMcpToolsContext) => {
     }),
 
     createTool<{ parentId?: string; at?: number; components: any; select?: boolean }>({
-      name: 'add_components',
+      name: ToolNames.addComponents,
       title: 'Add components',
       description:
         'Add new components inside a parent component (defaults to the wrapper of the selected page). Returns the ids of the added components.',
@@ -235,10 +237,11 @@ export default (ctx: WebMcpToolsContext) => {
       content?: any;
       name?: string;
     }>({
-      name: 'update_component',
+      name: ToolNames.updateComponent,
       title: 'Update component',
       description:
-        'Update a component: set or remove attributes, replace its inner content (children) or set its custom name shown in the layer manager. For styles and classes use the dedicated tools.',
+        'Update a component: set or remove attributes, replace its inner content (children) or set its custom name shown in the layer manager. ' +
+        `For styles and classes use ${toolRef(ctx, ToolNames.setComponentStyle)} and ${toolRef(ctx, ToolNames.updateComponentClasses)}.`,
       inputSchema: {
         type: 'object',
         properties: {
@@ -264,7 +267,7 @@ export default (ctx: WebMcpToolsContext) => {
 
         if (attributes && ('class' in attributes || 'style' in attributes || 'id' in attributes)) {
           throw new ToolError(
-            'Use update_component_classes/set_component_style to change classes and styles, the id attribute is not editable',
+            `Use ${toolRef(ctx, ToolNames.updateComponentClasses)}/${toolRef(ctx, ToolNames.setComponentStyle)} to change classes and styles, the id attribute is not editable`,
             'invalid_input',
           );
         }
@@ -285,7 +288,7 @@ export default (ctx: WebMcpToolsContext) => {
     }),
 
     createTool<{ id: string; parentId?: string; at?: number }>({
-      name: 'clone_component',
+      name: ToolNames.cloneComponent,
       title: 'Clone component',
       description:
         'Duplicate a component. By default the clone is placed right after the original, otherwise inside `parentId` at `at` index.',
@@ -316,7 +319,7 @@ export default (ctx: WebMcpToolsContext) => {
     }),
 
     createTool<{ id: string; parentId: string; at?: number }>({
-      name: 'move_component',
+      name: ToolNames.moveComponent,
       title: 'Move component',
       description: 'Move a component inside another parent (or to another position in the same parent).',
       inputSchema: {
@@ -342,9 +345,9 @@ export default (ctx: WebMcpToolsContext) => {
     }),
 
     createTool<{ ids: string[] }>({
-      name: 'remove_components',
+      name: ToolNames.removeComponents,
       title: 'Remove components',
-      description: 'Remove components from the page. Can be reverted with the undo tool.',
+      description: `Remove components from the page. Can be reverted with ${toolRef(ctx, ToolNames.undo)}.`,
       annotations: { consequentialHint: true },
       inputSchema: {
         type: 'object',

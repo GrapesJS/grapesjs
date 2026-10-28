@@ -6,6 +6,7 @@ import { ToolError } from './utils';
 
 export * from './types';
 export { createDefaultTools } from './tools';
+export { ToolNames } from './tools/names';
 export { getModelContext, registerTools } from './registry';
 export { ToolError } from './utils';
 
@@ -62,7 +63,7 @@ export const prepareTools = (tools: WebMcpTool[], prefix = ''): WebMcpTool[] => 
  * grapesjs.init({
  *   plugins: [
  *     editor => webMcpPlugin(editor, {
- *       getTools: ({ tools }) => tools.filter(tool => tool.name !== 'load_project_data'),
+ *       getTools: ({ tools }) => tools.filter(tool => tool.name !== ToolNames.loadProjectData),
  *     }),
  *   ],
  * });

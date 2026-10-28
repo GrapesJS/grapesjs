@@ -73,7 +73,7 @@ export interface WebMcpPluginOptions {
    * Customize the tool catalog. Receives the default tools and returns the complete
    * list of tools to register. Return an empty array to disable all tools.
    * @example
-   * getTools: ({ tools }) => tools.filter(tool => tool.name !== 'load_project_data')
+   * getTools: ({ tools }) => tools.filter(tool => tool.name !== ToolNames.loadProjectData)
    */
   getTools?: (ctx: GetToolsContext) => WebMcpTool[];
 
@@ -86,7 +86,7 @@ export interface WebMcpPluginOptions {
   /**
    * Project-specific instructions for the agent (eg. design rules or content to preserve).
    * WebMCP has no page-level instructions, so when provided, they are exposed through
-   * the read-only `get_editor_guide` tool.
+   * the read-only `get_editor_guide` tool (`ToolNames.getEditorGuide`).
    * @example
    * instructions: 'Use only the classes of the design system, never remove the header.'
    */

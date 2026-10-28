@@ -1,4 +1,5 @@
 import type { WebMcpToolsContext } from '../types';
+import { ToolNames } from './names';
 import { createTool } from '../utils';
 
 /**
@@ -7,7 +8,7 @@ import { createTool } from '../utils';
  */
 export default ({ instructions }: WebMcpToolsContext) =>
   createTool({
-    name: 'get_editor_guide',
+    name: ToolNames.getEditorGuide,
     title: 'Get editor guide',
     description:
       'Get the project-specific instructions to follow when editing this page. Call it before making changes.',

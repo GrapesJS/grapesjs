@@ -25,6 +25,8 @@ grapesjs.init({
 With options:
 
 ```js
+import webMcpPlugin, { ToolNames } from '@grapesjs/webmcp';
+
 grapesjs.init({
   container: '#gjs',
   plugins: [
@@ -32,7 +34,7 @@ grapesjs.init({
       webMcpPlugin(editor, {
         toolPrefix: 'grapesjs_',
         getTools: ({ editor, tools }) => [
-          ...tools.filter((tool) => tool.name !== 'load_project_data'),
+          ...tools.filter((tool) => tool.name !== ToolNames.loadProjectData),
           // Custom WebMCP tool definitions
         ],
       }),
@@ -103,6 +105,8 @@ They are returned by a read-only `get_editor_guide` tool, and `get_editor_state`
 
 ## Customize tools
 
+Default tool names (without the prefix) are available in the exported `ToolNames` enum, eg. `ToolNames.loadProjectData` is `'load_project_data'`. Prefer it over plain strings, so renamed or removed tools are caught by TypeScript.
+
 `getTools` runs once, when the editor is ready. Default tools are already bound to the editor and resolve the current editor state on every call.
 
 ### Filter
@@ -120,7 +124,7 @@ webMcpPlugin(editor, {
 webMcpPlugin(editor, {
   getTools: ({ tools }) =>
     tools.map((tool) =>
-      tool.name === 'remove_components'
+      tool.name === ToolNames.removeComponents
         ? {
             ...tool,
             description: `${tool.description} Ask the user for confirmation first.`,

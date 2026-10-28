@@ -1,6 +1,17 @@
 import type { Asset, Device, Page } from 'grapesjs';
 import type { WebMcpToolsContext } from '../types';
-import { createTool, getPageOf, guideHint, limitSchema, offsetSchema, paginate, toPlain, ToolError } from '../utils';
+import { ToolNames } from './names';
+import {
+  createTool,
+  getPageOf,
+  guideHint,
+  limitSchema,
+  offsetSchema,
+  paginate,
+  toPlain,
+  ToolError,
+  toolRef,
+} from '../utils';
 
 const serializePage = (page: Page, selected?: Page) => ({
   id: page.getId(),
@@ -50,7 +61,7 @@ export default (ctx: WebMcpToolsContext) => {
   return [
     // Editor
     createTool({
-      name: 'get_editor_state',
+      name: ToolNames.getEditorState,
       title: 'Get editor state',
       description:
         'Get the current editor state: selected components, active page and device, number of unsaved changes and undo/redo availability.' +
@@ -61,7 +72,7 @@ export default (ctx: WebMcpToolsContext) => {
 
     // Pages
     createTool({
-      name: 'list_pages',
+      name: ToolNames.listPages,
       title: 'List pages',
       description: 'List all the pages of the project.',
       annotations: { readOnlyHint: true },
@@ -72,7 +83,7 @@ export default (ctx: WebMcpToolsContext) => {
     }),
 
     createTool<{ name: string; id?: string; content?: string; select?: boolean }>({
-      name: 'add_page',
+      name: ToolNames.addPage,
       title: 'Add page',
       description: 'Create a new page, optionally with initial HTML content.',
       inputSchema: {
@@ -100,7 +111,7 @@ export default (ctx: WebMcpToolsContext) => {
     }),
 
     createTool<{ id: string; name: string }>({
-      name: 'rename_page',
+      name: ToolNames.renamePage,
       title: 'Rename page',
       description: 'Rename a page.',
       inputSchema: {
@@ -120,7 +131,7 @@ export default (ctx: WebMcpToolsContext) => {
     }),
 
     createTool<{ id: string }>({
-      name: 'select_page',
+      name: ToolNames.selectPage,
       title: 'Select page',
       description: 'Select (open) a page in the canvas.',
       inputSchema: {
@@ -136,7 +147,7 @@ export default (ctx: WebMcpToolsContext) => {
     }),
 
     createTool<{ id: string }>({
-      name: 'remove_page',
+      name: ToolNames.removePage,
       title: 'Remove page',
       description: 'Remove a page and all of its content. The last remaining page cannot be removed.',
       annotations: { consequentialHint: true },
@@ -163,7 +174,7 @@ export default (ctx: WebMcpToolsContext) => {
 
     // Devices
     createTool({
-      name: 'list_devices',
+      name: ToolNames.listDevices,
       title: 'List devices',
       description: 'List the configured devices (canvas sizes used for responsive styling).',
       annotations: { readOnlyHint: true },
@@ -179,7 +190,7 @@ export default (ctx: WebMcpToolsContext) => {
     }),
 
     createTool<{ id: string }>({
-      name: 'select_device',
+      name: ToolNames.selectDevice,
       title: 'Select device',
       description:
         'Select a device to preview the canvas at its size. Styles set on components while a device is selected apply to its media query.',
@@ -199,7 +210,7 @@ export default (ctx: WebMcpToolsContext) => {
 
     // Assets
     createTool<{ type?: string; limit?: number; offset?: number }>({
-      name: 'list_assets',
+      name: ToolNames.listAssets,
       title: 'List assets',
       description: 'List the assets (eg. images) of the project.',
       annotations: { readOnlyHint: true },
@@ -221,7 +232,7 @@ export default (ctx: WebMcpToolsContext) => {
     }),
 
     createTool<{ assets: Array<{ src: string; type?: string; name?: string; width?: number; height?: number }> }>({
-      name: 'add_assets',
+      name: ToolNames.addAssets,
       title: 'Add assets',
       description: 'Add assets by URL (no file upload).',
       inputSchema: {
@@ -259,7 +270,7 @@ export default (ctx: WebMcpToolsContext) => {
     }),
 
     createTool<{ srcs: string[] }>({
-      name: 'remove_assets',
+      name: ToolNames.removeAssets,
       title: 'Remove assets',
       description: 'Remove assets by their URL.',
       annotations: { consequentialHint: true },
@@ -284,7 +295,7 @@ export default (ctx: WebMcpToolsContext) => {
 
     // Project and history
     createTool<{ pageId?: string }>({
-      name: 'get_page_code',
+      name: ToolNames.getPageCode,
       title: 'Get page code',
       description: 'Export the HTML and CSS of a page (defaults to the selected page).',
       annotations: { readOnlyHint: true, untrustedContentHint: true },
@@ -306,16 +317,15 @@ export default (ctx: WebMcpToolsContext) => {
     }),
 
     createTool({
-      name: 'get_project_data',
+      name: ToolNames.getProjectData,
       title: 'Get project data',
-      description:
-        'Get the full project JSON (pages, styles, assets, etc.), the same format accepted by load_project_data.',
+      description: `Get the full project JSON (pages, styles, assets, etc.), the same format accepted by ${toolRef(ctx, ToolNames.loadProjectData)}.`,
       annotations: { readOnlyHint: true, untrustedContentHint: true },
       execute: () => ({ projectData: toPlain(editor.getProjectData()) }),
     }),
 
     createTool<{ projectData: Record<string, any> }>({
-      name: 'load_project_data',
+      name: ToolNames.loadProjectData,
       title: 'Load project data',
       description:
         'Replace the whole project with the provided project JSON. All the current content will be replaced.',
@@ -323,7 +333,10 @@ export default (ctx: WebMcpToolsContext) => {
       inputSchema: {
         type: 'object',
         properties: {
-          projectData: { type: 'object', description: 'Project JSON, as returned by get_project_data' },
+          projectData: {
+            type: 'object',
+            description: `Project JSON, as returned by ${toolRef(ctx, ToolNames.getProjectData)}`,
+          },
         },
         required: ['projectData'],
         additionalProperties: false,
@@ -335,7 +348,7 @@ export default (ctx: WebMcpToolsContext) => {
     }),
 
     createTool<{ steps?: number }>({
-      name: 'undo',
+      name: ToolNames.undo,
       title: 'Undo',
       description: 'Undo the last change(s).',
       inputSchema: {
@@ -357,7 +370,7 @@ export default (ctx: WebMcpToolsContext) => {
     }),
 
     createTool<{ steps?: number }>({
-      name: 'redo',
+      name: ToolNames.redo,
       title: 'Redo',
       description: 'Redo the last undone change(s).',
       inputSchema: {

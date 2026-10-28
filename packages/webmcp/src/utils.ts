@@ -1,4 +1,5 @@
 import type { Component, CssRule, Editor } from 'grapesjs';
+import { ToolNames } from './tools/names';
 import type {
   JsonSchema,
   WebMcpTool,
@@ -122,10 +123,16 @@ export const createTool = <I = Record<string, any>>(props: CreateToolProps<I>): 
 };
 
 /**
+ * Reference another tool (eg. in descriptions or error messages) with its registered name.
+ */
+export const toolRef = ({ toolPrefix }: Pick<WebMcpToolsContext, 'toolPrefix'>, name: ToolNames) =>
+  `${toolPrefix}${name}`;
+
+/**
  * Description suffix pointing the agent to the guide tool (when available).
  */
-export const guideHint = ({ toolPrefix, instructions }: WebMcpToolsContext) =>
-  instructions ? ` If you haven't yet, call ${toolPrefix}get_editor_guide first.` : '';
+export const guideHint = (ctx: WebMcpToolsContext) =>
+  ctx.instructions ? ` If you haven't yet, call ${toolRef(ctx, ToolNames.getEditorGuide)} first.` : '';
 
 // Common schema pieces
 

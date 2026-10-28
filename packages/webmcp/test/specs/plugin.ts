@@ -1,5 +1,5 @@
 import grapesjs from 'grapesjs';
-import webMcpPlugin, { createDefaultTools, GetToolsContext, prepareTools, WebMcpTool } from '../../src';
+import webMcpPlugin, { createDefaultTools, GetToolsContext, prepareTools, ToolNames, WebMcpTool } from '../../src';
 import { createEditor, createModelContext, flush } from '../helpers';
 
 const customTool: WebMcpTool = {
@@ -21,6 +21,28 @@ describe('webMcpPlugin', () => {
     editor.destroy();
   });
 
+  test('ToolNames lists all the default tools', async () => {
+    const { editor } = await createEditor();
+    const names = createDefaultTools({ editor, instructions: 'Some rules' }).map((tool) => tool.name);
+    expect(names.sort()).toEqual(Object.values(ToolNames).sort());
+    editor.destroy();
+  });
+
+  test('Tool references in descriptions point to registered tools', async () => {
+    const { editor, mc } = await createEditor({ toolPrefix: 'site_', instructions: 'Some rules' });
+    const registered = [...mc.tools.keys()];
+    const names: string[] = Object.values(ToolNames);
+
+    mc.tools.forEach((tool) => {
+      const text = `${tool.description} ${JSON.stringify(tool.inputSchema)}`;
+      const words = text.match(/[a-z_]+/g) || [];
+      words.filter((word) => word.startsWith('site_')).forEach((ref) => expect(registered).toContain(ref));
+      // Every reference to another tool is prefixed (skip plain words like "undo")
+      words.filter((word) => word.includes('_')).forEach((word) => expect(names).not.toContain(word));
+    });
+    editor.destroy();
+  });
+
   test('Read-only tools are annotated', async () => {
     const { editor, mc } = await createEditor();
     expect(mc.tools.get('grapesjs_get_component_tree')!.annotations).toMatchObject({ readOnlyHint: true });
@@ -33,9 +55,9 @@ describe('webMcpPlugin', () => {
     const calls: string[] = [];
     const getTools = jest.fn(({ tools }: GetToolsContext) => [
       ...tools
-        .filter((tool) => tool.name !== 'load_project_data')
+        .filter((tool) => tool.name !== ToolNames.loadProjectData)
         .map((tool) =>
-          tool.name === 'get_editor_state'
+          tool.name === ToolNames.getEditorState
             ? {
                 ...tool,
                 execute: async (input: any, opts: any) => {
@@ -56,7 +78,7 @@ describe('webMcpPlugin', () => {
     expect(await mc.call('site_say_hello', { name: 'Agent' })).toEqual({ message: 'Hello Agent' });
     const state = await mc.call('site_get_editor_state');
     expect(state).toMatchObject({ wrapped: true, dirtyCount: 0 });
-    expect(calls).toEqual(['get_editor_state']);
+    expect(calls).toEqual([ToolNames.getEditorState]);
     editor.destroy();
   });
 

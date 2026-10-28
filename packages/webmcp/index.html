@@ -102,7 +102,7 @@
           };
         }
 
-        const plugin = window.grapesjsWebMcp.default;
+        const { default: plugin, ToolNames } = window.grapesjsWebMcp;
 
         window.editor = grapesjs.init({
           container: '#gjs',
@@ -135,7 +135,7 @@
                   'Use the brand colors from grapesjs_get_brand_guidelines. Keep the hero section at the top.',
                 getTools: ({ tools }) => [
                   // Filtering: don't let agents replace the whole project
-                  ...tools.filter((tool) => tool.name !== 'load_project_data'),
+                  ...tools.filter((tool) => tool.name !== ToolNames.loadProjectData),
                   // Custom tool
                   {
                     name: 'get_brand_guidelines',
