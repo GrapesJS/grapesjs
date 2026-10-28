@@ -1,7 +1,7 @@
 import type { Editor } from 'grapesjs';
 import { createEditor, createModelContext } from '../helpers';
 
-describe('Style tools', () => {
+describe('CSS rule tools', () => {
   let editor: Editor;
   let call: ReturnType<typeof createModelContext>['call'];
 
@@ -18,26 +18,6 @@ describe('Style tools', () => {
   });
 
   afterEach(() => editor.destroy());
-
-  test('set_component_style merges and removes properties', async () => {
-    await call('set_component_style', { id: 'box', style: { color: 'green', padding: '10px' } });
-    let res = await call('set_component_style', { id: 'box', style: { padding: '', 'font-size': 12 } });
-    expect(res.style).toEqual({ color: 'green', 'font-size': '12' });
-    res = await call('set_component_style', { id: 'box', style: { margin: '0' }, replace: true });
-    expect(res.style).toEqual({ margin: '0' });
-    expect(editor.getCss()).toContain('#box{margin:0;}');
-  });
-
-  test('update_component_classes', async () => {
-    expect((await call('update_component_classes', { id: 'box', add: ['a', 'b'], remove: ['card'] })).classes).toEqual([
-      'a',
-      'b',
-    ]);
-    expect((await call('update_component_classes', { id: 'box', set: ['x'] })).classes).toEqual(['x']);
-    expect(await call('update_component_classes', { id: 'box', add: ['.bad'] })).toMatchObject({
-      error: { code: 'invalid_input' },
-    });
-  });
 
   test('get_css_rules', async () => {
     const all = await call('get_css_rules', { selector: '.card' });

@@ -42,7 +42,7 @@ describe('Block and trait tools', () => {
 
   test('insert_block', async () => {
     const res = await call('insert_block', { id: 'hero', parentId: 'box' });
-    expect(res.added[0]).toMatchObject({ tagName: 'section', classes: ['hero'] });
+    expect(res.added[0]).toMatchObject({ tagName: 'section', attributes: { class: 'hero' } });
     expect(editor.Components.getById('box')!.components().length).toBe(1);
 
     const res2 = await call('insert_block', { id: 'cta', at: 0 });

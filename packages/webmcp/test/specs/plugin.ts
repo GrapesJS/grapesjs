@@ -193,8 +193,8 @@ describe('webMcpPlugin', () => {
     const ed2 = create('ed2_');
     await flush();
     ed1.addComponents('<div id="one">One</div>');
-    expect((await mc.call('ed1_find_components', { selector: '#one' })).total).toBe(1);
-    expect((await mc.call('ed2_find_components', { selector: '#one' })).total).toBe(0);
+    expect((await mc.call('ed1_get_component', { id: 'one' })).id).toBe('one');
+    expect(await mc.call('ed2_get_component', { id: 'one' })).toMatchObject({ error: { code: 'not_found' } });
     ed1.destroy();
     expect([...mc.tools.keys()].every((name) => name.startsWith('ed2_'))).toBe(true);
     ed2.destroy();

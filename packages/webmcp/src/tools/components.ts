@@ -8,23 +8,13 @@ import {
   createTool,
   ensureCanMove,
   getComponent,
-  getDescendants,
   getParentComponent,
   guideHint,
   idSchema,
-  limitSchema,
-  mergeStyle,
-  offsetSchema,
-  paginate,
-  queryComponents,
   serializeComponent,
   serializeComponentSummary,
-  Style,
-  StyleInput,
-  styleSchema,
   ToolError,
   toolRef,
-  toPlain,
 } from '../utils';
 
 const atSchema = z.optional(
@@ -36,7 +26,7 @@ interface TreeNode extends ReturnType<typeof serializeComponentSummary> {
 }
 
 export default (ctx: WebMcpToolsContext) => {
-  const { editor, defaultLimit } = ctx;
+  const { editor } = ctx;
 
   return [
     createTool({
@@ -89,75 +79,13 @@ export default (ctx: WebMcpToolsContext) => {
       name: ToolNames.getComponent,
       title: 'Get component',
       description:
-        'Get details of a component: type, tag, attributes, classes, inline style, parent, position, direct children and editing flags.',
+        'Get details of a component: type, tag, attributes (including class and style), parent, position, direct children and editing flags.',
       annotations: { readOnlyHint: true, untrustedContentHint: true },
       input: z.strictObject({
         id: idSchema(),
         includeHtml: z.optional(z.boolean().check(z.describe('Include the HTML output of the component'))),
       }),
       execute: ({ id, includeHtml }) => serializeComponent(editor, getComponent(editor, id), { html: includeHtml }),
-    }),
-    createTool({
-      name: ToolNames.findComponents,
-      title: 'Find components',
-      description:
-        'Search components in the selected page (or inside a root component). All provided filters must match. `selector` is a CSS selector applied to the component tree.',
-      annotations: { readOnlyHint: true, untrustedContentHint: true },
-      input: z.strictObject({
-        rootId: z.optional(idSchema('Search only inside this component')),
-        selector: z.optional(z.string().check(z.describe('CSS selector, eg. "section .title"'))),
-        type: z.optional(z.string().check(z.describe('Component type, eg. "image"'))),
-        tagName: z.optional(z.string().check(z.describe('HTML tag name, eg. "h1"'))),
-        className: z.optional(z.string().check(z.describe('Class name the component must have'))),
-        text: z.optional(
-          z.string().check(z.describe('Case insensitive text contained in the component (tags excluded)')),
-        ),
-        attributes: z.optional(
-          z
-            .record(z.string(), z.string())
-            .check(z.describe('Attributes the component must have, eg. { "href": "/about" }')),
-        ),
-        limit: limitSchema,
-        offset: offsetSchema,
-      }),
-      execute: (input) => {
-        const root = getParentComponent(editor, input.rootId);
-        const { selector, type, tagName, className, attributes } = input;
-        const text = input.text?.toLowerCase();
-        const candidates = selector ? queryComponents(editor, root, selector) : getDescendants(root);
-
-        const matches = candidates.filter((cmp) => {
-          // Skip plain text nodes unless explicitly requested
-          if (type ? cmp.get('type') !== type : cmp.get('type') === 'textnode') return false;
-          if (tagName && cmp.get('tagName')?.toLowerCase() !== tagName.toLowerCase()) return false;
-          if (className && !cmp.getClasses().includes(className)) return false;
-          if (attributes) {
-            const attrs = cmp.getAttributes();
-            if (Object.keys(attributes).some((key) => `${attrs[key] ?? ''}` !== `${attributes[key]}`)) return false;
-          }
-          if (
-            text &&
-            !cmp
-              .getInnerHTML()
-              .replace(/<[^>]*>/g, '')
-              .toLowerCase()
-              .includes(text)
-          )
-            return false;
-          return true;
-        });
-
-        return paginate(matches, input, defaultLimit, serializeComponentSummary);
-      },
-    }),
-    createTool({
-      name: ToolNames.listComponentTypes,
-      title: 'List component types',
-      description: 'List the component types registered in the editor (usable as `type` in component definitions).',
-      annotations: { readOnlyHint: true },
-      execute: () => ({
-        types: editor.Components.getTypes().map((type) => type.id),
-      }),
     }),
     createTool({
       name: ToolNames.selectComponents,
@@ -201,14 +129,17 @@ export default (ctx: WebMcpToolsContext) => {
       name: ToolNames.updateComponent,
       title: 'Update component',
       description:
-        'Update a component: set or remove attributes, replace its inner content (children) or set its custom name shown in the layer manager. ' +
-        `For styles and classes use ${toolRef(ctx, ToolNames.setComponentStyle)} and ${toolRef(ctx, ToolNames.updateComponentClasses)}.`,
+        'Update a component: set or remove attributes (including id, class and style), replace its inner content (children) or set its custom name shown in the layer manager.',
       input: z.strictObject({
         id: idSchema(),
         attributes: z.optional(
           z
             .record(z.string(), z.union([z.string(), z.number(), z.boolean()]))
-            .check(z.describe('Attributes to add/update, eg. { "href": "/about", "title": "About" }')),
+            .check(
+              z.describe(
+                'Attributes to add/update, eg. { "href": "/about", "class": "btn btn-primary", "style": "color: red" }',
+              ),
+            ),
         ),
         removeAttributes: z.optional(z.array(z.string()).check(z.describe('Attribute names to remove'))),
         content: z.optional(
@@ -222,51 +153,18 @@ export default (ctx: WebMcpToolsContext) => {
       }),
       execute: ({ id, attributes, removeAttributes, content, name }) => {
         const cmp = getComponent(editor, id);
-
-        if (attributes && ('class' in attributes || 'style' in attributes || 'id' in attributes)) {
-          throw new ToolError(
-            `Use ${toolRef(ctx, ToolNames.updateComponentClasses)}/${toolRef(ctx, ToolNames.setComponentStyle)} to change classes and styles, the id attribute is not editable`,
-            'invalid_input',
-          );
-        }
-
-        // Text components are not droppable but their inner content can be replaced
-        if (content !== undefined && !cmp.isInstanceOf('text')) {
-          const items = Array.isArray(content) ? content : [content];
-          items.forEach((item) => ensureCanMove(editor, cmp, item));
-        }
-
         attributes && cmp.addAttributes(attributes);
-        removeAttributes?.length && cmp.removeAttributes(removeAttributes);
+
+        if (removeAttributes?.length) {
+          // Removing class/style attributes doesn't clear them in the component
+          removeAttributes.includes('class') && cmp.setClass([]);
+          removeAttributes.includes('style') && cmp.setStyle({});
+          cmp.removeAttributes(removeAttributes);
+        }
         name !== undefined && cmp.setName(name);
         content !== undefined && cmp.components(content);
 
         return serializeComponent(editor, cmp);
-      },
-    }),
-    createTool({
-      name: ToolNames.cloneComponent,
-      title: 'Clone component',
-      description:
-        'Duplicate a component. By default the clone is placed right after the original, otherwise inside `parentId` at `at` index.',
-      input: z.strictObject({
-        id: idSchema(),
-        parentId: z.optional(idSchema('Parent component id for the clone')),
-        at: atSchema,
-      }),
-      execute: ({ id, parentId, at }) => {
-        const cmp = getComponent(editor, id);
-        if (!cmp.get('copyable')) throw new ToolError(`Component "${id}" is not copyable`, 'not_allowed');
-        const parent = parentId ? getComponent(editor, parentId) : cmp.parent();
-        if (!parent) throw new ToolError('The root component cannot be cloned without a parentId', 'invalid_input');
-        const index = parentId ? at : cmp.index() + 1;
-        checkIndex(parent, index);
-
-        const clone = cmp.clone();
-        ensureCanMove(editor, parent, clone, index);
-        parent.components().add(clone, index !== undefined ? { at: index } : {});
-
-        return { clone: serializeComponentSummary(clone) };
       },
     }),
     createTool({
@@ -305,49 +203,6 @@ export default (ctx: WebMcpToolsContext) => {
 
         cmps.forEach((cmp) => cmp.remove());
         return { removed: ids };
-      },
-    }),
-    createTool({
-      name: ToolNames.setComponentStyle,
-      title: 'Set component style',
-      description:
-        'Update the style of a single component (merged with the current one by default). ' +
-        `For states (eg. hover) or media queries use ${toolRef(ctx, ToolNames.setCssRule)} with the "#<componentId>" selector, for shared styles prefer classes.`,
-      input: z.strictObject({
-        id: idSchema(),
-        style: styleSchema,
-        replace: z.optional(z.boolean().check(z.describe('Replace the whole style instead of merging it'))),
-      }),
-      execute: ({ id, style, replace }) => {
-        const cmp = getComponent(editor, id);
-        const current = (toPlain(cmp.getStyle()) || {}) as Style;
-        const next = mergeStyle(replace ? {} : current, style);
-        cmp.setStyle(next);
-        return { id, style: toPlain(cmp.getStyle()) || {} };
-      },
-    }),
-    createTool({
-      name: ToolNames.updateComponentClasses,
-      title: 'Update component classes',
-      description: 'Add, remove or replace the CSS classes of a component.',
-      input: z.strictObject({
-        id: idSchema(),
-        set: z.optional(z.array(z.string()).check(z.describe('Replace all classes with these ones'))),
-        add: z.optional(z.array(z.string()).check(z.describe('Classes to add'))),
-        remove: z.optional(z.array(z.string()).check(z.describe('Classes to remove'))),
-      }),
-      execute: ({ id, set, add, remove }) => {
-        const cmp = getComponent(editor, id);
-        const invalid = [...(set || []), ...(add || [])].find((cls) => !cls || /[\s.#]/.test(cls));
-        if (invalid !== undefined) {
-          throw new ToolError(`Invalid class name "${invalid}", pass names without dots or spaces`, 'invalid_input');
-        }
-
-        set && cmp.setClass(set);
-        add?.length && cmp.addClass(add);
-        remove?.length && cmp.removeClass(remove);
-
-        return { id, classes: cmp.getClasses() };
       },
     }),
   ];

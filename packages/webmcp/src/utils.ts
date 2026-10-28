@@ -282,7 +282,7 @@ export const serializeComponentSummary = (cmp: Component) => {
     type: cmp.get('type') || 'default',
     name: cmp.getName(),
     tagName: cmp.get('tagName'),
-    classes: cmp.getClasses(),
+    attributes: toPlain(cmp.getAttributes()) || {},
     childCount: cmp.components().length,
     ...(text ? { text: truncate(text, 100) } : {}),
   };
@@ -301,9 +301,7 @@ export const serializeComponent = (editor: Editor, cmp: Component, opts: { html?
     pageId: page?.getId(),
     parentId: parent?.getId() || null,
     index: parent ? cmp.index() : 0,
-    attributes: toPlain(cmp.getAttributes({ noClass: true, noStyle: true })) || {},
-    classes: cmp.getClasses(),
-    style: toPlain(cmp.getStyle()) || {},
+    attributes: toPlain(cmp.getAttributes()) || {},
     children: cmp.components().map((child) => serializeComponentSummary(child)),
     ...(text !== undefined ? { text } : {}),
     flags: {
@@ -316,42 +314,6 @@ export const serializeComponent = (editor: Editor, cmp: Component, opts: { html?
     },
     ...(opts.html ? { html: cmp.toHTML() } : {}),
   };
-};
-
-/**
- * Get all the descendants of a component (depth-first order).
- */
-export const getDescendants = (root: Component) => {
-  const result: Component[] = [];
-  const walk = (cmp: Component) =>
-    cmp.components().forEach((child) => {
-      result.push(child);
-      walk(child);
-    });
-  walk(root);
-  return result;
-};
-
-const QUERY_ATTR = 'data-webmcp-id';
-
-/**
- * Query descendants by CSS selector. Unlike `component.find`, it doesn't require
- * the component to be rendered (eg. components of non selected pages).
- */
-export const queryComponents = (editor: Editor, root: Component, selector: string) => {
-  const descendants = getDescendants(root);
-  const byId = new Map(descendants.map((cmp) => [cmp.getId(), cmp]));
-  const html = root.toHTML({ attributes: (cmp, attrs) => ({ ...attrs, [QUERY_ATTR]: cmp.getId() }) });
-  const doc = new DOMParser().parseFromString(html, 'text/html');
-  let elements: Element[];
-
-  try {
-    elements = Array.from(doc.body.querySelectorAll(selector));
-  } catch {
-    throw new ToolError(`Invalid selector "${selector}"`, 'invalid_input');
-  }
-
-  return elements.map((el) => byId.get(el.getAttribute(QUERY_ATTR) || '')).filter((cmp): cmp is Component => !!cmp);
 };
 
 export const ensureCanMove = (editor: Editor, target: Component, source: any, at?: number) => {

@@ -17,16 +17,11 @@ export enum ToolNames {
   // Components (components.ts)
   getComponentTree = 'get_component_tree',
   getComponent = 'get_component',
-  findComponents = 'find_components',
-  listComponentTypes = 'list_component_types',
   selectComponents = 'select_components',
   addComponents = 'add_components',
   updateComponent = 'update_component',
-  cloneComponent = 'clone_component',
   moveComponent = 'move_component',
   removeComponents = 'remove_components',
-  setComponentStyle = 'set_component_style',
-  updateComponentClasses = 'update_component_classes',
 
   // CSS rules (css.ts)
   getCssRules = 'get_css_rules',

@@ -52,7 +52,7 @@ describe('Component tools', () => {
     expect(res).toMatchObject({
       id: 'sec',
       tagName: 'section',
-      classes: ['hero'],
+      attributes: { id: 'sec', class: 'hero' },
       parentId: editor.getWrapper()!.getId(),
       index: 0,
       pageId: editor.Pages.getSelected()!.getId(),
@@ -61,36 +61,7 @@ describe('Component tools', () => {
     expect(res.html).toContain('<h1 id="title">Hello</h1>');
   });
 
-  test('find_components', async () => {
-    expect((await call('find_components', { selector: '.hero h1' })).items.map((c: any) => c.id)).toEqual(['title']);
-    expect((await call('find_components', { tagName: 'SPAN' })).items[0].id).toBe('inner');
-    expect((await call('find_components', { text: 'inner', type: 'text' })).items.map((c: any) => c.id)).toEqual([
-      'inner',
-    ]);
-    expect((await call('find_components', { className: 'hero' })).total).toBe(1);
-    expect((await call('find_components', { attributes: { id: 'para' } })).items[0].id).toBe('para');
-    expect((await call('find_components', { rootId: 'box' })).items.map((c: any) => c.id)).toEqual(['inner']);
-    const page = await call('find_components', { limit: 2, offset: 1 });
-    expect(page).toMatchObject({ offset: 1, hasMore: true });
-    expect(page.items).toHaveLength(2);
-    expect(await call('find_components', { selector: '!!' })).toMatchObject({ error: { code: 'invalid_input' } });
-  });
-
-  test('find_components works on non selected pages', async () => {
-    const page = editor.Pages.add({ id: 'other', component: '<div id="far">Far</div>' })!;
-    const wrapperId = page.getMainComponent().getId();
-    const res = await call('find_components', { rootId: wrapperId, selector: '#far' });
-    expect(res.items.map((c: any) => c.id)).toEqual(['far']);
-  });
-
-  test('find_components reflects manual edits', async () => {
-    editor.getWrapper()!.append('<article id="manual">New</article>');
-    expect((await call('find_components', { selector: 'article' })).items[0].id).toBe('manual');
-  });
-
-  test('list_component_types and select_components', async () => {
-    const { types } = await call('list_component_types');
-    expect(types).toEqual(expect.arrayContaining(['text', 'image', 'locked-box']));
+  test('select_components', async () => {
     expect(await call('select_components', { ids: ['title', 'box'] })).toEqual({ selected: ['title', 'box'] });
     expect(editor.getSelectedAll().map((c) => c.getId())).toEqual(['title', 'box']);
     expect(await call('select_components', { ids: [] })).toEqual({ selected: [] });
@@ -140,23 +111,38 @@ describe('Component tools', () => {
 
     await call('update_component', { id: 'title', removeAttributes: ['title'] });
     expect(editor.Components.getById('title')!.getAttributes().title).toBeUndefined();
-
-    expect(await call('update_component', { id: 'title', attributes: { class: 'x' } })).toMatchObject({
-      error: { code: 'invalid_input' },
-    });
   });
 
-  test('clone_component', async () => {
-    const res = await call('clone_component', { id: 'title' });
-    const sec = editor.Components.getById('sec')!;
-    expect(sec.components().at(1).getId()).toBe(res.clone.id);
-    expect(res.clone.id).not.toBe('title');
+  test('update_component handles class, style and id attributes', async () => {
+    let res = await call('update_component', {
+      id: 'box',
+      attributes: { class: 'card card--big', style: 'color: red; padding: 10px' },
+    });
+    // With avoidInlineStyle (default) styles are stored in the #id CSS rule, not in attributes
+    expect(res.attributes).toEqual({ id: 'box', class: 'card card--big' });
+    const box = editor.Components.getById('box')!;
+    expect(box.getClasses()).toEqual(['card', 'card--big']);
+    expect(editor.getCss()).toContain('#box{color:red;padding:10px;}');
 
-    const res2 = await call('clone_component', { id: 'title', parentId: 'box', at: 0 });
-    expect(editor.Components.getById('box')!.components().at(0).getId()).toBe(res2.clone.id);
+    // Other attributes don't affect classes and styles
+    res = await call('update_component', { id: 'box', attributes: { title: 'Box' } });
+    expect(res.attributes).toEqual({ id: 'box', class: 'card card--big', title: 'Box' });
+    expect(editor.getCss()).toContain('#box{color:red;padding:10px;}');
 
+    res = await call('update_component', { id: 'box', removeAttributes: ['class', 'style'] });
+    expect(res.attributes).toEqual({ id: 'box', title: 'Box' });
+    expect(box.getClasses()).toEqual([]);
+    expect(editor.getCss()).not.toContain('#box');
+
+    res = await call('update_component', { id: 'box', attributes: { id: 'new-box' } });
+    expect(res.id).toBe('new-box');
+    expect(editor.getHtml()).toContain('id="new-box"');
+  });
+
+  test('update_component replaces content without structure checks', async () => {
     editor.getWrapper()!.append({ type: 'locked-box', attributes: { id: 'locked' } });
-    expect(await call('clone_component', { id: 'locked' })).toMatchObject({ error: { code: 'not_allowed' } });
+    await call('update_component', { id: 'locked', content: '<span>Inside</span>' });
+    expect(editor.Components.getById('locked')!.toHTML()).toContain('<span>Inside</span>');
   });
 
   test('move_component', async () => {
