@@ -5,16 +5,18 @@
  * getTools: ({ tools }) => tools.filter(tool => tool.name !== ToolNames.loadProjectData)
  */
 export enum ToolNames {
-  // Guide (guide.ts)
+  // Guide
   getEditorGuide = 'get_editor_guide',
 
-  // Editor (editor.ts)
+  // Editor
   getEditorState = 'get_editor_state',
   getPageCode = 'get_page_code',
   getProjectData = 'get_project_data',
   loadProjectData = 'load_project_data',
+  undo = 'undo',
+  redo = 'redo',
 
-  // Components (components.ts)
+  // Components
   getComponentTree = 'get_component_tree',
   getComponent = 'get_component',
   selectComponents = 'select_components',
@@ -23,37 +25,33 @@ export enum ToolNames {
   moveComponent = 'move_component',
   removeComponents = 'remove_components',
 
-  // CSS rules (css.ts)
+  // CSS rules
   getCssRules = 'get_css_rules',
   setCssRule = 'set_css_rule',
   removeCssRule = 'remove_css_rule',
 
-  // Blocks (blocks.ts)
+  // Blocks
   listBlocks = 'list_blocks',
   getBlock = 'get_block',
   insertBlock = 'insert_block',
 
-  // Traits (traits.ts)
+  // Traits
   getComponentTraits = 'get_component_traits',
   updateComponentTraits = 'update_component_traits',
 
-  // Pages (pages.ts)
+  // Pages
   listPages = 'list_pages',
   addPage = 'add_page',
   renamePage = 'rename_page',
   selectPage = 'select_page',
   removePage = 'remove_page',
 
-  // Devices (devices.ts)
+  // Devices
   listDevices = 'list_devices',
   selectDevice = 'select_device',
 
-  // Assets (assets.ts)
+  // Assets
   listAssets = 'list_assets',
   addAssets = 'add_assets',
   removeAssets = 'remove_assets',
-
-  // Undo manager (undo_manager.ts)
-  undo = 'undo',
-  redo = 'redo',
 }

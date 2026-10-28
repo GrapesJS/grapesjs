@@ -8,7 +8,6 @@ import editorTools from './editor';
 import guideTool from './guide';
 import pageTools from './pages';
 import traitTools from './traits';
-import undoManagerTools from './undo_manager';
 
 /**
  * Create the default tool catalog, bound to the editor.
@@ -29,6 +28,5 @@ export const createDefaultTools = (
     ...pageTools(ctx),
     ...deviceTools(ctx),
     ...assetTools(ctx),
-    ...undoManagerTools(ctx),
   ];
 };
