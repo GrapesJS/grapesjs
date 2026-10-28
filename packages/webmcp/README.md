@@ -60,6 +60,7 @@ From a CDN (`window.grapesjsWebMcp`):
 | `toolPrefix`   | Prefix applied to every tool name, including custom tools. Use distinct prefixes when multiple editors live on the same page.      | `'grapesjs_'`                                                    |
 | `getTools`     | `({ editor, tools }) => WebMcpTool[]`. Receives the default tools and returns the complete catalog to register. `[]` disables all. | All the default tools                                            |
 | `defaultLimit` | Max number of items returned by list/search tools when the agent doesn't pass a `limit`.                                           | `50`                                                             |
+| `instructions` | Project-specific instructions for the agent. When provided, they are exposed through the `get_editor_guide` tool.                  |                                                                  |
 | `modelContext` | Custom `ModelContext` implementation.                                                                                              | `document.modelContext` (or the legacy `navigator.modelContext`) |
 
 ## Default tools
@@ -68,7 +69,7 @@ Names are listed without the prefix (eg. `get_component_tree` is registered as `
 
 | Area            | Tools                                                                                                                                                                                                 |
 | --------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Editor          | `get_editor_state` (selection, active page/device, unsaved changes count, undo/redo availability)                                                                                                     |
+| Editor          | `get_editor_guide` (only with `instructions`), `get_editor_state` (selection, active page/device, unsaved changes count, undo/redo availability)                                                      |
 | Components      | `get_component_tree`, `get_component`, `find_components`, `list_component_types`, `select_components`, `add_components`, `update_component`, `clone_component`, `move_component`, `remove_components` |
 | Styling         | `set_component_style`, `update_component_classes`, `get_css_rules`, `set_css_rule`, `remove_css_rule` (with state and media/at-rule support)                                                          |
 | Blocks          | `list_blocks`, `get_block`, `insert_block`                                                                                                                                                            |
@@ -87,6 +88,18 @@ How the tools behave:
 - Read-only tools are marked with `readOnlyHint`, destructive ones (removals, project replacement) with `consequentialHint`.
 - Errors are returned as data, so the agent can read the reason and recover: `{ "error": { "code": "not_found", "message": "..." } }`.
 - Not included by default: arbitrary method calls, JavaScript evaluation, storage operations, publishing and file uploads. Add custom tools if you need them.
+
+## Agent instructions
+
+WebMCP has no page-level instructions: the agent only sees the registered tools and their descriptions. To give the agent project-specific rules, pass `instructions`:
+
+```js
+webMcpPlugin(editor, {
+  instructions: 'Use only the classes of the design system. Never remove the header and footer.',
+});
+```
+
+They are returned by a read-only `get_editor_guide` tool, and `get_editor_state` and `get_component_tree` (usually the first tools an agent calls) point to it in their descriptions. Without `instructions`, the tool isn't registered.
 
 ## Customize tools
 

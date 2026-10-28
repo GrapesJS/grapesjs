@@ -1,5 +1,11 @@
 import type { Component, CssRule, Editor } from 'grapesjs';
-import type { JsonSchema, WebMcpTool, WebMcpToolAnnotations, WebMcpToolExecuteOptions } from './types';
+import type {
+  JsonSchema,
+  WebMcpTool,
+  WebMcpToolAnnotations,
+  WebMcpToolExecuteOptions,
+  WebMcpToolsContext,
+} from './types';
 
 export class ToolError extends Error {
   code: string;
@@ -114,6 +120,12 @@ export const createTool = <I = Record<string, any>>(props: CreateToolProps<I>): 
     },
   };
 };
+
+/**
+ * Description suffix pointing the agent to the guide tool (when available).
+ */
+export const guideHint = ({ toolPrefix, instructions }: WebMcpToolsContext) =>
+  instructions ? ` If you haven't yet, call ${toolPrefix}get_editor_guide first.` : '';
 
 // Common schema pieces
 

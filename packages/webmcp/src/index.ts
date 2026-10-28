@@ -67,8 +67,8 @@ export const prepareTools = (tools: WebMcpTool[], prefix = ''): WebMcpTool[] => 
  *   ],
  * });
  */
-export const webMcpPlugin: Plugin = (editor: Editor, opts: WebMcpPluginOptions = {}) => {
-  const { toolPrefix = 'grapesjs_', getTools, defaultLimit = 50 } = opts;
+export const webMcpPlugin: Plugin<WebMcpPluginOptions> = (editor: Editor, opts = {}) => {
+  const { toolPrefix = 'grapesjs_', getTools, defaultLimit = 50, instructions } = opts;
   let registration: ToolsRegistration | undefined;
   let disposed = false;
 
@@ -92,7 +92,7 @@ export const webMcpPlugin: Plugin = (editor: Editor, opts: WebMcpPluginOptions =
     let tools: WebMcpTool[];
 
     try {
-      const defaultTools = createDefaultTools({ editor, defaultLimit });
+      const defaultTools = createDefaultTools({ editor, defaultLimit, toolPrefix, instructions });
       const catalog = getTools ? getTools({ editor, tools: defaultTools }) : defaultTools;
       if (!Array.isArray(catalog)) throw new Error('`getTools` must return an array of tools');
       tools = prepareTools(catalog, toolPrefix);

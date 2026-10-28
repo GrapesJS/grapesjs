@@ -1,6 +1,6 @@
 import type { Asset, Device, Page } from 'grapesjs';
 import type { WebMcpToolsContext } from '../types';
-import { createTool, getPageOf, limitSchema, offsetSchema, paginate, toPlain, ToolError } from '../utils';
+import { createTool, getPageOf, guideHint, limitSchema, offsetSchema, paginate, toPlain, ToolError } from '../utils';
 
 const serializePage = (page: Page, selected?: Page) => ({
   id: page.getId(),
@@ -25,7 +25,8 @@ const getPage = (editor: WebMcpToolsContext['editor'], id: string) => {
   return page;
 };
 
-export default ({ editor, defaultLimit }: WebMcpToolsContext) => {
+export default (ctx: WebMcpToolsContext) => {
+  const { editor, defaultLimit } = ctx;
   const getState = () => {
     const page = editor.Pages.getSelected();
     const device = editor.Devices.getSelected();
@@ -52,7 +53,8 @@ export default ({ editor, defaultLimit }: WebMcpToolsContext) => {
       name: 'get_editor_state',
       title: 'Get editor state',
       description:
-        'Get the current editor state: selected components, active page and device, number of unsaved changes and undo/redo availability.',
+        'Get the current editor state: selected components, active page and device, number of unsaved changes and undo/redo availability.' +
+        guideHint(ctx),
       annotations: { readOnlyHint: true },
       execute: getState,
     }),

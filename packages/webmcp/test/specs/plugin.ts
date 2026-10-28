@@ -133,7 +133,7 @@ describe('webMcpPlugin', () => {
   });
 
   test('Remains inactive without WebMCP', async () => {
-    const editor = grapesjs.init({ headless: true, storageManager: false, plugins: [(ed) => webMcpPlugin(ed)] });
+    const editor = grapesjs.init({ headless: true, storageManager: false, plugins: [(ed) => webMcpPlugin(ed, {})] });
     editor.getModel().set('readyCanvas', true);
     expect(() => editor.getModel().trigger('load', editor)).not.toThrow();
     editor.destroy();
@@ -143,7 +143,7 @@ describe('webMcpPlugin', () => {
     const mc = createModelContext();
     (document as any).modelContext = mc.modelContext;
     try {
-      const editor = grapesjs.init({ headless: true, storageManager: false, plugins: [(ed) => webMcpPlugin(ed)] });
+      const editor = grapesjs.init({ headless: true, storageManager: false, plugins: [(ed) => webMcpPlugin(ed, {})] });
       editor.getModel().set('readyCanvas', true);
       editor.getModel().trigger('load', editor);
       await flush();

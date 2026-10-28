@@ -84,6 +84,15 @@ export interface WebMcpPluginOptions {
   defaultLimit?: number;
 
   /**
+   * Project-specific instructions for the agent (eg. design rules or content to preserve).
+   * WebMCP has no page-level instructions, so when provided, they are exposed through
+   * the read-only `get_editor_guide` tool.
+   * @example
+   * instructions: 'Use only the classes of the design system, never remove the header.'
+   */
+  instructions?: string;
+
+  /**
    * Custom `ModelContext` implementation. By default, the plugin uses
    * `document.modelContext` or the legacy `navigator.modelContext`.
    */
@@ -93,4 +102,8 @@ export interface WebMcpPluginOptions {
 export interface WebMcpToolsContext {
   editor: Editor;
   defaultLimit: number;
+  /** Prefix used to reference other tools in descriptions and in the guide. */
+  toolPrefix: string;
+  /** Project instructions, the guide tool is added only when provided. */
+  instructions?: string;
 }
