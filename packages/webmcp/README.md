@@ -50,7 +50,7 @@ From a CDN (`window.grapesjsWebMcp`):
 <script>
   grapesjs.init({
     container: '#gjs',
-    plugins: [(editor) => grapesjsWebMcp.default(editor, {})],
+    plugins: [(editor) => grapesjsWebMcp.plugin(editor, {})],
   });
 </script>
 ```

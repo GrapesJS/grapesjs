@@ -20,7 +20,7 @@ export type { CreateToolProps } from './utils';
  * @example
  * grapesjs.init({
  *   plugins: [
- *     editor => webMcpPlugin(editor, {
+ *     editor => plugin(editor, {
  *       getTools: ({ tools }) => tools.filter(tool => tool.name !== ToolNames.loadProjectData),
  *     }),
  *   ],
@@ -28,7 +28,7 @@ export type { CreateToolProps } from './utils';
  *
  * const webmcp = editor.runCommand('webMcpManager');
  */
-export const webMcpPlugin: Plugin<WebMcpPluginOptions> = (editor: Editor, opts = {}) => {
+export const plugin: Plugin<WebMcpPluginOptions> = (editor: Editor, opts = {}) => {
   const { toolPrefix = 'grapesjs_', getTools, defaultLimit = 50, instructions, modelContext } = opts;
   const manager = new WebMcpManager(editor, { toolPrefix, modelContext });
   let disposed = false;
@@ -64,4 +64,4 @@ export const webMcpPlugin: Plugin<WebMcpPluginOptions> = (editor: Editor, opts =
   };
 };
 
-export default webMcpPlugin;
+export default plugin;
