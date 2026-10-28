@@ -100,6 +100,8 @@ describe('webMcpPlugin', () => {
     const editor = grapesjs.init({
       headless: true,
       storageManager: false,
+      // Errors are still triggered as events, but not printed in the console
+      log: false,
       plugins: [
         (ed) => {
           ed.on('log:error', (msg: string) => logs.push(msg));

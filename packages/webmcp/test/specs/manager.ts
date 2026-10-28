@@ -143,6 +143,10 @@ describe('WebMcpManager', () => {
   });
 
   test('Failed registration of a tool is logged and keeps the others', async () => {
+    // Errors are still triggered as events, but not printed in the console
+    editor.destroy();
+    ({ editor, mc } = await createEditor({ getTools: () => [] }, { log: false }));
+    webmcp = editor.runCommand('webMcpManager');
     const logs: string[] = [];
     editor.on('log:error', (msg: string) => logs.push(msg));
     mc.tools.set('grapesjs_taken', helloTool as any);
