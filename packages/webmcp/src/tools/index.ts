@@ -7,7 +7,6 @@ import deviceTools from './devices';
 import editorTools from './editor';
 import guideTool from './guide';
 import pageTools from './pages';
-import traitTools from './traits';
 
 /**
  * Create the default tool catalog, bound to the editor.
@@ -24,7 +23,6 @@ export const createDefaultTools = (
     ...componentTools(ctx),
     ...cssTools(ctx),
     ...blockTools(ctx),
-    ...traitTools(ctx),
     ...pageTools(ctx),
     ...deviceTools(ctx),
     ...assetTools(ctx),

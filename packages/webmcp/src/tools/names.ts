@@ -24,6 +24,8 @@ export enum ToolNames {
   updateComponent = 'update_component',
   moveComponent = 'move_component',
   removeComponents = 'remove_components',
+  getComponentTraits = 'get_component_traits',
+  updateComponentTraits = 'update_component_traits',
 
   // CSS rules
   getCssRules = 'get_css_rules',
@@ -34,10 +36,6 @@ export enum ToolNames {
   listBlocks = 'list_blocks',
   getBlock = 'get_block',
   insertBlock = 'insert_block',
-
-  // Traits
-  getComponentTraits = 'get_component_traits',
-  updateComponentTraits = 'update_component_traits',
 
   // Pages
   listPages = 'list_pages',
