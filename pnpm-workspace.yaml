@@ -1,4 +1,5 @@
 packages:
   - 'packages/cli'
   - 'packages/core'
+  - 'packages/webmcp'
   - 'docs/'

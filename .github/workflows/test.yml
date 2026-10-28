@@ -22,3 +22,11 @@ jobs:
       - name: CLI Tests
         run: pnpm test
         working-directory: ./packages/cli
+  test-webmcp:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-project
+      - name: WebMCP Tests
+        run: pnpm test
+        working-directory: ./packages/webmcp

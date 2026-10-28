@@ -1,0 +1,96 @@
+import type { Editor } from 'grapesjs';
+
+/**
+ * JSON Schema object describing the tool input.
+ */
+export type JsonSchema = Record<string, any>;
+
+/**
+ * Hints that help the agent (and the browser) to decide how to treat a tool call.
+ * Mirrors the `ToolAnnotations` dictionary of the WebMCP draft.
+ */
+export interface WebMcpToolAnnotations {
+  /** The tool doesn't change any editor state. */
+  readOnlyHint?: boolean;
+  /** The tool performs a change that is hard to revert (eg. removes content or replaces the project). */
+  consequentialHint?: boolean;
+  /** The result might contain content not controlled by the site (eg. user-authored HTML). */
+  untrustedContentHint?: boolean;
+  [key: string]: unknown;
+}
+
+export interface WebMcpToolExecuteOptions {
+  /** Aborted when the agent cancels the call. */
+  signal?: AbortSignal;
+  [key: string]: unknown;
+}
+
+export type WebMcpToolExecute<I = any, R = unknown> = (input: I, options?: WebMcpToolExecuteOptions) => R | Promise<R>;
+
+/**
+ * WebMCP tool definition.
+ */
+export interface WebMcpTool<I = any, R = unknown> {
+  /** Tool name, without the `toolPrefix` (applied during registration). */
+  name: string;
+  title?: string;
+  description: string;
+  inputSchema?: JsonSchema;
+  annotations?: WebMcpToolAnnotations;
+  execute: WebMcpToolExecute<I, R>;
+}
+
+export interface GetToolsContext {
+  editor: Editor;
+  /** Default tools, already bound to the editor. */
+  tools: WebMcpTool[];
+}
+
+export interface ModelContextRegisterOptions {
+  signal?: AbortSignal;
+  [key: string]: unknown;
+}
+
+/**
+ * Minimal shape of the WebMCP `ModelContext` used by the plugin.
+ * Covers the current draft (`document.modelContext`, unregister via abort signal)
+ * and the legacy one (`navigator.modelContext`, `unregisterTool`).
+ */
+export interface ModelContextLike {
+  registerTool(tool: Record<string, any>, options?: ModelContextRegisterOptions): unknown;
+  unregisterTool?(name: string): unknown;
+}
+
+export interface WebMcpPluginOptions {
+  /**
+   * Prefix applied to every tool name (including custom tools), useful to distinguish
+   * multiple editors on the same page.
+   * @default 'grapesjs_'
+   */
+  toolPrefix?: string;
+
+  /**
+   * Customize the tool catalog. Receives the default tools and returns the complete
+   * list of tools to register. Return an empty array to disable all tools.
+   * @example
+   * getTools: ({ tools }) => tools.filter(tool => tool.name !== 'load_project_data')
+   */
+  getTools?: (ctx: GetToolsContext) => WebMcpTool[];
+
+  /**
+   * Max number of items returned by list/tree tools when the agent doesn't specify a limit.
+   * @default 50
+   */
+  defaultLimit?: number;
+
+  /**
+   * Custom `ModelContext` implementation. By default, the plugin uses
+   * `document.modelContext` or the legacy `navigator.modelContext`.
+   */
+  modelContext?: ModelContextLike;
+}
+
+export interface WebMcpToolsContext {
+  editor: Editor;
+  defaultLimit: number;
+}
