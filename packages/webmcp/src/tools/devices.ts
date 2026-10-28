@@ -1,4 +1,5 @@
 import type { Device } from 'grapesjs';
+import * as z from 'zod/mini';
 import type { WebMcpToolsContext } from '../types';
 import { ToolNames } from './names';
 import { createTool, ToolError } from '../utils';
@@ -25,17 +26,12 @@ export default ({ editor }: WebMcpToolsContext) => [
       };
     },
   }),
-  createTool<{ id: string }>({
+  createTool({
     name: ToolNames.selectDevice,
     title: 'Select device',
     description:
       'Select a device to preview the canvas at its size. Styles set on components while a device is selected apply to its media query.',
-    inputSchema: {
-      type: 'object',
-      properties: { id: { type: 'string', description: 'Device id' } },
-      required: ['id'],
-      additionalProperties: false,
-    },
+    input: z.strictObject({ id: z.string().check(z.describe('Device id')) }),
     execute: ({ id }) => {
       const device = editor.Devices.get(id);
       if (!device) throw new ToolError(`Device "${id}" not found`, 'not_found');

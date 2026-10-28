@@ -30,7 +30,9 @@ module.exports = ({ config }) => {
     experiments: {
       outputModule: !!BUILD_MODULE,
     },
-    // GrapesJS is only referenced for types, keep it out of the bundle in any case
-    externals: { grapesjs: 'grapesjs' },
+    // GrapesJS is only referenced for types, keep it out of the bundle in any case.
+    // The ES module imports zod from the dependencies (deduped with the consumer's copy), UMD bundles it.
+    externals: BUILD_MODULE ? { grapesjs: 'grapesjs', 'zod/mini': 'zod/mini' } : { grapesjs: 'grapesjs' },
+    ...(BUILD_MODULE ? { externalsType: 'module' } : {}),
   };
 };

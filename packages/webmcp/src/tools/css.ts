@@ -1,4 +1,5 @@
 import type { CssRule } from 'grapesjs';
+import * as z from 'zod/mini';
 import type { WebMcpToolsContext } from '../types';
 import { ToolNames } from './names';
 import {
@@ -15,11 +16,10 @@ import {
 } from '../utils';
 
 const atRuleProps = {
-  atRuleType: {
-    type: 'string',
-    description: 'At-rule type, eg. "media". Defaults to "media" when atRuleParams is set',
-  },
-  atRuleParams: { type: 'string', description: 'At-rule params, eg. "(max-width: 768px)"' },
+  atRuleType: z.optional(
+    z.string().check(z.describe('At-rule type, eg. "media". Defaults to "media" when atRuleParams is set')),
+  ),
+  atRuleParams: z.optional(z.string().check(z.describe('At-rule params, eg. "(max-width: 768px)"'))),
 };
 
 const getRuleOpts = (input: { atRuleType?: string; atRuleParams?: string }) => {
@@ -42,22 +42,18 @@ const serializeRule = (rule: CssRule) => {
 };
 
 export default ({ editor, defaultLimit }: WebMcpToolsContext) => [
-  createTool<{ selector?: string; atRuleType?: string; atRuleParams?: string; limit?: number; offset?: number }>({
+  createTool({
     name: ToolNames.getCssRules,
     title: 'Get CSS rules',
     description:
       'List CSS rules of the project. Filter by exact selector (including state, eg. ".btn:hover") and/or at-rule (eg. media params "(max-width: 768px)").',
     annotations: { readOnlyHint: true },
-    inputSchema: {
-      type: 'object',
-      properties: {
-        selector: { type: 'string', description: 'Exact selector, eg. ".btn:hover" or "#my-id"' },
-        ...atRuleProps,
-        limit: limitSchema,
-        offset: offsetSchema,
-      },
-      additionalProperties: false,
-    },
+    input: z.strictObject({
+      selector: z.optional(z.string().check(z.describe('Exact selector, eg. ".btn:hover" or "#my-id"'))),
+      ...atRuleProps,
+      limit: limitSchema,
+      offset: offsetSchema,
+    }),
     execute: (input) => {
       const { selector } = input;
       const hasAtRuleFilter = input.atRuleType !== undefined || input.atRuleParams !== undefined;
@@ -72,22 +68,17 @@ export default ({ editor, defaultLimit }: WebMcpToolsContext) => [
       return paginate(rules, input, defaultLimit, serializeRule);
     },
   }),
-  createTool<{ selector: string; style: StyleInput; atRuleType?: string; atRuleParams?: string; replace?: boolean }>({
+  createTool({
     name: ToolNames.setCssRule,
     title: 'Set CSS rule',
     description:
       'Create or update a CSS rule. The selector can include a state (eg. ".btn:hover") and the rule can be wrapped in an at-rule (eg. atRuleParams "(max-width: 768px)" for a media query). Styles are merged by default.',
-    inputSchema: {
-      type: 'object',
-      properties: {
-        selector: { type: 'string', description: 'CSS selector, eg. ".btn", ".btn:hover", "#my-id"' },
-        style: styleSchema,
-        ...atRuleProps,
-        replace: { type: 'boolean', description: 'Replace the whole rule style instead of merging it' },
-      },
-      required: ['selector', 'style'],
-      additionalProperties: false,
-    },
+    input: z.strictObject({
+      selector: z.string().check(z.describe('CSS selector, eg. ".btn", ".btn:hover", "#my-id"')),
+      style: styleSchema,
+      ...atRuleProps,
+      replace: z.optional(z.boolean().check(z.describe('Replace the whole rule style instead of merging it'))),
+    }),
     execute: ({ selector, style, replace, ...rest }) => {
       if (!selector.trim()) throw new ToolError('The selector is empty', 'invalid_input');
       const opts = getRuleOpts(rest);
@@ -98,20 +89,15 @@ export default ({ editor, defaultLimit }: WebMcpToolsContext) => [
       return { rule: serializeRule(rule) };
     },
   }),
-  createTool<{ selector: string; atRuleType?: string; atRuleParams?: string }>({
+  createTool({
     name: ToolNames.removeCssRule,
     title: 'Remove CSS rule',
     description: 'Remove a CSS rule matching the exact selector and at-rule.',
     annotations: { consequentialHint: true },
-    inputSchema: {
-      type: 'object',
-      properties: {
-        selector: { type: 'string', description: 'CSS selector, eg. ".btn:hover"' },
-        ...atRuleProps,
-      },
-      required: ['selector'],
-      additionalProperties: false,
-    },
+    input: z.strictObject({
+      selector: z.string().check(z.describe('CSS selector, eg. ".btn:hover"')),
+      ...atRuleProps,
+    }),
     execute: ({ selector, ...rest }) => {
       const rule = editor.Css.getRule(selector, getRuleOpts(rest));
       if (!rule) throw new ToolError(`CSS rule "${selector}" not found`, 'not_found');

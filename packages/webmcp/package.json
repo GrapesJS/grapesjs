@@ -7,10 +7,10 @@
   "homepage": "https://grapesjs.com",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
-  "types": "dist/index.d.ts",
+  "types": "dist/types/index.d.ts",
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
+      "types": "./dist/types/index.d.ts",
       "import": "./dist/index.mjs",
       "require": "./dist/index.js"
     }
@@ -39,16 +39,18 @@
     "build:mjs": "cross-env BUILD_MODULE=true node node_modules/grapesjs-cli/dist/cli.js build --dts=skip --patch=false",
     "ts:check": "tsc --noEmit",
     "test": "jest",
-    "build:dts": "dts-bundle-generator -o dist/index.d.ts src/index.ts --project tsconfig.build.json --no-banner --no-check"
+    "build:dts": "tsc -p tsconfig.build.json"
   },
   "peerDependencies": {
     "grapesjs": "^0.23.1"
   },
   "devDependencies": {
-    "dts-bundle-generator": "^8.0.1",
     "grapesjs": "workspace:^",
     "grapesjs-cli": "workspace:^",
     "jest-environment-jsdom": "30.4.1",
     "npm-run-all": "4.1.5"
+  },
+  "dependencies": {
+    "zod": "4.6.7"
   }
 }

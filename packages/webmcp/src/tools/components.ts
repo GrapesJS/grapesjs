@@ -1,4 +1,5 @@
 import type { Component } from 'grapesjs';
+import * as z from 'zod/mini';
 import type { WebMcpToolsContext } from '../types';
 import { ToolNames } from './names';
 import {
@@ -26,11 +27,9 @@ import {
   toPlain,
 } from '../utils';
 
-const atSchema = {
-  type: 'integer',
-  minimum: 0,
-  description: 'Index position inside the parent. Appends at the end if omitted',
-};
+const atSchema = z.optional(
+  z.int().check(z.minimum(0), z.describe('Index position inside the parent. Appends at the end if omitted')),
+);
 
 interface TreeNode extends ReturnType<typeof serializeComponentSummary> {
   children?: TreeNode[];
@@ -40,22 +39,20 @@ export default (ctx: WebMcpToolsContext) => {
   const { editor, defaultLimit } = ctx;
 
   return [
-    createTool<{ id?: string; depth?: number; maxNodes?: number }>({
+    createTool({
       name: ToolNames.getComponentTree,
       title: 'Get component tree',
       description:
         'Get the component tree of the selected page (or of a specific component). Nodes beyond `depth` or `maxNodes` are not expanded: their `childCount` is still reported and `truncated` is true, call the tool again with the node id to expand them.' +
         guideHint(ctx),
       annotations: { readOnlyHint: true, untrustedContentHint: true },
-      inputSchema: {
-        type: 'object',
-        properties: {
-          id: idSchema('Root component id. Defaults to the wrapper of the selected page'),
-          depth: { type: 'integer', minimum: 0, maximum: 50, description: 'Max depth to expand (default 4)' },
-          maxNodes: { type: 'integer', minimum: 1, maximum: 2000, description: 'Max number of nodes (default 200)' },
-        },
-        additionalProperties: false,
-      },
+      input: z.strictObject({
+        id: z.optional(idSchema('Root component id. Defaults to the wrapper of the selected page')),
+        depth: z.optional(z.int().check(z.minimum(0), z.maximum(50), z.describe('Max depth to expand (default 4)'))),
+        maxNodes: z.optional(
+          z.int().check(z.minimum(1), z.maximum(2000), z.describe('Max number of nodes (default 200)')),
+        ),
+      }),
       execute: ({ id, depth = 4, maxNodes = 200 }) => {
         const root = getParentComponent(editor, id);
         let count = 0;
@@ -88,58 +85,41 @@ export default (ctx: WebMcpToolsContext) => {
         return { tree, nodeCount: count, truncated };
       },
     }),
-    createTool<{ id: string; includeHtml?: boolean }>({
+    createTool({
       name: ToolNames.getComponent,
       title: 'Get component',
       description:
         'Get details of a component: type, tag, attributes, classes, inline style, parent, position, direct children and editing flags.',
       annotations: { readOnlyHint: true, untrustedContentHint: true },
-      inputSchema: {
-        type: 'object',
-        properties: {
-          id: idSchema(),
-          includeHtml: { type: 'boolean', description: 'Include the HTML output of the component' },
-        },
-        required: ['id'],
-        additionalProperties: false,
-      },
+      input: z.strictObject({
+        id: idSchema(),
+        includeHtml: z.optional(z.boolean().check(z.describe('Include the HTML output of the component'))),
+      }),
       execute: ({ id, includeHtml }) => serializeComponent(editor, getComponent(editor, id), { html: includeHtml }),
     }),
-    createTool<{
-      rootId?: string;
-      selector?: string;
-      type?: string;
-      tagName?: string;
-      className?: string;
-      text?: string;
-      attributes?: Record<string, string>;
-      limit?: number;
-      offset?: number;
-    }>({
+    createTool({
       name: ToolNames.findComponents,
       title: 'Find components',
       description:
         'Search components in the selected page (or inside a root component). All provided filters must match. `selector` is a CSS selector applied to the component tree.',
       annotations: { readOnlyHint: true, untrustedContentHint: true },
-      inputSchema: {
-        type: 'object',
-        properties: {
-          rootId: idSchema('Search only inside this component'),
-          selector: { type: 'string', description: 'CSS selector, eg. "section .title"' },
-          type: { type: 'string', description: 'Component type, eg. "image"' },
-          tagName: { type: 'string', description: 'HTML tag name, eg. "h1"' },
-          className: { type: 'string', description: 'Class name the component must have' },
-          text: { type: 'string', description: 'Case insensitive text contained in the component (tags excluded)' },
-          attributes: {
-            type: 'object',
-            description: 'Attributes the component must have, eg. { "href": "/about" }',
-            additionalProperties: { type: 'string' },
-          },
-          limit: limitSchema,
-          offset: offsetSchema,
-        },
-        additionalProperties: false,
-      },
+      input: z.strictObject({
+        rootId: z.optional(idSchema('Search only inside this component')),
+        selector: z.optional(z.string().check(z.describe('CSS selector, eg. "section .title"'))),
+        type: z.optional(z.string().check(z.describe('Component type, eg. "image"'))),
+        tagName: z.optional(z.string().check(z.describe('HTML tag name, eg. "h1"'))),
+        className: z.optional(z.string().check(z.describe('Class name the component must have'))),
+        text: z.optional(
+          z.string().check(z.describe('Case insensitive text contained in the component (tags excluded)')),
+        ),
+        attributes: z.optional(
+          z
+            .record(z.string(), z.string())
+            .check(z.describe('Attributes the component must have, eg. { "href": "/about" }')),
+        ),
+        limit: limitSchema,
+        offset: offsetSchema,
+      }),
       execute: (input) => {
         const root = getParentComponent(editor, input.rootId);
         const { selector, type, tagName, className, attributes } = input;
@@ -179,40 +159,28 @@ export default (ctx: WebMcpToolsContext) => {
         types: editor.Components.getTypes().map((type) => type.id),
       }),
     }),
-    createTool<{ ids: string[] }>({
+    createTool({
       name: ToolNames.selectComponents,
       title: 'Select components',
       description: 'Select components in the canvas. Pass an empty array to clear the selection.',
-      inputSchema: {
-        type: 'object',
-        properties: {
-          ids: { type: 'array', items: { type: 'string' }, description: 'Component ids to select' },
-        },
-        required: ['ids'],
-        additionalProperties: false,
-      },
+      input: z.strictObject({ ids: z.array(z.string()).check(z.describe('Component ids to select')) }),
       execute: ({ ids }) => {
         const cmps = ids.map((id) => getComponent(editor, id));
         editor.select(cmps);
         return { selected: editor.getSelectedAll().map((cmp) => cmp.getId()) };
       },
     }),
-    createTool<{ parentId?: string; at?: number; components: any; select?: boolean }>({
+    createTool({
       name: ToolNames.addComponents,
       title: 'Add components',
       description:
         'Add new components inside a parent component (defaults to the wrapper of the selected page). Returns the ids of the added components.',
-      inputSchema: {
-        type: 'object',
-        properties: {
-          parentId: idSchema('Parent component id. Defaults to the wrapper of the selected page'),
-          at: atSchema,
-          components: componentContentSchema,
-          select: { type: 'boolean', description: 'Select the added components' },
-        },
-        required: ['components'],
-        additionalProperties: false,
-      },
+      input: z.strictObject({
+        parentId: z.optional(idSchema('Parent component id. Defaults to the wrapper of the selected page')),
+        at: atSchema,
+        components: componentContentSchema,
+        select: z.optional(z.boolean().check(z.describe('Select the added components'))),
+      }),
       execute: ({ parentId, at, components, select }) => {
         const parent = getParentComponent(editor, parentId);
         checkIndex(parent, at);
@@ -229,38 +197,29 @@ export default (ctx: WebMcpToolsContext) => {
         return { added: addedList.map(serializeComponentSummary) };
       },
     }),
-    createTool<{
-      id: string;
-      attributes?: Record<string, any>;
-      removeAttributes?: string[];
-      content?: any;
-      name?: string;
-    }>({
+    createTool({
       name: ToolNames.updateComponent,
       title: 'Update component',
       description:
         'Update a component: set or remove attributes, replace its inner content (children) or set its custom name shown in the layer manager. ' +
         `For styles and classes use ${toolRef(ctx, ToolNames.setComponentStyle)} and ${toolRef(ctx, ToolNames.updateComponentClasses)}.`,
-      inputSchema: {
-        type: 'object',
-        properties: {
-          id: idSchema(),
-          attributes: {
-            type: 'object',
-            description: 'Attributes to add/update, eg. { "href": "/about", "title": "About" }',
-            additionalProperties: { type: ['string', 'number', 'boolean'] },
-          },
-          removeAttributes: { type: 'array', items: { type: 'string' }, description: 'Attribute names to remove' },
-          content: {
-            ...componentContentSchema,
-            description:
+      input: z.strictObject({
+        id: idSchema(),
+        attributes: z.optional(
+          z
+            .record(z.string(), z.union([z.string(), z.number(), z.boolean()]))
+            .check(z.describe('Attributes to add/update, eg. { "href": "/about", "title": "About" }')),
+        ),
+        removeAttributes: z.optional(z.array(z.string()).check(z.describe('Attribute names to remove'))),
+        content: z.optional(
+          componentContentSchema.check(
+            z.describe(
               'Replace all the children with this content (HTML string, component definition or array of them). For text components use HTML, eg. "Hello <b>world</b>"',
-          },
-          name: { type: 'string', description: 'Custom name of the component' },
-        },
-        required: ['id'],
-        additionalProperties: false,
-      },
+            ),
+          ),
+        ),
+        name: z.optional(z.string().check(z.describe('Custom name of the component'))),
+      }),
       execute: ({ id, attributes, removeAttributes, content, name }) => {
         const cmp = getComponent(editor, id);
 
@@ -285,21 +244,16 @@ export default (ctx: WebMcpToolsContext) => {
         return serializeComponent(editor, cmp);
       },
     }),
-    createTool<{ id: string; parentId?: string; at?: number }>({
+    createTool({
       name: ToolNames.cloneComponent,
       title: 'Clone component',
       description:
         'Duplicate a component. By default the clone is placed right after the original, otherwise inside `parentId` at `at` index.',
-      inputSchema: {
-        type: 'object',
-        properties: {
-          id: idSchema(),
-          parentId: idSchema('Parent component id for the clone'),
-          at: atSchema,
-        },
-        required: ['id'],
-        additionalProperties: false,
-      },
+      input: z.strictObject({
+        id: idSchema(),
+        parentId: z.optional(idSchema('Parent component id for the clone')),
+        at: atSchema,
+      }),
       execute: ({ id, parentId, at }) => {
         const cmp = getComponent(editor, id);
         if (!cmp.get('copyable')) throw new ToolError(`Component "${id}" is not copyable`, 'not_allowed');
@@ -315,20 +269,15 @@ export default (ctx: WebMcpToolsContext) => {
         return { clone: serializeComponentSummary(clone) };
       },
     }),
-    createTool<{ id: string; parentId: string; at?: number }>({
+    createTool({
       name: ToolNames.moveComponent,
       title: 'Move component',
       description: 'Move a component inside another parent (or to another position in the same parent).',
-      inputSchema: {
-        type: 'object',
-        properties: {
-          id: idSchema(),
-          parentId: idSchema('New parent component id'),
-          at: atSchema,
-        },
-        required: ['id', 'parentId'],
-        additionalProperties: false,
-      },
+      input: z.strictObject({
+        id: idSchema(),
+        parentId: idSchema('New parent component id'),
+        at: atSchema,
+      }),
       execute: ({ id, parentId, at }) => {
         const cmp = getComponent(editor, id);
         const parent = getComponent(editor, parentId);
@@ -340,19 +289,12 @@ export default (ctx: WebMcpToolsContext) => {
         return { moved: serializeComponentSummary(cmp), parentId: parent.getId(), index: cmp.index() };
       },
     }),
-    createTool<{ ids: string[] }>({
+    createTool({
       name: ToolNames.removeComponents,
       title: 'Remove components',
       description: `Remove components from the page. Can be reverted with ${toolRef(ctx, ToolNames.undo)}.`,
       annotations: { consequentialHint: true },
-      inputSchema: {
-        type: 'object',
-        properties: {
-          ids: { type: 'array', items: { type: 'string' }, minItems: 1, description: 'Component ids to remove' },
-        },
-        required: ['ids'],
-        additionalProperties: false,
-      },
+      input: z.strictObject({ ids: z.array(z.string()).check(z.minLength(1), z.describe('Component ids to remove')) }),
       execute: ({ ids }) => {
         const cmps = ids.map((id) => getComponent(editor, id));
 
@@ -365,22 +307,17 @@ export default (ctx: WebMcpToolsContext) => {
         return { removed: ids };
       },
     }),
-    createTool<{ id: string; style: StyleInput; replace?: boolean }>({
+    createTool({
       name: ToolNames.setComponentStyle,
       title: 'Set component style',
       description:
         'Update the style of a single component (merged with the current one by default). ' +
         `For states (eg. hover) or media queries use ${toolRef(ctx, ToolNames.setCssRule)} with the "#<componentId>" selector, for shared styles prefer classes.`,
-      inputSchema: {
-        type: 'object',
-        properties: {
-          id: idSchema(),
-          style: styleSchema,
-          replace: { type: 'boolean', description: 'Replace the whole style instead of merging it' },
-        },
-        required: ['id', 'style'],
-        additionalProperties: false,
-      },
+      input: z.strictObject({
+        id: idSchema(),
+        style: styleSchema,
+        replace: z.optional(z.boolean().check(z.describe('Replace the whole style instead of merging it'))),
+      }),
       execute: ({ id, style, replace }) => {
         const cmp = getComponent(editor, id);
         const current = (toPlain(cmp.getStyle()) || {}) as Style;
@@ -389,21 +326,16 @@ export default (ctx: WebMcpToolsContext) => {
         return { id, style: toPlain(cmp.getStyle()) || {} };
       },
     }),
-    createTool<{ id: string; add?: string[]; remove?: string[]; set?: string[] }>({
+    createTool({
       name: ToolNames.updateComponentClasses,
       title: 'Update component classes',
       description: 'Add, remove or replace the CSS classes of a component.',
-      inputSchema: {
-        type: 'object',
-        properties: {
-          id: idSchema(),
-          set: { type: 'array', items: { type: 'string' }, description: 'Replace all classes with these ones' },
-          add: { type: 'array', items: { type: 'string' }, description: 'Classes to add' },
-          remove: { type: 'array', items: { type: 'string' }, description: 'Classes to remove' },
-        },
-        required: ['id'],
-        additionalProperties: false,
-      },
+      input: z.strictObject({
+        id: idSchema(),
+        set: z.optional(z.array(z.string()).check(z.describe('Replace all classes with these ones'))),
+        add: z.optional(z.array(z.string()).check(z.describe('Classes to add'))),
+        remove: z.optional(z.array(z.string()).check(z.describe('Classes to remove'))),
+      }),
       execute: ({ id, set, add, remove }) => {
         const cmp = getComponent(editor, id);
         const invalid = [...(set || []), ...(add || [])].find((cls) => !cls || /[\s.#]/.test(cls));

@@ -1,4 +1,5 @@
 import type { Editor } from 'grapesjs';
+import * as z from 'zod/mini';
 import type { WebMcpToolsContext } from '../types';
 import { serializeDevice } from './devices';
 import { getPage, serializePage } from './pages';
@@ -38,16 +39,12 @@ export default (ctx: WebMcpToolsContext) => {
       annotations: { readOnlyHint: true },
       execute: () => getState(editor),
     }),
-    createTool<{ pageId?: string }>({
+    createTool({
       name: ToolNames.getPageCode,
       title: 'Get page code',
       description: 'Export the HTML and CSS of a page (defaults to the selected page).',
       annotations: { readOnlyHint: true, untrustedContentHint: true },
-      inputSchema: {
-        type: 'object',
-        properties: { pageId: { type: 'string', description: 'Page id' } },
-        additionalProperties: false,
-      },
+      input: z.strictObject({ pageId: z.optional(z.string().check(z.describe('Page id'))) }),
       execute: ({ pageId }) => {
         const page = pageId ? getPage(editor, pageId) : editor.Pages.getSelected();
         if (!page) throw new ToolError('No page is selected', 'not_found');
@@ -66,23 +63,17 @@ export default (ctx: WebMcpToolsContext) => {
       annotations: { readOnlyHint: true, untrustedContentHint: true },
       execute: () => ({ projectData: toPlain(editor.getProjectData()) }),
     }),
-    createTool<{ projectData: Record<string, any> }>({
+    createTool({
       name: ToolNames.loadProjectData,
       title: 'Load project data',
       description:
         'Replace the whole project with the provided project JSON. All the current content will be replaced.',
       annotations: { consequentialHint: true },
-      inputSchema: {
-        type: 'object',
-        properties: {
-          projectData: {
-            type: 'object',
-            description: `Project JSON, as returned by ${toolRef(ctx, ToolNames.getProjectData)}`,
-          },
-        },
-        required: ['projectData'],
-        additionalProperties: false,
-      },
+      input: z.strictObject({
+        projectData: z
+          .record(z.string(), z.unknown())
+          .check(z.describe(`Project JSON, as returned by ${toolRef(ctx, ToolNames.getProjectData)}`)),
+      }),
       execute: ({ projectData }) => {
         editor.loadProjectData(projectData);
         return { pages: editor.Pages.getAll().map((page) => serializePage(page, editor.Pages.getSelected())) };

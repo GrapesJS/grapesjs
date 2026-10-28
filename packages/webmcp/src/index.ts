@@ -8,7 +8,8 @@ export * from './types';
 export { createDefaultTools } from './tools';
 export { ToolNames } from './tools/names';
 export { getModelContext, registerTools } from './registry';
-export { ToolError } from './utils';
+export { createTool, ToolError } from './utils';
+export type { CreateToolProps } from './utils';
 
 const LOG_NS = 'webmcp';
 

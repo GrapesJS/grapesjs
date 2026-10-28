@@ -1,4 +1,5 @@
 import type { Page } from 'grapesjs';
+import * as z from 'zod/mini';
 import type { WebMcpToolsContext } from '../types';
 import { ToolNames } from './names';
 import { createTool, ToolError } from '../utils';
@@ -26,21 +27,16 @@ export default ({ editor }: WebMcpToolsContext) => [
       return { pages: editor.Pages.getAll().map((page) => serializePage(page, selected)) };
     },
   }),
-  createTool<{ name: string; id?: string; content?: string; select?: boolean }>({
+  createTool({
     name: ToolNames.addPage,
     title: 'Add page',
     description: 'Create a new page, optionally with initial HTML content.',
-    inputSchema: {
-      type: 'object',
-      properties: {
-        name: { type: 'string', description: 'Page name' },
-        id: { type: 'string', description: 'Custom page id' },
-        content: { type: 'string', description: 'Initial HTML content of the page' },
-        select: { type: 'boolean', description: 'Select the new page' },
-      },
-      required: ['name'],
-      additionalProperties: false,
-    },
+    input: z.strictObject({
+      name: z.string().check(z.describe('Page name')),
+      id: z.optional(z.string().check(z.describe('Custom page id'))),
+      content: z.optional(z.string().check(z.describe('Initial HTML content of the page'))),
+      select: z.optional(z.boolean().check(z.describe('Select the new page'))),
+    }),
     execute: ({ name, id, content, select }) => {
       if (id && editor.Pages.get(id)) throw new ToolError(`Page "${id}" already exists`, 'invalid_input');
       const page = editor.Pages.add(
@@ -53,51 +49,36 @@ export default ({ editor }: WebMcpToolsContext) => [
       return { page: serializePage(page, editor.Pages.getSelected()) };
     },
   }),
-  createTool<{ id: string; name: string }>({
+  createTool({
     name: ToolNames.renamePage,
     title: 'Rename page',
     description: 'Rename a page.',
-    inputSchema: {
-      type: 'object',
-      properties: {
-        id: { type: 'string', description: 'Page id' },
-        name: { type: 'string', description: 'New page name' },
-      },
-      required: ['id', 'name'],
-      additionalProperties: false,
-    },
+    input: z.strictObject({
+      id: z.string().check(z.describe('Page id')),
+      name: z.string().check(z.describe('New page name')),
+    }),
     execute: ({ id, name }) => {
       const page = getPage(editor, id);
       page.setName(name);
       return { page: serializePage(page, editor.Pages.getSelected()) };
     },
   }),
-  createTool<{ id: string }>({
+  createTool({
     name: ToolNames.selectPage,
     title: 'Select page',
     description: 'Select (open) a page in the canvas.',
-    inputSchema: {
-      type: 'object',
-      properties: { id: { type: 'string', description: 'Page id' } },
-      required: ['id'],
-      additionalProperties: false,
-    },
+    input: z.strictObject({ id: z.string().check(z.describe('Page id')) }),
     execute: ({ id }) => {
       editor.Pages.select(getPage(editor, id));
       return { page: serializePage(getPage(editor, id), editor.Pages.getSelected()) };
     },
   }),
-  createTool<{ id: string }>({
+  createTool({
     name: ToolNames.removePage,
     title: 'Remove page',
     description: 'Remove a page and all of its content. The last remaining page cannot be removed.',
     annotations: { consequentialHint: true },
-    inputSchema: {
-      type: 'object',
-      properties: { id: { type: 'string', description: 'Page id' } },
-      required: ['id'],
-      additionalProperties: false,
-    },
+    input: z.strictObject({ id: z.string().check(z.describe('Page id')) }),
     execute: ({ id }) => {
       const page = getPage(editor, id);
       const pages = editor.Pages.getAll();

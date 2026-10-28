@@ -1,4 +1,5 @@
 import type { Block } from 'grapesjs';
+import * as z from 'zod/mini';
 import type { WebMcpToolsContext } from '../types';
 import { ToolNames } from './names';
 import {
@@ -37,20 +38,16 @@ export default (ctx: WebMcpToolsContext) => {
   const { editor, defaultLimit } = ctx;
 
   return [
-    createTool<{ category?: string; limit?: number; offset?: number }>({
+    createTool({
       name: ToolNames.listBlocks,
       title: 'List blocks',
       description: `List the blocks available in the editor (predefined content that can be inserted with ${toolRef(ctx, ToolNames.insertBlock)}).`,
       annotations: { readOnlyHint: true },
-      inputSchema: {
-        type: 'object',
-        properties: {
-          category: { type: 'string', description: 'Filter by category label' },
-          limit: limitSchema,
-          offset: offsetSchema,
-        },
-        additionalProperties: false,
-      },
+      input: z.strictObject({
+        category: z.optional(z.string().check(z.describe('Filter by category label'))),
+        limit: limitSchema,
+        offset: offsetSchema,
+      }),
       execute: (input) => {
         const blocks = editor.Blocks.getAll().filter(
           (block: Block) => input.category === undefined || block.getCategoryLabel() === input.category,
@@ -58,38 +55,28 @@ export default (ctx: WebMcpToolsContext) => {
         return paginate(blocks, input, defaultLimit, serializeBlock);
       },
     }),
-    createTool<{ id: string }>({
+    createTool({
       name: ToolNames.getBlock,
       title: 'Get block',
       description: 'Get a block with its content (HTML string or component definitions).',
       annotations: { readOnlyHint: true },
-      inputSchema: {
-        type: 'object',
-        properties: { id: { type: 'string', description: 'Block id' } },
-        required: ['id'],
-        additionalProperties: false,
-      },
+      input: z.strictObject({ id: z.string().check(z.describe('Block id')) }),
       execute: ({ id }) => {
         const block = getBlock(editor, id);
         return { ...serializeBlock(block), content: getBlockContent(block) ?? null };
       },
     }),
-    createTool<{ id: string; parentId?: string; at?: number; select?: boolean }>({
+    createTool({
       name: ToolNames.insertBlock,
       title: 'Insert block',
       description:
         'Insert the content of a block inside a parent component (defaults to the wrapper of the selected page).',
-      inputSchema: {
-        type: 'object',
-        properties: {
-          id: { type: 'string', description: 'Block id' },
-          parentId: idSchema('Parent component id. Defaults to the wrapper of the selected page'),
-          at: { type: 'integer', minimum: 0, description: 'Index position inside the parent' },
-          select: { type: 'boolean', description: 'Select the inserted components' },
-        },
-        required: ['id'],
-        additionalProperties: false,
-      },
+      input: z.strictObject({
+        id: z.string().check(z.describe('Block id')),
+        parentId: z.optional(idSchema('Parent component id. Defaults to the wrapper of the selected page')),
+        at: z.optional(z.int().check(z.minimum(0), z.describe('Index position inside the parent'))),
+        select: z.optional(z.boolean().check(z.describe('Select the inserted components'))),
+      }),
       execute: ({ id, parentId, at, select }) => {
         const block = getBlock(editor, id);
         const content = block.getContent();

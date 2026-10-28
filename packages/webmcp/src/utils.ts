@@ -1,4 +1,5 @@
-import type { Component, CssRule, Editor } from 'grapesjs';
+import type { Component, Editor } from 'grapesjs';
+import * as z from 'zod/mini';
 import { ToolNames } from './tools/names';
 import type {
   JsonSchema,
@@ -18,106 +19,119 @@ export class ToolError extends Error {
   }
 }
 
-const typeOf = (value: unknown) => {
-  if (value === null) return 'null';
-  if (Array.isArray(value)) return 'array';
-  if (typeof value === 'number' && Number.isInteger(value)) return 'integer';
-  return typeof value;
-};
+const formatPath = (path: PropertyKey[]) =>
+  path.reduce<string>((acc, key) => (typeof key === 'number' ? `${acc}[${key}]` : `${acc}.${String(key)}`), 'input');
 
-const matchesType = (value: unknown, type: string | string[]): boolean => {
-  const types = Array.isArray(type) ? type : [type];
-  const actual = typeOf(value);
-  return types.some((t) => t === actual || (t === 'number' && actual === 'integer'));
+/**
+ * Readable message from a validation issue (zod/mini doesn't include localized messages).
+ */
+const formatIssue = (issue: z.core.$ZodIssue, input: unknown): string => {
+  const path = formatPath(issue.path);
+
+  switch (issue.code) {
+    case 'invalid_type': {
+      // Issues don't include the received value by default
+      const value = issue.path.reduce<any>((acc, key) => acc?.[key as any], input);
+      const expected = issue.expected === 'int' ? 'integer' : issue.expected;
+      return value === undefined ? `${path} is required` : `${path} must be of type ${expected}`;
+    }
+    case 'unrecognized_keys':
+      return issue.keys.map((key) => `${formatPath([...issue.path, key])} is not a supported property`).join(', ');
+    case 'too_small':
+      return issue.origin === 'array'
+        ? `${path} must contain at least ${issue.minimum} item(s)`
+        : `${path} must be >= ${issue.minimum}`;
+    case 'too_big':
+      return issue.origin === 'array'
+        ? `${path} must contain at most ${issue.maximum} item(s)`
+        : `${path} must be <= ${issue.maximum}`;
+    case 'invalid_value':
+      return `${path} must be one of: ${issue.values.map((v) => JSON.stringify(v)).join(', ')}`;
+    case 'invalid_union':
+      return `${path} doesn't match any of the allowed shapes`;
+    default:
+      return `${path} is not valid`;
+  }
 };
 
 /**
- * Minimal JSON Schema validation for the subset used by the default tools
- * (type, required, properties, additionalProperties, items, enum, minimum, maximum, minItems, oneOf).
+ * Validate the input against the schema, throws a ToolError with the first issue.
  */
-export const validateSchema = (value: unknown, schema: JsonSchema = {}, path = 'input'): string | undefined => {
-  if (schema.oneOf) {
-    const valid = (schema.oneOf as JsonSchema[]).some((sub) => !validateSchema(value, sub, path));
-    return valid ? undefined : `${path} doesn't match any of the allowed shapes`;
-  }
+export const parseInput = <S extends z.ZodMiniType>(schema: S, input: unknown): z.output<S> => {
+  const result = z.safeParse(schema, input);
+  if (!result.success) throw new ToolError(formatIssue(result.error.issues[0], input), 'invalid_input');
+  return result.data;
+};
 
-  if (schema.type && !matchesType(value, schema.type)) {
-    const expected = Array.isArray(schema.type) ? schema.type.join(' | ') : schema.type;
-    return `${path} must be of type ${expected}, received ${typeOf(value)}`;
-  }
+/**
+ * Remove noise added by the JSON Schema conversion (safe integer bounds, string property names).
+ */
+const cleanJsonSchema = (value: any): any => {
+  if (Array.isArray(value)) return value.map(cleanJsonSchema);
+  if (!value || typeof value !== 'object') return value;
+  const result: JsonSchema = {};
 
-  if (schema.enum && !schema.enum.includes(value)) {
-    return `${path} must be one of: ${schema.enum.map((v: unknown) => JSON.stringify(v)).join(', ')}`;
-  }
+  Object.keys(value).forEach((key) => {
+    const item = value[key];
+    if (key === 'maximum' && item === Number.MAX_SAFE_INTEGER) return;
+    if (key === 'minimum' && item === Number.MIN_SAFE_INTEGER) return;
+    if (key === 'propertyNames' && item?.type === 'string' && Object.keys(item).length === 1) return;
+    result[key] = cleanJsonSchema(item);
+  });
 
-  if (typeof value === 'number') {
-    if (typeof schema.minimum === 'number' && value < schema.minimum) return `${path} must be >= ${schema.minimum}`;
-    if (typeof schema.maximum === 'number' && value > schema.maximum) return `${path} must be <= ${schema.maximum}`;
-  }
+  return result;
+};
 
-  if (Array.isArray(value)) {
-    if (typeof schema.minItems === 'number' && value.length < schema.minItems) {
-      return `${path} must contain at least ${schema.minItems} item(s)`;
-    }
-    if (schema.items) {
-      for (let i = 0; i < value.length; i++) {
-        const err = validateSchema(value[i], schema.items, `${path}[${i}]`);
-        if (err) return err;
-      }
-    }
-  }
-
-  if (typeOf(value) === 'object') {
-    const obj = value as Record<string, unknown>;
-    const props: Record<string, JsonSchema> = schema.properties || {};
-
-    for (const key of schema.required || []) {
-      if (obj[key] === undefined) return `${path}.${key} is required`;
-    }
-
-    for (const key of Object.keys(obj)) {
-      if (obj[key] === undefined) continue;
-      if (props[key]) {
-        const err = validateSchema(obj[key], props[key], `${path}.${key}`);
-        if (err) return err;
-      } else if (schema.additionalProperties === false) {
-        return `${path}.${key} is not a supported property`;
-      } else if (typeOf(schema.additionalProperties) === 'object') {
-        const err = validateSchema(obj[key], schema.additionalProperties, `${path}.${key}`);
-        if (err) return err;
-      }
-    }
-  }
+/**
+ * Convert a zod schema to the JSON Schema exposed to the agent.
+ */
+export const toInputSchema = (schema: z.ZodMiniType): JsonSchema => {
+  const { $schema, ...jsonSchema } = z.toJSONSchema(schema, { io: 'input' }) as JsonSchema;
+  return cleanJsonSchema(jsonSchema);
 };
 
 export const throwIfAborted = (signal?: AbortSignal) => {
   if (signal?.aborted) throw new ToolError('The operation was aborted', 'aborted');
 };
 
-interface CreateToolProps<I> {
+const emptyInput = z.strictObject({});
+
+export interface CreateToolProps<S extends z.ZodMiniType> {
   name: string;
   title?: string;
   description: string;
-  inputSchema?: JsonSchema;
+  /** Zod (`zod/mini`) schema of the input, used for the `inputSchema` and validation. */
+  input?: S;
   annotations?: WebMcpToolAnnotations;
-  execute: (input: I, options: WebMcpToolExecuteOptions) => unknown;
+  execute: (input: z.output<S>, options: WebMcpToolExecuteOptions) => unknown;
 }
 
 /**
- * Create a default tool with input validation and abort check before running the handler.
+ * Create a tool from a zod schema: the `inputSchema` is generated from it, the input
+ * is validated (and typed) before running the handler.
+ * @example
+ * import * as z from 'zod/mini';
+ *
+ * createTool({
+ *   name: 'save_project',
+ *   description: 'Save the project',
+ *   input: z.strictObject({ reason: z.optional(z.string()) }),
+ *   execute: ({ reason }) => ({ saved: true }),
+ * });
  */
-export const createTool = <I = Record<string, any>>(props: CreateToolProps<I>): WebMcpTool<I> => {
-  const inputSchema = props.inputSchema || { type: 'object', properties: {}, additionalProperties: false };
+export const createTool = <S extends z.ZodMiniType = typeof emptyInput>(
+  props: CreateToolProps<S>,
+): WebMcpTool<z.output<S>> => {
+  const { input, execute, ...rest } = props;
+  const schema = (input || emptyInput) as S;
 
   return {
-    ...props,
-    inputSchema,
-    execute: async (input, options = {}) => {
-      const data = (input ?? {}) as I;
-      const error = validateSchema(data, inputSchema);
-      if (error) throw new ToolError(error, 'invalid_input');
+    ...rest,
+    inputSchema: toInputSchema(schema),
+    execute: async (data, options = {}) => {
+      const parsed = parseInput(schema, data ?? {});
       throwIfAborted(options.signal);
-      return props.execute(data, options);
+      return execute(parsed, options);
     },
   };
 };
@@ -155,23 +169,27 @@ export const mergeStyle = (current: Style, update: StyleInput) => {
 
 // Common schema pieces
 
-export const limitSchema = { type: 'integer', minimum: 1, maximum: 1000, description: 'Max number of items to return' };
-export const offsetSchema = { type: 'integer', minimum: 0, description: 'Number of items to skip (pagination)' };
-export const idSchema = (description = 'Component id, as returned by the inspection tools') => ({
-  type: 'string',
-  description,
-});
-export const styleSchema = {
-  type: 'object',
-  description:
-    'CSS properties, eg. { "color": "red", "padding-top": "10px" }. Use an empty string to remove a property',
-  additionalProperties: { type: ['string', 'number'] },
-};
-export const componentContentSchema = {
-  description:
-    'Components to add: an HTML string, a component definition object (eg. { "type": "text", "content": "Hello" }) or an array of them',
-  oneOf: [{ type: 'string' }, { type: 'object' }, { type: 'array', items: { type: ['string', 'object'] } }],
-};
+export const limitSchema = z.optional(
+  z.int().check(z.minimum(1), z.maximum(1000), z.describe('Max number of items to return')),
+);
+export const offsetSchema = z.optional(z.int().check(z.minimum(0), z.describe('Number of items to skip (pagination)')));
+export const idSchema = (description = 'Component id, as returned by the inspection tools') =>
+  z.string().check(z.describe(description));
+export const styleSchema = z
+  .record(z.string(), z.union([z.string(), z.number()]))
+  .check(
+    z.describe(
+      'CSS properties, eg. { "color": "red", "padding-top": "10px" }. Use an empty string to remove a property',
+    ),
+  );
+const componentDefSchema = z.looseObject({});
+export const componentContentSchema = z
+  .union([z.string(), componentDefSchema, z.array(z.union([z.string(), componentDefSchema]))])
+  .check(
+    z.describe(
+      'Components to add: an HTML string, a component definition object (eg. { "type": "text", "content": "Hello" }) or an array of them',
+    ),
+  );
 
 export const paginate = <T, R>(
   items: T[],

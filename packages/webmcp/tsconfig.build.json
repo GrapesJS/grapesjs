@@ -1,8 +1,11 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    // Resolve the workspace grapesjs from node_modules, so its types are imported instead of inlined
-    "preserveSymlinks": true,
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "noEmit": false,
+    "sourceMap": false,
+    "outDir": "./dist/types",
     "types": []
   },
   "include": ["src"]

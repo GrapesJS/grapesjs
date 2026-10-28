@@ -86,7 +86,7 @@ How the tools behave:
 
 - They use the public GrapesJS APIs, so changes go through the usual events, undo history and storage (eg. your autosave keeps working).
 - Components are addressed by the ids returned by the inspection tools. Ids are resolved on each call: stale ids (eg. removed components) return a clear error.
-- Inputs are validated before any change. Structural operations respect component constraints (`draggable`, `droppable`, `removable`, `copyable`) and moving a component inside itself or its descendants is rejected.
+- Inputs are validated (with [zod](https://zod.dev)) before any change. Structural operations respect component constraints (`draggable`, `droppable`, `removable`, `copyable`) and moving a component inside itself or its descendants is rejected.
 - Results are plain JSON. Lists are paginated (`limit`/`offset`, with `total` and `hasMore`) and the tree is bounded (`depth`/`maxNodes`, with `truncated`).
 - Read-only tools are marked with `readOnlyHint`, destructive ones (removals, project replacement) with `consequentialHint`.
 - Errors are returned as data, so the agent can read the reason and recover: `{ "error": { "code": "not_found", "message": "..." } }`.
@@ -139,6 +139,16 @@ webMcpPlugin(editor, {
 });
 ```
 
+Default tools validate their input strictly (unknown properties are rejected). If you extend the `inputSchema` of a default tool with your own properties, remove them before calling the original `execute`:
+
+```js
+execute: async ({ notify, ...input }, options) => {
+  const result = await tool.execute(input, options);
+  notify && showToast('Component updated');
+  return result;
+},
+```
+
 ### Add custom tools
 
 ```js
@@ -158,7 +168,35 @@ webMcpPlugin(editor, {
 });
 ```
 
-A tool has `name`, `description`, `inputSchema` (JSON Schema), optional `title`/`annotations` and `execute(input, { signal })`. Thrown errors are returned to the agent as `{ error }`.
+A tool has `name`, `description`, `inputSchema` (JSON Schema), optional `title`/`annotations` and `execute(input, { signal })`. Thrown errors are returned to the agent as `{ error }`. Custom tools defined this way are not validated by the plugin, check the input in `execute`.
+
+#### With zod
+
+Optionally, use `createTool` with a [`zod/mini`](https://zod.dev/packages/mini) schema (the same approach used by the default tools): the `inputSchema` is generated from it, and the input is validated and typed before `execute` runs.
+
+```js
+import * as z from 'zod/mini';
+import webMcpPlugin, { createTool } from '@grapesjs/webmcp';
+
+webMcpPlugin(editor, {
+  getTools: ({ editor, tools }) => [
+    ...tools,
+    createTool({
+      name: 'save_project',
+      description: 'Save the project to the server.',
+      input: z.strictObject({
+        reason: z.optional(z.string().check(z.describe('Why the project is saved'))),
+      }),
+      execute: async ({ reason }) => {
+        await editor.store({ reason });
+        return { saved: true };
+      },
+    }),
+  ],
+});
+```
+
+Invalid inputs are returned to the agent as `{ error: { code: 'invalid_input', message: 'input.reason must be of type string' } }`.
 
 ### Disable all tools
 
@@ -175,7 +213,7 @@ grapesjs.init({ container: '#body-editor', plugins: [(ed) => webMcpPlugin(ed, { 
 
 ### Reuse the tools
 
-`createDefaultTools`, `registerTools` and `getModelContext` are exported in case you need to build your own integration.
+`createDefaultTools`, `createTool`, `registerTools` and `getModelContext` are exported in case you need to build your own integration.
 
 ## Lifecycle
 

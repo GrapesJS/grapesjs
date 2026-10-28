@@ -1,4 +1,5 @@
 import type { Trait } from 'grapesjs';
+import * as z from 'zod/mini';
 import type { WebMcpToolsContext } from '../types';
 import { ToolNames } from './names';
 import { createTool, getComponent, idSchema, ToolError, toPlain } from '../utils';
@@ -20,33 +21,23 @@ const serializeTrait = (trait: Trait) => {
 };
 
 export default ({ editor }: WebMcpToolsContext) => [
-  createTool<{ id: string }>({
+  createTool({
     name: ToolNames.getComponentTraits,
     title: 'Get component traits',
     description:
       'Get the traits (settings) of a component: name, type, label, current value and options (for select-like traits).',
     annotations: { readOnlyHint: true },
-    inputSchema: {
-      type: 'object',
-      properties: { id: idSchema() },
-      required: ['id'],
-      additionalProperties: false,
-    },
+    input: z.strictObject({ id: idSchema() }),
     execute: ({ id }) => ({ id, traits: getComponent(editor, id).getTraits().map(serializeTrait) }),
   }),
-  createTool<{ id: string; values: Record<string, any> }>({
+  createTool({
     name: ToolNames.updateComponentTraits,
     title: 'Update component traits',
     description: 'Update trait values of a component, eg. { "href": "/about", "target": "_blank" }.',
-    inputSchema: {
-      type: 'object',
-      properties: {
-        id: idSchema(),
-        values: { type: 'object', description: 'Trait names with their new values' },
-      },
-      required: ['id', 'values'],
-      additionalProperties: false,
-    },
+    input: z.strictObject({
+      id: idSchema(),
+      values: z.record(z.string(), z.unknown()).check(z.describe('Trait names with their new values')),
+    }),
     execute: ({ id, values }) => {
       const cmp = getComponent(editor, id);
       const entries = Object.keys(values).map((name) => {
