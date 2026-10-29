@@ -23,11 +23,16 @@ describe('CSS rule tools', () => {
     const all = await call('get_css_rules', { selector: '.card' });
     expect(all.total).toBe(2);
     const media = await call('get_css_rules', { selector: '.card', atRuleParams: '(max-width: 768px)' });
-    expect(media.items).toEqual([
-      expect.objectContaining({ atRuleType: 'media', atRuleParams: '(max-width: 768px)', style: { color: 'blue' } }),
+    expect(media.items).toEqual(['@media (max-width: 768px){.card{color:blue;}}']);
+    const base = await call('get_css_rules', { selector: '.card', atRuleParams: '', format: 'style' });
+    expect(base.items).toEqual([
+      { selector: '.card', state: '', atRuleType: '', atRuleParams: '', style: { color: 'red' } },
     ]);
-    const base = await call('get_css_rules', { selector: '.card', atRuleParams: '' });
-    expect(base.items).toEqual([expect.objectContaining({ atRuleParams: '', style: { color: 'red' } })]);
+  });
+
+  test('get_css_rules keeps empty rules', async () => {
+    editor.Css.setRule('.empty', {});
+    expect((await call('get_css_rules', { selector: '.empty' })).items).toEqual(['.empty{}']);
   });
 
   test('set_css_rules with state and media', async () => {
@@ -102,16 +107,7 @@ describe('CSS rule tools', () => {
     const res = await call('remove_css_rules', {
       rules: [{ selector: '.card:hover' }, { selector: '.card', atRuleParams: '(max-width: 768px)' }],
     });
-    expect(res.removed).toEqual([
-      { selector: '.card:hover', state: 'hover', atRuleType: '', atRuleParams: '', style: { color: 'black' } },
-      {
-        selector: '.card',
-        state: '',
-        atRuleType: 'media',
-        atRuleParams: '(max-width: 768px)',
-        style: { color: 'blue' },
-      },
-    ]);
+    expect(res.removed).toEqual(['.card:hover{color:black;}', '@media (max-width: 768px){.card{color:blue;}}']);
     expect(editor.getCss()).not.toContain('@media');
     expect(editor.getCss()).not.toContain(':hover');
     expect(editor.getCss()).toContain('.card{color:red;}');

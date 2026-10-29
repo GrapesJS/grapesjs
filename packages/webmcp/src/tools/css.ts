@@ -40,16 +40,28 @@ const serializeRule = (rule: CssRule) => ({
   style: toPlain(rule.getStyle()) || {},
 });
 
+// Keep empty rules, otherwise they would be serialized as an empty string
+const serializeRuleCss = (rule: CssRule) => rule.toCSS({ allowEmpty: true });
+
 export default ({ editor, defaultLimit, toolPrefix }: WebMcpToolsContext) => [
   createTool({
     name: ToolNames.getCssRules,
     title: 'Get CSS rules',
     description:
-      'List CSS rules of the project. Filter by exact selector (including state, eg. ".btn:hover") and/or at-rule (eg. media params "(max-width: 768px)").',
+      'List CSS rules of the project. Filter by exact selector (including state, eg. ".btn:hover") and/or at-rule (eg. media params "(max-width: 768px)"). Rules are returned as CSS strings, unless `format` is "style".',
     annotations: { readOnlyHint: true },
     input: z.strictObject({
       selector: z.optional(z.string().check(z.describe('Exact selector, eg. ".btn:hover" or "#my-id"'))),
       ...atRuleProps,
+      format: z.optional(
+        z
+          .enum(['css', 'style'])
+          .check(
+            z.describe(
+              'Format of the returned rules: "css" (default) for CSS strings, "style" for objects with the rule identifiers and the style',
+            ),
+          ),
+      ),
       limit: limitSchema,
       offset: offsetSchema,
     }),
@@ -64,7 +76,9 @@ export default ({ editor, defaultLimit, toolPrefix }: WebMcpToolsContext) => [
         return true;
       });
 
-      return paginate(rules, input, defaultLimit, serializeRule);
+      return input.format === 'style'
+        ? paginate(rules, input, defaultLimit, serializeRule)
+        : paginate(rules, input, defaultLimit, serializeRuleCss);
     },
   }),
   createTool({
@@ -138,7 +152,7 @@ export default ({ editor, defaultLimit, toolPrefix }: WebMcpToolsContext) => [
       const missing = rules.filter((_, index) => !found[index]).map((rule) => `"${rule.selector}"`);
       if (missing.length) throw new ToolError(`CSS rules not found: ${missing.join(', ')}`, 'not_found');
 
-      const removed = found.map((rule) => serializeRule(rule!));
+      const removed = found.map((rule) => serializeRuleCss(rule!));
       found.forEach((rule) => editor.Css.remove(rule!));
       return { removed };
     },
