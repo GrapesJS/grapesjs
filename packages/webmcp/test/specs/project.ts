@@ -38,7 +38,7 @@ describe('Project tools', () => {
     const { page } = await call('add_page', { id: 'about', name: 'About', content: '<h1>About</h1>', select: true });
     expect(page).toEqual({ id: 'about', name: 'About', selected: true });
     expect(await call('add_page', { id: 'about', name: 'Dup' })).toMatchObject({ error: { code: 'invalid_input' } });
-    expect((await call('get_page_code')).html).toContain('<h1');
+    expect((await call('get_page_code')).code).toContain('<h1');
 
     await call('rename_page', { id: 'about', name: 'About us' });
     expect(editor.Pages.get('about')!.getName()).toBe('About us');
@@ -46,7 +46,7 @@ describe('Project tools', () => {
     const first = editor.Pages.getAll()[0].getId();
     await call('select_page', { id: first });
     expect(editor.Pages.getSelected()!.getId()).toBe(first);
-    expect((await call('get_page_code', { pageId: 'about' })).html).toContain('About');
+    expect((await call('get_page_code', { pageId: 'about' })).code).toContain('About');
 
     await call('select_page', { id: 'about' });
     expect(await call('remove_page', { id: 'about' })).toEqual({ removed: 'about' });
@@ -96,10 +96,12 @@ describe('Project tools', () => {
     expect(projectData.pages).toHaveLength(1);
     editor.getWrapper()!.components('<p>Changed</p>');
     await call('load_project_data', { projectData });
-    const code = await call('get_page_code');
-    expect(code.html).toContain('id="box"');
-    expect(code.html).not.toContain('Changed');
-    expect(code.css).toContain('.card{color:red;}');
+    const res = await call('get_page_code', { includeStyles: true });
+    expect(res.code).toContain('id="box"');
+    expect(res.code).not.toContain('Changed');
+    expect(res.styles).toContain('.card{color:red;}');
+    // Styles only on request
+    expect(await call('get_page_code')).toEqual({ pageId: res.pageId, code: res.code });
   });
 
   test('Undo/redo with no history', async () => {
