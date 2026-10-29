@@ -2,7 +2,8 @@
  * @jest-environment node
  */
 import grapesjs from 'grapesjs';
-import webMcpPlugin, { createDefaultTools, ToolNames, WebMcpEvents } from '../../src';
+import webMcpPlugin, { ToolNames, WebMcpEvents } from '../../src';
+import { createDefaultTools } from '../../src/tools';
 
 describe('Headless', () => {
   test('Runs without browser globals', () => {

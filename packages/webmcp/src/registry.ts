@@ -22,13 +22,6 @@ export interface ToolRegistration {
   unregister: () => void;
 }
 
-export interface ToolsRegistration {
-  /** Resolves once all tools are registered, rejects (after rolling back) on failure. */
-  ready: Promise<void>;
-  /** Unregister all the tools of this registration. Safe to call multiple times. */
-  unregister: () => void;
-}
-
 /**
  * Register a single tool and return its registration, used to remove only this tool.
  */
@@ -79,38 +72,4 @@ export const registerTool = (modelContext: ModelContextLike, tool: WebMcpTool): 
       settled && unregisterLegacy();
     },
   };
-};
-
-/**
- * Register tools one by one (never replacing the whole page catalog) and return
- * a cleanup that removes only the tools registered here.
- */
-export const registerTools = (modelContext: ModelContextLike, tools: WebMcpTool[]): ToolsRegistration => {
-  const registrations: ToolRegistration[] = [];
-  let disposed = false;
-
-  const unregister = () => {
-    if (disposed) return;
-    disposed = true;
-    registrations
-      .splice(0)
-      .reverse()
-      .forEach((reg) => reg.unregister());
-  };
-
-  const ready = (async () => {
-    try {
-      for (const tool of tools) {
-        if (disposed) return;
-        const registration = registerTool(modelContext, tool);
-        registrations.push(registration);
-        await registration.ready;
-      }
-    } catch (error) {
-      unregister();
-      throw error;
-    }
-  })();
-
-  return { ready, unregister };
 };

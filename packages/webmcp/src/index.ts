@@ -3,15 +3,21 @@ import { WebMcpManager } from './manager';
 import { createDefaultTools } from './tools';
 import { WEBMCP_MANAGER_COMMAND, WebMcpPluginOptions } from './types';
 
-export { WebMcpManager } from './manager';
-export type { WebMcpManagerOptions } from './manager';
-export { getModelContext, registerTool, registerTools } from './registry';
-export type { ToolRegistration, ToolsRegistration } from './registry';
-export { createDefaultTools } from './tools';
+export type { WebMcpManager } from './manager';
 export { ToolNames } from './tools/names';
-export * from './types';
+export { WebMcpEvents } from './types';
+export type {
+  GetToolsContext,
+  ModelContextLike,
+  WebMcpPluginOptions,
+  WebMcpTool,
+  WebMcpToolAnnotations,
+  WebMcpToolEventData,
+  WebMcpToolExecuteBeforeEventData,
+  WebMcpToolExecuteEventData,
+  WebMcpToolExecuteOptions,
+} from './types';
 export { createTool, ToolError } from './utils';
-export type { CreateToolProps } from './utils';
 
 /**
  * Expose GrapesJS editor APIs as WebMCP tools for browser AI agents.

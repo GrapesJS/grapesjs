@@ -1,6 +1,7 @@
 import type { Editor } from 'grapesjs';
 import * as z from 'zod/mini';
-import { createTool, ToolNames, WebMcpEvents, WebMcpManager, WebMcpTool, WebMcpToolExecuteEventData } from '../../src';
+import { createTool, ToolNames, WebMcpEvents, WebMcpTool, WebMcpToolExecuteEventData } from '../../src';
+import { WebMcpManager } from '../../src/manager';
 import { createEditor, createModelContext, flush } from '../helpers';
 
 const helloTool: WebMcpTool<{ name?: string }> = {
