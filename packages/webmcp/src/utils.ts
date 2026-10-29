@@ -287,21 +287,18 @@ export const serializeComponentSummary = (cmp: Component) => {
   };
 };
 
-export const serializeComponent = (editor: Editor, cmp: Component, opts: { html?: boolean } = {}) => {
+/**
+ * Details to extend the component summary with.
+ */
+export const serializeComponentDetails = (editor: Editor, cmp: Component) => {
   const parent = cmp.parent();
   const text = getTextContent(cmp);
   const page = getPageOf(editor, cmp);
 
   return {
-    id: cmp.getId(),
-    type: cmp.get('type') || 'default',
-    name: cmp.getName(),
-    tagName: cmp.get('tagName'),
     pageId: page?.getId(),
     parentId: parent?.getId() || null,
     index: parent ? cmp.index() : 0,
-    attributes: toPlain(cmp.getAttributes()) || {},
-    children: cmp.components().map((child) => serializeComponentSummary(child)),
     ...(text !== undefined ? { text } : {}),
     flags: {
       selectable: !!cmp.get('selectable'),
@@ -311,7 +308,6 @@ export const serializeComponent = (editor: Editor, cmp: Component, opts: { html?
       copyable: !!cmp.get('copyable'),
       editable: !!cmp.get('editable'),
     },
-    ...(opts.html ? { html: cmp.toHTML() } : {}),
   };
 };
 

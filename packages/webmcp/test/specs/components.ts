@@ -27,38 +27,82 @@ describe('Component tools', () => {
 
   afterEach(() => editor.destroy());
 
-  test('get_component_tree', async () => {
-    const res = await call('get_component_tree');
+  test('get_components tree', async () => {
+    // Only the root by default
+    const root = await call('get_components');
+    expect(root).toMatchObject({ total: 1, truncated: true });
+    expect(root.items[0]).toMatchObject({ type: 'wrapper', childCount: 2 });
+    expect(root.items[0].children).toBeUndefined();
+
+    const res = await call('get_components', { depth: 4 });
     expect(res.truncated).toBe(false);
-    expect(res.tree.type).toBe('wrapper');
-    expect(res.tree.children.map((c: any) => c.id)).toEqual(['sec', 'box']);
-    expect(res.tree.children[0].children[0]).toMatchObject({ id: 'title', tagName: 'h1', type: 'text' });
+    const [wrapper] = res.items;
+    expect(wrapper.children.map((c: any) => c.id)).toEqual(['sec', 'box']);
+    expect(wrapper.children[0].children[0]).toMatchObject({ id: 'title', tagName: 'h1', type: 'text' });
 
-    const shallow = await call('get_component_tree', { depth: 1 });
+    const shallow = await call('get_components', { depth: 1 });
     expect(shallow.truncated).toBe(true);
-    expect(shallow.tree.children[0].children).toBeUndefined();
-    expect(shallow.tree.children[0].childCount).toBe(2);
+    expect(shallow.items[0].children[0].children).toBeUndefined();
+    expect(shallow.items[0].children[0].childCount).toBe(2);
 
-    const limited = await call('get_component_tree', { maxNodes: 2 });
-    expect(limited.nodeCount).toBe(2);
+    const limited = await call('get_components', { depth: 4, maxNodes: 1 });
+    expect(limited.items[0].children.map((c: any) => c.id)).toEqual(['sec']);
     expect(limited.truncated).toBe(true);
 
-    const sub = await call('get_component_tree', { id: 'box' });
-    expect(sub.tree.id).toBe('box');
+    const sub = await call('get_components', { rootId: 'box', depth: 1 });
+    expect(sub.items[0]).toMatchObject({ id: 'box', children: [{ id: 'inner' }] });
   });
 
-  test('get_component', async () => {
-    const res = await call('get_component', { id: 'sec', includeHtml: true });
-    expect(res).toMatchObject({
+  test('get_components by ids with details', async () => {
+    const res = await call('get_components', { ids: ['sec', 'box'], details: true, includeHtml: true });
+    expect(res.items[0]).toMatchObject({
       id: 'sec',
       tagName: 'section',
       attributes: { id: 'sec', class: 'hero' },
+      childCount: 2,
       parentId: editor.getWrapper()!.getId(),
       index: 0,
       pageId: editor.Pages.getSelected()!.getId(),
+      flags: { removable: true },
+      html: expect.stringContaining('<section'),
     });
-    expect(res.children.map((c: any) => c.id)).toEqual(['title', 'para']);
-    expect(res.html).toContain('<h1 id="title">Hello</h1>');
+    expect(res.items[1]).toMatchObject({ id: 'box', index: 1 });
+    expect(res.items[0].children).toBeUndefined();
+  });
+
+  test('get_components with where', async () => {
+    const ids = async (where: Record<string, any>, opts = {}) =>
+      (await call('get_components', { where, ...opts })).items.map((c: any) => c.id);
+
+    expect(await ids({ tagName: 'H1' })).toEqual(['title']);
+    expect(await ids({ classes: ['hero'] })).toEqual(['sec']);
+    expect(await ids({ attributes: { id: 'para' } })).toEqual(['para']);
+    expect(await ids({ attributes: { class: true } })).toEqual(['sec']);
+    // The text content includes the children
+    expect(await ids({ text: 'some TEXT' })).toEqual([editor.getWrapper()!.getId(), 'sec', 'para']);
+    expect(await ids({ text: 'some text', tagName: 'p' })).toEqual(['para']);
+    expect(await ids({ type: 'text', text: 'inner' })).toEqual(['inner']);
+    expect(await ids({ tagName: 'span' }, { rootId: 'sec' })).toEqual([]);
+    expect(await ids({ tagName: 'nope' })).toEqual([]);
+
+    const res = await call('get_components', { where: { tagName: 'section' }, depth: 1 });
+    expect(res).toMatchObject({ total: 1, hasMore: false });
+    expect(res.items[0].children.map((c: any) => c.id)).toEqual(['title', 'para']);
+  });
+
+  test('get_components with pages and invalid targets', async () => {
+    editor.Pages.add({ id: 'about', component: '<h2 id="about-title">About</h2>' });
+    expect((await call('get_components', { pageId: 'about', where: { tagName: 'h2' } })).items).toEqual([
+      expect.objectContaining({ id: 'about-title' }),
+    ]);
+    expect((await call('get_components', { where: { tagName: 'h2' } })).items).toEqual([]);
+    expect(await call('get_components', { pageId: 'nope' })).toMatchObject({ error: { code: 'not_found' } });
+    expect(await call('get_components', { ids: ['sec'], where: { tagName: 'h1' } })).toMatchObject({
+      error: { code: 'invalid_input' },
+    });
+    expect(await call('get_components', { rootId: 'sec', pageId: 'about' })).toMatchObject({
+      error: { code: 'invalid_input' },
+    });
   });
 
   test('select_components', async () => {
@@ -188,7 +232,7 @@ describe('Component tools', () => {
   test('remove_components and stale ids', async () => {
     expect(await call('remove_components', { ids: ['para', 'box'] })).toEqual({ removed: ['para', 'box'] });
     expect(editor.getHtml()).not.toContain('para');
-    expect(await call('get_component', { id: 'para' })).toMatchObject({ error: { code: 'not_found' } });
+    expect(await call('get_components', { ids: ['para'] })).toMatchObject({ error: { code: 'not_found' } });
     // Stale id removed manually
     editor.Components.getById('title')!.remove();
     expect(await call('update_components', { updates: [{ id: 'title', attributes: { a: '1' } }] })).toMatchObject({
@@ -204,8 +248,8 @@ describe('Component tools', () => {
     await call('remove_components', { ids: ['box'] });
     expect(editor.Components.getById('box')).toBeFalsy();
     expect(await call('undo')).toMatchObject({ undone: 1, hasRedo: true });
-    expect((await call('get_component', { id: 'box' })).id).toBe('box');
+    expect((await call('get_components', { ids: ['box'] })).items[0].id).toBe('box');
     await call('redo');
-    expect(await call('get_component', { id: 'box' })).toMatchObject({ error: { code: 'not_found' } });
+    expect(await call('get_components', { ids: ['box'] })).toMatchObject({ error: { code: 'not_found' } });
   });
 });

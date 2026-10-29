@@ -2,6 +2,7 @@ import type { Component, Trait } from 'grapesjs';
 import * as z from 'zod/mini';
 import type { WebMcpToolsContext } from '../types';
 import { ToolNames } from './names';
+import { getPage } from './pages';
 import {
   checkIndex,
   componentContentSchema,
@@ -11,7 +12,10 @@ import {
   getParentComponent,
   guideHint,
   idSchema,
-  serializeComponent,
+  limitSchema,
+  offsetSchema,
+  paginate,
+  serializeComponentDetails,
   serializeComponentSummary,
   ToolError,
   toolRef,
@@ -42,67 +46,155 @@ interface TreeNode extends ReturnType<typeof serializeComponentSummary> {
   children?: TreeNode[];
 }
 
+interface ComponentsWhere {
+  type?: string;
+  tagName?: string;
+  name?: string;
+  classes?: string[];
+  attributes?: Record<string, string | true>;
+  text?: string;
+}
+
+const includesText = (value: string, search: string) => value.toLowerCase().includes(search.toLowerCase());
+
+/**
+ * Get the text content of components, including their children. Cached, as it's used on nested components.
+ */
+const createTextGetter = () => {
+  const cache = new Map<Component, string>();
+  const getText = (cmp: Component): string => {
+    let text = cache.get(cmp);
+    if (text === undefined) {
+      const content = cmp.get('content');
+      const ownText = typeof content === 'string' ? content.replace(/<[^>]*>/g, '') : '';
+      text = ownText + cmp.components().map(getText).join('');
+      cache.set(cmp, text);
+    }
+    return text;
+  };
+  return getText;
+};
+
+const matchesWhere = (cmp: Component, where: ComponentsWhere, getText: (cmp: Component) => string) => {
+  const { type, tagName, name, classes, attributes, text } = where;
+  if (type !== undefined && (cmp.get('type') || 'default') !== type) return false;
+  if (tagName !== undefined && `${cmp.get('tagName')}`.toLowerCase() !== tagName.toLowerCase()) return false;
+  if (name !== undefined && !includesText(cmp.getName(), name)) return false;
+  if (classes?.length) {
+    const cmpClasses = cmp.getClasses();
+    if (!classes.every((cls) => cmpClasses.includes(cls))) return false;
+  }
+  if (attributes) {
+    const cmpAttributes = cmp.getAttributes();
+    const matchAttr = (attr: string) => {
+      const value = cmpAttributes[attr];
+      return attributes[attr] === true ? value !== undefined : value !== undefined && `${value}` === attributes[attr];
+    };
+    if (!Object.keys(attributes).every(matchAttr)) return false;
+  }
+  if (text !== undefined && !includesText(getText(cmp), text)) return false;
+  return true;
+};
+
 export default (ctx: WebMcpToolsContext) => {
-  const { editor } = ctx;
+  const { editor, defaultLimit } = ctx;
 
   return [
     createTool({
-      name: ToolNames.getComponentTree,
-      title: 'Get component tree',
+      name: ToolNames.getComponents,
+      title: 'Get components',
       description:
-        'Get the component tree of the selected page (or of a specific component). Nodes beyond `depth` or `maxNodes` are not expanded: their `childCount` is still reported and `truncated` is true, call the tool again with the node id to expand them.' +
+        'Get components of the selected page (or of `pageId`). Returns `items` with: the root component (wrapper of the page, or `rootId`) by default, the components with `ids`, or the components in the root subtree matching all the conditions in `where`. ' +
+        'Children are expanded up to `depth` (default 0, eg. use 4 to get the page structure). Nodes not expanded because of `depth` or `maxNodes` still report their `childCount` and `truncated` is true, call the tool again with their id to expand them. ' +
+        'Use `details` for the parent, position, page and editing flags of the returned items.' +
         guideHint(ctx),
       annotations: { readOnlyHint: true, untrustedContentHint: true },
       input: z.strictObject({
-        id: z.optional(idSchema('Root component id. Defaults to the wrapper of the selected page')),
-        depth: z.optional(z.int().check(z.minimum(0), z.maximum(50), z.describe('Max depth to expand (default 4)'))),
-        maxNodes: z.optional(
-          z.int().check(z.minimum(1), z.maximum(2000), z.describe('Max number of nodes (default 200)')),
+        ids: z.optional(
+          z
+            .array(z.string())
+            .check(z.minLength(1), z.describe('Component ids to get, can not be combined with other targets')),
         ),
+        rootId: z.optional(idSchema('Root component id, defaults to the wrapper of the page')),
+        pageId: z.optional(z.string().check(z.describe('Page id, defaults to the selected page'))),
+        where: z.optional(
+          z
+            .strictObject({
+              type: z.optional(z.string().check(z.describe('Component type, eg. "text", "image", "link"'))),
+              tagName: z.optional(z.string().check(z.describe('Tag name, eg. "h1"'))),
+              name: z.optional(z.string().check(z.describe('Contained in the name (case-insensitive)'))),
+              classes: z.optional(z.array(z.string()).check(z.describe('Classes the component must all have'))),
+              attributes: z.optional(
+                z
+                  .record(z.string(), z.union([z.string(), z.literal(true)]))
+                  .check(z.describe('Attributes with their exact value, or true to only check their presence')),
+              ),
+              text: z.optional(
+                z.string().check(z.describe('Contained in the text content, including children (case-insensitive)')),
+              ),
+            })
+            .check(z.describe('Search the root subtree for components matching all the conditions')),
+        ),
+        depth: z.optional(
+          z.int().check(z.minimum(0), z.maximum(50), z.describe('Depth of children to expand (default 0)')),
+        ),
+        maxNodes: z.optional(
+          z.int().check(z.minimum(1), z.maximum(2000), z.describe('Max number of expanded children (default 200)')),
+        ),
+        details: z.optional(z.boolean().check(z.describe('Include details of the returned items'))),
+        includeHtml: z.optional(z.boolean().check(z.describe('Include the HTML of the returned items'))),
+        limit: limitSchema,
+        offset: offsetSchema,
       }),
-      execute: ({ id, depth = 4, maxNodes = 200 }) => {
-        const root = getParentComponent(editor, id);
+      execute: (input) => {
+        const { ids, rootId, pageId, where, depth = 0, maxNodes = 200, details, includeHtml } = input;
+        if (ids && (rootId || pageId || where)) {
+          throw new ToolError('`ids` can not be combined with `rootId`, `pageId` or `where`', 'invalid_input');
+        }
+        if (rootId && pageId) throw new ToolError('Use either `rootId` or `pageId`', 'invalid_input');
+
+        const root = pageId ? getPage(editor, pageId).getMainComponent() : getParentComponent(editor, rootId);
+        let items = ids ? ids.map((id) => getComponent(editor, id)) : [root];
+
+        if (where) {
+          const getText = createTextGetter();
+          const matches: Component[] = [];
+          const walk = (cmp: Component) => {
+            matchesWhere(cmp, where, getText) && matches.push(cmp);
+            cmp.components().forEach(walk);
+          };
+          walk(root);
+          items = matches;
+        }
+
         let count = 0;
         let truncated = false;
 
-        const walk = (cmp: Component, level: number): TreeNode => {
-          count++;
+        const serializeNode = (cmp: Component, level: number): TreeNode => {
           const node: TreeNode = serializeComponentSummary(cmp);
           const children = cmp.components();
 
-          if (children.length) {
-            if (level >= depth || count >= maxNodes) {
-              truncated = true;
-            } else {
-              node.children = [];
-              for (const child of children.models) {
-                if (count >= maxNodes) {
-                  truncated = true;
-                  break;
-                }
-                node.children.push(walk(child, level + 1));
-              }
+          if (children.length && level < depth) {
+            node.children = [];
+            for (const child of children.models) {
+              if (count >= maxNodes) break;
+              count++;
+              node.children.push(serializeNode(child, level + 1));
             }
           }
+          if (children.length && node.children?.length !== children.length) truncated = true;
 
           return node;
         };
 
-        const tree = walk(root, 0);
-        return { tree, nodeCount: count, truncated };
+        const result = paginate(items, input, defaultLimit, (cmp) => ({
+          ...serializeNode(cmp, 0),
+          ...(details ? serializeComponentDetails(editor, cmp) : {}),
+          ...(includeHtml ? { html: cmp.toHTML() } : {}),
+        }));
+
+        return { ...result, truncated };
       },
-    }),
-    createTool({
-      name: ToolNames.getComponent,
-      title: 'Get component',
-      description:
-        'Get details of a component: type, tag, attributes (including class and style), parent, position, direct children and editing flags.',
-      annotations: { readOnlyHint: true, untrustedContentHint: true },
-      input: z.strictObject({
-        id: idSchema(),
-        includeHtml: z.optional(z.boolean().check(z.describe('Include the HTML output of the component'))),
-      }),
-      execute: ({ id, includeHtml }) => serializeComponent(editor, getComponent(editor, id), { html: includeHtml }),
     }),
     createTool({
       name: ToolNames.selectComponents,

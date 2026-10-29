@@ -17,8 +17,7 @@ export enum ToolNames {
   redo = 'redo',
 
   // Components
-  getComponentTree = 'get_component_tree',
-  getComponent = 'get_component',
+  getComponents = 'get_components',
   selectComponents = 'select_components',
   addComponents = 'add_components',
   updateComponents = 'update_components',

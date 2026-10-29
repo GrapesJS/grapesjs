@@ -112,8 +112,10 @@ describe('WebMcpManager', () => {
     editor.destroy();
     ({ editor, mc } = await createEditor({}, { components: '<div id="box"></div>' }));
     webmcp = editor.runCommand('webMcpManager');
-    expect(webmcp.hasTool(ToolNames.getComponent)).toBe(true);
-    expect(await webmcp.executeTool(ToolNames.getComponent, { id: 'box' })).toMatchObject({ id: 'box' });
+    expect(webmcp.hasTool(ToolNames.getComponents)).toBe(true);
+    expect(await webmcp.executeTool(ToolNames.getComponents, { ids: ['box'] })).toMatchObject({
+      items: [{ id: 'box' }],
+    });
   });
 
   test('Execute events, for executeTool and agent calls', async () => {

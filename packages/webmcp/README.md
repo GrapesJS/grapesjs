@@ -67,18 +67,18 @@ From a CDN (`window.grapesjsWebMcp`):
 
 ## Default tools
 
-Names are listed without the prefix (eg. `get_component_tree` is registered as `grapesjs_get_component_tree`).
+Names are listed without the prefix (eg. `get_components` is registered as `grapesjs_get_components`).
 
-| Module     | Tools                                                                                                                                                                                       |
-| ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Guide      | `get_editor_guide` (only with `instructions`)                                                                                                                                               |
-| Editor     | `get_editor_state`, `get_page_code`, `get_project_data`, `load_project_data`, `undo`, `redo`                                                                                                |
-| Components | `get_component_tree`, `get_component`, `select_components`, `add_components`, `update_components`, `move_component`, `remove_components`, `get_component_traits`, `update_component_traits` |
-| CSS rules  | `get_css_rules`, `set_css_rules`, `remove_css_rules`                                                                                                                                        |
-| Blocks     | `list_blocks`, `get_block`, `insert_block`                                                                                                                                                  |
-| Pages      | `list_pages`, `add_page`, `rename_page`, `select_page`, `remove_page`                                                                                                                       |
-| Devices    | `list_devices`, `select_device`                                                                                                                                                             |
-| Assets     | `list_assets`, `add_assets`, `remove_assets`                                                                                                                                                |
+| Module     | Tools                                                                                                                                                                  |
+| ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Guide      | `get_editor_guide` (only with `instructions`)                                                                                                                          |
+| Editor     | `get_editor_state`, `get_page_code`, `get_project_data`, `load_project_data`, `undo`, `redo`                                                                           |
+| Components | `get_components`, `select_components`, `add_components`, `update_components`, `move_component`, `remove_components`, `get_component_traits`, `update_component_traits` |
+| CSS rules  | `get_css_rules`, `set_css_rules`, `remove_css_rules`                                                                                                                   |
+| Blocks     | `list_blocks`, `get_block`, `insert_block`                                                                                                                             |
+| Pages      | `list_pages`, `add_page`, `rename_page`, `select_page`, `remove_page`                                                                                                  |
+| Devices    | `list_devices`, `select_device`                                                                                                                                        |
+| Assets     | `list_assets`, `add_assets`, `remove_assets`                                                                                                                           |
 
 How the tools behave:
 
@@ -190,7 +190,7 @@ webmcp.getTool('save_project');
 webmcp.removeTool('save_project');
 
 // Execute a tool as an agent would do (eg. from your own in-app assistant)
-const result = await webmcp.executeTool('get_component', { id: 'my-id' });
+const result = await webmcp.executeTool('get_components', { ids: ['my-id'] });
 ```
 
 - Tool names are always without the `toolPrefix`, which is only applied to the names exposed via WebMCP.

@@ -43,9 +43,8 @@ describe('Headless', () => {
     // Headless editors never get the canvas, so they are not ready
     expect(await webmcp.executeTool(ToolNames.getEditorState)).toMatchObject({ ready: false });
     expect(await webmcp.executeTool(ToolNames.getEditorGuide)).toEqual({ instructions: 'Be nice' });
-    expect(await webmcp.executeTool(ToolNames.getComponent, { id: 'box' })).toMatchObject({
-      id: 'box',
-      attributes: { id: 'box', class: 'card' },
+    expect(await webmcp.executeTool(ToolNames.getComponents, { ids: ['box'] })).toMatchObject({
+      items: [{ id: 'box', attributes: { id: 'box', class: 'card' } }],
     });
     expect(
       await webmcp.executeTool(ToolNames.addComponents, {

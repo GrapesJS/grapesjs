@@ -46,7 +46,7 @@ describe('webMcpPlugin', () => {
 
   test('Read-only tools are annotated', async () => {
     const { editor, mc } = await createEditor();
-    expect(mc.tools.get('grapesjs_get_component_tree')!.annotations).toMatchObject({ readOnlyHint: true });
+    expect(mc.tools.get('grapesjs_get_components')!.annotations).toMatchObject({ readOnlyHint: true });
     expect(mc.tools.get('grapesjs_load_project_data')!.annotations).toMatchObject({ consequentialHint: true });
     expect(mc.tools.get('grapesjs_add_components')!.annotations?.readOnlyHint).toBeFalsy();
     editor.destroy();
@@ -132,13 +132,13 @@ describe('webMcpPlugin', () => {
       ],
     });
     expect(await mc.call('grapesjs_fail')).toEqual({ error: { code: 'execution_error', message: 'Boom' } });
-    expect(await mc.call('grapesjs_get_component', { id: 'missing' })).toMatchObject({
+    expect(await mc.call('grapesjs_get_components', { ids: ['missing'] })).toMatchObject({
       error: { code: 'not_found' },
     });
-    expect(await mc.call('grapesjs_get_component', {})).toEqual({
+    expect(await mc.call('grapesjs_remove_page', {})).toEqual({
       error: { code: 'invalid_input', message: 'input.id is required' },
     });
-    expect(await mc.call('grapesjs_get_component', { id: 1 })).toMatchObject({ error: { code: 'invalid_input' } });
+    expect(await mc.call('grapesjs_get_components', { ids: [1] })).toMatchObject({ error: { code: 'invalid_input' } });
     expect(await mc.call('grapesjs_list_pages', { extra: true })).toMatchObject({ error: { code: 'invalid_input' } });
     editor.destroy();
   });
@@ -196,8 +196,8 @@ describe('webMcpPlugin', () => {
     const ed2 = create('ed2_');
     await flush();
     ed1.addComponents('<div id="one">One</div>');
-    expect((await mc.call('ed1_get_component', { id: 'one' })).id).toBe('one');
-    expect(await mc.call('ed2_get_component', { id: 'one' })).toMatchObject({ error: { code: 'not_found' } });
+    expect((await mc.call('ed1_get_components', { ids: ['one'] })).items[0].id).toBe('one');
+    expect(await mc.call('ed2_get_components', { ids: ['one'] })).toMatchObject({ error: { code: 'not_found' } });
     ed1.destroy();
     expect([...mc.tools.keys()].every((name) => name.startsWith('ed2_'))).toBe(true);
     ed2.destroy();
