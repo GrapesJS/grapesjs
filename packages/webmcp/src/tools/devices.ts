@@ -7,14 +7,16 @@ import { createTool, ToolError } from '../utils';
 export const serializeDevice = (device: Device) => ({
   id: device.id as string,
   name: device.getName(),
-  width: device.getWidthMedia?.() || device.get('width') || '',
+  width: device.get('width') || '',
+  widthMedia: device.getWidthMedia() || '',
 });
 
 export default ({ editor }: WebMcpToolsContext) => [
   createTool({
     name: ToolNames.listDevices,
     title: 'List devices',
-    description: 'List the configured devices (canvas sizes used for responsive styling).',
+    description:
+      'List the configured devices (canvas sizes used for responsive styling). `width` is the canvas width (empty for full width), `widthMedia` is the max-width of the media query used for styles set while the device is selected (empty for no media query).',
     annotations: { readOnlyHint: true },
     execute: () => {
       const selected = editor.Devices.getSelected();

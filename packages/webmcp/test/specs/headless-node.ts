@@ -59,7 +59,7 @@ describe('Headless', () => {
     });
     expect(
       await webmcp.executeTool(ToolNames.setCssRules, { rules: [{ selector: '.card', style: { color: 'red' } }] }),
-    ).toMatchObject({ rules: [{ css: '.card{color:red;}' }] });
+    ).toMatchObject({ count: 1, rules: [{ selector: '.card' }] });
     expect(await webmcp.executeTool(ToolNames.getPageCode)).toMatchObject({
       html: expect.stringContaining('<p>New</p>'),
       css: expect.stringContaining('.card{color:red;}'),

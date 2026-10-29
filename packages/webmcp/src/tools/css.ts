@@ -11,6 +11,7 @@ import {
   Style,
   styleSchema,
   ToolError,
+  toolRef,
   toPlain,
 } from '../utils';
 
@@ -27,20 +28,19 @@ const getRuleOpts = (input: { atRuleType?: string; atRuleParams?: string }) => {
   return { atRuleType, atRuleParams };
 };
 
-const serializeRule = (rule: CssRule) => {
-  const atRuleType = rule.get('atRuleType') || (rule.get('mediaText') ? 'media' : '');
+const serializeRuleRef = (rule: CssRule) => ({
+  selector: rule.selectorsToString(),
+  state: rule.get('state') || '',
+  atRuleType: rule.get('atRuleType') || (rule.get('mediaText') ? 'media' : ''),
+  atRuleParams: rule.get('mediaText') || '',
+});
 
-  return {
-    selector: rule.selectorsToString(),
-    state: rule.get('state') || '',
-    atRuleType,
-    atRuleParams: rule.get('mediaText') || '',
-    style: toPlain(rule.getStyle()) || {},
-    css: rule.toCSS(),
-  };
-};
+const serializeRule = (rule: CssRule) => ({
+  ...serializeRuleRef(rule),
+  style: toPlain(rule.getStyle()) || {},
+});
 
-export default ({ editor, defaultLimit }: WebMcpToolsContext) => [
+export default ({ editor, defaultLimit, toolPrefix }: WebMcpToolsContext) => [
   createTool({
     name: ToolNames.getCssRules,
     title: 'Get CSS rules',
@@ -58,7 +58,7 @@ export default ({ editor, defaultLimit }: WebMcpToolsContext) => [
       const hasAtRuleFilter = input.atRuleType !== undefined || input.atRuleParams !== undefined;
       const { atRuleType, atRuleParams } = getRuleOpts(input);
       const rules = editor.Css.getRules().filter((rule: CssRule) => {
-        const data = serializeRule(rule);
+        const data = serializeRuleRef(rule);
         if (selector !== undefined && data.selector !== selector.trim()) return false;
         if (hasAtRuleFilter && (data.atRuleType !== atRuleType || data.atRuleParams !== atRuleParams)) return false;
         return true;
@@ -71,7 +71,8 @@ export default ({ editor, defaultLimit }: WebMcpToolsContext) => [
     name: ToolNames.setCssRules,
     title: 'Set CSS rules',
     description:
-      'Create or update CSS rules, passed as objects (`rules`) and/or as a raw CSS string (`css`). Selectors can include a state (eg. ".btn:hover") and rules can be wrapped in an at-rule (eg. a media query). Styles are merged into existing rules unless `replace` is true.',
+      'Create or update CSS rules, passed as objects (`rules`) and/or as a raw CSS string (`css`). Selectors can include a state (eg. ".btn:hover") and rules can be wrapped in an at-rule (eg. a media query). Styles are merged into existing rules unless `replace` is true. ' +
+      `Returns only the identifiers of the affected rules, use ${toolRef({ toolPrefix }, ToolNames.getCssRules)} to read their styles.`,
     input: z.strictObject({
       rules: z.optional(
         z
@@ -113,7 +114,8 @@ export default ({ editor, defaultLimit }: WebMcpToolsContext) => [
         result.push(...editor.Css.addCollection(css, { extend: !replace }));
       }
 
-      return { rules: result.map(serializeRule) };
+      const affected = [...new Set(result)];
+      return { count: affected.length, rules: affected.map(serializeRuleRef) };
     },
   }),
   createTool({

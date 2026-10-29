@@ -27,6 +27,67 @@ const getState = (editor: Editor) => {
   };
 };
 
+/**
+ * Get what the next undo/redo step affects, a step groups all the changes done in one operation.
+ */
+const getHistoryStep = (editor: Editor, type: 'undo' | 'redo') => {
+  const um = editor.UndoManager;
+  const stack = um.getStack() as any;
+  const current = stack.at(um.getPointer() + (type === 'undo' ? 0 : 1));
+  const labels = new Set<string>();
+  const components = new Set<string>();
+  const cssRules = new Set<string>();
+  if (!current) return { labels, components, cssRules };
+
+  const group = current.get('magicFusionIndex');
+  stack.forEach((item: any) => {
+    if (item.get('magicFusionIndex') !== group) return;
+    const { type, object, before, after, options } = item.attributes;
+    // Additions and removals are tracked on the collection
+    const target = type === 'add' ? after : type === 'remove' ? before : object;
+    // Selection changes are tracked on wrappers of the component
+    const model = target?.get?.('component') || target;
+    options?.action && labels.add(options.action);
+
+    if (model?.selectorsToString) {
+      cssRules.add(model.selectorsToString());
+    } else if (model?.getId && model.components) {
+      components.add(model.getId());
+    }
+  });
+
+  return { labels, components, cssRules };
+};
+
+const runHistory = (editor: Editor, type: 'undo' | 'redo', steps: number) => {
+  const um = editor.UndoManager;
+  const labels = new Set<string>();
+  const components = new Set<string>();
+  const cssRules = new Set<string>();
+  let done = 0;
+
+  while (done < steps && (type === 'undo' ? um.hasUndo() : um.hasRedo())) {
+    const pointer = um.getPointer();
+    const step = getHistoryStep(editor, type);
+    um[type]();
+    // Skipped by the editor, eg. while editing text
+    if (um.getPointer() === pointer) break;
+    step.labels.forEach((label) => labels.add(label));
+    step.components.forEach((id) => components.add(id));
+    step.cssRules.forEach((selector) => cssRules.add(selector));
+    done++;
+  }
+
+  return {
+    [type === 'undo' ? 'undone' : 'redone']: done,
+    labels: [...labels],
+    components: [...components],
+    cssRules: [...cssRules],
+    hasUndo: um.hasUndo(),
+    hasRedo: um.hasRedo(),
+  };
+};
+
 export default (ctx: WebMcpToolsContext) => {
   const { editor } = ctx;
 
@@ -35,7 +96,7 @@ export default (ctx: WebMcpToolsContext) => {
       name: ToolNames.getEditorState,
       title: 'Get editor state',
       description:
-        'Get the current editor state: readiness (whether the editor is loaded), selected components, active page and device, number of unsaved changes and undo/redo availability.' +
+        'Get the current editor state: readiness (whether the editor is loaded), selected components, active page and device, undo/redo availability and dirtyCount, the number of changes not yet stored by the Storage Manager (it stays 0 when autosave stores every change).' +
         guideHint(ctx),
       annotations: { readOnlyHint: true },
       execute: () => getState(editor),
@@ -83,36 +144,22 @@ export default (ctx: WebMcpToolsContext) => {
     createTool({
       name: ToolNames.undo,
       title: 'Undo',
-      description: 'Undo the last change(s).',
+      description:
+        'Undo the last change(s). Returns the action labels and the ids of components and selectors of CSS rules affected.',
       input: z.strictObject({
         steps: z.optional(z.int().check(z.minimum(1), z.maximum(100), z.describe('Number of steps (default 1)'))),
       }),
-      execute: ({ steps = 1 }) => {
-        const um = editor.UndoManager;
-        let done = 0;
-        while (done < steps && um.hasUndo()) {
-          um.undo();
-          done++;
-        }
-        return { undone: done, hasUndo: um.hasUndo(), hasRedo: um.hasRedo() };
-      },
+      execute: ({ steps = 1 }) => runHistory(editor, 'undo', steps),
     }),
     createTool({
       name: ToolNames.redo,
       title: 'Redo',
-      description: 'Redo the last undone change(s).',
+      description:
+        'Redo the last undone change(s). Returns the action labels and the ids of components and selectors of CSS rules affected.',
       input: z.strictObject({
         steps: z.optional(z.int().check(z.minimum(1), z.maximum(100), z.describe('Number of steps (default 1)'))),
       }),
-      execute: ({ steps = 1 }) => {
-        const um = editor.UndoManager;
-        let done = 0;
-        while (done < steps && um.hasRedo()) {
-          um.redo();
-          done++;
-        }
-        return { redone: done, hasUndo: um.hasUndo(), hasRedo: um.hasRedo() };
-      },
+      execute: ({ steps = 1 }) => runHistory(editor, 'redo', steps),
     }),
   ];
 };

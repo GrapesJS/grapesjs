@@ -62,7 +62,16 @@ describe('Project tools', () => {
   });
 
   test('Devices', async () => {
+    editor.Devices.add({ id: 'phone', name: 'Phone', width: '320px', widthMedia: '480px' });
     const { devices } = await call('list_devices');
+    // Canvas and media query widths are reported separately
+    expect(devices.find((d: any) => d.id === 'phone')).toEqual({
+      id: 'phone',
+      name: 'Phone',
+      width: '320px',
+      widthMedia: '480px',
+      selected: false,
+    });
     expect(devices.find((d: any) => d.id === 'desktop').selected).toBe(true);
     const mobile = devices.find((d: any) => d.id !== 'desktop');
     expect((await call('select_device', { id: mobile.id })).device.id).toBe(mobile.id);
@@ -95,7 +104,28 @@ describe('Project tools', () => {
 
   test('Undo/redo with no history', async () => {
     editor.UndoManager.clear();
-    expect(await call('undo', { steps: 3 })).toEqual({ undone: 0, hasUndo: false, hasRedo: false });
-    expect(await call('redo')).toEqual({ redone: 0, hasUndo: false, hasRedo: false });
+    const empty = { labels: [], components: [], cssRules: [], hasUndo: false, hasRedo: false };
+    expect(await call('undo', { steps: 3 })).toEqual({ undone: 0, ...empty });
+    expect(await call('redo')).toEqual({ redone: 0, ...empty });
+  });
+
+  test('Undo/redo report the affected components and CSS rules', async () => {
+    editor.UndoManager.clear();
+    // Changes done in the same operation are a single step
+    editor.getWrapper()!.append('<p id="new">New</p>');
+    editor.Css.setRule('.card', { color: 'blue' });
+
+    expect(await call('undo')).toEqual({
+      undone: 1,
+      labels: ['component:add'],
+      components: ['new'],
+      cssRules: ['.card'],
+      hasUndo: false,
+      hasRedo: true,
+    });
+    expect(editor.getHtml()).not.toContain('id="new"');
+
+    expect(await call('redo')).toMatchObject({ redone: 1, components: ['new'], cssRules: ['.card'], hasRedo: false });
+    expect(editor.getHtml()).toContain('id="new"');
   });
 });
