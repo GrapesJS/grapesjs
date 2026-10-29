@@ -61,8 +61,6 @@ export const plugin: Plugin<WebMcpPluginOptions> = (editor: Editor, opts = {}) =
     editor.log(`Unable to create WebMCP tools: ${(error as Error).message}`, { ns: 'webmcp', level: 'error' });
   }
 
-  manager.connect();
-
   // Plugin cleanup handler (used by `editor.Plugins.remove`)
   return ({ cleanup: builtInCleanup }) => {
     cleanup();

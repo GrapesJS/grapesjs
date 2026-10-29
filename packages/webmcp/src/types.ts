@@ -109,7 +109,6 @@ export interface WebMcpToolsContext {
   instructions?: string;
 }
 
-/**{START_EVENTS}*/
 export enum WebMcpEvents {
   /**
    * @event `webmcp:tool:add` Tool added to the manager.
@@ -140,7 +139,6 @@ export enum WebMcpEvents {
    */
   toolExecute = 'webmcp:tool:execute',
 }
-/**{END_EVENTS}*/
 
 export interface WebMcpToolEventData {
   tool: WebMcpTool;

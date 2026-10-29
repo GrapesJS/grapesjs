@@ -57,7 +57,7 @@ const formatIssue = (issue: z.core.$ZodIssue, input: unknown): string => {
 /**
  * Validate the input against the schema, throws a ToolError with the first issue.
  */
-export const parseInput = <S extends z.ZodMiniType>(schema: S, input: unknown): z.output<S> => {
+const parseInput = <S extends z.ZodMiniType>(schema: S, input: unknown): z.output<S> => {
   const result = z.safeParse(schema, input);
   if (!result.success) throw new ToolError(formatIssue(result.error.issues[0], input), 'invalid_input');
   return result.data;
@@ -85,12 +85,12 @@ const cleanJsonSchema = (value: any): any => {
 /**
  * Convert a zod schema to the JSON Schema exposed to the agent.
  */
-export const toInputSchema = (schema: z.ZodMiniType): JsonSchema => {
+const toInputSchema = (schema: z.ZodMiniType): JsonSchema => {
   const { $schema, ...jsonSchema } = z.toJSONSchema(schema, { io: 'input' }) as JsonSchema;
   return cleanJsonSchema(jsonSchema);
 };
 
-export const throwIfAborted = (signal?: AbortSignal) => {
+const throwIfAborted = (signal?: AbortSignal) => {
   if (signal?.aborted) throw new ToolError('The operation was aborted', 'aborted');
 };
 
@@ -209,7 +209,7 @@ export const paginate = <T, R>(
   };
 };
 
-export const truncate = (value: string, max = 200) => (value.length > max ? `${value.slice(0, max)}…` : value);
+const truncate = (value: string, max = 200) => (value.length > max ? `${value.slice(0, max)}…` : value);
 
 /**
  * Return a JSON safe copy of the value, or undefined if it can't be serialized.
@@ -234,14 +234,13 @@ const getRootOf = (cmp: Component) => {
 /**
  * Check if the component is part of one of the project pages (eg. not removed or temporary).
  */
-export const isAttached = (editor: Editor, cmp: Component) => {
+const isAttached = (editor: Editor, cmp: Component) => {
   const root = getRootOf(cmp);
   return !!root && editor.Pages.getAllWrappers().includes(root as any);
 };
 
 export const getComponent = (editor: Editor, id: string): Component => {
-  const cmps = editor.Components as any;
-  const cmp: Component | undefined = cmps.getById ? cmps.getById(id) : cmps.allById()[id];
+  const cmp = editor.Components.getById(id);
 
   if (!cmp || !isAttached(editor, cmp)) {
     throw new ToolError(
@@ -268,7 +267,7 @@ export const getPageOf = (editor: Editor, cmp: Component) => {
   return editor.Pages.getAll().find((page) => page.getMainComponent() === root);
 };
 
-export const getTextContent = (cmp: Component) => {
+const getTextContent = (cmp: Component) => {
   const content = cmp.get('content');
   if (cmp.get('type') === 'textnode' || (typeof content === 'string' && content)) {
     return typeof content === 'string' ? content : undefined;

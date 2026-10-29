@@ -39,7 +39,7 @@ const validateTool = (tool: WebMcpTool) => {
 
 /**
  * Manage the tools of an editor: add, remove and execute them. Tools are registered
- * in WebMCP (when available) once the manager is connected.
+ * in WebMCP (when available) as soon as they are added.
  * Tool names are always without the prefix, which is only applied to the names exposed via WebMCP.
  * @example
  * const webmcp = editor.runCommand('webMcpManager');
@@ -52,13 +52,11 @@ export class WebMcpManager {
   toolPrefix: string;
   private entries = new Map<string, ToolEntry>();
   private modelContext?: ModelContextLike;
-  private connected = false;
-  private customModelContext?: ModelContextLike;
 
   constructor(editor: Editor, opts: WebMcpManagerOptions = {}) {
     this.editor = editor;
     this.toolPrefix = opts.toolPrefix ?? 'grapesjs_';
-    this.customModelContext = opts.modelContext;
+    this.modelContext = opts.modelContext || getModelContext();
   }
 
   /**
@@ -83,7 +81,7 @@ export class WebMcpManager {
   }
 
   /**
-   * Add a tool, registered right away in WebMCP if the manager is connected.
+   * Add a tool, registered right away in WebMCP (when available).
    * Throws if the tool is invalid or its name is already used.
    */
   addTool(tool: WebMcpTool) {
@@ -140,27 +138,17 @@ export class WebMcpManager {
   }
 
   /**
-   * Register the current and future tools in WebMCP. Without WebMCP, tools are only available via `executeTool`.
-   */
-  connect() {
-    if (this.connected) return;
-    this.connected = true;
-    this.modelContext = this.customModelContext || getModelContext();
-    this.entries.forEach((entry) => this.register(entry));
-  }
-
-  /**
    * Remove all the tools, also from WebMCP.
    */
   destroy() {
     [...this.entries.keys()].forEach((name) => this.removeTool(name));
-    this.connected = false;
+    // Tools added afterwards are not registered anymore
     this.modelContext = undefined;
   }
 
   private register(entry: ToolEntry) {
     const { modelContext } = this;
-    if (!this.connected || !modelContext || entry.registration) return;
+    if (!modelContext || entry.registration) return;
 
     const registration = registerTool(modelContext, entry.exposed);
     entry.registration = registration;
