@@ -69,16 +69,16 @@ From a CDN (`window.grapesjsWebMcp`):
 
 Names are listed without the prefix (eg. `get_component_tree` is registered as `grapesjs_get_component_tree`).
 
-| Module     | Tools                                                                                                                                                                                      |
-| ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Guide      | `get_editor_guide` (only with `instructions`)                                                                                                                                              |
-| Editor     | `get_editor_state`, `get_page_code`, `get_project_data`, `load_project_data`, `undo`, `redo`                                                                                               |
-| Components | `get_component_tree`, `get_component`, `select_components`, `add_components`, `update_component`, `move_component`, `remove_components`, `get_component_traits`, `update_component_traits` |
-| CSS rules  | `get_css_rules`, `set_css_rules`, `remove_css_rules`                                                                                                                                       |
-| Blocks     | `list_blocks`, `get_block`, `insert_block`                                                                                                                                                 |
-| Pages      | `list_pages`, `add_page`, `rename_page`, `select_page`, `remove_page`                                                                                                                      |
-| Devices    | `list_devices`, `select_device`                                                                                                                                                            |
-| Assets     | `list_assets`, `add_assets`, `remove_assets`                                                                                                                                               |
+| Module     | Tools                                                                                                                                                                                       |
+| ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Guide      | `get_editor_guide` (only with `instructions`)                                                                                                                                               |
+| Editor     | `get_editor_state`, `get_page_code`, `get_project_data`, `load_project_data`, `undo`, `redo`                                                                                                |
+| Components | `get_component_tree`, `get_component`, `select_components`, `add_components`, `update_components`, `move_component`, `remove_components`, `get_component_traits`, `update_component_traits` |
+| CSS rules  | `get_css_rules`, `set_css_rules`, `remove_css_rules`                                                                                                                                        |
+| Blocks     | `list_blocks`, `get_block`, `insert_block`                                                                                                                                                  |
+| Pages      | `list_pages`, `add_page`, `rename_page`, `select_page`, `remove_page`                                                                                                                       |
+| Devices    | `list_devices`, `select_device`                                                                                                                                                             |
+| Assets     | `list_assets`, `add_assets`, `remove_assets`                                                                                                                                                |
 
 How the tools behave:
 

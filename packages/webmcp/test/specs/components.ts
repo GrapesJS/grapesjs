@@ -98,26 +98,43 @@ describe('Component tools', () => {
     expect(editor.Components.getById('locked')!.components().length).toBe(0);
   });
 
-  test('update_component', async () => {
-    const res = await call('update_component', {
-      id: 'title',
-      attributes: { title: 'Main', 'data-x': 1 },
-      content: 'New <b>title</b>',
-      name: 'Heading',
+  test('update_components', async () => {
+    const res = await call('update_components', {
+      updates: [
+        { id: 'title', attributes: { title: 'Main', 'data-x': 1 }, content: 'New <b>title</b>', name: 'Heading' },
+        { id: 'para', attributes: { title: 'Para' } },
+      ],
     });
-    expect(res.attributes).toMatchObject({ title: 'Main', 'data-x': 1 });
-    expect(res.name).toBe('Heading');
+    expect(res.updated).toEqual([
+      expect.objectContaining({
+        id: 'title',
+        name: 'Heading',
+        attributes: expect.objectContaining({ title: 'Main', 'data-x': 1 }),
+      }),
+      expect.objectContaining({ id: 'para', attributes: expect.objectContaining({ title: 'Para' }) }),
+    ]);
     expect(editor.Components.getById('title')!.toHTML()).toContain('New <b>title</b>');
 
-    await call('update_component', { id: 'title', removeAttributes: ['title'] });
+    await call('update_components', { updates: [{ id: 'title', removeAttributes: ['title'] }] });
+    expect(editor.Components.getById('title')!.getAttributes().title).toBeUndefined();
+    expect(await call('update_components', { updates: [] })).toMatchObject({ error: { code: 'invalid_input' } });
+  });
+
+  test('update_components updates nothing if a component is missing', async () => {
+    const res = await call('update_components', {
+      updates: [
+        { id: 'title', attributes: { title: 'Main' } },
+        { id: 'nope', attributes: { title: 'Nope' } },
+      ],
+    });
+    expect(res).toMatchObject({ error: { code: 'not_found' } });
     expect(editor.Components.getById('title')!.getAttributes().title).toBeUndefined();
   });
 
-  test('update_component handles class, style and id attributes', async () => {
-    let res = await call('update_component', {
-      id: 'box',
-      attributes: { class: 'card card--big', style: 'color: red; padding: 10px' },
-    });
+  test('update_components handles class, style and id attributes', async () => {
+    const update = async (data: Record<string, any>) =>
+      (await call('update_components', { updates: [{ id: 'box', ...data }] })).updated[0];
+    let res = await update({ attributes: { class: 'card card--big', style: 'color: red; padding: 10px' } });
     // With avoidInlineStyle (default) styles are stored in the #id CSS rule, not in attributes
     expect(res.attributes).toEqual({ id: 'box', class: 'card card--big' });
     const box = editor.Components.getById('box')!;
@@ -125,23 +142,23 @@ describe('Component tools', () => {
     expect(editor.getCss()).toContain('#box{color:red;padding:10px;}');
 
     // Other attributes don't affect classes and styles
-    res = await call('update_component', { id: 'box', attributes: { title: 'Box' } });
+    res = await update({ attributes: { title: 'Box' } });
     expect(res.attributes).toEqual({ id: 'box', class: 'card card--big', title: 'Box' });
     expect(editor.getCss()).toContain('#box{color:red;padding:10px;}');
 
-    res = await call('update_component', { id: 'box', removeAttributes: ['class', 'style'] });
+    res = await update({ removeAttributes: ['class', 'style'] });
     expect(res.attributes).toEqual({ id: 'box', title: 'Box' });
     expect(box.getClasses()).toEqual([]);
     expect(editor.getCss()).not.toContain('#box');
 
-    res = await call('update_component', { id: 'box', attributes: { id: 'new-box' } });
+    res = await update({ attributes: { id: 'new-box' } });
     expect(res.id).toBe('new-box');
     expect(editor.getHtml()).toContain('id="new-box"');
   });
 
-  test('update_component replaces content without structure checks', async () => {
+  test('update_components replaces content without structure checks', async () => {
     editor.getWrapper()!.append({ type: 'locked-box', attributes: { id: 'locked' } });
-    await call('update_component', { id: 'locked', content: '<span>Inside</span>' });
+    await call('update_components', { updates: [{ id: 'locked', content: '<span>Inside</span>' }] });
     expect(editor.Components.getById('locked')!.toHTML()).toContain('<span>Inside</span>');
   });
 
@@ -174,7 +191,7 @@ describe('Component tools', () => {
     expect(await call('get_component', { id: 'para' })).toMatchObject({ error: { code: 'not_found' } });
     // Stale id removed manually
     editor.Components.getById('title')!.remove();
-    expect(await call('update_component', { id: 'title', attributes: { a: '1' } })).toMatchObject({
+    expect(await call('update_components', { updates: [{ id: 'title', attributes: { a: '1' } }] })).toMatchObject({
       error: { code: 'not_found' },
     });
 

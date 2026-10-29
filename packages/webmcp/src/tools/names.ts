@@ -21,7 +21,7 @@ export enum ToolNames {
   getComponent = 'get_component',
   selectComponents = 'select_components',
   addComponents = 'add_components',
-  updateComponent = 'update_component',
+  updateComponents = 'update_components',
   moveComponent = 'move_component',
   removeComponents = 'remove_components',
   getComponentTraits = 'get_component_traits',

@@ -53,9 +53,9 @@ describe('Headless', () => {
       }),
     ).toMatchObject({ added: [{ tagName: 'p' }] });
     expect(
-      await webmcp.executeTool(ToolNames.updateComponent, { id: 'box', attributes: { title: 'T' } }),
+      await webmcp.executeTool(ToolNames.updateComponents, { updates: [{ id: 'box', attributes: { title: 'T' } }] }),
     ).toMatchObject({
-      attributes: { title: 'T' },
+      updated: [{ attributes: { title: 'T' } }],
     });
     expect(
       await webmcp.executeTool(ToolNames.setCssRules, { rules: [{ selector: '.card', style: { color: 'red' } }] }),

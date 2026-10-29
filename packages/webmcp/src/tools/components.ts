@@ -143,45 +143,55 @@ export default (ctx: WebMcpToolsContext) => {
       },
     }),
     createTool({
-      name: ToolNames.updateComponent,
-      title: 'Update component',
+      name: ToolNames.updateComponents,
+      title: 'Update components',
       description:
-        'Update a component: set or remove attributes (including id, class and style), replace its inner content (children) or set its custom name shown in the layer manager.',
+        'Update one or more components: set or remove attributes (including id, class and style), replace their inner content (children) or set their custom name shown in the layer manager. Nothing is updated if any of the components is not found.',
       input: z.strictObject({
-        id: idSchema(),
-        attributes: z.optional(
-          z
-            .record(z.string(), z.union([z.string(), z.number(), z.boolean()]))
-            .check(
-              z.describe(
-                'Attributes to add/update, eg. { "href": "/about", "class": "btn btn-primary", "style": "color: red" }',
+        updates: z
+          .array(
+            z.strictObject({
+              id: idSchema(),
+              attributes: z.optional(
+                z
+                  .record(z.string(), z.union([z.string(), z.number(), z.boolean()]))
+                  .check(
+                    z.describe(
+                      'Attributes to add/update, eg. { "href": "/about", "class": "btn btn-primary", "style": "color: red" }',
+                    ),
+                  ),
               ),
-            ),
-        ),
-        removeAttributes: z.optional(z.array(z.string()).check(z.describe('Attribute names to remove'))),
-        content: z.optional(
-          componentContentSchema.check(
-            z.describe(
-              'Replace all the children with this content (HTML string, component definition or array of them). For text components use HTML, eg. "Hello <b>world</b>"',
-            ),
-          ),
-        ),
-        name: z.optional(z.string().check(z.describe('Custom name of the component'))),
+              removeAttributes: z.optional(z.array(z.string()).check(z.describe('Attribute names to remove'))),
+              content: z.optional(
+                componentContentSchema.check(
+                  z.describe(
+                    'Replace all the children with this content (HTML string, component definition or array of them). For text components use HTML, eg. "Hello <b>world</b>"',
+                  ),
+                ),
+              ),
+              name: z.optional(z.string().check(z.describe('Custom name of the component'))),
+            }),
+          )
+          .check(z.minLength(1), z.describe('Updates to apply, in order')),
       }),
-      execute: ({ id, attributes, removeAttributes, content, name }) => {
-        const cmp = getComponent(editor, id);
-        attributes && cmp.addAttributes(attributes);
+      execute: ({ updates }) => {
+        const cmps = updates.map(({ id }) => getComponent(editor, id));
 
-        if (removeAttributes?.length) {
-          // Removing class/style attributes doesn't clear them in the component
-          removeAttributes.includes('class') && cmp.setClass([]);
-          removeAttributes.includes('style') && cmp.setStyle({});
-          cmp.removeAttributes(removeAttributes);
-        }
-        name !== undefined && cmp.setName(name);
-        content !== undefined && cmp.components(content);
+        updates.forEach(({ attributes, removeAttributes, content, name }, index) => {
+          const cmp = cmps[index];
+          attributes && cmp.addAttributes(attributes);
 
-        return serializeComponent(editor, cmp);
+          if (removeAttributes?.length) {
+            // Removing class/style attributes doesn't clear them in the component
+            removeAttributes.includes('class') && cmp.setClass([]);
+            removeAttributes.includes('style') && cmp.setStyle({});
+            cmp.removeAttributes(removeAttributes);
+          }
+          name !== undefined && cmp.setName(name);
+          content !== undefined && cmp.components(content);
+        });
+
+        return { updated: cmps.map(serializeComponentSummary) };
       },
     }),
     createTool({
