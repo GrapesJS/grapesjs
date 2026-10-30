@@ -4,7 +4,7 @@ import { createDefaultTools } from './tools';
 import { WEBMCP_MANAGER_COMMAND, WebMcpPluginOptions } from './types';
 
 export type { WebMcpManager } from './manager';
-export { ToolNames } from './tools/names';
+export { ToolNames } from './tools/constants';
 export { WebMcpEvents } from './types';
 export type {
   GetToolsContext,

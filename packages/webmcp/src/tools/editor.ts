@@ -3,7 +3,7 @@ import * as z from 'zod/mini';
 import type { WebMcpToolsContext } from '../types';
 import { serializeDevice } from './devices';
 import { getPage, serializePage } from './pages';
-import { ToolNames } from './names';
+import { ToolNames } from './constants';
 import { createTool, getPageOf, guideHint, ToolError, toolRef, toPlain } from '../utils';
 
 const getState = (editor: Editor) => {

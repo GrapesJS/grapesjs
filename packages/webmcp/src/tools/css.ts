@@ -1,7 +1,7 @@
 import type { CssRule } from 'grapesjs';
 import * as z from 'zod/mini';
 import type { WebMcpToolsContext } from '../types';
-import { ToolNames } from './names';
+import { ToolNames } from './constants';
 import {
   createTool,
   limitSchema,

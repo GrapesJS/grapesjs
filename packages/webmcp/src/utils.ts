@@ -1,6 +1,6 @@
 import type { Component, Editor } from 'grapesjs';
 import * as z from 'zod/mini';
-import { ToolNames } from './tools/names';
+import { ToolNames } from './tools/constants';
 import type {
   JsonSchema,
   WebMcpTool,

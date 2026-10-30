@@ -1,5 +1,5 @@
 import type { WebMcpToolsContext } from '../types';
-import { ToolNames } from './names';
+import { ToolNames } from './constants';
 import { createTool } from '../utils';
 
 /**
