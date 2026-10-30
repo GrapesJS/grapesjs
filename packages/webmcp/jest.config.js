@@ -13,6 +13,6 @@ module.exports = {
   transform: {
     '\\.[jt]s$': ['babel-jest', { configFile: require.resolve('../core/babel.config.js') }],
   },
-  setupFiles: ['<rootDir>/test/setup.js'],
-  testMatch: ['<rootDir>/test/specs/**/*.(t|j)s'],
+  setupFiles: ['<rootDir>/test/setup.ts'],
+  testMatch: ['<rootDir>/src/**/*.test.ts'],
 };

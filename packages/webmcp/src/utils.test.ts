@@ -1,6 +1,6 @@
 import * as z from 'zod/mini';
-import { createTool } from '../../src';
-import { createEditor } from '../helpers';
+import { createTool } from './utils';
+import { createEditor } from '../test/helpers';
 
 describe('createTool', () => {
   const tool = createTool({

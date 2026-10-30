@@ -1,5 +1,5 @@
-import { ToolNames } from '../../../src';
-import { createEditor } from '../../helpers';
+import { ToolNames } from './constants';
+import { createEditor } from '../../test/helpers';
 
 describe('Editor guide', () => {
   test('No guide tool without instructions', async () => {

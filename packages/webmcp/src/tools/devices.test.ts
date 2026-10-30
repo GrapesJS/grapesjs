@@ -1,6 +1,6 @@
 import type { Editor } from 'grapesjs';
-import { ToolNames } from '../../../src';
-import { createEditor, createModelContext } from '../../helpers';
+import { ToolNames } from './constants';
+import { createEditor, createModelContext } from '../../test/helpers';
 
 describe('Device tools', () => {
   let editor: Editor;

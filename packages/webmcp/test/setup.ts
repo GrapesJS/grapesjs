@@ -1,2 +1,2 @@
 // Defined at build time in the GrapesJS bundle
-global.__GJS_VERSION__ = '';
+(globalThis as any).__GJS_VERSION__ = '';

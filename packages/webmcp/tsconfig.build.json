@@ -6,5 +6,7 @@
     "outDir": "./dist",
     "types": []
   },
-  "include": ["src"]
+  "include": ["src"],
+  // Tests are next to the sources, keep them out of the published types
+  "exclude": ["src/**/*.test.ts"]
 }

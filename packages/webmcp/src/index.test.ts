@@ -1,7 +1,7 @@
 import grapesjs from 'grapesjs';
-import webMcpPlugin, { GetToolsContext, ToolNames, WebMcpTool } from '../../src';
-import { createDefaultTools } from '../../src/tools';
-import { createEditor, createModelContext, flush } from '../helpers';
+import webMcpPlugin, { GetToolsContext, ToolNames, WebMcpTool } from '.';
+import { createDefaultTools } from './tools';
+import { createEditor, createModelContext, flush } from '../test/helpers';
 
 const customTool: WebMcpTool = {
   name: 'say_hello',

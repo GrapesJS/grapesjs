@@ -1,6 +1,6 @@
-import { WebMcpTool } from '../../src';
-import { getModelContext, registerTool } from '../../src/registry';
-import { createModelContext, flush } from '../helpers';
+import { WebMcpTool } from '.';
+import { getModelContext, registerTool } from './registry';
+import { createModelContext, flush } from '../test/helpers';
 
 const tool = (name: string): WebMcpTool => ({ name, description: name, execute: () => ({}) });
 
