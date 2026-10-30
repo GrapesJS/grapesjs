@@ -19,7 +19,7 @@
         min-width: 0;
       }
       .demo__tools {
-        width: 340px;
+        width: 360px;
         display: flex;
         flex-direction: column;
         gap: 8px;
@@ -30,6 +30,9 @@
         color: #222;
         font-size: 13px;
         overflow: auto;
+      }
+      .demo__tools[hidden] {
+        display: none;
       }
       .demo__tools select,
       .demo__tools textarea,
@@ -49,24 +52,99 @@
         white-space: pre-wrap;
         word-break: break-word;
         font-size: 12px;
-        flex: 1;
+        max-height: 240px;
         overflow: auto;
       }
-      .demo__status {
-        padding: 6px 8px;
-        border-radius: 4px;
-        background: #fff4d6;
+      .demo__section {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 8px;
+        font-weight: 600;
       }
-      .demo__status--native {
-        background: #dff5e1;
+      .demo__section button {
+        width: auto;
+      }
+      .demo__logs {
+        display: flex;
+        flex-direction: column-reverse;
+        gap: 4px;
+      }
+      .demo__log summary {
+        cursor: pointer;
+        display: flex;
+        gap: 6px;
+        padding: 4px 6px;
+        border-radius: 4px;
+        background: #f5f5f5;
+      }
+      .demo__log-name {
+        flex: 1;
+        font-family: monospace;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .demo__log-meta {
+        color: #777;
+      }
+      .demo__log--error summary {
+        background: #fde2e1;
+      }
+      .demo__log--running summary {
+        background: #e5efff;
+      }
+      .demo__toggle {
+        position: fixed;
+        right: 16px;
+        bottom: 16px;
+        z-index: 10;
+        max-width: 280px;
+        padding: 8px 14px;
+        border: 0;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+        font:
+          13px system-ui,
+          sans-serif;
+        text-align: left;
+        cursor: pointer;
+        color: #3d2c00;
+        background: #ffd666;
+      }
+      .demo__toggle[hidden] {
+        display: none;
+      }
+      .demo__toggle--available {
+        color: #0b3d16;
+        background: #8fe0a0;
+      }
+      .demo__toggle-title {
+        display: block;
+        font-weight: 600;
+      }
+      .demo__toggle-last[hidden] {
+        display: none;
+      }
+      .demo__toggle-last {
+        display: block;
+        font-family: monospace;
+        font-size: 12px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
       }
     </style>
   </head>
   <body>
     <div class="demo">
       <div class="demo__editor"><div id="gjs"></div></div>
-      <div class="demo__tools">
-        <div id="status" class="demo__status"></div>
+      <div id="sidebar" class="demo__tools" hidden>
+        <div class="demo__section">
+          <span id="sidebar-title"></span>
+          <button id="close">Close</button>
+        </div>
+        <div id="status"></div>
+        <div class="demo__section">Run a tool</div>
         <label
           >Tool
           <select id="tool"></select
@@ -74,38 +152,29 @@
         <div id="description"></div>
         <label>Input (JSON) <textarea id="input">{}</textarea></label>
         <button id="run">Run tool</button>
-        <pre id="output"></pre>
+        <pre id="output" hidden></pre>
+        <div class="demo__section">
+          Executed tools
+          <button id="clear-logs">Clear</button>
+        </div>
+        <div id="logs" class="demo__logs"></div>
       </div>
     </div>
+    <button id="toggle" class="demo__toggle">
+      <span id="toggle-title" class="demo__toggle-title"></span>
+      <span id="toggle-last" class="demo__toggle-last" hidden></span>
+    </button>
 
     <script type="module">
       // The local GrapesJS build (packages/core/dist) and the plugin source
       import grapesjs from 'grapesjs';
       import 'grapesjs/dist/css/grapes.min.css';
-      import plugin, { ToolNames } from './src';
+      import plugin, { ToolNames, WebMcpEvents } from './src';
 
       const $ = (id) => document.getElementById(id);
+      const isAvailable = typeof (document.modelContext || navigator.modelContext)?.registerTool === 'function';
 
-      /**
-       * Demo-only fallback: when the browser doesn't provide WebMCP, emulate `document.modelContext`
-       * so the registered tools can be tried from the side panel.
-       * The plugin itself doesn't include any polyfill.
-       */
-      const isNative = typeof document.modelContext?.registerTool === 'function';
-      const demoTools = (window.demoTools = new Map());
-
-      if (!isNative) {
-        document.modelContext = {
-          registerTool(tool, { signal } = {}) {
-            demoTools.set(tool.name, tool);
-            signal?.addEventListener('abort', () => demoTools.delete(tool.name));
-            renderTools();
-            return Promise.resolve();
-          },
-        };
-      }
-
-      window.editor = grapesjs.init({
+      const editor = (window.editor = grapesjs.init({
         container: '#gjs',
         height: '100%',
         storageManager: false,
@@ -147,45 +216,102 @@
               ],
             }),
         ],
-      });
+      }));
 
-      const status = $('status');
-      status.textContent = isNative
-        ? 'WebMCP detected: tools are exposed to the browser agent.'
-        : 'WebMCP not available in this browser: using the demo fallback, try the tools below.';
-      isNative && status.classList.add('demo__status--native');
+      const webmcp = editor.runCommand('webMcpManager');
 
-      function renderTools() {
+      // Status and sidebar toggle
+
+      const toggle = $('toggle');
+      $('toggle-title').textContent = $('sidebar-title').textContent = isAvailable
+        ? 'WebMCP available'
+        : 'WebMCP not available';
+      isAvailable && toggle.classList.add('demo__toggle--available');
+      $('status').textContent = isAvailable
+        ? 'Tools are exposed to the browser agent. You can also run them from here.'
+        : 'Tools are not exposed, but you can still run them from here (via the webMcpManager command).';
+
+      const setSidebarOpen = (open) => {
+        $('sidebar').hidden = !open;
+        toggle.hidden = open;
+        // The canvas size changes with the sidebar
+        editor.refresh();
+      };
+
+      toggle.addEventListener('click', () => setSidebarOpen(true));
+      $('close').addEventListener('click', () => setSidebarOpen(false));
+
+      // Tool runner (same result an agent would receive)
+
+      const renderTools = () => {
         const select = $('tool');
         const current = select.value;
-        select.innerHTML = [...demoTools.keys()].map((name) => `<option>${name}</option>`).join('');
-        if (demoTools.has(current)) select.value = current;
+        const names = webmcp.getTools().map((tool) => tool.name);
+        select.innerHTML = names.map((name) => `<option>${name}</option>`).join('');
+        if (names.includes(current)) select.value = current;
         renderDescription();
-      }
+      };
 
-      function renderDescription() {
-        const tool = demoTools.get($('tool').value);
-        $('description').textContent = tool ? tool.description : '';
-      }
+      const renderDescription = () => {
+        $('description').textContent = webmcp.getTool($('tool').value)?.description || '';
+      };
 
+      renderTools();
+      editor.on(`${WebMcpEvents.toolAdd} ${WebMcpEvents.toolRemove}`, renderTools);
       $('tool').addEventListener('change', renderDescription);
+
       $('run').addEventListener('click', async () => {
-        const tool = demoTools.get($('tool').value);
-        if (!tool) return;
+        const output = $('output');
+        output.hidden = false;
         try {
-          const result = await tool.execute(JSON.parse($('input').value || '{}'), {
-            signal: new AbortController().signal,
-          });
-          $('output').textContent = JSON.stringify(result, null, 2);
+          const result = await webmcp.executeTool($('tool').value, JSON.parse($('input').value || '{}'));
+          output.textContent = JSON.stringify(result, null, 2);
         } catch (error) {
-          $('output').textContent = String(error);
+          output.textContent = String(error);
         }
       });
 
-      if (isNative) {
-        $('tool').closest('label').hidden = true;
-        ['input', 'run', 'output'].forEach((id) => ($(id).closest('label') || $(id)).setAttribute('hidden', ''));
-      }
+      // Logs of the executed tools (by the agent or the runner)
+
+      const calls = new WeakMap();
+      const format = (value) => JSON.stringify(value, null, 2);
+      const escape = (value) => value.replace(/[&<>"]/g, (char) => `&#${char.charCodeAt(0)};`);
+
+      const getCallLabel = ({ name, state, duration, result }) => {
+        if (state === 'running') return `⏳ ${name}`;
+        return state === 'error' ? `✕ ${name} · ${result.error.code}` : `✓ ${name} · ${duration}ms`;
+      };
+
+      const renderCall = (call) => {
+        const { el, name, state, duration, input, result } = call;
+        el.className = `demo__log demo__log--${state}`;
+        el.innerHTML = `
+          <summary>
+            <span class="demo__log-name">${escape(name)}</span>
+            <span class="demo__log-meta">${state === 'running' ? 'running' : `${duration}ms`}</span>
+          </summary>
+          <pre>${escape(`Input: ${format(input)}${state === 'running' ? '' : `\n\nResult: ${format(result)}`}`)}</pre>
+        `;
+        $('toggle-last').hidden = false;
+        $('toggle-last').textContent = getCallLabel(call);
+      };
+
+      editor.on(WebMcpEvents.toolExecuteBefore, ({ name, input }) => {
+        const call = { el: document.createElement('details'), name, input, state: 'running', start: Date.now() };
+        // The same input object is passed to both events
+        calls.set(input, call);
+        $('logs').appendChild(call.el);
+        renderCall(call);
+      });
+
+      editor.on(WebMcpEvents.toolExecute, ({ input, result, error }) => {
+        const call = calls.get(input);
+        if (!call) return;
+        Object.assign(call, { result, state: error ? 'error' : 'done', duration: Date.now() - call.start });
+        renderCall(call);
+      });
+
+      $('clear-logs').addEventListener('click', () => ($('logs').innerHTML = ''));
     </script>
   </body>
 </html>
