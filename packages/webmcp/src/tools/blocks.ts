@@ -13,7 +13,6 @@ import {
   paginate,
   serializeComponentSummary,
   ToolError,
-  toolRef,
   toPlain,
 } from '../utils';
 
@@ -41,7 +40,7 @@ export default (ctx: WebMcpToolsContext) => {
     createTool({
       name: ToolNames.listBlocks,
       title: 'List blocks',
-      description: `List the blocks available in the editor (predefined content that can be inserted with ${toolRef(ctx, ToolNames.insertBlock)}).`,
+      description: 'List the blocks available in the editor (predefined content that can be inserted in the page).',
       annotations: { readOnlyHint: true },
       input: z.strictObject({
         category: z.optional(z.string().check(z.describe('Filter by category label'))),

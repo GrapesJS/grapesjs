@@ -11,7 +11,6 @@ import {
   Style,
   styleSchema,
   ToolError,
-  toolRef,
   toPlain,
 } from '../utils';
 
@@ -43,7 +42,7 @@ const serializeRule = (rule: CssRule) => ({
 // Keep empty rules, otherwise they would be serialized as an empty string
 const serializeRuleCss = (rule: CssRule) => rule.toCSS({ allowEmpty: true });
 
-export default ({ editor, defaultLimit, toolPrefix }: WebMcpToolsContext) => [
+export default ({ editor, defaultLimit }: WebMcpToolsContext) => [
   createTool({
     name: ToolNames.getCssRules,
     title: 'Get CSS rules',
@@ -86,7 +85,7 @@ export default ({ editor, defaultLimit, toolPrefix }: WebMcpToolsContext) => [
     title: 'Set CSS rules',
     description:
       'Create or update CSS rules, passed as objects (`rules`) and/or as a raw CSS string (`css`). Selectors can include a state (eg. ".btn:hover") and rules can be wrapped in an at-rule (eg. a media query). Styles are merged into existing rules unless `replace` is true. ' +
-      `Returns only the identifiers of the affected rules, use ${toolRef({ toolPrefix }, ToolNames.getCssRules)} to read their styles.`,
+      'Returns the number of affected rules.',
     input: z.strictObject({
       rules: z.optional(
         z
@@ -128,8 +127,7 @@ export default ({ editor, defaultLimit, toolPrefix }: WebMcpToolsContext) => [
         result.push(...editor.Css.addCollection(css, { extend: !replace }));
       }
 
-      const affected = [...new Set(result)];
-      return { count: affected.length, rules: affected.map(serializeRuleRef) };
+      return { count: new Set(result).size };
     },
   }),
   createTool({

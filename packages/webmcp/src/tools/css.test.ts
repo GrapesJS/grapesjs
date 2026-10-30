@@ -43,14 +43,8 @@ describe('CSS rule tools', () => {
         { selector: '.card', style: { 'font-weight': 'bold' }, atRuleParams: '(max-width: 768px)' },
       ],
     });
-    // Only the identifiers of the affected rules are returned
-    expect(res).toEqual({
-      count: 2,
-      rules: [
-        { selector: '.card:hover', state: 'hover', atRuleType: '', atRuleParams: '' },
-        { selector: '.card', state: '', atRuleType: 'media', atRuleParams: '(max-width: 768px)' },
-      ],
-    });
+    // Only the number of affected rules is returned
+    expect(res).toEqual({ count: 2 });
     expect(editor.getCss()).toContain('.card:hover{color:black;}');
     expect(editor.getCss()).toContain('@media (max-width: 768px){.card{color:blue;font-weight:bold;}}');
 
@@ -65,8 +59,7 @@ describe('CSS rule tools', () => {
     const res = await call(ToolNames.setCssRules, {
       css: '.card { font-size: 12px } .btn:hover { color: white } section .title { font-weight: bold } @media (max-width: 768px) { .card { opacity: 0.5 } }',
     });
-    expect(res.count).toBe(4);
-    expect(res.rules.map((r: any) => r.selector)).toEqual(['.card', '.btn:hover', 'section .title', '.card']);
+    expect(res).toEqual({ count: 4 });
     // Merged into the existing rules by default
     const css = editor.getCss({ keepUnusedStyles: true });
     expect(css).toContain('.card{color:red;font-size:12px;}');
@@ -83,7 +76,7 @@ describe('CSS rule tools', () => {
       rules: [{ selector: '.a', style: { color: 'red' } }],
       css: '.b { color: blue }',
     });
-    expect(res.rules.map((r: any) => r.selector)).toEqual(['.a', '.b']);
+    expect(res).toEqual({ count: 2 });
     expect(editor.getCss({ keepUnusedStyles: true })).toContain('.a{color:red;}.b{color:blue;}');
   });
 

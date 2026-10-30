@@ -4,7 +4,7 @@ import type { WebMcpToolsContext } from '../types';
 import { serializeDevice } from './devices';
 import { getPage, serializePage } from './pages';
 import { ToolNames } from './constants';
-import { createTool, getPageOf, guideHint, ToolError, toolRef, toPlain } from '../utils';
+import { createTool, getPageOf, guideHint, ToolError, toPlain } from '../utils';
 
 const getState = (editor: Editor) => {
   const page = editor.Pages.getSelected();
@@ -34,20 +34,20 @@ const getHistoryStep = (editor: Editor, type: 'undo' | 'redo') => {
   const um = editor.UndoManager;
   const stack = um.getStack() as any;
   const current = stack.at(um.getPointer() + (type === 'undo' ? 0 : 1));
-  const labels = new Set<string>();
   const components = new Set<string>();
   const cssRules = new Set<string>();
-  if (!current) return { labels, components, cssRules };
+  if (!current) return { components, cssRules };
 
   const group = current.get('magicFusionIndex');
   stack.forEach((item: any) => {
     if (item.get('magicFusionIndex') !== group) return;
-    const { type, object, before, after, options } = item.attributes;
-    // Additions and removals are tracked on the collection
-    const target = type === 'add' ? after : type === 'remove' ? before : object;
+    const { type, object, before, after } = item.attributes;
+    const isCollectionChange = type === 'add' || type === 'remove';
+    // Additions and removals are tracked on the collection: report the component whose children
+    // changed, or the added/removed item for other collections (eg. CSS rules)
+    const target = isCollectionChange ? object?.parent || (type === 'add' ? after : before) : object;
     // Selection changes are tracked on wrappers of the component
     const model = target?.get?.('component') || target;
-    options?.action && labels.add(options.action);
 
     if (model?.selectorsToString) {
       cssRules.add(model.selectorsToString());
@@ -56,12 +56,11 @@ const getHistoryStep = (editor: Editor, type: 'undo' | 'redo') => {
     }
   });
 
-  return { labels, components, cssRules };
+  return { components, cssRules };
 };
 
 const runHistory = (editor: Editor, type: 'undo' | 'redo', steps: number) => {
   const um = editor.UndoManager;
-  const labels = new Set<string>();
   const components = new Set<string>();
   const cssRules = new Set<string>();
   let done = 0;
@@ -72,7 +71,6 @@ const runHistory = (editor: Editor, type: 'undo' | 'redo', steps: number) => {
     um[type]();
     // Skipped by the editor, eg. while editing text
     if (um.getPointer() === pointer) break;
-    step.labels.forEach((label) => labels.add(label));
     step.components.forEach((id) => components.add(id));
     step.cssRules.forEach((selector) => cssRules.add(selector));
     done++;
@@ -80,7 +78,6 @@ const runHistory = (editor: Editor, type: 'undo' | 'redo', steps: number) => {
 
   return {
     [type === 'undo' ? 'undone' : 'redone']: done,
-    labels: [...labels],
     components: [...components],
     cssRules: [...cssRules],
     hasUndo: um.hasUndo(),
@@ -125,7 +122,7 @@ export default (ctx: WebMcpToolsContext) => {
     createTool({
       name: ToolNames.getProjectData,
       title: 'Get project data',
-      description: `Get the full project JSON (pages, styles, assets, etc.), the same format accepted by ${toolRef(ctx, ToolNames.loadProjectData)}.`,
+      description: 'Get the full project JSON (pages, styles, assets, etc.).',
       annotations: { readOnlyHint: true, untrustedContentHint: true },
       execute: () => ({ projectData: toPlain(editor.getProjectData()) }),
     }),
@@ -138,7 +135,7 @@ export default (ctx: WebMcpToolsContext) => {
       input: z.strictObject({
         projectData: z
           .record(z.string(), z.unknown())
-          .check(z.describe(`Project JSON, as returned by ${toolRef(ctx, ToolNames.getProjectData)}`)),
+          .check(z.describe('Project JSON, in the same format of the exported project data')),
       }),
       execute: ({ projectData }) => {
         editor.loadProjectData(projectData);
@@ -149,7 +146,7 @@ export default (ctx: WebMcpToolsContext) => {
       name: ToolNames.undo,
       title: 'Undo',
       description:
-        'Undo the last change(s). Returns the action labels and the ids of components and selectors of CSS rules affected.',
+        'Undo the last change(s). Returns the ids of the affected components and the selectors of the affected CSS rules.',
       input: z.strictObject({
         steps: z.optional(z.int().check(z.minimum(1), z.maximum(100), z.describe('Number of steps (default 1)'))),
       }),
@@ -159,7 +156,7 @@ export default (ctx: WebMcpToolsContext) => {
       name: ToolNames.redo,
       title: 'Redo',
       description:
-        'Redo the last undone change(s). Returns the action labels and the ids of components and selectors of CSS rules affected.',
+        'Redo the last undone change(s). Returns the ids of the affected components and the selectors of the affected CSS rules.',
       input: z.strictObject({
         steps: z.optional(z.int().check(z.minimum(1), z.maximum(100), z.describe('Number of steps (default 1)'))),
       }),

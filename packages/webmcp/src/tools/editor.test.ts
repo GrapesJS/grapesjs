@@ -45,7 +45,7 @@ describe('Editor tools', () => {
 
   test('Undo/redo with no history', async () => {
     editor.UndoManager.clear();
-    const empty = { labels: [], components: [], cssRules: [], hasUndo: false, hasRedo: false };
+    const empty = { components: [], cssRules: [], hasUndo: false, hasRedo: false };
     expect(await call(ToolNames.undo, { steps: 3 })).toEqual({ undone: 0, ...empty });
     expect(await call(ToolNames.redo)).toEqual({ redone: 0, ...empty });
   });
@@ -56,10 +56,11 @@ describe('Editor tools', () => {
     editor.getWrapper()!.append('<p id="new">New</p>');
     editor.Css.setRule('.card', { color: 'blue' });
 
+    // For added/removed components, the parent is reported (the component whose children changed)
+    const wrapperId = editor.getWrapper()!.getId();
     expect(await call(ToolNames.undo)).toEqual({
       undone: 1,
-      labels: ['component:add'],
-      components: ['new'],
+      components: [wrapperId],
       cssRules: ['.card'],
       hasUndo: false,
       hasRedo: true,
@@ -68,10 +69,17 @@ describe('Editor tools', () => {
 
     expect(await call(ToolNames.redo)).toMatchObject({
       redone: 1,
-      components: ['new'],
+      components: [wrapperId],
       cssRules: ['.card'],
       hasRedo: false,
     });
     expect(editor.getHtml()).toContain('id="new"');
+  });
+
+  test('Undo of a content replacement reports the edited component', async () => {
+    editor.UndoManager.clear();
+    await call(ToolNames.updateComponents, { updates: [{ id: 'box', content: 'New <b>content</b>' }] });
+    expect(await call(ToolNames.undo)).toMatchObject({ undone: 1, components: ['box'] });
+    expect(editor.getHtml()).toContain('>Box</div>');
   });
 });

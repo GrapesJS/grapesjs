@@ -139,8 +139,7 @@ export const createTool = <S extends z.ZodMiniType = typeof emptyInput>(
 /**
  * Reference another tool (eg. in descriptions or error messages) with its registered name.
  */
-export const toolRef = ({ toolPrefix }: Pick<WebMcpToolsContext, 'toolPrefix'>, name: ToolNames) =>
-  `${toolPrefix}${name}`;
+const toolRef = ({ toolPrefix }: Pick<WebMcpToolsContext, 'toolPrefix'>, name: ToolNames) => `${toolPrefix}${name}`;
 
 /**
  * Description suffix pointing the agent to the guide tool (when available).

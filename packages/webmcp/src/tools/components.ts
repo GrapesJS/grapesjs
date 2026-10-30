@@ -18,7 +18,6 @@ import {
   serializeComponentDetails,
   serializeComponentSummary,
   ToolError,
-  toolRef,
   toPlain,
 } from '../utils';
 
@@ -309,7 +308,7 @@ export default (ctx: WebMcpToolsContext) => {
     createTool({
       name: ToolNames.removeComponents,
       title: 'Remove components',
-      description: `Remove components from the page. Can be reverted with ${toolRef(ctx, ToolNames.undo)}.`,
+      description: 'Remove components from the page. Can be reverted with an undo.',
       annotations: { consequentialHint: true },
       input: z.strictObject({ ids: z.array(z.string()).check(z.minLength(1), z.describe('Component ids to remove')) }),
       execute: ({ ids }) => {
