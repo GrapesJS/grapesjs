@@ -1,6 +1,6 @@
-import type { Editor } from 'grapesjs';
+import grapesjs, { type Editor } from 'grapesjs';
 import * as z from 'zod/mini';
-import { createTool, ToolNames, WebMcpEvents, WebMcpTool, WebMcpToolExecuteEventData } from '../../src';
+import webMcpPlugin, { createTool, ToolNames, WebMcpEvents, WebMcpTool, WebMcpToolExecuteEventData } from '../../src';
 import { WebMcpManager } from '../../src/manager';
 import { createEditor, createModelContext, flush } from '../helpers';
 
@@ -165,8 +165,6 @@ describe('WebMcpManager', () => {
 describe('WebMcpManager lifecycle', () => {
   test('Tools are registered right away, before the editor is ready', async () => {
     const mc = createModelContext();
-    const grapesjs = (await import('grapesjs')).default;
-    const webMcpPlugin = (await import('../../src')).default;
     const editor = grapesjs.init({
       headless: true,
       storageManager: false,
@@ -185,8 +183,6 @@ describe('WebMcpManager lifecycle', () => {
   });
 
   test('Works without WebMCP', async () => {
-    const grapesjs = (await import('grapesjs')).default;
-    const webMcpPlugin = (await import('../../src')).default;
     const editor = grapesjs.init({ headless: true, storageManager: false, plugins: [(ed) => webMcpPlugin(ed, {})] });
     editor.getModel().set('readyCanvas', true);
     editor.getModel().trigger('load', editor);
@@ -199,8 +195,6 @@ describe('WebMcpManager lifecycle', () => {
 
   test('Plugin removal removes the command and the tools', async () => {
     const mc = createModelContext();
-    const grapesjs = (await import('grapesjs')).default;
-    const webMcpPlugin = (await import('../../src')).default;
     const editor = grapesjs.init({ headless: true, storageManager: false });
     const plugin = editor.Plugins.add({
       id: 'webmcp',

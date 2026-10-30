@@ -46,9 +46,11 @@ describe('webMcpPlugin', () => {
 
   test('Read-only tools are annotated', async () => {
     const { editor, mc } = await createEditor();
-    expect(mc.tools.get('grapesjs_get_components')!.annotations).toMatchObject({ readOnlyHint: true });
-    expect(mc.tools.get('grapesjs_load_project_data')!.annotations).toMatchObject({ consequentialHint: true });
-    expect(mc.tools.get('grapesjs_add_components')!.annotations?.readOnlyHint).toBeFalsy();
+    expect(mc.tools.get(`grapesjs_${ToolNames.getComponents}`)!.annotations).toMatchObject({ readOnlyHint: true });
+    expect(mc.tools.get(`grapesjs_${ToolNames.loadProjectData}`)!.annotations).toMatchObject({
+      consequentialHint: true,
+    });
+    expect(mc.tools.get(`grapesjs_${ToolNames.addComponents}`)!.annotations?.readOnlyHint).toBeFalsy();
     editor.destroy();
   });
 
@@ -74,10 +76,10 @@ describe('webMcpPlugin', () => {
 
     expect(getTools).toHaveBeenCalledTimes(1);
     expect(getTools.mock.calls[0][0].editor).toBe(editor);
-    expect(mc.tools.has('site_load_project_data')).toBe(false);
-    expect(mc.tools.has('grapesjs_get_editor_state')).toBe(false);
+    expect(mc.tools.has(`site_${ToolNames.loadProjectData}`)).toBe(false);
+    expect(mc.tools.has(`grapesjs_${ToolNames.getEditorState}`)).toBe(false);
     expect(await mc.call('site_say_hello', { name: 'Agent' })).toEqual({ message: 'Hello Agent' });
-    const state = await mc.call('site_get_editor_state');
+    const state = await mc.call(`site_${ToolNames.getEditorState}`);
     expect(state).toMatchObject({ wrapped: true, dirtyCount: 0 });
     expect(calls).toEqual([ToolNames.getEditorState]);
     editor.destroy();
@@ -132,14 +134,18 @@ describe('webMcpPlugin', () => {
       ],
     });
     expect(await mc.call('grapesjs_fail')).toEqual({ error: { code: 'execution_error', message: 'Boom' } });
-    expect(await mc.call('grapesjs_get_components', { ids: ['missing'] })).toMatchObject({
+    expect(await mc.call(`grapesjs_${ToolNames.getComponents}`, { ids: ['missing'] })).toMatchObject({
       error: { code: 'not_found' },
     });
-    expect(await mc.call('grapesjs_remove_page', {})).toEqual({
+    expect(await mc.call(`grapesjs_${ToolNames.removePage}`, {})).toEqual({
       error: { code: 'invalid_input', message: 'input.id is required' },
     });
-    expect(await mc.call('grapesjs_get_components', { ids: [1] })).toMatchObject({ error: { code: 'invalid_input' } });
-    expect(await mc.call('grapesjs_list_pages', { extra: true })).toMatchObject({ error: { code: 'invalid_input' } });
+    expect(await mc.call(`grapesjs_${ToolNames.getComponents}`, { ids: [1] })).toMatchObject({
+      error: { code: 'invalid_input' },
+    });
+    expect(await mc.call(`grapesjs_${ToolNames.listPages}`, { extra: true })).toMatchObject({
+      error: { code: 'invalid_input' },
+    });
     editor.destroy();
   });
 
@@ -148,7 +154,7 @@ describe('webMcpPlugin', () => {
     const controller = new AbortController();
     controller.abort();
     const res = await mc.call(
-      'grapesjs_add_components',
+      `grapesjs_${ToolNames.addComponents}`,
       { components: '<div>Hi</div>' },
       { signal: controller.signal },
     );
@@ -196,8 +202,10 @@ describe('webMcpPlugin', () => {
     const ed2 = create('ed2_');
     await flush();
     ed1.addComponents('<div id="one">One</div>');
-    expect((await mc.call('ed1_get_components', { ids: ['one'] })).items[0].id).toBe('one');
-    expect(await mc.call('ed2_get_components', { ids: ['one'] })).toMatchObject({ error: { code: 'not_found' } });
+    expect((await mc.call(`ed1_${ToolNames.getComponents}`, { ids: ['one'] })).items[0].id).toBe('one');
+    expect(await mc.call(`ed2_${ToolNames.getComponents}`, { ids: ['one'] })).toMatchObject({
+      error: { code: 'not_found' },
+    });
     ed1.destroy();
     expect([...mc.tools.keys()].every((name) => name.startsWith('ed2_'))).toBe(true);
     ed2.destroy();

@@ -1,5 +1,6 @@
 import type { Editor } from 'grapesjs';
-import { createEditor, createModelContext } from '../helpers';
+import { ToolNames } from '../../../src';
+import { createEditor, createModelContext } from '../../helpers';
 
 describe('CSS rule tools', () => {
   let editor: Editor;
@@ -20,11 +21,11 @@ describe('CSS rule tools', () => {
   afterEach(() => editor.destroy());
 
   test('get_css_rules', async () => {
-    const all = await call('get_css_rules', { selector: '.card' });
+    const all = await call(ToolNames.getCssRules, { selector: '.card' });
     expect(all.total).toBe(2);
-    const media = await call('get_css_rules', { selector: '.card', atRuleParams: '(max-width: 768px)' });
+    const media = await call(ToolNames.getCssRules, { selector: '.card', atRuleParams: '(max-width: 768px)' });
     expect(media.items).toEqual(['@media (max-width: 768px){.card{color:blue;}}']);
-    const base = await call('get_css_rules', { selector: '.card', atRuleParams: '', format: 'style' });
+    const base = await call(ToolNames.getCssRules, { selector: '.card', atRuleParams: '', format: 'style' });
     expect(base.items).toEqual([
       { selector: '.card', state: '', atRuleType: '', atRuleParams: '', style: { color: 'red' } },
     ]);
@@ -32,11 +33,11 @@ describe('CSS rule tools', () => {
 
   test('get_css_rules keeps empty rules', async () => {
     editor.Css.setRule('.empty', {});
-    expect((await call('get_css_rules', { selector: '.empty' })).items).toEqual(['.empty{}']);
+    expect((await call(ToolNames.getCssRules, { selector: '.empty' })).items).toEqual(['.empty{}']);
   });
 
   test('set_css_rules with state and media', async () => {
-    const res = await call('set_css_rules', {
+    const res = await call(ToolNames.setCssRules, {
       rules: [
         { selector: '.card:hover', style: { color: 'black' } },
         { selector: '.card', style: { 'font-weight': 'bold' }, atRuleParams: '(max-width: 768px)' },
@@ -53,7 +54,7 @@ describe('CSS rule tools', () => {
     expect(editor.getCss()).toContain('.card:hover{color:black;}');
     expect(editor.getCss()).toContain('@media (max-width: 768px){.card{color:blue;font-weight:bold;}}');
 
-    await call('set_css_rules', {
+    await call(ToolNames.setCssRules, {
       rules: [{ selector: '.card', style: { margin: 0 } }],
       replace: true,
     });
@@ -61,7 +62,7 @@ describe('CSS rule tools', () => {
   });
 
   test('set_css_rules with raw CSS', async () => {
-    const res = await call('set_css_rules', {
+    const res = await call(ToolNames.setCssRules, {
       css: '.card { font-size: 12px } .btn:hover { color: white } section .title { font-weight: bold } @media (max-width: 768px) { .card { opacity: 0.5 } }',
     });
     expect(res.count).toBe(4);
@@ -73,12 +74,12 @@ describe('CSS rule tools', () => {
     expect(css).toContain('section .title{font-weight:bold;}');
     expect(css).toContain('@media (max-width: 768px){.card{color:blue;opacity:0.5;}}');
 
-    await call('set_css_rules', { css: '.card { opacity: 1 }', replace: true });
+    await call(ToolNames.setCssRules, { css: '.card { opacity: 1 }', replace: true });
     expect(editor.Css.getRule('.card')!.toCSS()).toBe('.card{opacity:1;}');
   });
 
   test('set_css_rules with rules and CSS together', async () => {
-    const res = await call('set_css_rules', {
+    const res = await call(ToolNames.setCssRules, {
       rules: [{ selector: '.a', style: { color: 'red' } }],
       css: '.b { color: blue }',
     });
@@ -87,10 +88,10 @@ describe('CSS rule tools', () => {
   });
 
   test('set_css_rules input errors', async () => {
-    expect(await call('set_css_rules', {})).toMatchObject({ error: { code: 'invalid_input' } });
-    expect(await call('set_css_rules', { css: '  ' })).toMatchObject({ error: { code: 'invalid_input' } });
+    expect(await call(ToolNames.setCssRules, {})).toMatchObject({ error: { code: 'invalid_input' } });
+    expect(await call(ToolNames.setCssRules, { css: '  ' })).toMatchObject({ error: { code: 'invalid_input' } });
     expect(
-      await call('set_css_rules', {
+      await call(ToolNames.setCssRules, {
         rules: [
           { selector: '.ok', style: {} },
           { selector: ' ', style: {} },
@@ -103,8 +104,8 @@ describe('CSS rule tools', () => {
   });
 
   test('remove_css_rules', async () => {
-    await call('set_css_rules', { rules: [{ selector: '.card:hover', style: { color: 'black' } }] });
-    const res = await call('remove_css_rules', {
+    await call(ToolNames.setCssRules, { rules: [{ selector: '.card:hover', style: { color: 'black' } }] });
+    const res = await call(ToolNames.removeCssRules, {
       rules: [{ selector: '.card:hover' }, { selector: '.card', atRuleParams: '(max-width: 768px)' }],
     });
     expect(res.removed).toEqual(['.card:hover{color:black;}', '@media (max-width: 768px){.card{color:blue;}}']);
@@ -114,9 +115,9 @@ describe('CSS rule tools', () => {
   });
 
   test('remove_css_rules removes nothing if a rule is missing', async () => {
-    const res = await call('remove_css_rules', { rules: [{ selector: '.card' }, { selector: '.nope' }] });
+    const res = await call(ToolNames.removeCssRules, { rules: [{ selector: '.card' }, { selector: '.nope' }] });
     expect(res).toEqual({ error: { code: 'not_found', message: 'CSS rules not found: ".nope"' } });
     expect(editor.getCss()).toContain('.card{color:red;}');
-    expect(await call('remove_css_rules', { rules: [] })).toMatchObject({ error: { code: 'invalid_input' } });
+    expect(await call(ToolNames.removeCssRules, { rules: [] })).toMatchObject({ error: { code: 'invalid_input' } });
   });
 });
