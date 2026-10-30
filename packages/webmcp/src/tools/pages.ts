@@ -84,12 +84,10 @@ export default ({ editor }: WebMcpToolsContext) => [
       const pages = editor.Pages.getAll();
       if (pages.length <= 1) throw new ToolError('The last page cannot be removed', 'not_allowed');
 
-      if (editor.Pages.getSelected() === page) {
-        editor.Pages.select(pages.find((pg) => pg !== page)!);
-      }
-
+      const wasSelected = editor.Pages.getSelected() === page;
       const removed = editor.Pages.remove(page);
       if (!removed) throw new ToolError('The page removal was aborted', 'aborted');
+      wasSelected && editor.Pages.select(pages.find((pg) => pg !== page)!);
       return { removed: id };
     },
   }),

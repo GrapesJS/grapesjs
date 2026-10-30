@@ -49,7 +49,7 @@ export default ({ editor, defaultLimit, toolPrefix }: WebMcpToolsContext) => [
     title: 'Get CSS rules',
     description:
       'List CSS rules of the project. Filter by exact selector (including state, eg. ".btn:hover") and/or at-rule (eg. media params "(max-width: 768px)"). Rules are returned as CSS strings, unless `format` is "style".',
-    annotations: { readOnlyHint: true },
+    annotations: { readOnlyHint: true, untrustedContentHint: true },
     input: z.strictObject({
       selector: z.optional(z.string().check(z.describe('Exact selector, eg. ".btn:hover" or "#my-id"'))),
       ...atRuleProps,

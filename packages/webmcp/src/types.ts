@@ -79,7 +79,7 @@ export interface WebMcpPluginOptions {
   getTools?: (ctx: GetToolsContext) => WebMcpTool[];
 
   /**
-   * Max number of items returned by list/tree tools when the agent doesn't specify a limit.
+   * Max number of items returned by list tools (eg. `get_components`, `get_css_rules`) when the agent doesn't specify a limit.
    * @default 50
    */
   defaultLimit?: number;

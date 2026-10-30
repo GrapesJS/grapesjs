@@ -43,9 +43,11 @@ describe('Page tools', () => {
   });
 
   test('remove_page reports aborted removals', async () => {
-    editor.Pages.add({ id: 'p2' });
+    editor.Pages.add({ id: 'p2' }, { select: true });
     editor.on('page:remove:before', (_page: any, _rm: any, opts: any) => (opts.abort = true));
     expect(await call(ToolNames.removePage, { id: 'p2' })).toMatchObject({ error: { code: 'aborted' } });
     expect(editor.Pages.get('p2')).toBeTruthy();
+    // The selection doesn't change
+    expect(editor.Pages.getSelected()!.getId()).toBe('p2');
   });
 });
