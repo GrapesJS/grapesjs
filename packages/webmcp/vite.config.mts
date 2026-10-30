@@ -18,7 +18,8 @@ export default defineConfig(({ mode }) => {
         entry: 'src/index.ts',
         name: 'grapesjsWebMcp',
         formats: isUmd ? ['umd'] : ['es', 'cjs'],
-        fileName: (format) => `index.${format}.js`,
+        // `.mjs`, otherwise Node loads the ES module as CommonJS (the package has no `"type": "module"`)
+        fileName: (format) => `index.${format}.${format === 'es' ? 'mjs' : 'js'}`,
       },
       rolldownOptions: {
         // GrapesJS is only used for types

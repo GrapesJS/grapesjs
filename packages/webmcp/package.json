@@ -6,12 +6,12 @@
   "license": "BSD-3-Clause",
   "homepage": "https://grapesjs.com",
   "main": "dist/index.cjs.js",
-  "module": "dist/index.es.js",
+  "module": "dist/index.es.mjs",
   "types": "dist/index.d.ts",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
-      "import": "./dist/index.es.js",
+      "import": "./dist/index.es.mjs",
       "require": "./dist/index.cjs.js",
       "umd": "./dist/index.umd.js"
     }
