@@ -166,7 +166,9 @@ export default class CommandResize extends CommandAbstract<
         const { el, config, resizer } = opts;
         const { keyHeight, keyWidth, currentUnit, keepAutoHeight, keepAutoWidth } = config;
         toggleBodyClass('add', ev, opts);
-        modelToStyle = em.Styles.getModelToStyle(component);
+        // In drag mode, ComponentDrag writes positions to the component (or its #id rule),
+        // so the resize must target the same model, otherwise the class rule loses on specificity.
+        modelToStyle = em.Styles.getModelToStyle(component, em.getDragMode(component) ? { useClasses: false } : {});
         elComputedStyle = getComputedStyle(el);
         const modelStyle = modelToStyle.getStyle();
         const rectStart = { ...resizer.startDim! };
