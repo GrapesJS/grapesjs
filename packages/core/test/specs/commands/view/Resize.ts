@@ -58,11 +58,13 @@ describe('Resize command', () => {
       skipPositionUpdate = false,
       dragMode = 'absolute' as DragMode,
       unitWidth = 'px',
+      classes = [] as string[],
     } = {}) => {
       const { editor, cmpRoot, fixtures } = testEditor;
       editor.setDragMode(dragMode);
       const parentComponent = cmpRoot.append({ style: { position: 'relative', width: '1000px', height: '500px' } })[0];
       const component = parentComponent.append({
+        classes,
         style: {
           position: 'absolute',
           left: '450px',
@@ -194,6 +196,14 @@ describe('Resize command', () => {
     test('keeps untransformed positioning unchanged', () => {
       const { resize } = setup({ transform: 'none', ratioX: 0, ratioY: 0 });
       expect(resize('cl', -50, 0)).toMatchObject({ left: '400px', top: '150px', width: '470px' });
+    });
+
+    test('writes to the component, not its class rule, in drag mode', () => {
+      const { editor, component, resize } = setup({ classes: ['box'] });
+      resize('cl', -50, 0, true);
+
+      expect(component.getStyle()).toMatchObject({ left: '425px', width: '470px' });
+      expect(editor.Css.getRule('.box')?.getStyle() ?? {}).toEqual({});
     });
 
     test.each([{ skipPositionUpdate: true }, { dragMode: '' }] as const)(
