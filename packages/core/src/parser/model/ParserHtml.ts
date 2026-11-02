@@ -39,6 +39,42 @@ interface ParserHtmlInternalOptions extends ParseNodeOptions {
 
 const hasOwn = (obj: object, key: string) => Object.prototype.hasOwnProperty.call(obj, key);
 
+/**
+ * Split a style string into declarations, ignoring semicolons
+ * inside quotes or parentheses (eg. `url(data:image/png;base64,...)`).
+ */
+const splitStyleDeclarations = (str: string) => {
+  const decls: string[] = [];
+  let quote = '';
+  let depth = 0;
+  let start = 0;
+
+  for (let i = 0; i < str.length; i++) {
+    const char = str[i];
+
+    if (quote) {
+      if (char === '\\') {
+        i++;
+      } else if (char === quote) {
+        quote = '';
+      }
+    } else if (char === '"' || char === "'") {
+      quote = char;
+    } else if (char === '(') {
+      depth++;
+    } else if (char === ')') {
+      depth && depth--;
+    } else if (char === ';' && !depth) {
+      decls.push(str.slice(start, i));
+      start = i + 1;
+    }
+  }
+
+  decls.push(str.slice(start));
+
+  return decls;
+};
+
 export default class ParserHtml {
   compTypes: ComponentStackItem[] = [];
   modelAttrStart = modelAttrStart;
@@ -141,7 +177,7 @@ export default class ParserHtml {
       str = str.replace(str.slice(start, endIndex), '');
     }
 
-    const decls = str.split(';');
+    const decls = splitStyleDeclarations(str);
 
     for (let i = 0, len = decls.length; i < len; i++) {
       const decl = decls[i].trim();

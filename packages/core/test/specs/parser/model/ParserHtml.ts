@@ -79,6 +79,19 @@ describe('ParserHtml', () => {
     expect(obj.parseStyle(str)).toEqual(result);
   });
 
+  test('Parse style string with values containing semicolon to object', () => {
+    const str =
+      'background-image:url(data:image/png;base64,iVBORw0KGgo=); ' +
+      'mask-image:url(\'data:image/svg+xml;utf8,<svg></svg>\'); content:"a;b"; test:value;';
+    const result = {
+      'background-image': 'url(data:image/png;base64,iVBORw0KGgo=)',
+      'mask-image': "url('data:image/svg+xml;utf8,<svg></svg>')",
+      content: '"a;b"',
+      test: 'value',
+    };
+    expect(obj.parseStyle(str)).toEqual(result);
+  });
+
   test('Parse style with multiple values of the same key', () => {
     expect(obj.parseStyle(CSS_BG_STR)).toEqual(CSS_BG_OBJ);
   });
