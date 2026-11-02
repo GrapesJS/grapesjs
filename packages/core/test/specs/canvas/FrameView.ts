@@ -36,6 +36,22 @@ describe('Canvas frame accessible name', () => {
     expect(createFrame().el.title).toBe('Editor canvas');
   });
 
+  test('does not render a removed frame when a late iframe load arrives', () => {
+    em = new EditorModel({});
+    const view = createFrame();
+    const doc = document.implementation.createHTMLDocument();
+    jest.spyOn(view, 'getDoc').mockReturnValue(doc);
+    jest.spyOn(view, 'getWindow').mockReturnValue(window);
+    jest.spyOn(view, 'renderHead').mockImplementation(() => {});
+    const renderBody = jest.spyOn(view, 'renderBody').mockImplementation(() => {});
+    view.renderScripts();
+
+    view.remove();
+    view.el.dispatchEvent(new Event('load'));
+
+    expect(renderBody).not.toHaveBeenCalled();
+  });
+
   test('Releases CSS rule views when the canvas frame is removed', () => {
     em = new EditorModel({});
     const view = createFrame();
