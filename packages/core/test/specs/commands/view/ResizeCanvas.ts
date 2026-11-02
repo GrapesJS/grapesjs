@@ -28,9 +28,12 @@ describe('Resize command on canvas', () => {
     frameX = 140,
     frameY = -10,
     transformed = false,
+    svg = false,
     nested = false,
     unitWidth = 'px',
     positionedParent = true,
+    parentStyle = {} as Record<string, string>,
+    wrapperStyle = {} as Record<string, string>,
     skipPositionUpdate = false,
     dragMode = 'absolute' as DragMode,
     parentRect = { left: 50, top: 20, width: 500, height: 350 },
@@ -44,10 +47,12 @@ describe('Resize command on canvas', () => {
         ...(isRelative ? { display: 'flex', 'justify-content': 'center', 'align-items': 'center' } : {}),
         width: `${parentRect.width}px`,
         height: `${parentRect.height}px`,
+        ...parentStyle,
       },
     })[0];
-    const container = nested ? parent.append({ tagName: 'section' })[0] : parent;
+    const container = nested ? parent.append({ tagName: 'section', style: wrapperStyle })[0] : parent;
     const component = container.append({
+      ...(svg ? { type: 'svg', attributes: { viewBox: '0 0 120 60' } } : {}),
       style: {
         position,
         left: `${left}px`,
@@ -61,7 +66,8 @@ describe('Resize command on canvas', () => {
     fixtures.appendChild(cmpRoot.getEl()!);
     const parentEl = parent.getEl()!;
     const el = component.getEl()!;
-    Object.defineProperty(el, 'offsetParent', { value: positionedParent ? parentEl : editor.Canvas.getBody() });
+    if (!svg)
+      Object.defineProperty(el, 'offsetParent', { value: positionedParent ? parentEl : editor.Canvas.getBody() });
     Object.defineProperty(parentEl, 'offsetWidth', { value: parentRect.width });
     Object.defineProperty(editor.Canvas.getBody(), 'offsetWidth', { value: 600 });
     jest.spyOn(editor.Canvas, 'getZoomDecimal').mockReturnValue(zoom);
@@ -102,7 +108,19 @@ describe('Resize command on canvas', () => {
       if (store) stop();
       return { update: addStyle.mock.calls.at(-1)![0], style: component.getStyle(), rect: canvasView.offset(el) };
     };
-    return { editor, component, el, before, resize, canvasView, move, stop };
+    return {
+      editor,
+      component,
+      el,
+      before,
+      resize,
+      canvasView,
+      move,
+      stop,
+      resizer,
+      parentEl,
+      containerEl: container.getEl()!,
+    };
   };
 
   describe('absolute children with canvas offsets', () => {
@@ -161,6 +179,130 @@ describe('Resize command on canvas', () => {
       expect(editor.UndoManager.hasUndo()).toBe(false);
       editor.UndoManager.redo();
       expect(component.getStyle()).toMatchObject({ left: '80px', top: '80px', width: '140px' });
+    });
+  });
+
+  describe('absolutely positioned SVG roots', () => {
+    const setupSvg = (options: Parameters<typeof setup>[0] = {}) =>
+      setup({ svg: true, frameX: 0, frameY: 0, ...options });
+
+    test('preserves CSS left/top without an offsetParent or canvas offset', () => {
+      const { el, before, resize } = setupSvg({ parentRect: { left: 37.25, top: 20, width: 500, height: 350 } });
+      expect(el.namespaceURI).toBe('http://www.w3.org/2000/svg');
+      expect(el.offsetParent).toBeUndefined();
+      expect(before).toMatchObject({ left: 117.25, top: 100, width: 120, height: 60 });
+      const after = resize();
+      expect(after.style).toMatchObject({ left: '80px', top: '80px', width: '140px' });
+      expect(after.rect).toMatchObject({ left: before.left, top: before.top });
+    });
+
+    test.each([
+      ['tl', -20, -10, '60px', '70px', '140px', '70px'],
+      ['tc', 0, -10, '80px', '70px', undefined, '70px'],
+      ['tr', 20, -10, '80px', '70px', '140px', '70px'],
+      ['cl', -20, 0, '60px', '80px', '140px', undefined],
+      ['cr', 20, 0, '80px', '80px', '140px', undefined],
+      ['bl', -20, 10, '60px', '80px', '140px', '70px'],
+      ['bc', 0, 10, '80px', '80px', undefined, '70px'],
+      ['br', 20, 10, '80px', '80px', '140px', '70px'],
+    ] as const)('anchors the correct edges for %s', (handler, dx, dy, left, top, width, height) => {
+      const { resize } = setupSvg();
+      expect(resize(handler, dx, dy).update).toEqual({
+        left,
+        top,
+        ...(width ? { width } : {}),
+        ...(height ? { height } : {}),
+        __p: false,
+      });
+    });
+
+    test('finds the positioned ancestor through a static HTML wrapper', () => {
+      const { resize } = setupSvg({ nested: true });
+      expect(resize().style).toMatchObject({ left: '80px', top: '80px', width: '140px' });
+    });
+
+    test.each([0.5, 1, 2])('handles canvas offset and zoom %s', (zoom) => {
+      const { resize } = setupSvg({ zoom, frameX: 140, frameY: -10 });
+      expect(resize().style).toMatchObject({ left: '80px', top: '80px', width: '140px' });
+    });
+
+    test('preserves SVG translation correction', () => {
+      const { resize } = setupSvg({ transformed: true });
+      expect(resize().style).toMatchObject({ left: '90px', top: '80px', width: '140px' });
+    });
+
+    test('keeps the zero origin when no positioned ancestor exists', () => {
+      const { resizer } = setupSvg({ positionedParent: false });
+      expect(resizer.getParentRect()).toEqual({ left: 0, top: 0, width: 0, height: 0 });
+    });
+
+    test.each<Record<string, string>>([
+      { position: 'relative' },
+      { position: 'absolute' },
+      { position: 'fixed' },
+      { position: 'sticky' },
+      { transform: 'translate(0px, 0px)' },
+      { translate: '0px 0px' },
+      { rotate: '0deg' },
+      { scale: '1' },
+      { perspective: '1000px' },
+      { 'transform-style': 'preserve-3d' },
+      { filter: 'blur(0px)' },
+      { contain: 'layout' },
+      { contain: 'paint' },
+      { contain: 'strict' },
+      { contain: 'content' },
+      { 'content-visibility': 'auto' },
+      { 'will-change': 'transform' },
+      { 'will-change': 'opacity, perspective' },
+      { 'will-change': 'transform-style' },
+    ])('resolves the containing ancestor with %j', (parentStyle) => {
+      const { resizer } = setupSvg({ positionedParent: false, parentStyle });
+      expect(resizer.getParentRect()).toMatchObject({ left: 50, top: 20, width: 500, height: 350 });
+    });
+
+    test.each<Record<string, string>>([
+      { position: 'static' },
+      { 'will-change': 'opacity' },
+      { contain: 'size' },
+      { contain: 'style' },
+      { transform: 'none' },
+      { 'transform-style': 'flat' },
+      { display: 'contents', position: 'relative' },
+    ])('does not treat %j as a containing ancestor', (parentStyle) => {
+      const { resizer } = setupSvg({ positionedParent: false, parentStyle });
+      expect(resizer.getParentRect()).toEqual({ left: 0, top: 0, width: 0, height: 0 });
+    });
+
+    test('uses the nearest containing wrapper rather than the outer positioned parent', () => {
+      const { resizer, canvasView, containerEl } = setupSvg({ nested: true, wrapperStyle: { position: 'relative' } });
+      const offset = jest.mocked(canvasView.offset).getMockImplementation()!;
+      jest
+        .mocked(canvasView.offset)
+        .mockImplementation((el, opts) =>
+          el === containerEl ? { left: 90, top: 50, width: 300, height: 200 } : offset(el, opts),
+        );
+      expect(resizer.getParentRect()).toMatchObject({ left: 90, top: 50, width: 300, height: 200 });
+    });
+
+    test('keeps fixed SVG coordinates relative to the viewport when ancestors are only positioned', () => {
+      const { resizer } = setupSvg({ position: 'fixed' });
+      expect(resizer.getParentRect()).toEqual({ left: 0, top: 0, width: 0, height: 0 });
+    });
+
+    test('resolves a transformed containing ancestor for a fixed SVG', () => {
+      const { resizer } = setupSvg({ position: 'fixed', parentStyle: { transform: 'translate(0px, 0px)' } });
+      expect(resizer.getParentRect()).toMatchObject({ left: 50, top: 20, width: 500, height: 350 });
+    });
+
+    test('preserves a native null offsetParent for a fixed HTML element', () => {
+      const { resizer, parentEl } = setupSvg();
+      const htmlEl = document.createElement('div');
+      htmlEl.style.position = 'fixed';
+      parentEl.appendChild(htmlEl);
+      expect(htmlEl.offsetParent).toBeNull();
+      resizer.el = htmlEl;
+      expect(resizer.getParentRect()).toEqual({ left: 0, top: 0, width: 0, height: 0 });
     });
   });
 
