@@ -33,6 +33,27 @@ describe('File Uploader', () => {
 
   afterEach(() => {
     obj.remove();
+    jest.restoreAllMocks();
+  });
+
+  test('uploads files using the current global fetch', async () => {
+    const url = 'https://example.test/upload';
+    const file = new File(['image'], 'image.png', { type: 'image/png' });
+    const data = { data: ['https://example.test/image.png'] };
+    const fetchMock = jest.spyOn(global, 'fetch').mockResolvedValueOnce(new Response(JSON.stringify(data)));
+    const onUpload = jest.fn();
+    Object.assign(obj.config, { upload: url, uploadName: 'files', multiUploadSuffix: '[]', headers: {} });
+
+    await obj.uploadFile({ target: { files: [file] } } as unknown as DragEvent, onUpload);
+
+    expect(fetchMock).toHaveBeenCalledWith(url, {
+      method: 'post',
+      credentials: 'include',
+      headers: { 'X-Requested-With': 'XMLHttpRequest' },
+      body: expect.any(FormData),
+    });
+    expect((fetchMock.mock.calls[0][1]?.body as FormData).get('files[]')).toBe(file);
+    expect(onUpload).toHaveBeenCalledWith(data);
   });
 
   test('Object exists', () => {

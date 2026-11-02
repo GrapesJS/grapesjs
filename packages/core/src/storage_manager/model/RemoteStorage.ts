@@ -1,6 +1,5 @@
 import Editor from '../../editor';
 import { isUndefined, isFunction, isString } from 'underscore';
-import fetch from '../../utils/fetch';
 import IStorage, { ProjectData } from './IStorage';
 import { ObjectAny } from '../../common';
 

@@ -17,8 +17,7 @@
   ],
   "dependencies": {
     "codemirror": "5.63.0",
-    "codemirror-formatting": "1.0.0",
-    "html-entities": "~1.4.0"
+    "codemirror-formatting": "1.0.0"
   },
   "devDependencies": {
     "chalk": "4.1.2",
@@ -30,8 +29,7 @@
     "sass": "1.80.3",
     "vuepress-plugin-sitemap": "2.3.1",
     "vuepress": "1.9.10",
-    "webpack": "4.0.0",
-    "whatwg-fetch": "3.6.20"
+    "webpack": "4.0.0"
   },
   "scripts": {
     "docs": "vuepress dev .",

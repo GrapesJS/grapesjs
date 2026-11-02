@@ -109,9 +109,6 @@ importers:
       codemirror-formatting:
         specifier: 1.0.0
         version: 1.0.0
-      html-entities:
-        specifier: ~1.4.0
-        version: 1.4.0
     devDependencies:
       '@types/markdown-it':
         specifier: 14.1.2
@@ -143,9 +140,6 @@ importers:
       webpack:
         specifier: 4.0.0
         version: 4.0.0
-      whatwg-fetch:
-        specifier: 3.6.20
-        version: 3.6.20
 
   packages/cli:
     dependencies:
@@ -234,12 +228,6 @@ importers:
       codemirror-formatting:
         specifier: 1.0.0
         version: 1.0.0
-      html-entities:
-        specifier: ~1.4.0
-        version: 1.4.0
-      promise-polyfill:
-        specifier: 8.3.0
-        version: 8.3.0
       underscore:
         specifier: 1.13.8
         version: 1.13.8
@@ -271,9 +259,6 @@ importers:
       sass:
         specifier: 1.80.3
         version: 1.80.3
-      whatwg-fetch:
-        specifier: 3.6.20
-        version: 3.6.20
 
 packages:
 
@@ -7312,9 +7297,6 @@ packages:
       bluebird:
         optional: true
 
-  promise-polyfill@8.3.0:
-    resolution: {integrity: sha512-H5oELycFml5yto/atYqmjyigJoAo3+OXwolYiH7OfQuYlAqhxNvTfiNMbV9hsC6Yp83yE5r2KTVmtrG6R9i6Pg==}
-
   property-information@6.5.0:
     resolution: {integrity: sha512-PgTgs/BlvHxOu8QuEN7wi5A0OmXaBcHpmCSTehcs6Uuu9IkDIEo13Hy7n898RHfrQ49vKCoGeWZSaAK01nwVig==}
 
@@ -9018,9 +9000,6 @@ packages:
   websocket-extensions@0.1.4:
     resolution: {integrity: sha512-OqedPIGOfsDlo31UNwYbCFMSaO9m9G/0faIHj5/dZFDMFqPTcx6UwqyOy3COEaEOg/9VsGIpdqn62W5KhoKSpg==}
     engines: {node: '>=0.8.0'}
-
-  whatwg-fetch@3.6.20:
-    resolution: {integrity: sha512-EqhiFU6daOA8kpjOWTL0olhVOF3i7OrFzSYiGsEMB8GcXS+RrzauAERX65xMeNWVqxA6HXH2m69Z9LaKKdisfg==}
 
   whatwg-mimetype@4.0.0:
     resolution: {integrity: sha512-QaKxh0eNIi2mE9p2vEdzfagOKHCcj1pJ56EEHGQOVxp8r9/iszLUUV7v89x9O1p/T+NlTM5W7jW6+cz4Fq1YVg==}
@@ -18059,8 +18038,6 @@ snapshots:
     optionalDependencies:
       bluebird: 3.7.2
 
-  promise-polyfill@8.3.0: {}
-
   property-information@6.5.0: {}
 
   proto-list@1.2.4: {}
@@ -20338,8 +20315,6 @@ snapshots:
       websocket-extensions: 0.1.4
 
   websocket-extensions@0.1.4: {}
-
-  whatwg-fetch@3.6.20: {}
 
   whatwg-mimetype@4.0.0: {}
 
