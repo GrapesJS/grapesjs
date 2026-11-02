@@ -228,9 +228,6 @@ importers:
       backbone:
         specifier: 1.4.1
         version: 1.4.1
-      backbone-undo:
-        specifier: 0.2.6
-        version: 0.2.6
       codemirror:
         specifier: 5.63.0
         version: 5.63.0
@@ -2734,10 +2731,6 @@ packages:
     engines: {node: ^18.14.0 || ^20.0.0 || ^22.0.0 || >=24.0.0}
     peerDependencies:
       '@babel/core': ^7.11.0 || ^8.0.0-beta.1
-
-  backbone-undo@0.2.6:
-    resolution: {integrity: sha512-AsfpNiljLXlk7TcffDUu3EAUq7CxWbyTNwARWrql5XTzN4vh6WzEEBZYaKK4kTTz+iW1tSzqUooaGRIwO83kWA==}
-    deprecated: Package no longer supported. Contact Support at https://www.npmjs.com/support for more info.
 
   backbone@1.4.1:
     resolution: {integrity: sha512-ADy1ztN074YkWbHi8ojJVFe3vAanO/lrzMGZWUClIP7oDD/Pjy2vrASraUP+2EVCfIiTtCW4FChVow01XneivA==}
@@ -12622,11 +12615,6 @@ snapshots:
       '@babel/core': 7.29.0
       babel-plugin-jest-hoist: 30.4.0
       babel-preset-current-node-syntax: 1.2.0(@babel/core@7.29.0)
-
-  backbone-undo@0.2.6:
-    dependencies:
-      backbone: 1.4.1
-      underscore: 1.13.8
 
   backbone@1.4.1:
     dependencies:

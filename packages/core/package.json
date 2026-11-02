@@ -32,7 +32,6 @@
   "dependencies": {
     "@types/backbone": "1.4.15",
     "backbone": "1.4.1",
-    "backbone-undo": "0.2.6",
     "codemirror": "5.63.0",
     "codemirror-formatting": "1.0.0",
     "html-entities": "~1.4.0",
