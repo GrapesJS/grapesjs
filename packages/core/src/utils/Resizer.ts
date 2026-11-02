@@ -786,7 +786,7 @@ export default class Resizer {
 
     // Check if the parent or any ancestor has `position: relative`, `absolute`, `fixed`, or `sticky`
     if (offsetParent && offsetParent.tagName !== 'BODY') {
-      parentRect = this.getElementPos(offsetParent as HTMLElement);
+      parentRect = this.getElementPos(offsetParent as HTMLElement, { avoidFrameZoom: true, avoidFrameOffset: true });
     }
 
     return parentRect;
