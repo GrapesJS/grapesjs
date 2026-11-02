@@ -868,34 +868,34 @@ export default class Component extends StyleableModel<ComponentProperties> {
 
   /**
    * Set the style on the component
-   * @param {Object} prop Key value style object
+   * @param {Object|string} prop Key value style object or declaration string
    * @return {Object}
    * @example
    * component.setStyle({ color: 'red' });
    */
-  setStyle(prop: StyleProps = {}, opts: UpdateStyleOptions = {}) {
+  setStyle(prop: StyleProps | string = {}, opts: UpdateStyleOptions = {}) {
     const { opt, em } = this;
+    let styleProps: StyleProps = isString(prop) ? this.parseStyle(prop) : prop;
 
     if (avoidInline(em) && !opt.temporary && !opts.inline) {
       const style = this.get('style') || {};
-      prop = isString(prop) ? this.parseStyle(prop) : prop;
-      prop = { ...(style as any), ...prop };
+      styleProps = { ...(style as any), ...styleProps };
       const state = em.get('state');
       const cc = em.Css;
       const propOrig = this.getStyle({ ...opts, skipResolve: true });
-      this.rule = cc.setIdRule(this.getId(), prop, { state, ...opts });
-      const diff = shallowDiff(propOrig, prop);
+      this.rule = cc.setIdRule(this.getId(), styleProps, { state, ...opts });
+      const diff = shallowDiff(propOrig, styleProps);
       this.set('style', '', { silent: true });
       keys(diff).forEach((pr) => this.trigger(`change:style:${pr}`));
     } else {
-      prop = super.setStyle.apply(this, arguments as any);
+      styleProps = super.setStyle(styleProps, opts);
     }
 
     if (!opt.temporary) {
-      this.__onStyleChange(opts.addStyle || prop, opts);
+      this.__onStyleChange(opts.addStyle || styleProps, opts);
     }
 
-    return prop;
+    return styleProps;
   }
 
   /**

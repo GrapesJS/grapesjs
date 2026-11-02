@@ -1,4 +1,5 @@
 import Editor from '../../../src/editor/model/Editor';
+import EditorApi from '../../../src/editor';
 
 describe('Parser module', () => {
   let em: Editor;
@@ -71,5 +72,38 @@ describe('Parser module', () => {
     expect(() => em.Parser.parseHtml('<div></div>', { parserCode: 'missing-parser' })).toThrow(
       'Parser code "missing-parser" not found',
     );
+  });
+
+  test('uses the configured CSS parser for inline attributes and model style strings', () => {
+    const style = { color: ['red', 'blue'], test: 'value' };
+    const parserCss = jest.fn(() => [{ selectors: '.inline', style }]);
+    const editor = new EditorApi({ parser: { parserCss } });
+    editor.getModel().Pages.onLoad();
+    parserCss.mockClear();
+    editor.setComponents('<div style="color: red; color: blue; test: value"></div>');
+    const component = editor.getComponents().at(0);
+
+    expect(component.getStyle()).toEqual(style);
+    component.setStyle('color: red; color: blue; test: value');
+    expect(component.getStyle()).toEqual(style);
+    component.addStyle('height', '5px');
+    expect(component.getStyle()).toEqual({ ...style, height: '5px' });
+    expect(parserCss).toHaveBeenCalledTimes(2);
+    expect(parserCss).toHaveBeenLastCalledWith('.__gjs_inline__ { color: red; color: blue; test: value }', editor);
+
+    const updatedStyle = { width: '10px' };
+    const updatedParser = jest.fn(() => [{ selectors: '.inline', style: updatedStyle }]);
+    editor.setCustomParserCss(updatedParser);
+
+    expect(editor.Parser.parseStyle('width: 10px')).toEqual(updatedStyle);
+    expect(editor.Parser.parseHtml('<div style="width: 10px"></div>').html).toMatchObject({ style: updatedStyle });
+    component.setStyle('width: 10px');
+    expect(component.getStyle()).toEqual(updatedStyle);
+    const rule = editor.Css.setRule('.test', {});
+    rule.setStyle('width: 10px');
+    expect(rule.getStyle()).toEqual(updatedStyle);
+    expect(updatedParser).toHaveBeenCalledTimes(4);
+
+    editor.destroy();
   });
 });

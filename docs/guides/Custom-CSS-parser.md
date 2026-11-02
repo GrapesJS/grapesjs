@@ -144,6 +144,8 @@ const editor = grapesjs.init({
 editor.setCustomParserCss(parserCss);
 ```
 
+The same parser is used for inline `style` attributes and declaration strings passed to `setStyle` and `editor.Parser.parseStyle`. Declaration strings are wrapped in a temporary CSS rule before being passed to the parser. The native parser normalizes values, discards unsupported declarations, and resolves repeated properties according to the browser's CSSOM. A custom parser can preserve unsupported properties and repeated values as arrays.
+
 ## Rule Objects
 
 The syntax of rule objects is pretty straightforward. Each object can contain the following keys.

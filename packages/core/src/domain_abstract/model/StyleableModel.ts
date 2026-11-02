@@ -1,6 +1,6 @@
 import { isArray, isObject, isString, keys } from 'underscore';
 import { Model, ObjectAny, ObjectHash, SetOptions } from '../../common';
-import ParserHtml from '../../parser/model/ParserHtml';
+import ParserCss from '../../parser/model/ParserCss';
 import Selectors from '../../selector_manager/model/Selectors';
 import { shallowDiff } from '../../utils/mixins';
 import EditorModel from '../../editor/model/Editor';
@@ -25,7 +25,7 @@ export interface UpdateStyleOptions extends SetOptions, DataWatchersOptions {
 
 export type StyleableView = ComponentView | CssRuleView;
 
-const parserHtml = new ParserHtml();
+const parserCss = new ParserCss();
 
 export const getLastStyleValue = (value: string | string[]) => {
   return isArray(value) ? value[value.length - 1] : value;
@@ -114,7 +114,7 @@ export default class StyleableModel<T extends StyleableModelProperties = any> ex
    * @returns
    */
   parseStyle(str: string) {
-    return parserHtml.parseStyle(str);
+    return this.em?.Parser?.parseStyle(str) ?? parserCss.parseStyle(str);
   }
 
   /**

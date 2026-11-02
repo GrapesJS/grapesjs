@@ -1,12 +1,13 @@
 import { ObjectAny } from '../common';
 import { CssRuleJSON } from '../css_composer/model/CssRule';
 import { ComponentDefinitionDefined } from '../dom_components/model/types';
+import type { StyleProps } from '../domain_abstract/model/StyleableModel';
 import Editor from '../editor';
 import type { HTMLParserOptions } from './config/config';
 
 export interface ParsedCssRule {
   selectors: string | string[];
-  style: Record<string, string>;
+  style: StyleProps;
   atRule?: string;
   params?: string;
 }

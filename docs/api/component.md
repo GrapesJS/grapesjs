@@ -353,7 +353,7 @@ Set the style on the component
 
 ### Parameters
 
-*   `prop` **[Object][2]** Key value style object (optional, default `{}`)
+*   `prop` **([Object][2] | [string][1])** Key value style object or declaration string (optional, default `{}`)
 *   `opts` **UpdateStyleOptions**  (optional, default `{}`)
 
 ### Examples
