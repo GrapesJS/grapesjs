@@ -46,10 +46,11 @@ export default class ToolbarButtonView extends View<ToolbarButton> {
 
     const { em } = this;
     const { left, top } = em.Canvas.getFrameEl().getBoundingClientRect();
+    const zoomMlt = em.Canvas.getZoomMultiplier();
     const ev = {
       ...event,
-      clientX: event.clientX - left,
-      clientY: event.clientY - top,
+      clientX: (event.clientX - left) * zoomMlt,
+      clientY: (event.clientY - top) * zoomMlt,
     };
 
     em.trigger('toolbar:run:before', { event: ev });
