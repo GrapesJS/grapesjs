@@ -1,7 +1,6 @@
 import AssetManager from '..';
 import { View } from '../../common';
 import EditorModel from '../../editor/model/Editor';
-import fetch from '../../utils/fetch';
 import html from '../../utils/html';
 import { AssetManagerConfig } from '../config/config';
 import { UploadFileClb, UploadFileOptions } from '../types';

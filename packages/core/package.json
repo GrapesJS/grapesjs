@@ -32,11 +32,8 @@
   "dependencies": {
     "@types/backbone": "1.4.15",
     "backbone": "1.4.1",
-    "backbone-undo": "0.2.6",
     "codemirror": "5.63.0",
     "codemirror-formatting": "1.0.0",
-    "html-entities": "~1.4.0",
-    "promise-polyfill": "8.3.0",
     "underscore": "1.13.8"
   },
   "devDependencies": {
@@ -48,8 +45,7 @@
     "npm-run-all": "4.1.5",
     "postcss": "8",
     "pretty": "2.0.0",
-    "sass": "1.80.3",
-    "whatwg-fetch": "3.6.20"
+    "sass": "1.80.3"
   },
   "keywords": [
     "grapes",
