@@ -22,7 +22,7 @@ runs:
         node-version: ${{ inputs.node-version }}
         cache: 'pnpm'
     - name: Install dependencies
-      run: pnpm install
+      run: pnpm install --frozen-lockfile
       shell: bash
     - name: Build project
       run: pnpm build

@@ -29,7 +29,7 @@
     "sass": "1.80.3",
     "vuepress-plugin-sitemap": "2.3.1",
     "vuepress": "1.9.10",
-    "webpack": "4.0.0"
+    "webpack": "4.47.0"
   },
   "scripts": {
     "docs": "vuepress dev .",

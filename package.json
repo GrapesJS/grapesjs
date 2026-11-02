@@ -67,6 +67,11 @@
         "dependencies": {
           "lru-cache": "5.1.1"
         }
+      },
+      "vue-server-renderer@2.7.16": {
+        "dependencies": {
+          "webpack": "4.47.0"
+        }
       }
     },
     "peerDependencyRules": {
