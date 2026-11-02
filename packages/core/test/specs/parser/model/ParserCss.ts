@@ -39,6 +39,51 @@ describe('ParserCss', () => {
     expect(obj.parse(str)).toEqual([result, result]);
   });
 
+  describe('parseStyle', () => {
+    test.each([
+      ['', {}],
+      ['color: red; test: value; color: blue', { color: 'blue' }],
+      ['color: red !important; --content: "a;b"', { color: 'red !important', '--content': '"a;b"' }],
+      [
+        'background-image: url(data:image/png;base64,iVBORw0KGgo=); content: "a;b"; color: red',
+        {
+          'background-image': 'url("data:image/png;base64,iVBORw0KGgo=")',
+          content: '"a;b"',
+          color: 'red',
+        },
+      ],
+      [
+        String.raw`background-image: url(icon\(blue.svg); color: red; width: 10px`,
+        { 'background-image': 'url("icon(blue.svg")', color: 'red', width: '10px' },
+      ],
+      ['content: "/* keep; this */"; /* ignore; this */ color: red', { content: '"/* keep; this */"', color: 'red' }],
+    ])('parses declarations: %s', (input, expected) => {
+      expect(obj.parseStyle(input)).toEqual(expected);
+    });
+
+    test('uses the custom CSS parser and preserves its declaration values', () => {
+      const style = { ...CSS_BG_OBJ, test: 'value' };
+      const parserCss = jest.fn(() => [{ selectors: '.inline', style }]);
+      obj = new ParserCss(em, { parserCss });
+
+      expect(obj.parseStyle(CSS_BG_STR)).toEqual(style);
+      expect(parserCss).toHaveBeenCalledWith(`.__gjs_inline__ { ${CSS_BG_STR} }`, em.Editor);
+    });
+
+    test('returns an empty style when the custom CSS parser returns no rules', () => {
+      obj = new ParserCss(em, { parserCss: () => [] });
+      expect(obj.parseStyle('color: red')).toEqual({});
+    });
+
+    test('skips the CSS parser for empty declarations', () => {
+      const parserCss = jest.fn(() => []);
+      obj = new ParserCss(em, { parserCss });
+
+      expect(obj.parseStyle(' \n ')).toEqual({});
+      expect(parserCss).not.toHaveBeenCalled();
+    });
+  });
+
   describe('parseSelector', () => {
     test('Parse selector', () => {
       var str = '.test';

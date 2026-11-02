@@ -2,7 +2,7 @@ import ParserHtml from '../../../../src/parser/model/ParserHtml';
 import ParserCss from '../../../../src/parser/model/ParserCss';
 import DomComponents from '../../../../src/dom_components';
 import Editor from '../../../../src/editor/model/Editor';
-import { CSS_BG_OBJ, CSS_BG_STR } from './ParserCss';
+import { CSS_BG_STR } from './ParserCss';
 
 describe('ParserHtml', () => {
   let obj: ParserHtml;
@@ -61,20 +61,20 @@ describe('ParserHtml', () => {
   });
 
   test('Parse style string to object', () => {
-    const str = 'color:black; width:100px; test:value;';
+    const str = 'color:black; width:100px; --test:value;';
     const result = {
       color: 'black',
       width: '100px',
-      test: 'value',
+      '--test': 'value',
     };
     expect(obj.parseStyle(str)).toEqual(result);
   });
 
   test('Parse style string with values containing colon to object', () => {
-    const str = 'background-image:url("https://some-website.ex"); test:value;';
+    const str = 'background-image:url("https://some-website.ex"); --test:value;';
     const result = {
       'background-image': 'url("https://some-website.ex")',
-      test: 'value',
+      '--test': 'value',
     };
     expect(obj.parseStyle(str)).toEqual(result);
   });
@@ -82,18 +82,38 @@ describe('ParserHtml', () => {
   test('Parse style string with values containing semicolon to object', () => {
     const str =
       'background-image:url(data:image/png;base64,iVBORw0KGgo=); ' +
-      'mask-image:url(\'data:image/svg+xml;utf8,<svg></svg>\'); content:"a;b"; test:value;';
+      'mask-image:url(\'data:image/svg+xml;utf8,<svg></svg>\'); content:"a;b"; --test:value;';
     const result = {
-      'background-image': 'url(data:image/png;base64,iVBORw0KGgo=)',
+      'background-image': 'url("data:image/png;base64,iVBORw0KGgo=")',
       'mask-image': "url('data:image/svg+xml;utf8,<svg></svg>')",
       content: '"a;b"',
-      test: 'value',
+      '--test': 'value',
     };
     expect(obj.parseStyle(str)).toEqual(result);
   });
 
-  test('Parse style with multiple values of the same key', () => {
-    expect(obj.parseStyle(CSS_BG_STR)).toEqual(CSS_BG_OBJ);
+  test('Parse repeated declarations using native CSS parser semantics', () => {
+    expect(obj.parseStyle(CSS_BG_STR)).toEqual({
+      'background-image': 'linear-gradient(rgb(170, 170, 170), rgb(187, 187, 187))',
+    });
+  });
+
+  test('Parse inline data URLs without consuming following declarations', () => {
+    expect(
+      obj.parse('<div style="background-image:url(data:image/png;base64,iVBORw0KGgo=);color:red"></div>').html,
+    ).toEqual([
+      {
+        tagName: 'div',
+        style: { 'background-image': 'url("data:image/png;base64,iVBORw0KGgo=")', color: 'red' },
+      },
+    ]);
+  });
+
+  test('Use the configured CSS parser without an editor', () => {
+    const style = { test: ['first', 'second'] };
+    const parser = new ParserHtml(undefined, { parserCss: () => [{ selectors: '.inline', style }] });
+
+    expect(parser.parseStyle('test:first;test:second')).toEqual(style);
   });
 
   test('Parse style with comments', () => {
@@ -121,7 +141,7 @@ describe('ParserHtml', () => {
   });
 
   test('Style attribute is isolated', () => {
-    const str = '<div id="test1" style="color:black; width:100px; test:value;"></div>';
+    const str = '<div id="test1" style="color:black; width:100px; --test:value;"></div>';
     const result = [
       {
         tagName: 'div',
@@ -129,7 +149,7 @@ describe('ParserHtml', () => {
         style: {
           color: 'black',
           width: '100px',
-          test: 'value',
+          '--test': 'value',
         },
       },
     ];

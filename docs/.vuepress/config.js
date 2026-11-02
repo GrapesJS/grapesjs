@@ -138,6 +138,7 @@ module.exports = {
           children: [
             ['/guides/Symbols', 'Symbols'],
             ['/guides/Replace-Rich-Text-Editor', 'Replace Rich Text Editor'],
+            ['/guides/Custom-HTML-parser', 'Use Custom HTML Parser'],
             ['/guides/Custom-CSS-parser', 'Use Custom CSS Parser'],
             ['/guides/Telemetry', 'GrapesJS Telemetry'],
           ],

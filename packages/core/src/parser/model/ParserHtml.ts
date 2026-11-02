@@ -15,6 +15,7 @@ import {
   SyntheticElementCtor,
 } from '../types';
 import BrowserParserHtml from './BrowserParserHtml';
+import ParserCss from './ParserCss';
 import { getSyntheticElementCtor } from './SyntheticElement';
 import {
   createElementNode,
@@ -38,42 +39,6 @@ interface ParserHtmlInternalOptions extends ParseNodeOptions {
 }
 
 const hasOwn = (obj: object, key: string) => Object.prototype.hasOwnProperty.call(obj, key);
-
-/**
- * Split a style string into declarations, ignoring semicolons
- * inside quotes or parentheses (eg. `url(data:image/png;base64,...)`).
- */
-const splitStyleDeclarations = (str: string) => {
-  const decls: string[] = [];
-  let quote = '';
-  let depth = 0;
-  let start = 0;
-
-  for (let i = 0; i < str.length; i++) {
-    const char = str[i];
-
-    if (quote) {
-      if (char === '\\') {
-        i++;
-      } else if (char === quote) {
-        quote = '';
-      }
-    } else if (char === '"' || char === "'") {
-      quote = char;
-    } else if (char === '(') {
-      depth++;
-    } else if (char === ')') {
-      depth && depth--;
-    } else if (char === ';' && !depth) {
-      decls.push(str.slice(start, i));
-      start = i + 1;
-    }
-  }
-
-  decls.push(str.slice(start));
-
-  return decls;
-};
 
 export default class ParserHtml {
   compTypes: ComponentStackItem[] = [];
@@ -163,42 +128,12 @@ export default class ParserHtml {
    * @param {string} str
    * @return {Object}
    * @example
-   * var stl = ParserHtml.parseStyle('color:black; width:100px; test:value;');
+   * var stl = ParserHtml.parseStyle('color:black; width:100px;');
    * console.log(stl);
-   * // {color: 'black', width: '100px', test: 'value'}
+   * // {color: 'black', width: '100px'}
    */
   parseStyle(str: string) {
-    const result: Record<string, string | string[]> = {};
-
-    while (str.indexOf('/*') >= 0) {
-      const start = str.indexOf('/*');
-      const end = str.indexOf('*/');
-      const endIndex = end > -1 ? end + 2 : undefined;
-      str = str.replace(str.slice(start, endIndex), '');
-    }
-
-    const decls = splitStyleDeclarations(str);
-
-    for (let i = 0, len = decls.length; i < len; i++) {
-      const decl = decls[i].trim();
-      if (!decl) continue;
-      const prop = decl.split(':');
-      const key = prop[0].trim();
-      const value = prop.slice(1).join(':').trim();
-
-      // Support multiple values for the same key
-      if (result[key]) {
-        if (!isArray(result[key])) {
-          result[key] = [result[key] as string];
-        }
-
-        (result[key] as string[]).push(value);
-      } else {
-        result[key] = value;
-      }
-    }
-
-    return result;
+    return this.em?.Parser?.parseStyle(str) ?? new ParserCss(undefined, this.config).parseStyle(str);
   }
 
   /**

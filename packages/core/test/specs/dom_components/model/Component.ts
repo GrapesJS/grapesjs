@@ -9,7 +9,7 @@ import ComponentVideo from '../../../../src/dom_components/model/ComponentVideo'
 import Components from '../../../../src/dom_components/model/Components';
 import Selector from '../../../../src/selector_manager/model/Selector';
 import Editor from '../../../../src/editor/model/Editor';
-import { CSS_BG_OBJ, CSS_BG_STR } from '../../parser/model/ParserCss';
+import { CSS_BG_STR } from '../../parser/model/ParserCss';
 const $ = Backbone.$;
 
 let obj: Component;
@@ -456,7 +456,7 @@ describe('Component', () => {
       id: 'test',
       'data-test': 'value',
       class: 'class1 class2',
-      style: 'color: white; background: #fff',
+      style: 'color: white; background-color: white',
     });
     // Style is not in attributes because it has not been set as inline
     expect(obj.getAttributes()).toEqual({
@@ -467,13 +467,31 @@ describe('Component', () => {
     expect(obj.classes.length).toEqual(2);
     expect(obj.getStyle()).toEqual({
       color: 'white',
-      background: '#fff',
+      'background-color': 'white',
     });
   });
 
-  test('set style with multiple values of the same key', () => {
+  test('set repeated style declarations using native CSS parser semantics', () => {
     obj.setAttributes({ style: CSS_BG_STR });
-    expect(obj.getStyle()).toEqual(CSS_BG_OBJ);
+    expect(obj.getStyle()).toEqual({
+      'background-image': 'linear-gradient(rgb(170, 170, 170), rgb(187, 187, 187))',
+    });
+  });
+
+  test('setStyle parses semicolons and escaped URLs', () => {
+    obj.setStyle('background-image: url(data:image/png;base64,iVBORw0KGgo=); color: red');
+    expect(obj.getStyle()).toEqual({
+      'background-image': 'url("data:image/png;base64,iVBORw0KGgo=")',
+      color: 'red',
+    });
+
+    obj.setStyle(String.raw`background-image: url(icon\(blue.svg); width: 10px`);
+    obj.addStyle('color', 'red');
+    expect(obj.getStyle()).toEqual({
+      'background-image': 'url("icon(blue.svg")',
+      color: 'red',
+      width: '10px',
+    });
   });
 
   test('set style on id and inline style', () => {
@@ -546,10 +564,10 @@ describe('Component', () => {
     });
   });
 
-  test('get proper style from style with multiple values of the same key', () => {
+  test('serialize repeated style declarations using native CSS parser semantics', () => {
     obj.setAttributes({ style: CSS_BG_STR }, { inline: true });
     expect(obj.getAttributes()).toEqual({
-      style: CSS_BG_STR.split('\n').join(''),
+      style: 'background-image:linear-gradient(rgb(170, 170, 170), rgb(187, 187, 187));',
     });
   });
 
@@ -748,16 +766,20 @@ describe('Component', () => {
     newObj.components().each((model) => inhereted(model));
   });
 
-  test('setStyle parses styles correctly', () => {
+  test('setStyle uses native CSS parsing for shorthand styles', () => {
     const styles = 'padding: 12px;height:auto;';
     const expectedObj = {
       padding: '12px',
+      'padding-top': '12px',
+      'padding-right': '12px',
+      'padding-bottom': '12px',
+      'padding-left': '12px',
       height: 'auto',
     };
 
     const c = new Component({}, compOpts);
 
-    expect(c.setStyle(styles as any)).toEqual(expectedObj);
+    expect(c.setStyle(styles)).toEqual(expectedObj);
   });
 
   test('setStyle should be called successfully when invoked internally', () => {
