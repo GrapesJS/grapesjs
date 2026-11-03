@@ -113,6 +113,7 @@ $ pnpm test
 
 ### Extensions
 
+- [@grapesjs/webmcp](https://github.com/GrapesJS/grapesjs/tree/dev/packages/webmcp) - Expose the editor API as WebMCP tools for browser AI agents
 - [grapesjs-plugin-export](https://github.com/GrapesJS/export) - Export GrapesJS templates in a zip archive
 - [grapesjs-plugin-filestack](https://github.com/GrapesJS/filestack) - Add Filestack uploader in Asset Manager
 - [grapesjs-plugin-ckeditor](https://github.com/GrapesJS/ckeditor) - Replaces the built-in RTE with CKEditor
