@@ -179,17 +179,17 @@ describe('Component tools', () => {
   test('update_components handles class, style and id attributes', async () => {
     const update = async (data: Record<string, any>) =>
       (await call(ToolNames.updateComponents, { updates: [{ id: 'box', ...data }] })).updated[0];
-    let res = await update({ attributes: { class: 'card card--big', style: 'color: red; padding: 10px' } });
+    let res = await update({ attributes: { class: 'card card--big', style: 'color: red; padding-top: 10px' } });
     // With avoidInlineStyle (default) styles are stored in the #id CSS rule, not in attributes
     expect(res.attributes).toEqual({ id: 'box', class: 'card card--big' });
     const box = editor.Components.getById('box')!;
     expect(box.getClasses()).toEqual(['card', 'card--big']);
-    expect(editor.getCss()).toContain('#box{color:red;padding:10px;}');
+    expect(editor.getCss()).toContain('#box{color:red;padding-top:10px;}');
 
     // Other attributes don't affect classes and styles
     res = await update({ attributes: { title: 'Box' } });
     expect(res.attributes).toEqual({ id: 'box', class: 'card card--big', title: 'Box' });
-    expect(editor.getCss()).toContain('#box{color:red;padding:10px;}');
+    expect(editor.getCss()).toContain('#box{color:red;padding-top:10px;}');
 
     res = await update({ removeAttributes: ['class', 'style'] });
     expect(res.attributes).toEqual({ id: 'box', title: 'Box' });
