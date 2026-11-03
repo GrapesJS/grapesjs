@@ -1,6 +1,6 @@
 {
   "name": "@grapesjs/webmcp",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Expose the GrapesJS editor API as WebMCP tools for browser AI agents",
   "author": "Artur Arseniev",
   "license": "BSD-3-Clause",
