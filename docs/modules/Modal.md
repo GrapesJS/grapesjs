@@ -4,17 +4,17 @@ title: Modal
 
 # Modal
 
-The **Modal** module allows to easily display content in a dialog window.
+The **Modal** module allows you to easily display content in a dialog window.
 
 ::: warning
-This guide is referring to GrapesJS v0.17.26 or higher
+This guide applies to GrapesJS v0.17.26 or higher.
 :::
 
 [[toc]]
 
 ## Basic usage
 
-You can easily display your content by calling a single API call.
+You can easily display your content with a single API call.
 
 ```js
 // Init editor
@@ -34,7 +34,7 @@ document.body.insertAdjacentHTML('afterbegin',`
 
 ## Using API
 
-By using other [available APIs](/api/modal_dialog.html) you have full control of the modal (eg. updating content/title, closing the modal, etc.).
+The other [available APIs](/api/modal_dialog.html) give you full control of the modal (e.g., updating its content/title or closing it).
 
 Here are a few examples:
 
@@ -61,8 +61,8 @@ Modal.onceClose(() => {
 
 ## Customization
 
-The modal can be fully customized and you have different available options.
-The fastest and the easiest one is to use your specific CSS for the modal element. With a few lines of CSS your modal can be completely adapted to your choices.
+The modal can be fully customized in several ways.
+The fastest and easiest option is to use custom CSS for the modal element. With a few lines of CSS, you can adapt the modal to your needs.
 
 ```css
 .gjs-mdl-dialog {
@@ -71,7 +71,7 @@ The fastest and the easiest one is to use your specific CSS for the modal elemen
 }
 ```
 
-In case you have to customize a specific modal differently, you can rely on your custom class attributes.
+If you need to customize a specific modal differently, you can use custom class attributes.
 
 ```js
 editor.Modal.open({
@@ -90,12 +90,12 @@ editor.Modal.open({
 ```
 
 ::: warning
-Your custom CSS has to be loaded after the GrapesJS one.
+Your custom CSS must be loaded after the GrapesJS CSS.
 :::
 
 ### Custom Modal
 
-For more advanced usage, you can completely replace the default modal with one of your own. All you have to do is to indicate the editor your intent to use a custom modal and then subscribe to the `modal` event that will give you all the information on any requested change.
+For more advanced usage, you can completely replace the default modal with one of your own. Tell the editor to use a custom modal, then subscribe to the `modal` event, which provides information about any requested changes.
 
 ```js
 const editor = grapesjs.init({
@@ -108,16 +108,16 @@ editor.on('modal', (props) => {
   // props.open (boolean) - Indicates if the modal should be open
   // props.title (Node) - Modal title
   // props.content (Node) - Modal content
-  // props.attributes (Object) - Modal custom attributes (eg. class)
+  // props.attributes (Object) - Modal custom attributes (e.g., class)
   // props.close (Function) - A callback to use when you want to close the modal programmatically
   // Here you would put the logic to control your modal.
 });
 ```
 
-Here an example of using the Bootstrap modal.
+Here's an example of using the Bootstrap modal.
 
 <demo-viewer value="x70amv3f" height="500" darkcode/>
 
 ## Events
 
-For a complete list of available events, you can check it [here](/api/modal_dialog.html#available-events).
+For a complete list of available events, check [here](/api/modal_dialog.html#available-events).

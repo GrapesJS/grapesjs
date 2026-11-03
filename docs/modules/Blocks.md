@@ -6,14 +6,14 @@ title: Block Manager
 
 <p align="center"><img src="http://grapesjs.com/img/sc-grapesjs-blocks-prp.jpg" alt="GrapesJS - Block Manager" height="400" align="center"/></p>
 
-A [Block] is a simple object which allows the end-user to reuse your [Components]. It can be connected to a single [Component] or to a complex composition of them. In this guide, you will see how to setup and take full advantage of the built-in Block Manager UI in GrapesJS.
-The default UI is a lightweight component with built-in Drag & Drop support, but as you'll see next in this guide, it's easy to extend and create your own UI manager.
+A [Block] is a simple object which allows the end-user to reuse your [Components]. It can be connected to a single [Component] or to a complex composition of them. In this guide, you will see how to set up and take full advantage of the built-in Block Manager UI in GrapesJS.
+The default UI is a lightweight component with built-in drag-and-drop support, but as you'll see next in this guide, it's easy to extend and create your own UI manager.
 
 ::: warning
-To get a better understanding of the content in this guide, we recommend reading [Components] first
+To get a better understanding of the content in this guide, we recommend reading [Components] first.
 :::
 ::: warning
-This guide is referring to GrapesJS v0.17.27 or higher
+This guide applies to GrapesJS v0.17.27 or higher.
 :::
 
 ::: tip
@@ -24,7 +24,7 @@ Need a sleek block UI that’s easy to extend and customize? [Explore the Grapes
 
 ## Configuration
 
-To change the default configurations you have to pass the `blockManager` property with the main configuration object.
+To change the default configuration, pass the `blockManager` property in the main configuration object.
 
 ```js
 const editor = grapesjs.init({
@@ -40,10 +40,10 @@ Check the full list of available options here: [Block Manager Config](https://gi
 
 ## Initialization
 
-By default, Block Manager UI is considered a hidden component. Currently, the GrapesJS core, renders default panels and buttons that allow you to show them, but in the long term, this is something that might change. Here below you can see how to init the editor without default panels and immediately rendered Block Manager UI.
+By default, the Block Manager UI is hidden. GrapesJS core currently renders default panels and buttons that allow you to show it, but this may change in the future. Below, you can see how to initialize the editor without default panels and render the Block Manager UI immediately.
 
 ::: tip
-Follow the [Getting Started] guide in order to setup properly the editor with custom panels.
+Follow the [Getting Started] guide to set up the editor properly with custom panels.
 :::
 
 ```js
@@ -64,7 +64,7 @@ const editor = grapesjs.init({
         // Use `image` component
         content: { type: 'image' },
         // The component `image` is activatable (shows the Asset Manager).
-        // We want to activate it once dropped in the canvas.
+        // We want to activate it once dropped onto the canvas.
         activate: true,
         // select: true, // Default with `activate: true`
       },
@@ -75,11 +75,11 @@ const editor = grapesjs.init({
 
 ## Block content types
 
-The key of connecting blocks to components is the `block.content` property and what we passed in the example above is the [Component Definition]. This is the component-oriented way to create blocks and this is how we highly recommend the creation of your blocks.
+The key to connecting blocks to components is the `block.content` property. In the example above, we passed a [Component Definition]. We strongly recommend this component-oriented approach to creating blocks.
 
 ### Component-oriented
 
-The `content` can accept different formats, like an HTML string (which will be parsed and converted to components), but the component-oriented approach is the most precise as you can keep the control of your each dropped block in the canvas. Another advice is to keep your blocks' [Component Definition] as light as possible, if you're defining a lot of redundant properties, probably it makes sense to create another dedicated component, this might reduce the size of your project JSON file. Here an example:
+The `content` property accepts different formats, such as an HTML string (which will be parsed and converted to components). The component-oriented approach gives you the most precise control over each block dropped onto the canvas. Keep your blocks' [Component Definition] as light as possible. If you're defining many redundant properties, consider creating another dedicated component to reduce the size of your project JSON file. Here's an example:
 
 ```js
 // Your components
@@ -99,7 +99,7 @@ editor.Components.addType('my-cmp', {
 ]
 ```
 
-Here we're reusing the same component multiple times with the same set of properties (just an example, makes more sense with composed content of components), this can be reduced to something like this.
+Here, we're reusing the same component multiple times with the same set of properties. This is a simple example; the benefit is greater when composing multiple components. We can simplify it like this:
 
 ```js
 // Your components
@@ -123,7 +123,7 @@ editor.Components.addType('my-cmp-alt', {
 
 ### HTML strings
 
-Using HTML strings as `content` is not wrong, in some cases you don't need the finest control over components and want to leave the user full freedom on template composition (eg. static site builder editor with HTML copy-pasted from a framework like [Tailwind Components](https://tailwindcomponents.com/))
+Using HTML strings as `content` is valid. In some cases, you don't need fine control over components and want to give users full freedom to compose templates (e.g., in a static site builder with HTML copied from a resource like [Tailwind Components](https://tailwindcomponents.com/)).
 
 ```js
 // Your block
@@ -137,9 +137,9 @@ Using HTML strings as `content` is not wrong, in some cases you don't need the f
 }
 ```
 
-In such a case, all rendered elements will be converted to the best suited default component (eg. `.el-Y` elements will be treated like `text` components). The user will be able to style and drag them with no particular restrictions.
+In such a case, all rendered elements will be converted to the most suitable default component (e.g., `.el-Y` elements will be treated like `text` components). The user will be able to style and drag them with no particular restrictions.
 
-Thanks to Components' [isComponent](Components.html#iscomponent) feature (executed post parsing), you're still able to bind your rendered elements to components and enforce an extra logic. Here an example how you would enforce all `.el-Y` elements to be placed only inside `.el-X` one, without touching any part of the original HTML used in the `content`.
+The Components module's [isComponent](Components.html#iscomponent) feature (executed after parsing) lets you bind rendered elements to components and apply additional logic. Here's how to restrict all `.el-Y` elements to being placed only inside `.el-X` elements, without changing the original HTML used in `content`:
 
 ```js
 // Your component
@@ -173,7 +173,7 @@ You can use most of the available [Component properties](/api/component.html#pro
 }
 // Component
 editor.Components.addType('cmp-Y', {
-  // You don't need `isComponent` anymore as you declare types already on elements
+  // You don't need `isComponent` anymore, as types are already declared on the elements
   model: {
     defaults: {
       name: 'Component Y', // Simple custom name
@@ -195,8 +195,8 @@ editor.Components.addType('cmp-Y', {
 // You're already defining properties of each element.
 ```
 
-Here we showed all the possibilities you have with HTML strings, but we strongly advise against the abuse of the `Option 2` and to stick to a more component-oriented approach.
-Without a proper component type, not only your HTML will be harder to read, but all those defined properties will be "hard-coded" to a generic component of those elements. So, if one day you decide to "upgrade" the logic of the component (eg. `draggable: '.el-X'` -> `draggable: '.el-X, .el-Z'`), you won't be able.
+These examples show the options available with HTML strings. We strongly recommend avoiding overuse of `Option 2` and following a component-oriented approach.
+Without a dedicated component type, your HTML will be harder to read, and the properties will be hard-coded into the generic components created for those elements. This prevents you from centrally updating the component logic later (e.g., changing `draggable: '.el-X'` to `draggable: '.el-X, .el-Z'`).
 
 ### Mixed
 
@@ -220,9 +220,9 @@ It's also possible to mix components with HTML strings by passing an array.
 &nbsp;
 :::
 
-### Avoid non serializable properties
+### Avoid non-serializable properties
 
-Don't put non serializable properties, like functions, in your blocks, keep them only in your components.
+Don't put non-serializable properties, such as functions, in your blocks. Keep them in your component types.
 
 ```js
 // Your block
@@ -234,17 +234,17 @@ Don't put non serializable properties, like functions, in your blocks, keep them
 }
 ```
 
-This will work, but if you try to save and reload a stored project, those will disappear.
+This will work, but if you try to save and reload a stored project, those properties will disappear.
 
 ### Avoid styles
 
-Don't put styles in your blocks, keep them always in your components.
+Don't put styles in your blocks. Keep them in your component types.
 
 ```js
 // Your block
 {
   content: [
-    // BAD: You risk to create conflicting styles
+    // BAD: You risk creating conflicting styles
     { type: 'my-cmp', styles: '.cmp { color: red }' },
     { type: 'my-cmp', styles: '.cmp { color: green }' },
 
@@ -261,21 +261,21 @@ Don't put styles in your blocks, keep them always in your components.
 }
 ```
 
-<!-- Styles imported via component definition, by using the `styles` property, are connected to that specific component type. This allows the editor to remove automatically those styles if all related components are deleted. -->
+<!-- Styles imported via component definition, by using the `styles` property, are connected to that specific component type. This allows the editor to automatically remove those styles if all related components are deleted. -->
 
-With the component-oriented approach, you put yourself in a risk of conflicting styles and having a lot of useless redundant styles definitions in your project JSON.
+With the component-oriented approach, you risk creating conflicting styles and redundant style definitions in your project JSON.
 
 With the HTML string, if you remove all related elements, the editor is not able to clean those styles from the project JSON, as there is no safe way to connect them.
 
 ## Programmatic usage
 
-If you need to manage your blocks programmatically you can use its [APIs][Blocks API].
+To manage your blocks programmatically, use the [Blocks API][Blocks API].
 
 ::: warning
-All Blocks API methods update mainly your Block Manager UI, it has nothing to do with Components already dropped in the canvas.
+Blocks API methods mainly update your Block Manager UI. They do not affect Components already dropped onto the canvas.
 :::
 
-Below an example of commonly used methods.
+Below is an example of commonly used methods.
 
 ```js
 // Get the BlockManager module first
@@ -304,9 +304,9 @@ To know more about the available block properties, check the [Block API Referenc
 
 ## Customization
 
-The default Block Manager UI is great for simple things, but except the possibility to tweak some CSS style, adding more complex elements requires a replace of the default UI.
+The default Block Manager UI is useful for simple tasks and can be styled with CSS. Adding more complex elements requires replacing the default UI.
 
-All you have to do is to indicate the editor your intent to use a custom UI and then subscribe to the `block:custom` event that will give you all the information on any requested change.
+Tell the editor to use a custom UI, then subscribe to the `block:custom` event, which provides information about any requested changes.
 
 ```js
 const editor = grapesjs.init({
@@ -327,25 +327,25 @@ editor.on('block:custom', (props) => {
 });
 ```
 
-Here an example of using custom Block Manager with a Vue component.
+Here's an example of a custom Block Manager using a Vue component.
 
 <demo-viewer value="xyofm1qr" height="500" darkcode/>
 
-From the demo above you can also see how we decided to hide our custom Block Manager and append it to the default container, but that is up to your preferences.
+In the demo above, you can also see how we decided to hide our custom Block Manager and append it to the default container, but you can adapt this to your preferences.
 
 ## Events
 
-For a complete list of available events, you can check it [here](/api/block_manager.html#available-events).
+For a complete list of available events, check [here](/api/block_manager.html#available-events).
 
 <!--
 ## Custom render <Badge text="0.14.55+"/>
 
-If you need to customize the aspect of each block you can pass a `render` callback function in the block definition. Let's see how it works.
+To customize the appearance of each block, pass a `render` callback function in the block definition. Let's see how it works.
 
-As a first option, you can return a simple HTML string, which will be used as a new inner content of the block. As an argument of the callback you will get an object containing the following properties:
+As a first option, you can return a simple HTML string, which will be used as the new inner content of the block. As an argument to the callback, you will receive an object containing the following properties:
 
-* `model` - Block's model (so you can use any passed property to it)
-* `el` - Current rendered HTMLElement of the block
+* `model` - Block's model (so you can use any property passed to it)
+* `el` - Currently rendered HTMLElement of the block
 * `className` - The base class name used for blocks (useful if you follow BEM, so you can create classes like `${className}__elem`)
 
 ```js

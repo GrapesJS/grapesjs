@@ -4,10 +4,10 @@ title: Pages
 
 # Pages
 
-The Pages module in GrapesJS allows you to create a project with multiple pages. By default, one page is always created under the hood, even if you don't need multi-page support. This allows keeping the API consistent and easier to extend if you need to add multiple pages later.
+The Pages module in GrapesJS allows you to create a project with multiple pages. By default, one page is always created under the hood, even if you don't need multi-page support. This keeps the API consistent and makes it easier to extend if you need to add multiple pages later.
 
 ::: warning
-This guide is referring to GrapesJS v0.21.1 or higher
+This guide applies to GrapesJS v0.21.1 or higher.
 :::
 
 ::: tip
@@ -17,24 +17,24 @@ Want pages to just work, with a polished UI? [See how the Grapes Studio SDK does
 
 ## Initialization
 
-The default editor initialization doesn't require any knowledge of pages and this was mainly done to avoid introducing breaking changes when the Pages module was introduced.
+The default editor initialization doesn't require any knowledge of pages. This avoids breaking changes for projects created before the Pages module was introduced.
 
-This is how a typical editor initialization looks like:
+This is what a typical editor initialization looks like:
 
 ```js
 const editor = grapesjs.init({
   container: '#gjs',
   height: '100%',
   storageManager: false,
-  // CSS or a JSON of styles
+  // CSS or styles in JSON format
   style: '.my-el { color: red }',
-  // HTML string or a JSON of components
+  // HTML string or components in JSON format
   components: '<div class="my-el">Hello world!</div>',
   // ...other config options
 });
 ```
 
-What actually is happening is that this configuration is automatically migrated to the Page Manager.
+What actually happens is that this configuration is automatically migrated to the Page Manager.
 
 ```js
 const editor = grapesjs.init({
@@ -46,9 +46,9 @@ const editor = grapesjs.init({
       {
         // without an explicit ID, a random one will be created
         id: 'my-first-page',
-        // CSS or a JSON of styles
+        // CSS or styles in JSON format
         styles: '.my-el { color: red }',
-        // HTML string or a JSON of components
+        // HTML string or components in JSON format
         component: '<div class="my-el">Hello world!</div>',
       },
     ],
@@ -57,10 +57,10 @@ const editor = grapesjs.init({
 ```
 
 ::: warning
-Worth noting the previous keys are `style` and `components`, where in pages you should use `styles` and `component`.
+Notice that the original keys are `style` and `components`, whereas pages use `styles` and `component`.
 :::
 
-As you might guess, this is how initializing the editor with multiple pages would look like:
+Initializing the editor with multiple pages looks like this:
 
 ```js
 const editor = grapesjs.init({
@@ -82,11 +82,11 @@ const editor = grapesjs.init({
 });
 ```
 
-GrapesJS doesn't provide any default UI for the Page Manager but you can easily built one by leveraging its [APIs][Pages API]. Check the [Customization](#customization) section for more details on how to create your own Page Manager UI.
+GrapesJS doesn't provide a default UI for the Page Manager, but you can easily build one using its [APIs][Pages API]. Check the [Customization](#customization) section for more details on how to create your own Page Manager UI.
 
 ## Programmatic usage
 
-If you need to manage pages programmatically you can use its [APIs][Pages API].
+To manage pages programmatically, use the [Pages API][Pages API].
 
 Below are some commonly used methods:
 
@@ -126,9 +126,9 @@ pages.remove('new-page-id');
 
 ## Customization
 
-By using the [Pages API] it's easy to create your own Page Manager UI.
+Using the [Pages API], you can easily create your own Page Manager UI.
 
-The simpliest way is to subscribe to the catch-all `page` event, which is triggered on any change related to the Page module (not related to page content like components or styles), and update your UI accordingly.
+The simplest way is to subscribe to the catch-all `page` event, which is triggered on any change related to the Page module (not related to page content like components or styles), and update your UI accordingly.
 
 ```js
 const editor = grapesjs.init({
@@ -140,7 +140,7 @@ editor.on('page', () => {
 });
 ```
 
-In the example below you can see an quick implementation of the Page Manager UI.
+In the example below, you can see a quick implementation of the Page Manager UI.
 
 <demo-viewer value="1y6bgeo3" height="500" darkcode/>
 
@@ -281,6 +281,6 @@ const app = new Vue({
 
 ## Events
 
-For a complete list of available events, you can check it [here](/api/pages.html#available-events).
+For a complete list of available events, check [here](/api/pages.html#available-events).
 
 [Pages API]: /api/pages.html

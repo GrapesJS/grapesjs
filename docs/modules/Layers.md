@@ -6,17 +6,17 @@ title: Layer Manager
 
 <p align="center"><img :src="$withBase('/layer-manager.png')" alt="GrapesJS - Layer Manager"/></p>
 
-The Layer Manager module is responsible to manage and display your [Components] as a tree.
+The Layer Manager module is responsible for managing and displaying your [Components] as a tree.
 
 ::: warning
-This guide is referring to GrapesJS v0.19.5 or higher
+This guide applies to GrapesJS v0.19.5 or higher.
 :::
 
 [[toc]]
 
 ## Configuration
 
-To change the default configurations you have to pass the `layerManager` option with the main configuration object.
+To change the default configuration, pass the `layerManager` option in the main configuration object.
 
 ```js
 const editor = grapesjs.init({
@@ -29,9 +29,9 @@ const editor = grapesjs.init({
 
 You can check here the full list of available configuration options: [Layer Manager Config](https://github.com/GrapesJS/grapesjs/blob/master/src/navigator/config/config.ts)
 
-Layers are a direct representation of your components, therefore they will only be available once your components are loaded in the editor (eg. you might load your project data from a remote endpoint).
+Layers directly represent your components, so they are only available once your components are loaded in the editor (e.g., after loading project data from a remote endpoint).
 
-In your configuration, you're able to change the global behavior of layers (eg. make all the layers not sortable) and also decide which component layer should be used as a root.
+In your configuration, you can change the global behavior of layers (e.g., make all layers unsortable) and decide which component layer to use as the root.
 
 ```js
 const editor = grapesjs.init({
@@ -46,17 +46,17 @@ const editor = grapesjs.init({
 });
 ```
 
-The configurations are mainly targeting the default UI provided by GrapesJS core, in case you need more control over the tree of your layers, you can read more in the [Customization](#customization) section below.
+The configuration options mainly target the default UI provided by GrapesJS core. If you need more control over the layer tree, read the [Customization](#customization) section below.
 
 ## Programmatic usage
 
-If you need to manage layers programmatically you can use its [APIs][Layers API].
+To manage layers programmatically, use the [Layers API][Layers API].
 
 ## Customization
 
-By using the [Layers API][Layers API] you're able to replace the default UI with your own implementation.
+Using the [Layers API][Layers API], you can replace the default UI with your own implementation.
 
-All you have to do is to indicate to the editor your intent to use a custom UI and then subscribe to a few events that allow you to properly update your UI.
+Tell the editor to use a custom UI, then subscribe to the events that let you update it.
 
 ```js
 const editor = grapesjs.init({
@@ -79,13 +79,13 @@ editor.on('layer:root', (root) => {
   // Update the root of your UI
 });
 
-// Triggered when a component is updated, this allows you to update specific layers.
+// Triggered when a component is updated, allowing you to update specific layers.
 editor.on('layer:component', (component) => {
   // Update the specific layer of your UI
 });
 ```
 
-In the example below we'll replicate most of the default functionality with our own implementation.
+In the example below, we'll replicate most of the default functionality with our own implementation.
 
 <demo-viewer value="L24hkgm5" height="500" darkcode/>
 
@@ -369,7 +369,7 @@ const app = new Vue({
 
 ## Events
 
-For a complete list of available events, you can check it [here](/api/layer_manager.html#available-events).
+For a complete list of available events, check [here](/api/layer_manager.html#available-events).
 
 [Components]: Components.html
 [Layers API]: /api/layer_manager.html

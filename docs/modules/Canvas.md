@@ -9,14 +9,14 @@ The documentation of this module is still a work in progress.
 :::
 
 ::: warning
-This guide is referring to GrapesJS v0.21.5 or higher
+This guide applies to GrapesJS v0.21.5 or higher.
 :::
 
 [[toc]]
 
 ## Configuration
 
-To change the default configurations you have to pass the `canvas` property with the main configuration object.
+To change the default configuration, pass the `canvas` property in the main configuration object.
 
 ```js
 const editor = grapesjs.init({
@@ -31,9 +31,9 @@ Check the full list of available options here: [Canvas Config](https://github.co
 
 ## Canvas Spots
 
-Canvas spots are elements drawn on top of the canvas. They can be used to represent anything you might need but the most common use case of canvas spots is rendering information and managing components rendered in the canvas.
+Canvas spots are elements drawn on top of the canvas. They can represent anything you need, but their most common use is to display information about components in the canvas and provide controls for managing them.
 
-In order to get a better understanding of canvas spots let's see their built-in types usage.
+To better understand canvas spots, let's see how their built-in types are used.
 
 ### Built-in spot types
 
@@ -41,7 +41,7 @@ In order to get a better understanding of canvas spots let's see their built-in 
 
 <img :src="$withBase('/canvas-spot-select.jpg')" class="img-ctr" style="max-height: 100px">
 
-The `select` type is responsable for showing selected components and rendering the available toolbar items of the last selected component.
+The `select` type is responsible for showing selected components and rendering the available toolbar items for the last selected component.
 
 ::: tip
 Get the toolbar items from the component.
@@ -71,10 +71,10 @@ const resizable = editor.getSelected().resizable;
 
 <img :src="$withBase('/canvas-spot-target.jpg')" class="img-ctr" style="max-height: 200px">
 
-The `target` type is used to highlight the component, like during the drag & drop, to show where the component will be placed.
+The `target` type highlights a component during operations such as drag and drop to show where the dragged component will be placed.
 
 ::: warning
-The default green position indicator is not part of the spot but you can easily customize it via CSS.
+The default green position indicator is not part of the spot, but you can easily customize it via CSS.
 
 ```css
 .gjs-placeholder.horizontal {
@@ -94,7 +94,7 @@ The default green position indicator is not part of the spot but you can easily 
 
 <img :src="$withBase('/canvas-spot-hover.jpg')" class="img-ctr" style="max-height: 200px">
 
-The `hover` is used to highlight the hovered component and show the component name.
+The `hover` type is used to highlight the hovered component and show the component name.
 
 ::: tip
 Get the component name.
@@ -107,7 +107,7 @@ const name = editor.getSelected().getName();
 
 #### Spacing type
 
-The `spacing` type is used to show component offsets like paddings and margins (visible on the `hover` type image above).
+The `spacing` type is used to show component offsets such as padding and margins (visible on the `hover` type image above).
 
 ### Disable built-in types
 
@@ -131,13 +131,13 @@ In the next section, we'll see how it's possible to reuse the built-in spots and
 
 ### Spots customization
 
-In the example below we'll see how to reuse the built-in `hover` canvas spot to render our custom highlighting rectangle (we'll disable the rendering of the default one) and create a new one in order to render a button below the selected `text` components.
+In the example below, we'll reuse the built-in `hover` canvas spot to render a custom highlighting rectangle, disabling the default one. We'll also create a new spot to render a button below the selected `text` component.
 
 [DEMO](https://jsfiddle.net/artur_arseniev/zdetbjsg/)
 
 <demo-viewer value="zdetbjsg" height="500" darkcode/>
 
-Worth noting a few important points:
+A few points to keep in mind:
 
 - Our custom container has to be moved inside the GrapesJS spots container.
 
@@ -147,19 +147,19 @@ editor.onReady(() => {
 });
 ```
 
-- We pass the `component` to our custom spot, in order to have the style coordinates properly updated when we scroll the page or update the component.
+- We pass the `component` to our custom spot so its style coordinates are updated correctly when we scroll the page or update the component.
 
 ```js
 Canvas.addSpot({ type: customSpotType, component });
 ```
 
-- The single spot is placed properly with `spot.getStyle()`
+- Each spot is positioned using `spot.getStyle()`.
 
 ```html
 <div ... class="spot" :style="spot.getStyle()">...</div>
 ```
 
-- The spots container, by default, relies on `pointer-events: none`, in order to prevent the spot from blocking the interaction with the components. This is why we have to re-enable the pointer event on the button in order to make it interactable.
+- By default, the spots container uses `pointer-events: none` to prevent spots from blocking interaction with components. We therefore have to re-enable pointer events on the button to make it interactive.
 
 ```css
 .spot-text-btn {
@@ -232,7 +232,7 @@ Canvas.addSpot({ type: customSpotType, component });
 
       // Add a new custom canvas spot for the last selected text component.
       editor.on('component:toggled', (component) => {
-        // Remove all spots related to out custom type
+        // Remove all spots related to our custom type
         Canvas.removeSpots({ type: 'my-text-spot' });
 
         if (component === editor.getSelected() && component.is('text')) {
@@ -275,4 +275,4 @@ Canvas.addSpot({ type: customSpotType, component });
 
 ## Events
 
-For a complete list of available events, you can check it [here](/api/canvas.html#available-events).
+For a complete list of available events, check [here](/api/canvas.html#available-events).

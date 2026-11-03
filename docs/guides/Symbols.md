@@ -5,9 +5,9 @@ title: Symbols
 # Symbols
 
 ::: warning
-This feature is released as a beta from GrapesJS v0.21.11
+This feature is available in beta starting with GrapesJS v0.21.11.
 
-To get a better understanding of the content in this guide we recommend reading [Components] first
+To better understand this guide, we recommend reading [Components] first.
 :::
 
 Symbols are a special type of [Component] that allows you to easily reuse common elements across your project. They are particularly useful for components that appear multiple times in your project and need to remain consistent. By using Symbols, you can easily update these components in one place and have the changes reflected everywhere they are used.
@@ -25,7 +25,7 @@ Below is a simple representation of the connection between Main and Instance Sym
 <img :src="$withBase('/symbols-model.svg')">
 
 ::: warning Note
-This feature operates at a low level, meaning there is no built-in UI for creating and managing symbols. Developers need to implement their own UI to interact with this feature. Below you'll find an example of implementation.
+This feature operates at a low level, meaning there is no built-in UI for creating and managing symbols. Developers need to implement their own UI to interact with this feature. Below you'll find an implementation example.
 :::
 
 ## Programmatic usage
@@ -41,7 +41,7 @@ const anyComponent = editor.getSelected();
 const symbolMain = editor.Components.addSymbol(anyComponent);
 ```
 
-This will transform `anyComponent` to an Instance and the returned `symbolMain` will be the Main Symbol. GrapesJS keeps track of Main Symbols separately in your project JSON, and they will be automatically reconnected when you reload the project.
+This will transform `anyComponent` into an Instance, and the returned `symbolMain` will be the Main Symbol. GrapesJS keeps track of Main Symbols separately in your project JSON, and they will be automatically reconnected when you reload the project.
 
 The `addSymbol` method also handles the creation of Instances. If you call it again by passing `symbolMain` or `anyComponent`, it will create a new Instance of `symbolMain`.
 
@@ -103,7 +103,7 @@ secondInstance.get('my-property'); // true; change didn't propagate
 
 ### Detach symbol
 
-Once you have Symbol instances you might need to disconnect one to create a new custom shape with other components inside, in that case you can use `detachSymbol`.
+Once you have Symbol instances, you might need to disconnect one to create a custom shape with other components inside. In that case, you can use `detachSymbol`.
 
 ```js
 editor.Components.detachSymbol(anyComponent);
@@ -128,7 +128,7 @@ symbolMain.remove();
 
 The editor triggers several symbol-related events that you can leverage for your integration:
 
-- `symbol:main:add` Added new root main symbol.
+- `symbol:main:add` A new root main symbol was added.
 
 ```js
 editor.on('symbol:main:add', ({ component }) => { ... });
@@ -146,13 +146,13 @@ editor.on('symbol:main:update', ({ component }) => { ... });
 editor.on('symbol:main:remove', ({ component }) => { ... });
 ```
 
-- `symbol:main` Catch-all event related to root main symbol updates.
+- `symbol:main` Catch-all event for root main symbol updates.
 
 ```js
 editor.on('symbol:main', ({ event, component }) => { ... });
 ```
 
-- `symbol:instance:add` Added new root instance symbol.
+- `symbol:instance:add` A new root instance symbol was added.
 
 ```js
 editor.on('symbol:instance:add', ({ component }) => { ... });
@@ -164,7 +164,7 @@ editor.on('symbol:instance:add', ({ component }) => { ... });
 editor.on('symbol:instance:remove', ({ component }) => { ... });
 ```
 
-- `symbol:instance` Catch-all event related to root instance symbol updates.
+- `symbol:instance` Catch-all event for root instance symbol updates.
 
 ```js
 editor.on('symbol:instance', ({ event, component }) => { ... });

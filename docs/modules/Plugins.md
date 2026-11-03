@@ -4,10 +4,10 @@ title: Plugins
 
 # Plugins
 
-Creating plugins in GrapesJS is pretty straightforward and here you'll get how to achieve it.
+Creating plugins in GrapesJS is straightforward, and this guide will show you how.
 
 ::: warning
-This guide is referring to GrapesJS v0.21.2 or higher
+This guide applies to GrapesJS v0.21.2 or higher.
 :::
 
 ::: tip
@@ -35,7 +35,7 @@ const editor = grapesjs.init({
 });
 ```
 
-This means plugins can be moved to separate folders to keep thing cleaner or imported from NPM.
+This means plugins can be moved to separate folders to keep things organized or imported from npm.
 
 ```js
 import myPlugin from './plugins/myPlugin';
@@ -49,7 +49,7 @@ const editor = grapesjs.init({
 
 ## Plugins with options
 
-It's also possible to pass custom parameters to plugins in to make them more flexible.
+It's also possible to pass custom parameters to plugins to make them more flexible.
 
 ```js
 const myPluginWithOptions = (editor, options) => {
@@ -70,7 +70,7 @@ const editor = grapesjs.init({
 
 ## Usage with TS
 
-If you're using TypeScript, for a better type safety, we recommend using the `usePlugin` helper.
+If you're using TypeScript, we recommend using the `usePlugin` helper for better type safety.
 
 ```ts
 import grapesjs, { usePlugin } from 'grapesjs';
@@ -97,7 +97,7 @@ grapesjs.init({
 ## Dynamic plugin management
 
 ::: warning
-Available from GrapesJS v0.23.1
+Available starting with GrapesJS v0.23.1.
 :::
 
 Plugins can also be added and removed dynamically at runtime via `editor.Plugins`.
@@ -128,7 +128,7 @@ editor.Plugins.getAll();
 editor.Plugins.remove('my-plugin-2');
 ```
 
-GrapesJS stores active plugins inside `editor.Plugins` module, so the plugin can be identified and removed later.
+GrapesJS stores active plugins in the `editor.Plugins` module, so each plugin can be identified and removed later.
 
 For this reason, the object descriptor form requires an explicit `id`.
 
@@ -160,4 +160,4 @@ const myPlugin: Plugin = (editor) => {
 
 ## Boilerplate
 
-For fast plugin development, we highly recommend using [grapesjs-cli](https://github.com/GrapesJS/cli) which helps to avoid the hassle of setting up all the dependencies and configurations for development and building (no need to touch Webpack or Babel configurations). For more information check the repository.
+For fast plugin development, we highly recommend using [grapesjs-cli](https://github.com/GrapesJS/cli), which helps you avoid the hassle of setting up all the dependencies and configuration for development and builds (no need to touch Webpack or Babel configurations). For more information, check the repository.
