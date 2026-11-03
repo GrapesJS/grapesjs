@@ -1,0 +1,71 @@
+import type { Editor, Plugin } from 'grapesjs';
+import { WebMcpManager } from './manager';
+import { createDefaultTools } from './tools';
+import { WEBMCP_MANAGER_COMMAND, WebMcpPluginOptions } from './types';
+
+export type { WebMcpManager } from './manager';
+export { ToolNames } from './tools/constants';
+export { WebMcpEvents } from './types';
+export type {
+  GetToolsContext,
+  ModelContextLike,
+  WebMcpPluginOptions,
+  WebMcpTool,
+  WebMcpToolAnnotations,
+  WebMcpToolEventData,
+  WebMcpToolExecuteBeforeEventData,
+  WebMcpToolExecuteEventData,
+  WebMcpToolExecuteOptions,
+} from './types';
+export { createTool, ToolError } from './utils';
+
+/**
+ * Expose GrapesJS editor APIs as WebMCP tools for browser AI agents.
+ * The plugin stays inactive when WebMCP is not available in the page, tools can still
+ * be managed and executed via the `webMcpManager` command.
+ * @example
+ * grapesjs.init({
+ *   plugins: [
+ *     editor => plugin(editor, {
+ *       getTools: ({ tools }) => tools.filter(tool => tool.name !== ToolNames.loadProjectData),
+ *     }),
+ *   ],
+ * });
+ *
+ * const webmcp = editor.runCommand('webMcpManager');
+ */
+export const plugin: Plugin<WebMcpPluginOptions> = (editor: Editor, opts = {}) => {
+  const { toolPrefix = 'grapesjs_', getTools, defaultLimit = 50, instructions, modelContext } = opts;
+  const manager = new WebMcpManager(editor, { toolPrefix, modelContext });
+  let disposed = false;
+
+  editor.Commands.add(WEBMCP_MANAGER_COMMAND, () => manager);
+
+  const cleanup = () => {
+    if (disposed) return;
+    disposed = true;
+    manager.destroy();
+    editor.Commands.remove(WEBMCP_MANAGER_COMMAND);
+    editor.off('destroy', cleanup);
+  };
+
+  editor.on('destroy', cleanup);
+
+  // Tools resolve the editor state on execution, so they can be registered right away
+  try {
+    const defaultTools = createDefaultTools({ editor, defaultLimit, toolPrefix, instructions });
+    const catalog = getTools ? getTools({ editor, tools: defaultTools }) : defaultTools;
+    if (!Array.isArray(catalog)) throw new Error('`getTools` must return an array of tools');
+    manager.addTools(catalog);
+  } catch (error) {
+    editor.log(`Unable to create WebMCP tools: ${(error as Error).message}`, { ns: 'webmcp', level: 'error' });
+  }
+
+  // Plugin cleanup handler (used by `editor.Plugins.remove`)
+  return ({ cleanup: builtInCleanup }) => {
+    cleanup();
+    builtInCleanup();
+  };
+};
+
+export default plugin;

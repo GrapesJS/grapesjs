@@ -1,0 +1,12 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "outDir": "./dist",
+    "types": []
+  },
+  "include": ["src"],
+  // Tests are next to the sources, keep them out of the published types
+  "exclude": ["src/**/*.test.ts"]
+}
