@@ -6,25 +6,25 @@ title: Style Manager
 
 <p align="center"><img :src="$withBase('/style-manager.jpg')" alt="GrapesJS - Style Manager"/></p>
 
-The Style Manager module is responsible to show and update style properties relative to your [Components]. In this guide, you will see how to setup and take full advantage of the built-in Style Manager UI in GrapesJS.
+The Style Manager module displays and updates style properties for your [Components]. In this guide, you will see how to set up and take full advantage of the built-in Style Manager UI in GrapesJS.
 The default UI is a lightweight component with built-in properties, but as you'll see next in this guide, it's easy to extend with your own elements or even create the Style Manager UI from scratch by using the [Style Manager API].
 
 ::: warning
-To get a better understanding of the content in this guide, we recommend reading [Components] first
+To get a better understanding of the content in this guide, we recommend reading [Components] first.
 :::
 ::: warning
-This guide is referring to GrapesJS v0.18.1 or higher
+This guide applies to GrapesJS v0.18.1 or higher.
 :::
 
 ::: tip
-Looking for a UI that is easy and ready to customize? [Checkout the Grapes Studio SDK!](https://app.grapesjs.com/docs-sdk/configuration/components/overview?utm_source=grapesjs-docs&utm_medium=tip) 
+Looking for a UI that is easy and ready to customize? [Check out the Grapes Studio SDK!](https://app.grapesjs.com/docs-sdk/configuration/components/overview?utm_source=grapesjs-docs&utm_medium=tip)
 :::
 
 [[toc]]
 
 ## Configuration
 
-To change the default configurations you have to pass the `styleManager` property with the main configuration object.
+To change the default configuration, pass the `styleManager` property in the main configuration object.
 
 ```js
 const editor = grapesjs.init({
@@ -40,7 +40,7 @@ Check the full list of available options here: [Style Manager Config](https://gi
 
 ## Initialization
 
-The Style Manager module is organized in sectors where each sector contains a list of properties to display. The default Style Manager configuration contains already a list of default common property styles and you can use them by simply skipping the `styleManagerConfig.sectors` option.
+The Style Manager module is organized into sectors, each containing a list of properties to display. The default configuration already includes common style properties. You can use them by omitting the `styleManagerConfig.sectors` option.
 
 ```js
 grapesjs.init({
@@ -59,7 +59,7 @@ It makes sense to show the Style Manager UI only when you have at least one comp
 
 ### Sector definitions
 
-Each sector is identified by its `name` and a list of `properties` to display. You can also specify the `id` in order to access the sector via API (if not indicated it will be generated from the `name`) and the default `open` state.
+Each sector is identified by its `name` and a list of `properties` to display. You can also specify an `id` to access the sector via the API (if omitted, it is generated from the `name`) and set its default `open` state.
 
 ```js
 grapesjs.init({
@@ -84,9 +84,9 @@ grapesjs.init({
 
 ### Property definitions
 
-Once you have defined your sector you can start adding property definitions inside `properties`. Each property has a common set of options (`label`, `default`, etc.) and others specific by their `type`.
+Once you have defined your sector, you can start adding property definitions in `properties`. Each property has a common set of options (`label`, `default`, etc.) and other options specific to its `type`.
 
-Let's see below a simple definition for controlling the padding style.
+Below is a simple definition for controlling the padding style.
 
 ```js
 sectors: [
@@ -95,12 +95,12 @@ sectors: [
     properties: [
       {
         // Default options
-        // id: 'padding', // The id of the property, if missing, will be the same as `property` value
+        // id: 'padding', // The property ID defaults to the `property` value if omitted
         type: 'number',
         label: 'Padding', // Label for the property
         property: 'padding', // CSS property to change
         default: '0', // Default value to display
-        // Additonal `number` options
+        // Additional `number` options
         units: ['px', '%'], // Units (available only for the 'number' type)
         min: 0, // Min value (available only for the 'number' type)
       },
@@ -111,7 +111,7 @@ sectors: [
 
 This will render the number input UI and will change the `padding` CSS property on the selected component.
 
-The flexibility of the definition allows you to create easily different UI inputs for any possible CSS property. You're free to decide what will be the best UI for your users. If you take for example a numeric property like `font-size`, you can follow its CSS specification and define it as a `number`
+The flexibility of the definition lets you easily create different UI inputs for any CSS property. You're free to choose the best UI for your users. For example, you can follow the CSS specification for a numeric property like `font-size` and define it as a `number`:
 
 ```js
 {
@@ -123,7 +123,7 @@ The flexibility of the definition allows you to create easily different UI input
 }
 ```
 
-or you can decide to show it as a `select` and make available only a defined set of values (eg. based on your Design System tokens).
+Or you can show it as a `select` and offer only a predefined set of values (e.g., based on your design system tokens):
 
 ```js
 {
@@ -139,23 +139,23 @@ or you can decide to show it as a `select` and make available only a defined set
 }
 ```
 
-Each type defines the specific UI view and a model on how to handle inputs and updates.
-Let's see below the list of all available default types with their relative UI and models.
+Each type defines a UI view and a model for handling inputs and updates.
+Below is a list of all available default types with their corresponding UI and models.
 
 #### Default types
 
 ::: tip
-Each **Model** describes more in detail available props and their usage.
+Each **Model** describes the available properties and their usage in more detail.
 :::
 
-- `base` - The base type, renders as a simple text input field. **Model**: [Property](/api/property.html)
+- `base` - The base type; renders as a simple text input field. **Model**: [Property](/api/property.html)
 
   <img :src="$withBase('/sm-base-type.jpg')"/>
 
   ```js
   // Example
   {
-    // type: 'base', // Omitting the type in definition will fallback to the 'base'
+    // type: 'base', // Omitting the type in the definition defaults to 'base'
     property: 'some-css-property',
     label: 'Base type',
     default: 'Default value',
@@ -212,7 +212,7 @@ Each **Model** describes more in detail available props and their usage.
 
   <img :src="$withBase('/sm-type-radio.jpg')"/>
 
-- `composite` - This type is great for CSS shorthand properties, where the final value is a composition of multiple sub properties. **Model**: [PropertyComposite](/api/property_composite.html)
+- `composite` - This type is great for CSS shorthand properties, where the final value is a composition of multiple subproperties. **Model**: [PropertyComposite](/api/property_composite.html)
 
   <img :src="$withBase('/sm-type-composite.jpg')"/>
 
@@ -232,7 +232,7 @@ Each **Model** describes more in detail available props and their usage.
   },
   ```
 
-- `stack` - This type is great for CSS multiple properties like `text-shadow`, `box-shadow`, `transform`, etc. **Model**: [PropertyStack](/api/property_stack.html)
+- `stack` - This type is useful for CSS properties with multiple layers or values, such as `text-shadow`, `box-shadow`, `transform`, etc. **Model**: [PropertyStack](/api/property_stack.html)
 
   <img :src="$withBase('/sm-type-stack.jpg')"/>
 
@@ -254,7 +254,7 @@ Each **Model** describes more in detail available props and their usage.
 
 #### Built-in properties
 
-In order to speed up the Style Manager configuration, GrapesJS is shipped with a set of already defined common CSS properties which you can reuse and extend.
+In order to speed up the Style Manager configuration, GrapesJS ships with a set of predefined common CSS properties that you can reuse and extend.
 
 ```js
 sectors: [
@@ -269,7 +269,7 @@ sectors: [
         extend: 'max-width',
         units: ['px', '%'],
       },
-      // If the property doesn't exist it will be converted to a base type
+      // If the property doesn't exist, it will be converted to a base type
       'unknown-property', // -> { type: 'base', property: 'unknown-property' }
     ],
   },
@@ -293,7 +293,7 @@ editor.StyleManager.getBuiltInAll();
 
 ## I18n
 
-If you're planning to have a multi-language editor you can easily connect sector and property labels to the [I18n] module via their IDs.
+If you're planning to have a multilingual editor, you can easily connect sector and property labels to the [I18n] module via their IDs.
 
 ```js
 grapesjs.init({
@@ -350,7 +350,7 @@ grapesjs.init({
 
 ## Component constraints
 
-When you define custom components you can also indicate, via `stylable` and `unstylable` props, which CSS properties should be available for styling. In that case, the Style Manager will only show the available properties. If the sector doesn't contain any available property, it won't be shown.
+When you define custom components, you can also indicate, via `stylable` and `unstylable` props, which CSS properties should be available for styling. In that case, the Style Manager will only show the available properties. If the sector doesn't contain any available property, it won't be shown.
 
 ```js
 const customComponents = (editor) => {
@@ -398,7 +398,7 @@ grapesjs.init({
 
 ## Programmatic usage
 
-For a more advanced usage you can rely on the [Style Manager API] to perform different kind of actions related to the module.
+For more advanced usage, you can use the [Style Manager API] to perform different kinds of actions related to the module.
 
 - Managing sectors/properties post-initialization.
 
@@ -431,7 +431,7 @@ For a more advanced usage you can rely on the [Style Manager API] to perform dif
   const btnCmp = wrapperCmp.find('button')[0];
   btnCmp && sm.select(btnCmp);
 
-  // Set as a target the CSS selector (the relative CSSRule will be created if doesn't exist yet)
+  // Set the CSS selector as the target (the corresponding CSSRule is created if it doesn't exist)
   sm.select('.btn > span');
   // Get the last selected target
   const lastTarget = sm.getLastSelected();
@@ -469,11 +469,11 @@ For a more advanced usage you can rely on the [Style Manager API] to perform dif
 
 ## Customization
 
-The default types should cover most of the common styling properties but in case you need a more advanced control over styling you can define your own types or even create a completely custom Style Manager UI from scratch.
+The default types cover most common styling properties. If you need more advanced control over styling, you can define your own types or create a completely custom Style Manager UI from scratch.
 
 ### Adding new types
 
-In order to add a new type you have to use the `styleManager.addType` API call and indicate all the necessary methods to make it work properly with the editor. Here an example of implementation by using the native `range` input.
+To add a new type, use the `styleManager.addType` API call and define the methods needed to integrate it with the editor. Here's an implementation example using the native `range` input.
 
 <demo-viewer value="y1mxv6p5" height="500" darkcode/>
 
@@ -494,11 +494,11 @@ const customType = (editor) => {
       const { value } = event.target;
       updateStyle(`${value}px`, { partial });
     },
-    // Update UI (eg. when the target is changed)
+    // Update the UI (e.g., when the target changes)
     update({ value, el }) {
       el.querySelector('.my-input').value = parseInt(value, 10);
     },
-    // Clean the memory from side effects if necessary (eg. global event listeners, etc.)
+    // Clean up side effects if necessary (e.g., global event listeners)
     destroy() {
     },
   });
@@ -528,9 +528,9 @@ grapesjs.init({
 
 ### Custom Style Manager
 
-In case you need a completely custom Style Manager UI (eg. you have to use your UI components), you can create it from scratch by relying on the same sector/propriety architecture or even interfacing directly with selected targets.
+If you need a completely custom Style Manager UI (e.g., to use your own UI components), you can create it from scratch using the same sector/property architecture or interact directly with selected targets.
 
-All you have to do is to indicate the editor your intent to use a custom UI and then subscribe to the `style:custom` event that will let you know when is the right moment to create/update your UI.
+Tell the editor to use a custom UI, then subscribe to the `style:custom` event, which tells you when to create/update your UI.
 
 ```js
 const editor = grapesjs.init({
@@ -545,15 +545,15 @@ editor.on('style:custom', (props) => {
   // props.container (HTMLElement)
   //    The default element where you can append your
   //    custom UI in order to render it in the default position.
-  // Here you would put the logic to render/update your UI by relying on Style Manager API
+  // Here you would put the logic to render/update your UI using the Style Manager API
 });
 ```
 
-Here an example below of a custom Style Manager UI rendered by using Vuetify (Vue Material components) and relying on the default sector/propriety state architecture via API.
+Below is an example of a custom Style Manager UI rendered with Vuetify (Vue Material components), using the default sector/property state architecture via the API.
 
 <demo-viewer value="46kf7brn" height="500" darkcode/>
 
-From the example above you can notice how we subscribe to `style:custom` and update `this.sectors = sm.getSectors({ visible: true });` on each trigger, and this is enough for the framework to update the rest of the template automatically.
+In the example above, notice how we subscribe to `style:custom` and update `this.sectors = sm.getSectors({ visible: true });` on each trigger, and this is enough for the framework to update the rest of the template automatically.
 
 In case you need to get/update the selected style targets directly, you can also rely on these APIs.
 
@@ -566,7 +566,7 @@ const wrapperCmp = editor.Pages.getSelected().getMainComponent();
 const btnCmp = wrapperCmp.find('button')[0];
 btnCmp && sm.select(btnCmp);
 
-// You can also select CSS query as a target
+// You can also select a CSS selector as a target
 sm.select('.btn > span');
 
 // Once the target is selected, you can check its current style object
@@ -850,7 +850,7 @@ sm.addStyleTargets({ color: 'red' });
 
 ## Events
 
-For a complete list of available events, you can check it [here](/api/style_manager.html#available-events).
+For a complete list of available events, check [here](/api/style_manager.html#available-events).
 
 [Components]: Components.html
 [I18n]: I18n.html

@@ -22,9 +22,9 @@ We use data to:
 - **Analyze usage**: We use data to analyze how GrapesJS is used. For example, we use data to understand which features are used most often.
 - **Provide support**: We use data to provide support to users. For example, we use data to understand how users interact with GrapesJS.
 
-## How to opt-out
+## How to opt out
 
-You can opt-out of data collection by setting the `telemetry` option to `false` when initializing GrapesJS:
+You can opt out of data collection by setting the `telemetry` option to `false` when initializing GrapesJS:
 
 ```js
 const editor = grapesjs.init({

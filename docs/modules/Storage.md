@@ -4,10 +4,10 @@ title: Storage Manager
 
 # Storage Manager
 
-The Storage Manager is a built-in module that allows the persistence of your project data.
+The Storage Manager is a built-in module that allows you to persist your project data.
 
 ::: warning
-This guide requires GrapesJS v0.19.\* or higher
+This guide requires GrapesJS v0.19.\* or higher.
 :::
 
 ::: tip
@@ -18,12 +18,12 @@ Need more powerful and customizable storage options? [The Grapes Studio SDK has 
 
 ## Configuration
 
-To change the default configurations you have to pass the `storageManager` property with the main configuration object.
+To change the default configuration, pass the `storageManager` property in the main configuration object.
 
 ```js
 const editor = grapesjs.init({
   ...
-  // Default configurations
+  // Default configuration
   storageManager: {
     type: 'local', // Storage type. Available: local | remote
     autosave: true, // Store data automatically
@@ -52,7 +52,7 @@ Check the full list of available options here: [Storage Manager Config](https://
 
 ## Project data
 
-The project data is a JSON object containing all the necessary information (styles, pages, etc.) about your project in the editor and is the one used in the storage manager methods in order to store and load your project (locally or remotely in your DB/file).
+Project data is a JSON object containing all the necessary information (styles, pages, etc.) about your project in the editor. The Storage Manager uses this object to store and load your project locally or remotely in a database or file.
 
 ::: tip
 You can get the current state of the data and load it manually in this way:
@@ -70,14 +70,14 @@ editor.loadProjectData(projectData);
 ::: danger
 You should only rely on the JSON project data in order to load your project properly in the editor.
 
-The editor is able to parse and use HTML/CSS code, you can use it as part of your project initialization but never rely on it as a persitance layer in the load of projects as many information could be stripped off.
+The editor can parse and use HTML/CSS code as part of your project initialization. However, never rely on HTML/CSS as a persistence layer when loading projects, as important information may be lost.
 :::
 
-<!-- If necessary, the JSON can be also enriched with your data of choice, but as the data schema might differ in time we highly recommend to store them in your domain specific keys-->
+<!-- If necessary, the JSON can also be enriched with your own data. As the schema might change over time, we strongly recommend storing it under keys specific to your application. -->
 
 ## Storage strategy
 
-Project data are automatically stored every time the amount of changes (`editor.getDirtyCount()`) reaches the number of steps before save (`editor.Storage.getStepsBeforeSave()`). On any successful store of the data, the counter of changes is reset (`editor.clearDirtyCount()`).
+Project data is automatically stored every time the number of changes (`editor.getDirtyCount()`) reaches the number of steps before save (`editor.Storage.getStepsBeforeSave()`). After each successful save, the change counter is reset (`editor.clearDirtyCount()`).
 
 ::: tip
 When necessary, you can always trigger store/load manually.
@@ -94,12 +94,12 @@ const loadedProjectData = await editor.load();
 
 ## Setup local storage
 
-By default, GrapesJS saves the data locally by using the built-in `local` storage which leverages [localStorage API].
+By default, GrapesJS saves the data locally by using the built-in `local` storage, which uses the [localStorage API].
 
-The only option you might probably care for the local storage is the `key` used to store the data. If the user loads different projects in your application, you might probably need to differentiate the local storage by the ID of the project (the ID here is intended to be part of your application domain).
+The main local storage option to consider is the `key` used to store the data. If the user loads different projects in your application, you may need to use a different key for each project ID (an ID defined by your application).
 
 ```js
-// Get your project ID (eg. taken from the route)
+// Get your project ID (e.g., taken from the route)
 const projectId = getProjectId();
 
 const editor = grapesjs.init({
@@ -115,9 +115,9 @@ const editor = grapesjs.init({
 
 ## Setup remote storage
 
-Most commonly the data of the project might be saved remotely on your server (DB, file, etc.) therefore you need to setup your server-side API calls in order to store/load project data.
+Project data is often saved remotely on your server (in a database, file, etc.), so you need to set up your server-side API to store/load it.
 
-For a sake of simplicity we can setup a fake REST API server by relying on [json-server].
+For simplicity, we can set up a mock REST API server using [json-server].
 
 ```sh
 mkdir my-server
@@ -128,9 +128,9 @@ echo '{"projects": [ {"id": 1, "data": {"assets": [], "styles": [], "pages": [{"
 npx json-server --watch db.json
 ```
 
-This will start up a local server with one single project available on `http://localhost:3000/projects/1`. The data will be updated on the `db.json` file.
+This will start up a local server with a single project available at `http://localhost:3000/projects/1`. The data will be updated in the `db.json` file.
 
-Here below an example of how you would configure a `remote` storage in GrapesJS.
+Here's an example of how to configure `remote` storage in GrapesJS:
 
 ```js
 const projectID = 1;
@@ -145,7 +145,7 @@ const editor = grapesjs.init({
       remote: {
         urlLoad: projectEndpoint,
         urlStore: projectEndpoint,
-        // The `remote` storage uses the POST method when stores data but
+        // The `remote` storage uses POST when storing data, but
         // the json-server API requires PATCH.
         fetchOptions: opts => (opts.method === 'POST' ?  { method: 'PATCH' } : {}),
         // As the API stores projects in this format `{id: 1, data: projectData }`,
@@ -160,26 +160,26 @@ const editor = grapesjs.init({
 ```
 
 ::: danger
-Be sure to configure properly [CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS) on your server API. The [json-server] is not intended to be used in production and therefore enables all of them automatically.
+Be sure to configure [CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS) properly for your server API. [json-server] is not intended for production use and enables cross-origin requests automatically.
 :::
 
 <div id="setup-the-server"></div>
 
 ### Server setup
 
-Server configuration might differ case to case so usually, it's up to you to know how to configure it properly.
-The default remote storage follows a simple REST API approach with project data exchanged as a JSON (`Content-Type: application/json`).
+Server configuration varies from case to case, so adapt it to your requirements.
+The default remote storage follows a simple REST API approach with project data exchanged as JSON (`Content-Type: application/json`).
 
-- On **load** (`GET` method), the JSON project data are expected to be returned directly in the response. As from example above, you can use `options.remote.onLoad` to extract the project data if the response contains other metadata.
+- On **load** (`GET` method), the JSON project data is expected to be returned directly in the response. As shown in the example above, you can use `options.remote.onLoad` to extract the project data if the response contains other metadata.
 - On **store** (`POST` method), the editor doesn't expect any particular result but only a valid response from the server (status code `200`).
 
 <!-- ## Store and load templates
 
-Even without a fully working endpoint, you can see what is sent from the editor by triggering the store and looking in the network panel of the inspector. GrapesJS sends mainly 4 types of parameters and it prefixes them with the `gjs-` key (you can disable it via `storageManager.id`). From the parameters, you will get the final result in 'gjs-html' and 'gjs-css' and this is what actually your end-users will gonna see on the final template/page. The other two, 'gjs-components' and 'gjs-styles', are a JSON representation of your template and therefore those should be used for the template editing. **So be careful**, GrapesJS is able to start from any HTML/CSS but use this approach only for importing already existent HTML templates, once the user starts editing, rely always on JSON objects because the HTML doesn't contain information about your components. You can achieve it in a pretty straightforward way and if you load your page by server-side you don't even need to load asynchronously your data (so you can turn off the `autoload`).
+Even without a working endpoint, you can see what the editor sends by triggering storage and checking the inspector's network panel. GrapesJS sends four main types of parameters, prefixed with `gjs-` (you can disable the prefix via `storageManager.id`). The 'gjs-html' and 'gjs-css' parameters contain the final template/page that end users will see. The other two, 'gjs-components' and 'gjs-styles', contain a JSON representation of your template and should be used for editing. **Be careful**: although GrapesJS can start from HTML/CSS, use this only to import existing templates. Once the user starts editing, always rely on JSON objects, as HTML does not contain all component information. If you render your page on the server, you can provide the data directly without loading it asynchronously and disable `autoload`.
 
 ```js
-// Lets say, for instance, you start with your already defined HTML template and you'd like to
-// import it on fly for the user
+// Let's say you have an existing HTML template and want to
+// import it on the fly for the user
 const LandingPage = {
   html: `<div>...</div>`,
   css: null,
@@ -191,9 +191,9 @@ const editor = grapesjs.init({
   ...
   // If set to true, then the content within the wrapper element overrides the following config,
   fromElement: false,
-  // The `components` accepts HTML string or a JSON of components
-  // Here, at first, we check and use components if are already defined, otherwise
-  // the HTML string gonna be used
+  // The `components` option accepts an HTML string or components in JSON format.
+  // Use components if they are already defined; otherwise,
+  // use the HTML string.
   components: LandingPage.components || LandingPage.html,
   // We might want to make the same check for styles
   style: LandingPage.style || LandingPage.css,
@@ -207,11 +207,11 @@ const editor = grapesjs.init({
 
 ## Storage API
 
-The Storage Manager module has also its own [set of APIs](/api/storage_manager.html) that allows you to extend and add new functionalities.
+The Storage Manager module also has its own [set of APIs](/api/storage_manager.html), which allows you to extend it and add functionality.
 
 ### Define new storage
 
-Defining a new storage is a matter of passing of two asyncronous methods to the `editor.Storage.add` API. For a sake of simplicity, the example below illustrates the API usage for defining the `session` storage by using [sessionStorage API](https://developer.mozilla.org/en-US/docs/Web/API/Window/sessionStorage).
+Defining a new storage type involves passing two asynchronous methods to the `editor.Storage.add` API. For simplicity, the example below defines `session` storage using the [sessionStorage API](https://developer.mozilla.org/en-US/docs/Web/API/Window/sessionStorage).
 
 ```js
 const sessionStoragePlugin = (editor) => {
@@ -242,8 +242,8 @@ const editor = grapesjs.init({
 
 ### Extend storage
 
-Among other needs, you might need to use existing storages to combine them in a more complex use case.
-For example, let's say we would like to mix the local and remote storages inside another one. This is how it would look like:
+You might need to combine existing storage types for a more complex use case.
+For example, we can combine local and remote storage in a new storage type like this:
 
 ```js
 const { Storage } = editor;
@@ -269,9 +269,9 @@ Storage.add('remote-local', {
 
 ### Replace storage
 
-You can also replace already defined storages with other implementations by passing the same storage type in the `Storage.add` method. You can switch, for example, the default `local`, which relies on [localStorage API], with something more scalable like [IndexedDB API].
+You can also replace existing storage types with other implementations by passing the same storage type in the `Storage.add` method. You can switch, for example, the default `local` storage, which relies on the [localStorage API], with something more scalable like [IndexedDB API].
 
-It might also be possible that you're already using some HTTP client library (eg. [axios](https://github.com/axios/axios)) which handles for you all the necessary HTTP headers in your application (CSRF token, session data, etc.), so you can simply replace the default `remote` storage with your implementation of choice without caring about the default configurations.
+If you're already using an HTTP client library (e.g., [axios](https://github.com/axios/axios)) that handles the necessary HTTP headers in your application (CSRF token, session data, etc.), you can replace the default `remote` storage with your own implementation without relying on the default configuration.
 
 ```js
 editor.Storage.add('remote', {
@@ -296,10 +296,10 @@ Here you can find some of the plugins extending the Storage Manager
 
 ### Skip initial load
 
-In case you're using the `remote` storage, you might probably want to skip the initial remote call by loading the project instantly. In that case, you can specify the `projectData` on initialization.
+If you're using `remote` storage, you may want to skip the initial remote call by providing the project data directly. To do this, specify `projectData` during initialization.
 
 ```js
-// Get the data before initializing the editor (eg. printed on server-side).
+// Get the data before initializing the editor (e.g., rendered on the server).
 const projectData = {...};
 // ...
 grapesjs.init({
@@ -326,8 +326,8 @@ In case `projectData` is defined, the initial storage load will be automatically
 
 ### HTML code with project data
 
-The project data doesn't contain HTML/CSS of your pages as its main purpose is to collect only the strictly necessary information.
-In case you have a strict requirement to execute also other logic connected to the store of your project data (eg. deploy HTML/CSS result to the stage environment) you can enrich your remote calls by using the `onStore` option in the remote configuration.
+The project data doesn't contain the HTML/CSS of your pages, as its main purpose is to collect only the necessary information.
+If you need to run additional logic when storing project data (e.g., deploying the HTML/CSS to a staging environment), you can enrich your remote calls using the `onStore` option in the remote configuration.
 
 ```js
 grapesjs.init({
@@ -357,7 +357,7 @@ grapesjs.init({
 
 ### Inline project data
 
-In might be a case where the editor is not connected to any storage but simply read/write the data in inputs placed in a form. For such a case you can create an inline storage.
+In some cases, the editor isn't connected to a storage backend and simply reads/writes data in form inputs. For these cases, you can create inline storage.
 
 ```html
 <form id="my-form">
@@ -408,11 +408,11 @@ In might be a case where the editor is not connected to any storage but simply r
 </script>
 ```
 
-In the example above we're relying on two hidden inputs, one for containing the project data and the another one for the HTML/CSS.
+In the example above, we use two hidden inputs: one for the project data and another for the HTML/CSS.
 
 ## Events
 
-For a complete list of available events, you can check it [here](/api/storage_manager.html#available-events).
+For a complete list of available events, check [here](/api/storage_manager.html#available-events).
 
 [grapesjs-indexeddb]: https://github.com/GrapesJS/storage-indexeddb
 [grapesjs-firestore]: https://github.com/GrapesJS/storage-firestore

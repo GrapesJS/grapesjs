@@ -6,7 +6,7 @@ title: Asset Manager
 
 <p align="center"><img src="http://grapesjs.com/img/sc-grapesjs-assets-1.jpg" alt="GrapesJS - Asset Manager" align="center"/></p>
 
-In this section, you will see how to setup and take the full advantage of built-in Asset Manager in GrapesJS. The Asset Manager is lightweight and implements just an `image` in its core, but as you'll see next it's easy to extend and create your own asset types.
+In this section, you will see how to set up and take full advantage of the built-in Asset Manager in GrapesJS. The Asset Manager is lightweight and includes only the `image` asset type in its core, but as you'll see, it's easy to extend and create your own asset types.
 
 ::: tip
 Want an asset manager that looks great out of the box? [Try the Grapes Studio SDK!](https://app.grapesjs.com/docs-sdk/configuration/assets/overview?utm_source=grapesjs-docs&utm_medium=tip)
@@ -16,7 +16,7 @@ Want an asset manager that looks great out of the box? [Try the Grapes Studio SD
 
 ## Configuration
 
-To change default configurations you'd need to pass the `assetManager` property with the main configuration object
+To change the default configuration, pass the `assetManager` property in the main configuration object:
 
 ```js
 const editor = grapesjs.init({
@@ -28,7 +28,7 @@ const editor = grapesjs.init({
 });
 ```
 
-You can update most of them later by using `getConfig` inside of the module
+You can update most options later using the module's `getConfig` method:
 
 ```js
 const amConfig = editor.AssetManager.getConfig();
@@ -38,7 +38,7 @@ Check the full list of available options here: [Asset Manager Config](https://gi
 
 ## Initialization
 
-The Asset Manager is ready to work by default, so pass few URLs to see them loaded
+The Asset Manager is ready to work by default, so pass a few URLs to see them loaded:
 
 ```js
 const editor = grapesjs.init({
@@ -55,8 +55,8 @@ const editor = grapesjs.init({
        name: 'displayName'
      },
      {
-       // As the 'image' is the base type of assets, omitting it will
-       // be set as `image` by default
+       // As 'image' is the base asset type, omitting the type
+       // will default to `image`
        src: 'https://placeholder.photo/350x250/79c267/fff?text=image3.jpg',
        height: 350,
        width: 250,
@@ -67,14 +67,14 @@ const editor = grapesjs.init({
 });
 ```
 
-If you want a complete list of available properties check out the source [AssetImage Model](https://github.com/GrapesJS/grapesjs/blob/dev/packages/core/src/asset_manager/model/AssetImage.ts)
+For a complete list of available properties, check the [AssetImage Model source](https://github.com/GrapesJS/grapesjs/blob/dev/packages/core/src/asset_manager/model/AssetImage.ts).
 
-The built-in Asset Manager modal is implemented and is showing up when requested. By default, you can make it appear by dragging Image Components in canvas, double clicking on images and all other stuff related to images (eg. CSS styling)
+The built-in Asset Manager modal appears when requested. By default, you can open it by dragging Image Components onto the canvas, double-clicking images, or using other image-related features (e.g., CSS styling).
 
 <img :src="$withBase('/assets-builtin-modal.png')">
 
 <!--
-Making the modal appear is registered with a command, so you can make it appear with this
+A command is registered to open the modal, so you can use this:
 
 ```js
 // This command shows only assets with `image` type
@@ -82,7 +82,7 @@ editor.runCommand('open-assets');
 ```
 
 
-Worth noting that by doing this you can't do much with assets (if you double click on them nothing happens) and this is because you've not indicated any target. Try just to select an image in your canvas and run this in console (you should first make the editor globally available `window.editor = editor;` in your script)
+This alone doesn't let you do much with assets: double-clicking them has no effect because you haven't specified a target. Select an image in your canvas and run this in the console (first make the editor globally available by adding `window.editor = editor;` to your script):
 
 ```js
 editor.runCommand('open-assets', {
@@ -95,11 +95,11 @@ Now you should be able to change the image of the component.
 
 ## Uploading assets
 
-The default Asset Manager includes also an easy to use, drag-and-drop uploader with a few UI helpers. The default uploader is already visible when you open the Asset Manager.
+The default Asset Manager also includes an easy-to-use drag-and-drop uploader with a few UI helpers. The default uploader is already visible when you open the Asset Manager.
 
 <img :src="$withBase('/assets-uploader.png')">
 
-You can click on the uploader to select your files or just drag them directly from your computer to trigger the uploader. Obviously, before it will work you have to setup your server to receive your assets and specify the upload endpoint in your configuration
+You can click on the uploader to select your files or just drag them directly from your computer to trigger the uploader. Before it will work, you have to set up your server to receive assets and specify the upload endpoint in your configuration:
 
 ```js
 const editor = grapesjs.init({
@@ -119,15 +119,15 @@ const editor = grapesjs.init({
 
 ### Listeners
 
-If you want to execute an action before/after the uploading process (eg. loading animation) or even on response, you can make use of these listeners
+To execute an action before/after uploading (e.g., showing a loading animation) or when a response arrives, use these listeners:
 
 ```js
-// The upload is started
+// The upload has started
 editor.on('asset:upload:start', () => {
   startAnimation();
 });
 
-// The upload is ended (completed or not)
+// The upload has ended (successfully or otherwise)
 editor.on('asset:upload:end', () => {
   endAnimation();
 });
@@ -145,7 +145,7 @@ editor.on('asset:upload:response', (response) => {
 
 ### Response
 
-When the uploading is over, by default (via config parameter `autoAdd: 1`), the editor expects to receive a JSON of uploaded assets in a `data` key as a response and tries to add them to the main collection. The JSON might look like this:
+When uploading finishes, the editor expects a JSON response containing the uploaded assets under a `data` key and tries to add them to the main collection by default (via the configuration parameter `autoAdd: 1`). The JSON might look like this:
 
 ```js
 {
@@ -171,7 +171,7 @@ There is another helper which improves the uploading of assets: A full-width edi
 <img :src="$withBase('/assets-full-dropzone.gif')">
 
 
-All you have to do is to activate it and possibly set a custom content (you might also want to hide the default uploader)
+Activate it and optionally set custom content (you might also want to hide the default uploader):
 
 ```js
 const editor = grapesjs.init({
@@ -186,19 +186,19 @@ const editor = grapesjs.init({
 
 ## Programmatic usage
 
-If you need to manage your assets programmatically you have to use its [APIs][API-Asset-Manager]
+To manage your assets programmatically, use the [Asset Manager API][API-Asset-Manager].
 
 ```js
 // Get the Asset Manager module first
 const am = editor.AssetManager;
 ```
 
-First of all, it's worth noting that Asset Manager keeps 2 collections of assets:
+The Asset Manager keeps two collections of assets:
 
-- **global** - which is just the one with all available assets, you can get it with `am.getAll()`
-- **visible** - this is the collection which is currently rendered by the Asset Manager, you get it with `am.getAllVisible()`
+- **global** - Contains all available assets. Access it with `am.getAll()`.
+- **visible** - Contains the assets currently rendered by the Asset Manager. Access it with `am.getAllVisible()`.
 
-This allows you to decide which assets to show and when. Let's say we'd like to have a category switcher, first of all you gonna add to the **global** collection all your assets (which you may already defined at init by `config.assetManager.assets = [...]`)
+This allows you to decide which assets to show and when. Let's say we'd like to have a category switcher. First, add all your assets to the **global** collection (you may have already defined them during initialization with `config.assetManager.assets = [...]`):
 
 ```js
 am.add([
@@ -219,7 +219,7 @@ am.add([
 ]);
 ```
 
-Now if you call the `render()`, without an argument, you will see all the assets rendered
+Now, if you call `render()` without an argument, you will see all the assets rendered:
 
 ```js
 // without any argument
@@ -229,7 +229,7 @@ am.getAll().length; // <- 3
 am.getAllVisible().length; // <- 3
 ```
 
-Ok, now let's show only assets from the first category
+Now let's show only assets from the first category:
 
 ```js
 const assets = am.getAll();
@@ -240,7 +240,7 @@ am.getAll().length; // Still have 3 assets
 am.getAllVisible().length; // but only 2 are shown
 ```
 
-You can also mix arrays of assets
+You can also mix arrays of assets:
 
 ```js
 am.render([...assets1, ...assets2, ...assets3]);
@@ -254,7 +254,7 @@ am.getContainer().insertAdjacentHTML('afterbegin', '<div><button type="button">C
 ```
 -->
 
-In case you want to update or remove an asset, you can make use of this methods
+To update or remove an asset, use these methods:
 
 ```js
 // Get the asset via its `src`
@@ -267,12 +267,12 @@ asset.set({ src: 'http://.../new-img.jpg' });
 am.remove(asset); // or via src, am.remove('http://.../new-img.jpg');
 ```
 
-For more APIs methods check out the [API Reference][API-Asset-Manager].
+For more API methods, check out the [API Reference][API-Asset-Manager].
 
 ### Custom select logic
 
 ::: warning
-This section is referring to GrapesJS v0.17.26 or higher
+This section applies to GrapesJS v0.17.26 or higher.
 :::
 
 You can open the Asset Manager with your own select logic.
@@ -296,9 +296,9 @@ am.open({
 
 ## Customization
 
-The default Asset Manager UI is great for simple things, but except the possibility to tweak some CSS style, adding more complex things like a search input, filters, etc. requires a replace of the default UI.
+The default Asset Manager UI is useful for simple tasks and can be styled with CSS. Adding more complex features, such as a search input or filters, requires replacing the default UI.
 
-All you have to do is to indicate the editor your intent to use a custom UI and then subscribe to the `asset:custom` event that will give you all the information on any requested change.
+Tell the editor to use a custom UI, then subscribe to the `asset:custom` event, which provides information about any requested changes.
 
 ```js
 const editor = grapesjs.init({
@@ -313,7 +313,7 @@ editor.on('asset:custom', (props) => {
   // The `props` will contain all the information you need in order to update your UI.
   // props.open (boolean) - Indicates if the Asset Manager is open
   // props.assets (Array<Asset>) - Array of all assets
-  // props.types (Array<String>) - Array of asset types requested, eg. ['image'],
+  // props.types (Array<String>) - Array of asset types requested, e.g., ['image'],
   // props.close (Function) - A callback to close the Asset Manager
   // props.remove (Function<Asset>) - A callback to remove an asset
   // props.select (Function<Asset, boolean>) - A callback to select an asset
@@ -322,14 +322,14 @@ editor.on('asset:custom', (props) => {
 });
 ```
 
-Here an example of using custom Asset Manager with a Vue component.
+Here's an example of a custom Asset Manager using a Vue component.
 
 <demo-viewer value="wbj4tmqk" height="500" darkcode/>
 
-The example above is the right way if you need to replace the default UI, but as you might notice we append the mounted element to the container `props.container.appendChild(this.$el);`.
+The example above shows how to replace the default UI. Notice that we append the mounted element to the container with `props.container.appendChild(this.$el);`.
 This is required as the Asset Manager, by default, is placed in the [Modal](/modules/Modal.html).
 
-How to approach the case when your Asset Manager is a completely independent/external module (eg. should be shown in its own custom modal)? Not a problem, you can bind the Asset Manager state via `assetManager.custom.open`.
+If your Asset Manager is a completely independent/external module (e.g., it should appear in its own custom modal), you can bind its state via `assetManager.custom.open`.
 
 ```js
 const editor = grapesjs.init({
@@ -338,7 +338,7 @@ const editor = grapesjs.init({
     // ...
     custom: {
       open(props) {
-        // `props` are the same used in `asset:custom` event
+        // `props` contains the same properties as in the `asset:custom` event
         // ...
         // Init and open your external Asset Manager
         // ...
@@ -356,15 +356,15 @@ const editor = grapesjs.init({
 });
 ```
 
-It's important to declare also the `close` function, the editor should be able to close the Asset Manager via `am.close()`.
+Also declare the `close` function so the editor can close the Asset Manager via `am.close()`.
 
 <!--
 ### Define new Asset type
 
-Generally speaking, images aren't the only asset you'll use, it could be a `video`, `svg-icon`, or any other kind of `document`. Each type of asset is applied in our templates/pages differently. If you need to change the image of the Component all you need is another `url` in `src` attribute. However In case of a `svg-icon`, it's not the same, you might want to replace the element with a new `<svg>` content. Besides this you also have to deal with the presentation/preview of the asset inside the panel/modal. For example, showing a thumbnail for big images or the possibility to preview videos.
+Images aren't the only assets you might use; others include a `video`, an `svg-icon`, or another kind of `document`. Each asset type is applied differently in templates/pages. To change a Component's image, you only need to update the URL in its `src` attribute. For an `svg-icon`, however, you might want to replace the element with new `<svg>` content. You also have to handle how the asset is presented or previewed in the panel/modal, for example, by showing thumbnails for large images or previews for videos.
 
 
-Defining a new asset means we have to push on top of the 'Stack of Types' a new layer. This stack is iterated over by the editor at any addition of the asset and tries to associate the correct type.
+Defining a new asset type means adding a new layer to the top of the 'Stack of Types'. The editor iterates over this stack whenever an asset is added to identify its type.
 
 ```js
 am.add('https://.../image.png');
@@ -377,8 +377,8 @@ am.add({type: 'video', src: '...'});
 // an object, has 'video' type key -> 'video' type
 ```
 
-It's up to you tell the editor how to recognize your type and for this purpose you should to use `isType()` method.
-Let's see now an example of how we'd start to defining a type like `svg-icon`
+It's up to you to tell the editor how to recognize your type using the `isType()` method.
+Let's see how to start defining a type like `svg-icon`:
 
 
 ```js
@@ -400,7 +400,7 @@ am.addType('svg-icon', {
 })
 ```
 
-With this snippet you can already add SVGs, the asset manager will assign the appropriate type.
+With this snippet, you can already add SVGs, and the Asset Manager will assign the appropriate type.
 
 ```js
 // Add some random SVG
@@ -411,7 +411,7 @@ am.add(`<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
 ```
 
 
-The default `open-assets` command shows only `image` assets, so to render `svg-icon` run this
+The default `open-assets` command shows only `image` assets, so to render `svg-icon`, run this:
 
 ```js
 am.render(am.getAll().filter(
@@ -425,12 +425,12 @@ You should see something like this
 <img :src="$withBase('/assets-empty-view.png')">
 
 
-The SVG asset is not rendered correctly and this is because we haven't yet configured its view
+The SVG asset is not rendered correctly because we haven't configured its view yet.
 
 ```js
 am.addType('svg-icon', {
   view: {
-    // `getPreview()` and `getInfo()` are just few helpers, you can
+    // `getPreview()` and `getInfo()` are just a few helpers, you can
     // override the entire template with `template()`
     // Check the base `template()` here:
     // https://github.com/GrapesJS/grapesjs/blob/dev/packages/core/src/asset_manager/view/AssetView.ts
@@ -438,7 +438,7 @@ am.addType('svg-icon', {
       return `<div style="text-align: center">${this.model.get('svgContent')}</div>`;
     },
     getInfo() {
-      // You can use model's properties if you passed them:
+      // You can use the model's properties if you passed them:
       // am.add({
       //  type: 'svg-icon',
       //  svgContent: '<svg ...',
@@ -469,11 +469,11 @@ am.addType('svg-icon', {
     updateTarget(target) {
       const svg = this.model.get('svgContent');
 
-      // Just to make things bit interesting, if it's an image type
-      // I put the svg as a data uri, content otherwise
+      // To make things a bit more interesting, use a data URI for an image
+      // component and set the content directly for other component types
       if (target.get('type') == 'image') {
         // Tip: you can also use `data:image/svg+xml;utf8,<svg ...` but you
-        // have to escape few chars
+        // have to escape a few characters
         target.set('src', `data:mime/type;base64,${btoa(svg)}`);
       } else {
         target.set('content', svg);
@@ -514,7 +514,7 @@ am.addType('svg-icon', {
 
 ### Extend Asset Types
 
-Extending asset types is basically the same as adding them, you can choose what type to extend and how.
+Extending asset types is similar to adding them. You can choose which type to extend and how.
 
 ```js
 // svgIconType will contain the definition (model, view, isType)
@@ -537,14 +537,14 @@ am.addType('svg-icon2', {
 ```
 
 
-You can also extend the already defined types (to be sure to load assets with the old type extended create a plugin for your definitions)
+You can also extend existing types. To ensure assets load with the extended type, put your definitions in a plugin.
 
 ```js
 // Extend the original `image` and add a confirm dialog before removing it
 am.addType('image', {
-  // As you adding on top of an already defined type you can avoid indicating
-  // `am.getType('image').view.extend({...` the editor will do it by default
-  // but you can eventually extend some other type
+  // As you're extending an existing type, you can omit
+  // `am.getType('image').view.extend({...`; the editor does this by default.
+  // You can also extend a different type.
   view: {
     // If you want to see more methods to extend check out
     // https://github.com/GrapesJS/grapesjs/blob/dev/packages/core/src/asset_manager/view/AssetImageView.ts
@@ -562,6 +562,6 @@ am.addType('image', {
 
 ## Events
 
-For a complete list of available events, you can check it [here](/api/assets.html#available-events).
+For a complete list of available events, check [here](/api/assets.html#available-events).
 
 [API-Asset-Manager]: /api/assets.html

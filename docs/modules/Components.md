@@ -4,24 +4,24 @@ title: Component Manager
 
 # Component Manager
 
-The Component is a base element of the template. It might be something simple and atomic like an image or a text box, but also complex structures, more probably composed by other components, like sections or pages. The concept of the component was made to allow the developer to bind different behaviors to different elements. For example, opening the Asset Manager on double click of the image is a custom behavior bound to that particular type of element.
+A Component is a basic element of a template. It can be something simple, like an image or a text box, or a complex structure composed of other components, like a section or a page. Components allow developers to bind different behaviors to different elements. For example, opening the Asset Manager when an image is double-clicked is a custom behavior bound to that element type.
 
 ::: warning
-This guide is referring to GrapesJS v0.15.8 or higher
+This guide applies to GrapesJS v0.15.8 or higher.
 :::
 
 ::: tip
-Skip the boilerplate—use a refined component editor out of the box. [Checkout the Grapes Studio SDK!](https://app.grapesjs.com/docs-sdk/configuration/components/overview?utm_source=grapesjs-docs&utm_medium=tip)
+Skip the boilerplate—use a refined component editor out of the box. [Check out the Grapes Studio SDK!](https://app.grapesjs.com/docs-sdk/configuration/components/overview?utm_source=grapesjs-docs&utm_medium=tip)
 :::
 
 [[toc]]
 
-## How Components work?
+## How Components work
 
-Let's see in detail how components work by looking at all the steps from adding an HTML string to the editor.
+Let's see how components work by looking at what happens when an HTML string is added to the editor.
 
 ::: tip
-All the following snippets can be run directly in console from the [main demo](https://grapesjs.com/demo.html)
+All the following snippets can be run directly in the console of the [main demo](https://grapesjs.com/demo.html).
 :::
 
 This is how we can add new components to the canvas:
@@ -33,7 +33,7 @@ editor.addComponents(`<div>
   <span title="foo">Hello world!!!</span>
 </div>`);
 
-// or into some, already defined, component.
+// Or into an existing component.
 // For instance, appending to a selected component would be:
 editor.getSelected().append(`<div>...`);
 
@@ -42,13 +42,13 @@ editor.getWrapper().append(`<div>...`);
 ```
 
 ::: tip
-If you need to append a component at a specific position, you can use `at` option. So, to add a component on top of all others (in the same collection) you would use
+If you need to append a component at a specific position, you can use the `at` option. To add a component before all others in the same collection, use:
 
 ```js
 component.append('<div>...', { at: 0 });
 ```
 
-or in the middle
+Or in the middle:
 
 ```js
 const { length } = component.components();
@@ -59,7 +59,7 @@ component.append('<div>...', { at: parseInt(length / 2, 10) });
 
 ### Component Definition
 
-In the first step, the HTML string is parsed and transformed to what is called **Component Definition**, so the result of the input above would be:
+First, the HTML string is parsed and transformed into a **Component Definition**. The input above would produce the following result:
 
 ```js
 {
@@ -81,28 +81,28 @@ In the first step, the HTML string is parsed and transformed to what is called *
 }
 ```
 
-The real **Component Definition** would be a little bit bigger so we've reduced the JSON for the sake of simplicity.
+The actual **Component Definition** would be a little larger, so we've simplified the JSON for this example.
 
-You might notice the result is similar to what is generally called a **Virtual DOM**, a lightweight representation of the DOM element. This actually helps the editor to keep track of the state of our elements and make performance-friendly changes/updates.
-The meaning of properties like `tagName`, `attributes` and `components` are quite obvious, but what about `type`?! This particular property specifies the **Component Type** of our **Component Definition** (you check the list of default components [below](#built-in-component-types)) and if it's omitted, the default one will be used `type: 'default'`.
-At this point, a good question would be, how the editor assigns those types by starting from a simple HTML string? This step is identified as **Component Recognition** and it's explained in detail in the next paragraph.
+You might notice that the result is similar to what is generally called a **Virtual DOM**, a lightweight representation of a DOM element. This actually helps the editor to keep track of the state of our elements and make performance-friendly changes/updates.
+The meanings of properties like `tagName`, `attributes`, and `components` are fairly clear, but what about `type`? This property specifies the **Component Type** of our **Component Definition** (see the list of default components [below](#built-in-component-types)). If omitted, it defaults to `type: 'default'`.
+How does the editor assign those types when starting from a simple HTML string? This step is called **Component Recognition**, and it's explained in the next section.
 
 ### Component Recognition and Component Type Stack
 
-As we mentioned before, when you pass an HTML string as a component to the editor, that string is parsed and compiled to the [Component Definition] with a new `type` property. To understand what `type` should be assigned, for each parsed HTML Element, the editor iterates over all the defined components, called **Component Type Stack**, and checks via `isComponent` method (we will see it later) if that component type is appropriate for that element. The Component Type Stack is just a simple array of component types but what matters is the order of those types. Any new added custom **Component Type** (we'll see later how to create them) goes on top of the Component Type Stack and each element returned from the parser iterates the stack from top to bottom (the last element of the stack is the `default` one), the iteration stops once one of the component returns a truthy value from the `isComponent` method.
+As mentioned earlier, when you pass an HTML string to the editor, it is parsed and compiled into a [Component Definition] with a `type` property. To determine the `type` for each parsed HTML element, the editor iterates over the **Component Type Stack**, checking each type's `isComponent` method (explained later) to see whether it matches the element. The stack is an array of component types whose order matters. Each new custom **Component Type** is added to the top of the stack. For each parsed element, the editor checks the stack from top to bottom, stopping when a type's `isComponent` method returns a truthy value. The `default` type is at the bottom of the stack.
 
 <img :src="$withBase('/component-type-stack.svg')" class="img-ctr">
 
 Component recognition can also rely on `isParsedNode`, which receives the normalized parsed node instead of a DOM element. If a component defines both `isParsedNode` and `isComponent`, `isParsedNode` is preferred.
 
 ::: tip
-If you're importing big string chunks of HTML code you might want to improve the performances by skipping the parsing and the component recognition steps by passing directly Component Definition objects or using the JSX syntax.
-Read [here](#setup-jsx-syntax) about how to setup JSX syntax parser
+If you're importing large chunks of HTML, you can improve performance by passing Component Definition objects directly or using JSX syntax to skip parsing and component recognition.
+Read [here](#setup-jsx-syntax) about how to set up a JSX syntax parser.
 :::
 
 ### Component instance
 
-Once the **Component Definition** is ready and the type is assigned, the [Component] instance can be created (known also as the **Model**). Let's step back to our previous example with the HTML string, the result of the `append` method is an array of added components.
+Once the **Component Definition** is ready and the type is assigned, the [Component] instance can be created (also known as the **Model**). In our previous HTML string example, the `append` method returns an array of added components:
 
 ```js
 const component = editor.addComponents(`<div>
@@ -111,14 +111,14 @@ const component = editor.addComponents(`<div>
 </div>`)[0];
 ```
 
-The Component instance contains properties and methods which allows you to obtain its data and change them.
-You can read properties with the `get` method, like, for example, the `type`
+The Component instance contains properties and methods that allow you to retrieve and update its data.
+You can read properties with the `get` method, for example, the `type`:
 
 ```js
-const componentType = component.get('type'); // eg. 'image'
+const componentType = component.get('type'); // e.g., 'image'
 ```
 
-and to update properties you'd use `set`, which might change the way a component behaves in the canvas.
+To update properties, use `set`, which may change how a component behaves in the canvas:
 
 ```js
 // Make the component not draggable
@@ -134,35 +134,35 @@ innerComponents.forEach((comp) => console.log(comp.toHTML()));
 component.components(`<div>Component 1</div><div>Component 2</div>`);
 ```
 
-Each component can define its own properties and methods but all of them will always extend, at least, the `default` one (then you will see how to create new custom components and how to extend the already defined) so it's good to check the [Component API] to see all available properties and methods.
+Each component can define its own properties and methods, but all components extend the `default` type, directly or indirectly. Later, we'll see how to create custom components and extend existing ones. Check the [Component API] for the available properties and methods.
 
-The **main purpose of the Component** is to keep track of its data and to return them when necessary. One common thing you might need to ask from the component is to show its current HTML
+The **main purpose of the Component** is to track its data and return it when needed. For example, you might want to retrieve its current HTML:
 
 ```js
 const componentHTML = component.toHTML();
 ```
 
 This will return a string containing the HTML of the component and all of its children.
-The component implements also `toJSON` methods so you can get its JSON structure in this way
+The component also implements a `toJSON` method, so you can get its JSON structure like this:
 
 ```js
 JSON.stringify(component);
 ```
 
 ::: tip
-For storing/loading all the components you should rely on the [Storage Manager](/modules/Storage.html)
+To store/load all components, use the [Storage Manager](/modules/Storage.html).
 :::
 
-So, the **Component instance** is responsible for the **final data** (eg. HTML, JSON) of your templates. If you need, for example, to update/add some attribute in the HTML you need to update its component (eg. `component.addAttributes({ title: 'Title added' })`), so the Component/Model is your **Source of Truth**.
+The **Component instance** is responsible for the **final data** (e.g., HTML and JSON) of your templates. To add or update an HTML attribute, update its component (e.g., `component.addAttributes({ title: 'Title added' })`). The Component/Model is your **Source of Truth**.
 
 ### Component rendering
 
-Another important part of components is how they are rendered in the **canvas**, this aspect is handled by its **View**. It has nothing to do with the **final HTML data**, you can return a big `<div>...</div>` string as HTML of your component but render it as a simple image in the canvas (think about placeholders for complex/dynamic data).
+Another important aspect of components is how they are rendered in the **canvas**. This is handled by the **View**, independently of the **final HTML data**. You can return a large `<div>...</div>` string as your component's HTML but render it as a simple image in the canvas, for example, as a placeholder for complex or dynamic data.
 
-By default, the view of components is automatically synced with the data of its models (you can't have a View without a Model). If you update the attribute of the component or append a new one as a child, the view will render it in the canvas.
+By default, a component's View is automatically synced with its Model's data (you can't have a View without a Model). If you update the attribute of the component or append a new one as a child, the view will render it in the canvas.
 
-Unfortunately, sometimes, you might need some additional logic to handle better the component result. Think about allowing a user build its `<table>` element, for this specific case you might want to add custom buttons in the canvas, so it'd be easier adding/removing columns/rows. To handle those cases you can rely on the View, where you can add additional DOM component, attach events, etc. All of this will be completely unrelated with the final HTML of the `<table>` (the result the user would expect) as it handled by the Model.
-Once the component is rendered you can always access its View and the DOM element.
+Sometimes, you need additional logic to improve the component's editing experience. For example, when a user builds a `<table>`, you might want to add custom buttons in the canvas to make adding or removing columns and rows easier. You can do this in the View, where you can add DOM elements, attach event listeners, etc. These additions are independent of the final `<table>` HTML, which is handled by the Model.
+Once the component is rendered, you can access its View and DOM element:
 
 ```js
 const component = editor.getSelected();
@@ -172,9 +172,9 @@ const view = component.getView();
 const el = component.getEl();
 ```
 
-Generally, the View is something you wouldn't need to change as the default one handles already the sync with the Model but in case you'd need more control over elements (eg. custom UI in canvas) you'll probably need to create a custom component type and extend the default View with your logic. We'll see later how to create custom Component Types.
+Generally, you don't need to change the View, as the default one already handles synchronization with the Model. If you need more control over elements (e.g., a custom UI in the canvas), create a custom component type and extend the default View with your logic. We'll see how to create custom Component Types later.
 
-So far we have seen the core concept behind Components and how they work. The **Model/Component** is the **source of truth** for the final code of templates (eg. the HTML export relies on it) and the **View/ComponentView** is what is used by the editor to **preview our components** to users in the canvas.
+So far, we have seen the core concept behind Components and how they work. The **Model/Component** is the **source of truth** for the final code of templates (e.g., the HTML export relies on it) and the **View/ComponentView** is what is used by the editor to **preview our components** to users in the canvas.
 
 <!--
 TODO
@@ -183,32 +183,32 @@ A more advanced use case of custom components is an implementation of a custom r
 
 ## Built-in Component Types
 
-Here below you can see the list of built-in component types, ordered by their position in the **Component Type Stack**
+Below is the list of built-in component types, ordered by their position in the **Component Type Stack**:
 
-- [`cell`](https://github.com/GrapesJS/grapesjs/blob/dev/packages/core/src/dom_components/model/ComponentTableCell.ts) - Component for handle `<td>` and `<th>` elements
-- [`row`](https://github.com/GrapesJS/grapesjs/blob/dev/packages/core/src/dom_components/model/ComponentTableRow.ts) - Component for handle `<tr>` elements
-- [`table`](https://github.com/GrapesJS/grapesjs/blob/dev/packages/core/src/dom_components/model/ComponentTable.ts) - Component for handle `<table>` elements
-- [`thead`](https://github.com/GrapesJS/grapesjs/blob/dev/packages/core/src/dom_components/model/ComponentTableHead.ts) - Component for handle `<thead>` elements
-- [`tbody`](https://github.com/GrapesJS/grapesjs/blob/dev/packages/core/src/dom_components/model/ComponentTableBody.ts) - Component for handle `<tbody>` elements
-- [`tfoot`](https://github.com/GrapesJS/grapesjs/blob/dev/packages/core/src/dom_components/model/ComponentTableFoot.ts) - Component for handle `<tfoot>` elements
-- [`map`](https://github.com/GrapesJS/grapesjs/blob/dev/packages/core/src/dom_components/model/ComponentMap.ts) - Component for handle `<a>` elements
-- [`link`](https://github.com/GrapesJS/grapesjs/blob/dev/packages/core/src/dom_components/model/ComponentLink.ts) - Component for handle `<a>` elements
-- [`label`](https://github.com/GrapesJS/grapesjs/blob/dev/packages/core/src/dom_components/model/ComponentLabel.ts) - Component for handle properly `<label>` elements
+- [`cell`](https://github.com/GrapesJS/grapesjs/blob/dev/packages/core/src/dom_components/model/ComponentTableCell.ts) - Component for handling `<td>` and `<th>` elements
+- [`row`](https://github.com/GrapesJS/grapesjs/blob/dev/packages/core/src/dom_components/model/ComponentTableRow.ts) - Component for handling `<tr>` elements
+- [`table`](https://github.com/GrapesJS/grapesjs/blob/dev/packages/core/src/dom_components/model/ComponentTable.ts) - Component for handling `<table>` elements
+- [`thead`](https://github.com/GrapesJS/grapesjs/blob/dev/packages/core/src/dom_components/model/ComponentTableHead.ts) - Component for handling `<thead>` elements
+- [`tbody`](https://github.com/GrapesJS/grapesjs/blob/dev/packages/core/src/dom_components/model/ComponentTableBody.ts) - Component for handling `<tbody>` elements
+- [`tfoot`](https://github.com/GrapesJS/grapesjs/blob/dev/packages/core/src/dom_components/model/ComponentTableFoot.ts) - Component for handling `<tfoot>` elements
+- [`map`](https://github.com/GrapesJS/grapesjs/blob/dev/packages/core/src/dom_components/model/ComponentMap.ts) - Component for handling `<a>` elements
+- [`link`](https://github.com/GrapesJS/grapesjs/blob/dev/packages/core/src/dom_components/model/ComponentLink.ts) - Component for handling `<a>` elements
+- [`label`](https://github.com/GrapesJS/grapesjs/blob/dev/packages/core/src/dom_components/model/ComponentLabel.ts) - Component for correctly handling `<label>` elements
 - [`video`](https://github.com/GrapesJS/grapesjs/blob/dev/packages/core/src/dom_components/model/ComponentVideo.ts) - Component for videos
 - [`image`](https://github.com/GrapesJS/grapesjs/blob/dev/packages/core/src/dom_components/model/ComponentImage.ts) - Component for images
-- [`script`](https://github.com/GrapesJS/grapesjs/blob/dev/packages/core/src/dom_components/model/ComponentScript.ts) - Component for handle `<script>` elements
-- [`svg`](https://github.com/GrapesJS/grapesjs/blob/dev/packages/core/src/dom_components/model/ComponentSvg.ts) - Component for handle SVG elements
+- [`script`](https://github.com/GrapesJS/grapesjs/blob/dev/packages/core/src/dom_components/model/ComponentScript.ts) - Component for handling `<script>` elements
+- [`svg`](https://github.com/GrapesJS/grapesjs/blob/dev/packages/core/src/dom_components/model/ComponentSvg.ts) - Component for handling SVG elements
 - [`comment`](https://github.com/GrapesJS/grapesjs/blob/dev/packages/core/src/dom_components/model/ComponentComment.ts) - Component for comments (might be useful for email editors)
-- [`textnode`](https://github.com/GrapesJS/grapesjs/blob/dev/packages/core/src/dom_components/model/ComponentTextNode.ts) - Similar to the textnode in DOM definition, so a text element without a tag element.
+- [`textnode`](https://github.com/GrapesJS/grapesjs/blob/dev/packages/core/src/dom_components/model/ComponentTextNode.ts) - Similar to a DOM text node: text content without an enclosing tag.
 - [`text`](https://github.com/GrapesJS/grapesjs/blob/dev/packages/core/src/dom_components/model/ComponentText.ts) - A simple text component that can be edited inline
-- [`wrapper`](https://github.com/GrapesJS/grapesjs/blob/dev/packages/core/src/dom_components/model/ComponentWrapper.ts) - The canvas need to contain a root component, a wrapper, this component was made to identify it
+- [`wrapper`](https://github.com/GrapesJS/grapesjs/blob/dev/packages/core/src/dom_components/model/ComponentWrapper.ts) - The root component that wraps all content in the canvas
 - [`default`](https://github.com/GrapesJS/grapesjs/blob/dev/packages/core/src/dom_components/model/Component.ts) Default base component
 
 ## Define Custom Component Type
 
 Now that we know how components work, we can start exploring the process of creating custom **Component Types**.
 
-<u>The first rule of defining new component types is to place the code inside a plugin</u>. This is necessary if you want to load your custom types at the beginning, before any component initialization (eg. a template loaded from DB). The plugin is loaded before component fetch (eg. in case of Storage use) so it's a perfect place to define component types.
+<u>The first rule of defining new component types is to place the code inside a plugin</u>. This is necessary if you want to load your custom types at the beginning, before any components are initialized (e.g., from a template loaded from a database). Plugins run before components are fetched, including when using storage, making them a suitable place to define component types.
 
 ```js
 const myNewComponentTypes = (editor) => {
@@ -222,7 +222,7 @@ const editor = grapesjs.init({
 });
 ```
 
-Let's say we want to make the editor understand and handle better `<input>` elements. This is how we would start defining our new component type
+Let's say we want the editor to recognize and better handle `<input>` elements. We can start defining our new component type like this:
 
 ```js
 editor.DomComponents.addType('my-input-type', {
@@ -248,10 +248,10 @@ editor.DomComponents.addType('my-input-type', {
 });
 ```
 
-With this code, the editor will be able to understand simple text `<input>`s, assign default attributes and show some trait for a better attribute handling.
+With this code, the editor can recognize text `<input>` elements, assign default attributes, and show traits for editing those attributes.
 
 ::: tip
-To understand better how Traits work you should read its [dedicated page](Traits.html) but we highly suggest to read it after you've finished reading this one
+To better understand how Traits work, read their [dedicated page](Traits.html). We recommend finishing this page first.
 :::
 
 ### isComponent
@@ -260,15 +260,15 @@ To understand better how Traits work you should read its [dedicated page](Traits
 From `v0.23.1`, prefer `isParsedNode` over `isComponent` for new component types. It is the recommended API and avoids relying on DOM-specific behavior during component recognition.
 :::
 
-Let's see in detail what we have done so far. The first thing to notice is the `isComponent` function, we have already mentioned its usage in [this](#component-recognition-and-component-type-stack) section and we need it to make the editor understand `<input>` during the component recognition step.
-It receives only the `el` argument, which is the parsed HTMLElement node and expects a truthy value in case the element satisfies your logic condition. So, if we add this HTML string as component
+Let's look at what we have done so far. The `isComponent` function, mentioned in [this section](#component-recognition-and-component-type-stack), tells the editor how to recognize `<input>` elements during component recognition.
+It receives a single `el` argument, the parsed HTML node, and should return a truthy value if the element matches your condition. If we add this HTML string as a component:
 
 ```js
 // ...after editor initialization
 editor.addComponents(`<input name="my-test" title="hello"/>`);
 ```
 
-The resultant Component Definition will be
+The resulting Component Definition will be:
 
 ```js
 {
@@ -280,13 +280,13 @@ The resultant Component Definition will be
 }
 ```
 
-If you need you can also customize the resultant Component Definition by returning an object as the result:
+If needed, you can also customize the resulting Component Definition by returning an object as the result:
 
 ```js
 editor.DomComponents.addType('my-input-type', {
   isComponent: el => {
     if (el.tagName === 'INPUT') {
-      // You should explicitly declare the type of your resultant
+      // You should explicitly declare the type of your resulting
       // object, otherwise the `default` one will be used
       const result = { type: 'my-input-type' };
 
@@ -305,7 +305,7 @@ editor.DomComponents.addType('my-input-type', {
 Keep the `isComponent` function as simple as possible
 :::
 
-**Be aware** that this method will probably receive ANY parsed element from your canvas (eg. on load or on add) and not all the nodes have the same interface (eg. properties/methods).
+**Be aware** that this method will probably receive ANY parsed element from your canvas (e.g., when loading or adding components) and not all the nodes have the same interface (e.g., properties/methods).
 If you do this:
 
 ```js
@@ -324,9 +324,9 @@ isComponent: (el) => {
 </div>`);
 ```
 
-You will see printing all the nodes, so doing something like this `el.getAttribute('...')` in your `isComponent` (which will work on the `div` but not on the `text node`), without an appropriate check, will break the code.
+All nodes will be printed. Calling something like `el.getAttribute('...')` in `isComponent` without an appropriate check will break the code: it works on the `div` but not on the text node.
 
-It's also important to understand that `isComponent` is executed only if the parsing is required (eg. by adding components as HTML string or initializing the editor with `fromElement`). In case the type is already defined, there is no need for the `isComponent` to be executed.
+The `isComponent` method is executed only when parsing is required (e.g., when adding components as an HTML string or initializing the editor with `fromElement`). If the type is already specified, `isComponent` does not need to run.
 Let's see some examples:
 
 ```js
@@ -380,12 +380,12 @@ editor.Parser.config.customSyntheticElement = (SyntheticElement) =>
 
 ### Model
 
-Now that we got how `isComponent` works we can start to explore the `model` property.
-The `model` is probably the one you'll use the most as is what is used for the description of your component and the first thing you can see is its `defaults` key which just stands for _default component properties_ and it reflects the already described [Component Definition]
+Now that we understand how `isComponent` works, we can explore the `model` property.
+The `model` describes your component and is probably the property you'll use most. Its `defaults` key defines the _default component properties_ and reflects the [Component Definition] described earlier.
 
-The model defines also what you will see as the resultant HTML (the export code) and you've probably noticed the use of `tagName` (if not specified the `div` will be used) and `attributes` properties on the model.
+The model also defines the resulting HTML (the exported code). You've probably noticed its `tagName` and `attributes` properties. If `tagName` is not specified, `div` is used.
 
-One another important property (not used in our input component integration because `<input/>` doesn't need it) might be `components`, which defines default internal components
+Another important property is `components`, which defines default child components. We didn't use it in our input component because `<input/>` doesn't need children:
 
 ```js
 defaults: {
@@ -409,9 +409,8 @@ defaults: {
     },
     '<p>Paragraph test</p>',
   ],
-  // Or a function, which get as an argument the current
-  // model and expects as the return one of the possible
-  // values described above
+  // Or a function that receives the current model
+  // and returns one of the possible values described above
   components: model => {
     return `<h1>Header test: ${model.get('type')}</h1>`;
   },
@@ -420,7 +419,7 @@ defaults: {
 
 #### Read and update the model
 
-You can read and update the model properties wherever you have the reference to it. Here some references to the most useful API
+You can read and update model properties wherever you have a reference to the model. Here are some of the most useful API methods:
 
 ```js
 // let's use the selected component
@@ -462,15 +461,15 @@ const addedComponents = modelComponent.components(`<div>...</div>`);
 modelComponent.find(`.query-string[example=value]`).forEach((inner) => console.log(inner.props()));
 ```
 
-You'll notice that, on any change, the component in the canvas and its export code are changing accordingly
+Whenever you make a change, the component in the canvas and its exported code update accordingly.
 
 :::tip
-To know all the available methods/properties check the [Component API]
+For all available methods/properties, check the [Component API].
 :::
 
 #### Listen to property changes
 
-If you need to accomplish some kind of action on some property change you can set up listeners in the `init` method
+To perform an action when a property changes, set up listeners in the `init` method:
 
 ```js
 editor.DomComponents.addType('my-input-type', {
@@ -505,25 +504,25 @@ editor.DomComponents.addType('my-input-type', {
 });
 ```
 
-You'll find other lifecycle methods, like `init`, [below](#lifecycle-hooks)
+You'll find other lifecycle methods, like `init`, [below](#lifecycle-hooks).
 
-Now let's go back to our input component integration and see another useful part for the component customization
+Now let's return to our input component and explore another useful part of component customization.
 
 ### View
 
-Generally, when you create a component in GrapesJS you expect to see in the canvas the preview of what you've defined in the model. Indeed, by default, the editor does the exact thing and updates the element in the canvas when something in the model changes (eg. attributes, tag, etc.) to obtain the classic **WYSIWYG** (What You See Is What You Get) experience. Unfortunately, not always the simplest thing is the right one, by building components for the builder you will notice that sometimes you'll need something more:
+When you create a component in GrapesJS, you generally expect the canvas to show a preview of what you've defined in the model. By default, the editor does exactly that, updating the canvas element whenever the model changes (e.g., its attributes or tag) to provide a **WYSIWYG** (What You See Is What You Get) experience. When building components, however, you'll sometimes need more:
 
-- You want to improve the experience of editing of the component.
-  A perfect example is the TextComponent, its view is enriched with a built-in RTE (Rich Text Editor) which enables the user to edit the text faster by double-clicking on it.
+- You want to improve the component editing experience.
+  For example, the TextComponent view includes a built-in RTE (Rich Text Editor) that lets users edit text by double-clicking it.
 
-  So you'll probably feel a need adding actions to react on some DOM events or even custom UI elements (eg. buttons) around the component.
+  You may want to add actions that respond to DOM events or custom UI elements (e.g., buttons) around the component.
 
 - The DOM representation of the component acts differently from what you'd expect, so you need to change some behavior.
-  An example could be a VideoComponent which, for example, is loaded from Youtube via iframe. Once the iframe is loaded, everything inside it is in a different context, the editor is not able to see it, indeed if you point your cursor on the iframe you'll interact with the video and not the editor, so you can't even select your component. To workaround this "issue", in the render, we disabled the pointer interaction with the iframe and wrapped it with another element (without the wrapper the editor would select the parent component). Obviously, all of these changes have nothing to do with the final code, the result will always be a simple iframe
+  For example, a VideoComponent may load a YouTube video in an iframe. The iframe content runs in a separate context that the editor cannot access. Pointer interactions go to the video, preventing you from selecting the component. To handle this during rendering, we disable pointer interactions with the iframe and wrap it in another element (without the wrapper, the editor would select the parent component). These changes do not affect the final code, which remains a simple iframe.
 
 - You need to customize the content or fill it with some data from the server
 
-For all of these cases, you can use the `view` in your Component Type Definition. The `<input>` component is probably not the best use case for this scenario but we'll try to cover most of the cases with an example below
+For these cases, use the `view` property in your Component Type Definition. Although an `<input>` component may not need all these features, the example below illustrates how they work:
 
 ```js
 editor.DomComponents.addType('my-input-type', {
@@ -532,13 +531,13 @@ editor.DomComponents.addType('my-input-type', {
     // ...
   },
   view: {
-    // Be default, the tag of the element is the same of the model
+    // By default, the element's tag is the same as the model's
     tagName: 'div',
 
-    // Add easily component specific listeners with `events`
-    // Being component specific (eg. you can't attach here listeners to window)
-    // you don't need to care about removing them when the component is removed,
-    // they will be managed automatically by the editor
+    // Easily add listeners specific to the component with `events`.
+    // These listeners cannot target outside objects such as window.
+    // The editor manages them automatically, so you don't need to remove them
+    // when the component is removed.
     events: {
       click: 'clickOnElement',
       // You can also make use of event delegation
@@ -550,7 +549,7 @@ editor.DomComponents.addType('my-input-type', {
       ev.stopPropagation();
       // ...
 
-      // If you need you can access the model from any function in the view
+      // If needed, you can access the model from any function in the view
       this.model.components('Update inner components');
     },
 
@@ -560,8 +559,8 @@ editor.DomComponents.addType('my-input-type', {
       // Do something in view on model property change
       this.listenTo(model, 'change:prop', this.handlePropChange);
 
-      // If you attach listeners on outside objects remember to unbind
-      // them in `removed` function in order to avoid memory leaks
+      // If you attach listeners to outside objects, remember to unbind
+      // them in the `removed` function to avoid memory leaks
       this.onDocClick = this.onDocClick.bind(this);
       document.addEventListener('click', this.onDocClick);
     },
@@ -589,7 +588,7 @@ editor.DomComponents.addType('my-input-type', {
         someDataFromModel: model.get('someData'),
       });
       // Remember, these changes exist only inside the editor canvas
-      // None of the DOM change is stored in your template data,
+      // None of the DOM changes are stored in your template data;
       // if you need to store something, update the model properties
       el.appendChild(asyncContent);
     },
@@ -599,7 +598,7 @@ editor.DomComponents.addType('my-input-type', {
 
 ## Update Component Type
 
-Updating component types is quite easy, let's see how:
+Updating component types is easy. Here's how:
 
 ```js
 const domc = editor.DomComponents;
@@ -617,7 +616,7 @@ domc.addType('some-component', {
       someNewProp: 'Hello', // Add new property
     },
     init() {
-      // Ovverride `init` function in `some-component`
+      // Override the `init` function in `some-component`
     },
   },
 
@@ -628,7 +627,7 @@ domc.addType('some-component', {
 
 ### Extend Component Type
 
-Sometimes you would need to create a new type by extending another one. Just use `extend` and `extendView` indicating the component to extend.
+Sometimes you would need to create a new type by extending another one. Use `extend` and `extendView` to specify the component type to extend.
 
 ```js
 comps.addType('my-new-component', {
@@ -651,13 +650,13 @@ comps.addType('my-new-component', {
 
 ### Extend parent functions
 
-When you need to reuse functions, from the parent you're extending, you can avoid writing this:
+When you need to reuse functions from the parent type you're extending, you can avoid writing this:
 
 ```js
 domc.getType('parent-type').model.prototype.init.apply(this, arguments);
 ```
 
-by using `extendFn` and `extendFnView` options:
+by using the `extendFn` and `extendFnView` options:
 
 ```js
 domc.addType('new-type', {
@@ -671,10 +670,10 @@ domc.addType('new-type', {
 });
 ```
 
-The same would be for the view by using `extendFnView`
+The same applies to the view using `extendFnView`.
 
 :::tip
-If you need you can also get all the current component types by using `getTypes`
+You can also get all current component types using `getTypes`:
 
 ```js
 editor.DomComponents.getTypes().forEach((compType) => console.log(compType.id));
@@ -684,27 +683,26 @@ editor.DomComponents.getTypes().forEach((compType) => console.log(compType.id));
 
 ## Lifecycle Hooks
 
-Each component triggers different lifecycle hooks, which allows you to add custom actions at their specific stages.
-We can distinguish 2 different types of hooks: **global** and **local**.
-You define **local** hooks when you create/extend a component type (usually via some `model`/`view` method) and the reason is to react to an event of that
-particular component type. Instead, the **global** one, will be called indistinctly on any component (you listen to them via `editor.on`) and you can make
-use of them for a more generic use case or also listen to them inside other components.
+Each component triggers lifecycle hooks that let you add custom actions at specific stages.
+There are two types of hooks: **global** and **local**.
+You define **local** hooks when creating or extending a component type, usually through `model` or `view` methods, to react to events for that type.
+**Global** hooks run for any component, and you listen to them via `editor.on`. You can use them for general behavior or listen to them from other components.
 
 Let's see below the flow of all hooks:
 
 - **Local hook**: `model.init()` method, executed once the model of the component is initialized
 - **Global hook**: `component:create` event, called right after `model.init()`. The model is passed as an argument to the callback function.
-  Es. `editor.on('component:create', model => console.log('created', model))`
+  E.g., `editor.on('component:create', model => console.log('created', model))`
 - **Local hook**: `view.init()` method, executed once the view of the component is initialized
 - **Local hook**: `view.onRender()` method, executed once the component is rendered on the canvas
 - **Global hook**: `component:mount` event, called right after `view.onRender()`. The model is passed as an argument to the callback function.
 - **Local hook**: `model.updated()` method, executes when some property of the model is updated.
 - **Global hook**: `component:update` event, called after `model.updated()`. The model is passed as an argument to the callback function.
-  You can also listen to specific property change via `component:update:{propertyName}`
+  You can also listen for changes to a specific property via `component:update:{propertyName}`
 - **Local hook**: `model.removed()` method, executed when the component is removed.
 - **Global hook**: `component:remove` event, called after `model.removed()`. The model is passed as an argument to the callback function.
 
-Below you can find an example usage of all the hooks
+Below is an example of how to use all the hooks:
 
 ```js
 editor.DomComponents.addType('test-component', {
@@ -715,7 +713,7 @@ editor.DomComponents.addType('test-component', {
     init() {
       console.log('Local hook: model.init');
       this.listenTo(this, 'change:testprop', this.handlePropChange);
-      // Here we can listen global hooks with editor.on('...')
+      // Here we can listen for global hooks with editor.on('...')
     },
     updated(property, value, prevValue) {
       console.log('Local hook: model.updated', 'property', property, 'value', value, 'prevValue', prevValue);
@@ -755,10 +753,10 @@ editor.on(`component:remove`, (model) => console.log('Global hook: component:rem
 ## Components & CSS
 
 ::: warning
-This section is referring to GrapesJS v0.17.27 or higher
+This section applies to GrapesJS v0.17.27 or higher.
 :::
 
-If you need to add component-related styles, you can do it via `styles` property.
+If you need to add component-related styles, use the `styles` property.
 
 ```js
 domc.addType('component-css', {
@@ -786,15 +784,15 @@ domc.addType('component-css', {
 });
 ```
 
-This approach allows the editor to group these styles ([CssRule] instances) and remove them accordingly in case all references of the same component are removed.
+This approach allows the editor to group these styles ([CssRule] instances) and remove them when all instances of the associated component type are removed.
 
 ::: danger Important caveat
 &nbsp;
 :::
 
-In the example above we used one custom component and default sub-components. Styles are declared on our custom component only, that means if you remove all `.cmp-css-a` and `.cmp-css-b` instances from the canvas, their CssRules will still be stored in the project (**here we're not talking about the CSS export, which is able to skip not used rules, but instances stored in your project JSON**).
+In the example above, we used one custom component and default child components. Styles are declared only on the custom component. If you remove all `.cmp-css-a` and `.cmp-css-b` instances from the canvas, their CssRules will still be stored in the project (**this refers to instances stored in your project JSON; the CSS export can skip unused rules**).
 
-The cleanest approach would be to follow component-oriented styling, where you declare styles only in the scope of the component itself. This is how it would look like with the example above.
+The cleanest approach would be to follow component-oriented styling, where you declare styles only in the scope of the component itself. Here's how that approach applies to the example above:
 
 ```js
 domc.addType('cmp-a', {
@@ -842,7 +840,7 @@ domc.addType('component-css', {
 ```
 
 ::: tip Component-first styling
-By default, when you select a component in the canvas and apply styles on it, changes will be applied on its existent classes. This will result on changing of all the components with those applied classes. If you need the style to be applied only on the specific selected component you have to select componentFirst strategy in this way.
+By default, when you select a component in the canvas and style it, changes are applied to its existing classes. This affects all components with those classes. To apply styles only to the selected component, enable the `componentFirst` strategy:
 
 ```js
 grapesjs.init({
@@ -857,19 +855,19 @@ grapesjs.init({
 
 ### External CSS
 
-If you need to load external component-specific CSS, you have to rely on the `script` property. For more details please refer to [Components & JS](Components-js.html).
+If you need to load external component-specific CSS, you have to rely on the `script` property. For more details, refer to [Components & JS](Components-js.html).
 
 ## Components & JS
 
-If you want to know how to create Components with javascript attached (eg. counters, galleries, slideshows, etc.) check the dedicated page
-[Components & JS](Components-js.html)
+To learn how to create Components with JavaScript attached (e.g., counters, galleries, and slideshows), see
+[Components & JS](Components-js.html).
 
 ## Tips
 
 ### JSX syntax
 
-If you're importing big chunks of HTML string into the editor (eg. defined via Blocks) JSX might be a great compromise between performances and code readibility as it allows you to skip the parsing and the component recognition steps by keeping the HTML syntax.
-By default, GrapesJS understands objects generated from React JSX preset, so, if you're working in the React app probably you're already using JSX and you don't need to do anything else, your environment is already configured to parse JSX in javascript files.
+If you're importing large chunks of HTML into the editor (e.g., through Blocks), JSX can offer a balance between performance and code readability. It lets you skip parsing and component recognition while retaining HTML-like syntax.
+By default, GrapesJS understands objects generated by the React JSX preset. If you're working in a React app, your environment is probably already configured to parse JSX in JavaScript files, so you don't need any additional setup.
 
 So, instead of writing this:
 
@@ -882,7 +880,7 @@ editor.addComponents(`<div>
 </div>`);
 ```
 
-or this
+Or this:
 
 ```js
 // I'm passing the Component Definition, so heavy steps will be skipped but the code is less readable
@@ -894,7 +892,7 @@ editor.addComponents({
 });
 ```
 
-you can use this format
+You can use this format:
 
 ```js
 editor.addComponents(
@@ -906,20 +904,20 @@ editor.addComponents(
 );
 ```
 
-Another cool feature you will get by using JSX is the ability to pass component types as element tags `<custom-component>` instead of `data-gjs-type="custom-component"`
+Another cool feature you will get by using JSX is the ability to pass component types as element tags `<custom-component>` instead of `data-gjs-type="custom-component"`.
 
 #### Setup JSX syntax
 
-For those who are not using React you have the following options:
+If you're not using React, you have the following options:
 
-- GrapesJS has an option, `config.domComponents.processor`, thats allows you to easily implement other JSX presets. This scenario is useful if you work with a framework different from React but that uses JSX (eg. Vue). In that case, the result object from JSX pragma function (React uses `React.createElement`) will be different (you can log the JSX to see the result object) and you have to transform that in GrapesJS [Component Definition] object. Below an example of usage
+- The `config.domComponents.processor` option lets you support other JSX presets. This is useful if you use JSX with a framework other than React (e.g., Vue). The object returned by the JSX pragma function (React uses `React.createElement`) will differ, and you need to transform it into a GrapesJS [Component Definition] object. You can log a JSX expression to inspect the resulting object. Below is a usage example:
 
 ```js
 grapesjs.init({
   // ...
   domComponents: {
     processor: (obj) => {
-     if (obj.$$typeof) { // eg. this is a React Element
+     if (obj.$$typeof) { // e.g., this is a React element
         const compDef = {
          type: obj.type,
          components: obj.props.children,
@@ -933,9 +931,9 @@ grapesjs.init({
 })
 ```
 
-- In case you need to support JSX from scratch (you don't use a framework which supports JSX) you have, at first, implement the parser which transforms JSX in your files in something JS-readable.
+- If you need to support JSX from scratch without a framework that supports it, first configure a parser to transform JSX in your files into JavaScript.
 
-For Babel users, it's just a matter of adding few plugins: `@babel/plugin-syntax-jsx` and `@babel-plugin-transform-react`. Then update your `.babelrc` file
+For Babel users, it's just a matter of adding a few plugins: `@babel/plugin-syntax-jsx` and `@babel-plugin-transform-react`. Then update your `.babelrc` file:
 
 ```json
 {
@@ -946,9 +944,9 @@ For Babel users, it's just a matter of adding few plugins: `@babel/plugin-syntax
 }
 ```
 
-You can also customize the pragma function which executes the transformation `[“@babel/plugin-transform-react-jsx”, { “pragma”: “customCreateEl” }]`, by default `React.createElement` is used (you'll need a React instance available in the file to make it work).
+You can also customize the pragma function that performs the transformation: `[“@babel/plugin-transform-react-jsx”, { “pragma”: “customCreateEl” }]`. By default, `React.createElement` is used (you'll need a React instance available in the file to make it work).
 
-A complete example of this approach can be found [here](https://codesandbox.io/s/x07xf)
+A complete example of this approach can be found [here](https://codesandbox.io/s/x07xf).
 
 [Component Definition]: #component-definition
 [Component]: /api/component.html

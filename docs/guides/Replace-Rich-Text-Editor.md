@@ -4,12 +4,12 @@ title: Replace the built-in Rich Text Editor
 
 # Replace the built-in Rich Text Editor
 
-As you might have noticed the default Rich Text Editor (RTE) is really tiny and so doesn't seem like a complete solution as a text editor. Instead of showing how to add new commands inside the default one we'll show how to completely replace it with another one.
+As you might have noticed, the default Rich Text Editor (RTE) is small and may not provide all the text editing features you need. Instead of showing how to add commands to the default RTE, we'll show how to replace it with another editor.
 
-In the following guide we'll integrate the CKEditor and to accomplish this task we just need to provide few functions to the GrapesJS API method `setCustomRte` as an interface.
+In this guide, we'll integrate CKEditor. To do this, we just need to provide a few functions to the GrapesJS API method `setCustomRte` as an interface.
 
 ::: warning
-This guide is referring to GrapesJS v0.21.2 or higher
+This guide applies to GrapesJS v0.21.2 or higher.
 :::
 
 [[toc]]
@@ -18,7 +18,7 @@ This guide is referring to GrapesJS v0.21.2 or higher
 
 ### Enable
 
-The first step is to indicate how to enable the third-party library and so for we gonna start with the `enable()` function. This method should take care of the first initialization of our custom RTE but also for the next time is called on the same element, this is why there is the `rte` argument.
+The first step is to specify how to enable the third-party library, so we'll start with the `enable()` function. This method should handle both the initial setup of our custom RTE and subsequent calls on the same element. The `rte` argument lets us reuse the existing instance.
 
 ```js
 // IMPORTANT: place the code in a new plugin
@@ -30,14 +30,14 @@ const customRTE = (editor) => {
   editor.setCustomRte({
     /**
      * Enabling the custom RTE
-     * @param  {HTMLElement} el This is the HTML node which was selected to be edited
-     * @param  {Object} rte It's the instance you'd return from the first call of enable().
-     *                      At the first call it'd be undefined. This is useful when you need
+     * @param  {HTMLElement} el The HTML node selected for editing
+     * @param  {Object} rte The instance returned from the first call to enable().
+     *                      On the first call, it is undefined. This is useful when you need
      *                      to check if the RTE is already enabled on the component
-     * @return {Object} The return should be the RTE initialized instance
+     * @return {Object} The initialized RTE instance
      */
     enable(el, rte) {
-      // If already exists just focus
+      // If the instance already exists, just focus it
       if (rte) {
         focus(el, rte);
         return rte;
@@ -48,12 +48,12 @@ const customRTE = (editor) => {
         // Your configurations...
         toolbar: [...],
         // IMPORTANT
-        // Generally, inline editors are attached exactly at the same position of
-        // the selected element but in this case it'd work until you start to scroll
-        // the canvas. For this reason you have to move the RTE's toolbar inside the
-        // one from GrapesJS. For this purpose we used a plugin which simplify
-        // this process and move all next CKEditor's toolbars inside our indicated
-        // element
+        // Generally, inline editors are attached at the same position as
+        // the selected element, but this only works until you start scrolling
+        // the canvas. For this reason, move the RTE's toolbar inside the
+        // GrapesJS toolbar. We use a plugin that simplifies this process
+        // and places all subsequent CKEditor toolbars inside the specified
+        // element.
         sharedSpaces: {
           top: editor.RichTextEditor.getToolbarEl(),
         }
@@ -73,13 +73,13 @@ const editor = grapesjs.init({
 
 ### Disable
 
-Once we know how to enable the RTE let's implement the method which disable it, so let's create the `disable()` function.
+Now that we know how to enable the RTE, let's implement the `disable()` function.
 
 ```js
 editor.setCustomRte({
   // ...
   /**
-   * The signature of the function is the same of the `enable`
+   * The function has the same signature as `enable`
    */
   disable(el, rte) {
     el.contentEditable = false;
@@ -90,7 +90,7 @@ editor.setCustomRte({
 
 ### Content
 
-Each third-party library could handle the state of the content differently and what is actually rendered as a DOM in the preview might not rapresent the final HTML output. So, by default, GrapesJS takes the `innerHTML` as the final output directly from the DOM element but is highly recommended to specify the method responsible to return the final state as HTML string (each third-party library might handle it differently).
+Each third-party library can handle the content's state differently, and the DOM rendered in the preview might not represent the final HTML output. By default, GrapesJS takes `innerHTML` directly from the DOM element as the final output. However, we strongly recommend specifying a method that returns the final state as an HTML string, using the library's API.
 
 ```js
 editor.setCustomRte({
@@ -104,7 +104,7 @@ editor.setCustomRte({
 
 ### Focus
 
-The `focus()` method is just a helper used inside `enable()` and not required by the interface
+The `focus()` method is a helper used inside `enable()` and is not required by the interface.
 
 ```js
 const focus = (el, rte) => {
@@ -128,23 +128,23 @@ editor.setCustomRte({
 
 ## Toolbar position
 
-Sometimes the default top-left position of the toolbar is not always what you need. For example, when you scroll the canvas and the toolbar reaches the top, you'd like to move it down. For this purpose, you can add a listener which applies your logic in this way:
+The default top-left position of the toolbar may not always suit your needs. For example, when you scroll the canvas and the toolbar reaches the top, you might want to move it down. To do this, you can add a listener that applies your logic:
 
 ```js
 editor.on('rteToolbarPosUpdate', (pos) => {
-  // eg. update `pos.top` and `pos.left` based on additional data passed inside `pos`
+  // e.g., update `pos.top` and `pos.left` based on additional data passed in `pos`
 });
 ```
 
 ## The built-in vs third-party
 
-One thing you have to keep in mind when using a custom RTE is that all the content and its behavior are handled by the library itself, the GrapesJS's component will just store the content as it is.
-For example, when you create a link using the built-in RTE then you'll be able to select it and edit its `href` via Component Settings. With a custom RTE, it will be its own task to show the proper modal for the link editing.
-Obviously, each third-party library has its own APIs and can present some limitations and drawbacks, so, a minimal knowledge of the library is a plus.
+When using a custom RTE, keep in mind that all the content and its behavior are handled by the library itself. The GrapesJS component simply stores the content as it is.
+For example, when you create a link using the built-in RTE, you can select it and edit its `href` via Component Settings. With a custom RTE, the library is responsible for showing the appropriate modal for editing links.
+Each third-party library has its own APIs and may have limitations and drawbacks, so some familiarity with the library is helpful.
 
 ### Enable content parser
 
-As an experimental feature, now it's possible to tell the editor to parse the returned HTML content from the custom RTE and store the result as components and not as a simple HTML string. This allows GrapesJS to handle the custom RTE more closely to the native implementation and enable features like [textable components](https://github.com/GrapesJS/grapesjs/issues/2771#issuecomment-1040486056).
+As an experimental feature, you can tell the editor to parse the HTML content returned by the custom RTE and store the result as components rather than a simple HTML string. This allows GrapesJS to handle the custom RTE more like the native implementation and enables features like [textable components](https://github.com/GrapesJS/grapesjs/issues/2771#issuecomment-1040486056).
 
 ```js
 editor.setCustomRte({
@@ -156,4 +156,4 @@ editor.setCustomRte({
 
 ## Plugins
 
-For the CKEditor, you can find a complete plugin here [grapesjs-plugin-ckeditor](https://github.com/GrapesJS/ckeditor).
+For CKEditor, you can find a complete plugin here: [grapesjs-plugin-ckeditor](https://github.com/GrapesJS/ckeditor).

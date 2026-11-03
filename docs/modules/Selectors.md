@@ -6,17 +6,17 @@ title: Selector Manager
 
 <p align="center"><img :src="$withBase('/selector-manager.jpg')" alt="GrapesJS - Selector Manager"/></p>
 
-The [Selector] allows the reuse of styles across all of your [Components] in the project (exactly what classes do in HTML) and the main goal of the Selector Manager is to collect them and indicate the current state of the selection.
+A [Selector] allows you to reuse styles across all [Components] in your project, just as classes do in HTML. The main goal of the Selector Manager is to collect selectors and indicate the current state of the selection.
 
 ::: warning
-This guide is referring to GrapesJS v0.17.28 or higher
+This guide applies to GrapesJS v0.17.28 or higher.
 :::
 
 [[toc]]
 
 ## Configuration
 
-To change the default configurations you have to pass the `selectorManager` property with the main configuration object.
+To change the default configuration, pass the `selectorManager` property in the main configuration object.
 
 ```js
 const editor = grapesjs.init({
@@ -31,9 +31,9 @@ Check the full list of available options here: [Selector Manager Config](https:/
 
 ## Initialization
 
-The Selector Manager starts to collect data once componenets and styles are loaded. The default UI is displayed along with the default panels provided by GrapesJS core, in case you need to setup the editor with your own panels we recommend following the [Getting Started] guide.
+The Selector Manager starts collecting data once components and styles are loaded. The default UI is displayed along with the default panels provided by GrapesJS core. If you need to set up the editor with your own panels, we recommend following the [Getting Started] guide.
 
-In the example below we init the editor with already provided components and styles.
+In the example below, we initialize the editor with predefined components and styles.
 
 ```js
 const editor = grapesjs.init({
@@ -53,13 +53,13 @@ const editor = grapesjs.init({
 });
 ```
 
-Internally, the example above will provide to Selector Manager 3 selectors: `class-a`, `class-b` and `class-c`.
+Internally, the example above provides three selectors to the Selector Manager: `class-a`, `class-b`, and `class-c`.
 
-Without any selected component, the Selector Manager UI is hidden by default (along with the Style Manager). By selecting the `Element A-B-C` you will see the current selection of what will be actually styled.
+When no component is selected, the Selector Manager UI is hidden by default (along with the Style Manager). Selecting `Element A-B-C` shows the current selection that will be styled.
 
 <img :src="$withBase('/sm-selected-component.jpg')" alt="Selected component" style="display: block; margin: auto"/>
 
-The label **Selected** indicates on which CSS query styles will be applied, so if you try to change the color of the current selection, this is what you'll get in the final code:
+The label **Selected** indicates which CSS selector the styles will be applied to, so if you try to change the color of the current selection, this is what you'll get in the final code:
 
 ```css
 .class-a.class-b.class-c {
@@ -67,15 +67,15 @@ The label **Selected** indicates on which CSS query styles will be applied, so i
 }
 ```
 
-You can also disable specific selectors and change the state (eg. Hover) in order to switch the target of styling.
+You can also disable specific selectors and change the state (e.g., Hover) in order to switch the target of styling.
 
 <img :src="$withBase('/sm-disable-selector.jpg')" alt="Disabled selectors" style="display: block; margin: auto"/>
 
 ## Component-first selectors
 
-By default, selecting components with classes will indicate their selectors as target style. That means that any change in Style Manager will be applied to all components containing those **Selected** classes.
+By default, selecting components with classes sets their selectors as the style target. This means that any change in the Style Manager will be applied to all components containing those **Selected** classes.
 
-In case you need to select single components as style targets, you can enable `componentFirst` option.
+If you need to select individual components as style targets, you can enable the `componentFirst` option.
 
 ```js
 const editor = grapesjs.init({
@@ -86,23 +86,23 @@ const editor = grapesjs.init({
 });
 ```
 
-This option enables also the possibility to style multiple components and the ability to sync common selectors with the current component styles (the refresh icon).
+This option also lets you style multiple components and sync common selectors with the current component styles using the refresh icon.
 
 <img :src="$withBase('/sm-component-first.jpg')" alt="Component First" style="display: block; margin: auto"/>
 
 ::: warning
-With multiple selection, the Style Manager shows always styles of the last selected component.
+With multiple selection, the Style Manager always shows the styles of the last selected component.
 :::
 
 ## Programmatic usage
 
-If you need to manage your selectors programmatically you can use its [APIs][Selector API].
+If you need to manage your selectors programmatically, you can use the [Selector Manager API][Selector API].
 
 ## Customization
 
-The default UI can handle most of the common tasks but in case you need a more advanced logic/elements, that requires a replace of the default UI.
+The default UI can handle most common tasks, but you may need to replace it if you require more advanced logic or elements.
 
-All you have to do is to indicate the editor your intent to use a custom UI and then subscribe to the `selector:custom` event that will trigger on any necessary update of the UI.
+Tell the editor to use a custom UI, then subscribe to the `selector:custom` event, which is triggered whenever the UI needs to update.
 
 ```js
 const editor = grapesjs.init({
@@ -119,13 +119,13 @@ editor.on('selector:custom', (props) => {
 });
 ```
 
-In the example below we'll replicate most of the default functionality by using solely the Selector Manager API.
+In the example below, we'll replicate most of the default functionality using only the Selector Manager API.
 
 <demo-viewer value="v8cgkLfr" height="500" darkcode/>
 
 ## Events
 
-For a complete list of available events, you can check it [here](/api/selector_manager.html#available-events).
+For a complete list of available events, check [here](/api/selector_manager.html#available-events).
 
 [Selector]: /api/selector.html
 [Style Manager]: Style-manager.html
