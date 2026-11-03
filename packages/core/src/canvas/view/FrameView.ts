@@ -237,6 +237,7 @@ export default class FrameView extends ModuleView<Frame, HTMLIFrameElement> {
   }
 
   remove(...args: any) {
+    this.el.onload = null;
     this._toggleEffects(false);
     this.tools = {};
     this.refComponentView?.remove();

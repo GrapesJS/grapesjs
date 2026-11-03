@@ -782,11 +782,48 @@ export default class Resizer {
 
     if (!el) return parentRect;
 
-    const { offsetParent } = el;
+    let { offsetParent } = el;
+    const win = el.ownerDocument.defaultView;
+
+    // SVG elements have no native offsetParent. Find their containing block from ancestor styles.
+    if (!offsetParent && el.namespaceURI === 'http://www.w3.org/2000/svg' && win) {
+      const isFixed = win.getComputedStyle(el).position === 'fixed';
+      const containingProps = ['transform', 'translate', 'rotate', 'scale', 'perspective', 'filter', 'backdrop-filter'];
+      let parent = el.parentElement;
+
+      while (parent && parent.tagName !== 'BODY') {
+        const style = win.getComputedStyle(parent);
+        if (style.display === 'none') break;
+
+        const isPositioned = !isFixed && /^(relative|absolute|fixed|sticky)$/.test(style.position);
+        const hasContainingStyle = containingProps.some((property) => {
+          const value = style.getPropertyValue(property);
+          return value && value !== 'none';
+        });
+        const preserves3d = style.transformStyle === 'preserve-3d';
+        const willContain = style.willChange
+          .split(',')
+          .some((property) =>
+            [...containingProps, 'transform-style', 'contain', 'content-visibility'].includes(property.trim()),
+          );
+        const hasContainment = /\b(layout|paint|strict|content)\b/.test(style.contain);
+        const skipsContent = ['auto', 'hidden'].includes(style.contentVisibility);
+
+        if (
+          style.display !== 'contents' &&
+          (isPositioned || hasContainingStyle || preserves3d || willContain || hasContainment || skipsContent)
+        ) {
+          offsetParent = parent;
+          break;
+        }
+
+        parent = parent.parentElement;
+      }
+    }
 
     // Check if the parent or any ancestor has `position: relative`, `absolute`, `fixed`, or `sticky`
     if (offsetParent && offsetParent.tagName !== 'BODY') {
-      parentRect = this.getElementPos(offsetParent as HTMLElement);
+      parentRect = this.getElementPos(offsetParent as HTMLElement, { avoidFrameZoom: true, avoidFrameOffset: true });
     }
 
     return parentRect;

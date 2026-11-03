@@ -4,17 +4,17 @@ title: Commands
 
 # Commands
 
-A basic command in GrapesJS it's a simple function, but you will see in this guide how powerful they can be. The main goal of the Command module is to centralize functions and be easily reused across the editor. Another big advantage of using commands is the ability to track them, extend or even interrupt beside some conditions.
+A basic command in GrapesJS is a simple function, but this guide will show you how powerful commands can be. The main goal of the Commands module is to centralize functions so they can be easily reused across the editor. Another advantage of using commands is the ability to track, extend, or even interrupt them under certain conditions.
 
 ::: warning
-This guide is referring to GrapesJS v0.14.61 or higher
+This guide applies to GrapesJS v0.14.61 or higher.
 :::
 
 [[toc]]
 
 ## Basic configuration
 
-You can create your commands already from the initialization step by passing them in the `commands.defaults` options:
+You can create commands during initialization by passing them in the `commands.defaults` option:
 
 ```js
 const editor = grapesjs.init({
@@ -36,9 +36,9 @@ const editor = grapesjs.init({
 });
 ```
 
-For all other available options check directly the [configuration source file](https://github.com/GrapesJS/grapesjs/blob/master/src/commands/config/config.ts).
+For all other available options, check the [configuration source file](https://github.com/GrapesJS/grapesjs/blob/master/src/commands/config/config.ts).
 
-Most commonly commands are created dynamically post-initialization, in that case, you'll need to use the [Commands API](/api/commands.html) (eg. this is what you need if you create a plugin)
+Commands are most commonly created dynamically after initialization. In that case, you'll need to use the [Commands API](/api/commands.html), for example, when creating a plugin.
 
 ```js
 const commands = editor.Commands;
@@ -54,25 +54,25 @@ commands.add('my-command-id', {
 });
 ```
 
-As you see the definition is quite easy, you just add an ID and the callback function. The [Editor](/api/editor.html) instance is passed as the first argument to the callback so you can access any other module or API method.
+As you can see, the definition is simple: just add an ID and a callback function. The [Editor](/api/editor.html) instance is passed as the first argument to the callback so you can access any other module or API method.
 
-Now if you want to call that command you should just run this
+To call that command, run this:
 
 ```js
 editor.runCommand('my-command-id');
 ```
 
 ::: tip
-The method `editor.runCommand` is an alias of `editor.Commands.run`
+The method `editor.runCommand` is an alias of `editor.Commands.run`.
 :::
 
-You could also pass options if you need
+You can also pass options if needed:
 
 ```js
 editor.runCommand('my-command-id', { some: 'option' });
 ```
 
-Then you can get the same object as a third argument of the callback.
+Then you can get the same object as the third argument to the callback.
 
 ```js
 commands.add('my-command-id', (editor, sender, options = {}) => {
@@ -80,35 +80,35 @@ commands.add('my-command-id', (editor, sender, options = {}) => {
 });
 ```
 
-The second argument, `sender`, just indicates who requested the command, in our case will be always the `editor`
+The second argument, `sender`, indicates who requested the command. In our case, it will always be the `editor`.
 
-Until now there is nothing exciting except a common entry point for functions, but we'll see later its real advantages.
+So far, we have a common entry point for functions. We'll see its other advantages later.
 
 ## Default commands
 
-GrapesJS comes along with some default set of commands and you can get a list of all currently available commands via `editor.Commands.getAll()`. This will give you an object of all available commands, so, also those added later, like via plugins. You can recognize default commands by their namespace `core:*`, we also recommend to use namespaces in your own custom commands, but let's get a look more in detail here:
+GrapesJS comes with a default set of commands. You can get all currently available commands via `editor.Commands.getAll()`. This returns an object containing all available commands, including those added later, such as through plugins. You can recognize default commands by their `core:*` namespace. We also recommend using namespaces for your own custom commands. Here's a closer look at the default commands:
 
 - [`core:canvas-clear`](https://github.com/GrapesJS/grapesjs/blob/dev/packages/core/src/commands/view/CanvasClear.ts) - Clear all the content from the canvas (HTML and CSS)
 - [`core:component-delete`](https://github.com/GrapesJS/grapesjs/blob/dev/packages/core/src/commands/view/ComponentDelete.ts) - Delete a component
-- [`core:component-enter`](https://github.com/GrapesJS/grapesjs/blob/dev/packages/core/src/commands/view/ComponentEnter.ts) - Select the first children component of the selected one
-- [`core:component-exit`](https://github.com/GrapesJS/grapesjs/blob/dev/packages/core/src/commands/view/ComponentExit.ts) - Select the parent component of the current selected one
+- [`core:component-enter`](https://github.com/GrapesJS/grapesjs/blob/dev/packages/core/src/commands/view/ComponentEnter.ts) - Select the first child component of the selected one
+- [`core:component-exit`](https://github.com/GrapesJS/grapesjs/blob/dev/packages/core/src/commands/view/ComponentExit.ts) - Select the parent component of the currently selected one
 - [`core:component-next`](https://github.com/GrapesJS/grapesjs/blob/dev/packages/core/src/commands/view/ComponentNext.ts) - Select the next sibling component
 - [`core:component-prev`](https://github.com/GrapesJS/grapesjs/blob/dev/packages/core/src/commands/view/ComponentPrev.ts) - Select the previous sibling component
-- [`core:component-outline`](https://github.com/GrapesJS/grapesjs/blob/dev/packages/core/src/commands/view/SwitchVisibility.ts) - Enable outline border on components
-- [`core:component-offset`](https://github.com/GrapesJS/grapesjs/blob/dev/packages/core/src/commands/view/ShowOffset.ts) - Enable components offset (margins, paddings)
+- [`core:component-outline`](https://github.com/GrapesJS/grapesjs/blob/dev/packages/core/src/commands/view/SwitchVisibility.ts) - Enable outline borders on components
+- [`core:component-offset`](https://github.com/GrapesJS/grapesjs/blob/dev/packages/core/src/commands/view/ShowOffset.ts) - Show component offsets (margins and padding)
 - [`core:component-select`](https://github.com/GrapesJS/grapesjs/blob/dev/packages/core/src/commands/view/SelectComponent.ts) - Enable the process of selecting components in the canvas
-- [`core:copy`](https://github.com/GrapesJS/grapesjs/blob/dev/packages/core/src/commands/view/CopyComponent.ts) - Copy the current selected component
-- [`core:paste`](https://github.com/GrapesJS/grapesjs/blob/dev/packages/core/src/commands/view/PasteComponent.ts) - Paste copied component
-- [`core:preview`](https://github.com/GrapesJS/grapesjs/blob/dev/packages/core/src/commands/view/Preview.ts) - Show the preview of the template in canvas
-- [`core:fullscreen`](https://github.com/GrapesJS/grapesjs/blob/dev/packages/core/src/commands/view/Fullscreen.ts) - Set the editor fullscreen
+- [`core:copy`](https://github.com/GrapesJS/grapesjs/blob/dev/packages/core/src/commands/view/CopyComponent.ts) - Copy the currently selected component
+- [`core:paste`](https://github.com/GrapesJS/grapesjs/blob/dev/packages/core/src/commands/view/PasteComponent.ts) - Paste the copied component
+- [`core:preview`](https://github.com/GrapesJS/grapesjs/blob/dev/packages/core/src/commands/view/Preview.ts) - Show a preview of the template in the canvas
+- [`core:fullscreen`](https://github.com/GrapesJS/grapesjs/blob/dev/packages/core/src/commands/view/Fullscreen.ts) - Make the editor full-screen
 - [`core:open-code`](https://github.com/GrapesJS/grapesjs/blob/dev/packages/core/src/commands/view/ExportTemplate.ts) - Open a default panel with the template code
 - [`core:open-layers`](https://github.com/GrapesJS/grapesjs/blob/dev/packages/core/src/commands/view/OpenLayers.ts) - Open a default panel with layers
 - [`core:open-styles`](https://github.com/GrapesJS/grapesjs/blob/dev/packages/core/src/commands/view/OpenStyleManager.ts) - Open a default panel with the style manager
 - [`core:open-traits`](https://github.com/GrapesJS/grapesjs/blob/dev/packages/core/src/commands/view/OpenTraitManager.ts) - Open a default panel with the trait manager
 - [`core:open-blocks`](https://github.com/GrapesJS/grapesjs/blob/dev/packages/core/src/commands/view/OpenBlocks.ts) - Open a default panel with the blocks
 - [`core:open-assets`](https://github.com/GrapesJS/grapesjs/blob/dev/packages/core/src/commands/view/OpenAssets.ts) - Open a default panel with the assets
-- `core:undo` - Call undo operation
-- `core:redo` - Call redo operation
+- `core:undo` - Perform an undo operation
+- `core:redo` - Perform a redo operation
   <!-- * `core:canvas-move` -->
   <!-- * `core:component-drag` -->
   <!-- * `core:component-style-clear` -->
@@ -116,7 +116,7 @@ GrapesJS comes along with some default set of commands and you can get a list of
 
 ## Stateful commands
 
-As we've already seen the command is just a function and once executed nothing is left behind, but in some cases, we'd like to keep a track of executed commands. GrapesJS can handle by default this case and to enable it you just need to declare a command as an object with the `run` and `stop` methods
+As we've already seen, a command can be a simple function that leaves no state behind after execution. In some cases, however, we'd like to track whether a command is active. GrapesJS supports this by default. To enable it, declare a command as an object with `run` and `stop` methods:
 
 ```js
 commands.add('my-command-state', {
@@ -129,7 +129,7 @@ commands.add('my-command-state', {
 });
 ```
 
-So if we now run `editor.runCommand('my-command-state')` the command will be registered as active. To check the state of the command you can use `commands.isActive('my-command-state')` or you can even get the list of all active commands via `commands.getActive()`, in our case the result would be something like this
+If we now run `editor.runCommand('my-command-state')`, the command will be registered as active. To check its state, use `commands.isActive('my-command-state')`. You can also get all active commands via `commands.getActive()`. In our case, the result would look like this:
 
 ```js
 {
@@ -138,7 +138,7 @@ So if we now run `editor.runCommand('my-command-state')` the command will be reg
 }
 ```
 
-The key of the result object tells you the active command, the value is the last return of the `run` command, in our case is `undefined` because we didn't return anything, but it's up to your implementation decide what to return and if you actually need it.
+Each key in the result object identifies an active command, and its value is the last value returned by the command's `run` method. In our case, it is `undefined` because we didn't return anything. Your implementation can decide whether to return a value and what that value should be.
 
 ```js
 // Let's return something
@@ -150,12 +150,12 @@ run(editor) {
     }
 },
 ...
-// Now instead of the `undefined` you'll see the object from the run method
+// Now, instead of `undefined`, you'll see the object from the run method
 ```
 
-To disable the command use `editor.stopCommand` method, so in our case it'll be `editor.stopCommand('my-command-state')`. As for the `runCommand` you can pass an options object as a second argument and use them in your `stop` method.
+To disable the command, use the `editor.stopCommand` method: in our case, `editor.stopCommand('my-command-state')`. As with `runCommand`, you can pass an options object as the second argument and use it in your `stop` method.
 
-Once the command is active, if you try to run `editor.runCommand('my-command-state')` again you'll notice that the `run` is not triggering. This behavior is useful to prevent executing multiple times the activation process which might lead to an inconsistent state (think about, for instance, having a counter, which should be increased on `run` and decreased on `stop`). If you need to run a command multiple times probably you're dealing with a not stateful command, so try to use it without the `stop` method, but in case you're aware of your application state you can actually force the execution with `editor.runCommand('my-command-state', { force: true })`. The same logic applies to the `stopCommand` method.
+Once the command is active, calling `editor.runCommand('my-command-state')` again won't trigger `run`. This prevents the activation process from running multiple times, which might lead to an inconsistent state. For example, consider a counter that should increase on `run` and decrease on `stop`. If you need to run a command multiple times, it may not need to be stateful, so try defining it without a `stop` method. If you understand the implications for your application's state, you can force execution with `editor.runCommand('my-command-state', { force: true })`. The same logic applies to the `stopCommand` method.
 
 <br/>
 
@@ -179,7 +179,7 @@ commands.add('my-command-modal', {
 });
 ```
 
-If you run it, close the modal (eg. by clicking the 'x' on top) and then try to run it again you'll see that the modal is not opening anymore. This happens because the command is still active (you should see it in `commands.getActive()`) and to fix it you have to disable it once the modal is closed.
+If you run the command, close the modal (e.g., by clicking the 'x' at the top), and then try to run it again, the modal won't open. This happens because the command is still active (you should see it in `commands.getActive()`). To fix this, disable the command when the modal closes.
 
 ```js
 ...
@@ -192,12 +192,12 @@ If you run it, close the modal (eg. by clicking the 'x' on top) and then try to 
 ...
 ```
 
-In the example above, we make use of few helper methods from the Modal module (`onceClose`) and the command itself (`stopCommand`) but obviously, the logic might be different due to your requirements and specific UI.
+In the example above, we use a few helper methods from the Modal module (`onceClose`) and the command itself (`stopCommand`) but the logic may differ depending on your requirements and UI.
 
 ## Extending
 
 Another big advantage of commands is the possibility to easily extend or override them with another command.
-Let's take a simple example
+Let's take a simple example:
 
 ```js
 commands.add('my-command-1', (editor) => {
@@ -213,7 +213,7 @@ commands.add('my-command-1', (editor) => {
 });
 ```
 
-Let's see now instead how can we extend one
+Now let's see how to extend a command:
 
 ```js
 commands.add('my-command-2', {
@@ -230,7 +230,7 @@ commands.add('my-command-2', {
 });
 ```
 
-to extend it just use `extend` method by passing the id
+To extend it, use the `extend` method and pass the ID:
 
 ```js
 commands.extend('my-command-2', {
@@ -242,11 +242,11 @@ commands.extend('my-command-2', {
 
 ## Events
 
-The Commands module offers also a set of events that you can use to intercept the command flow for adding more functionality or even interrupting it.
+The Commands module also offers a set of events that you can use to intercept the command flow, add functionality, or even interrupt execution.
 
 ### Intercept run and stop
 
-By using our previously created `my-command-modal` command let's see which events we can listen to
+Using our previously created `my-command-modal` command, let's see which events we can listen to:
 
 ```js
 editor.on('command:run:my-command-modal', () => {
@@ -267,7 +267,7 @@ editor.on('command:stop:before:my-command-modal:before', () => {
 });
 ```
 
-If you need, you can also listen to all commands
+If needed, you can also listen to all commands:
 
 ```js
 editor.on('command:run', (commandId) => {
@@ -281,7 +281,7 @@ editor.on('command:stop', (commandId) => {
 
 ### Interrupt command flow
 
-Sometimes you might need to interrupt the execution of an existant command due to some condition. In that case, you have to use `command:run:before:{COMMAND-ID}` event and set to `true` the abort option
+Sometimes you might need to interrupt an existing command when a certain condition is met. In that case, use the `command:run:before:{COMMAND-ID}` event and set the abort option to `true`:
 
 ```js
 const condition = 1;
@@ -296,4 +296,4 @@ editor.on('command:run:before:my-command-modal', (options) => {
 
 ## Conclusion
 
-The Commands module is quite simple but, at the same time, really powerful if used correctly. So, if you're creating a plugin for GrapesJS, use commands as much as possible, this will allow higher reusability and control over your logic.
+The Commands module is simple but powerful when used correctly. If you're creating a plugin for GrapesJS, using commands makes your logic easier to reuse and control.

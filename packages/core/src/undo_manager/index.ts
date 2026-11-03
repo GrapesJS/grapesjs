@@ -23,8 +23,7 @@
  *
  * @module UndoManager
  */
-// @ts-ignore
-import UndoManager from 'backbone-undo';
+import UndoManager from '../utils/backbone-undo';
 import { isArray, isBoolean, isEmpty, unique, times } from 'underscore';
 import { Module } from '../abstract';
 import EditorModel from '../editor/model/Editor';

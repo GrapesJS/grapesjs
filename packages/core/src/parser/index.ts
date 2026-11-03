@@ -20,6 +20,7 @@
  * * [getConfig](#getconfig)
  * * [parseHtml](#parsehtml)
  * * [parseCss](#parsecss)
+ * * [parseStyle](#parsestyle)
  * * [addParserCode](#addparsercode)
  * * [getParserCode](#getparsercode)
  * * [removeParserCode](#removeparsercode)
@@ -112,6 +113,18 @@ export default class ParserModule extends Module<ParserConfig & { name?: string 
    */
   parseCss(input: string) {
     return this.parserCss.parse(input);
+  }
+
+  /**
+   * Parse style declarations using the native or custom CSS parser.
+   * @param {String} input Style string to parse
+   * @returns {Object} Style object
+   * @example
+   * const style = Parser.parseStyle('color: red; width: 100px');
+   * // { color: 'red', width: '100px' }
+   */
+  parseStyle(input: string) {
+    return this.parserCss.parseStyle(input);
   }
 
   /**

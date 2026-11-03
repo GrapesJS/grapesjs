@@ -1,5 +1,6 @@
 import { isString } from 'underscore';
 import { CssRuleJSON } from '../../css_composer/model/CssRule';
+import type { StyleProps } from '../../domain_abstract/model/StyleableModel';
 import EditorModel from '../../editor/model/Editor';
 import { ParserConfig } from '../config/config';
 import { ParsedCssRule } from '../types';
@@ -11,6 +12,15 @@ export default class ParserCss {
     private em?: EditorModel,
     private config: ParserConfig = {},
   ) {}
+
+  /**
+   * Parse style declarations using the configured CSS parser.
+   */
+  parseStyle(str: string): StyleProps {
+    if (!str.trim()) return {};
+
+    return this.parse(`.__gjs_inline__ { ${str} }`)[0]?.style || {};
+  }
 
   /**
    * Parse CSS string to a desired model object

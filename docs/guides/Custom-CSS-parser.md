@@ -4,10 +4,10 @@ title: Use Custom CSS Parser
 
 # Use Custom CSS Parser
 
-If you use GrapesJS only to build templates from scratch, starting from an empty canvas and relying strictly on the generated JSON for editing (with final HTML/CSS only for end users), you can probably skip this guide. On the other hand, if you import templates from existing HTML/CSS or let users embed custom code (eg. using the [grapesjs-custom-code](https://github.com/GrapesJS/components-custom-code) plugin), you should know that you might face some unexpected behaviors.
+If you use GrapesJS only to build templates from scratch, starting from an empty canvas and relying strictly on the generated JSON for editing (with final HTML/CSS only for end users), you can probably skip this guide. On the other hand, if you import templates from existing HTML/CSS or let users embed custom code (e.g., using the [grapesjs-custom-code](https://github.com/GrapesJS/components-custom-code) plugin), you might encounter unexpected behavior.
 
 ::: warning
-This guide requires GrapesJS v0.14.33 or higher
+This guide requires GrapesJS v0.14.33 or higher.
 :::
 
 [[toc]]
@@ -62,11 +62,11 @@ For this example, we'll use a simple rule, parse it, and print the CSSOM result 
 <pre id="result"></pre>
 
 <script>
-  // We use ES5 just to make it more cross-browser, without the need of being compiled
+  // We use ES5 for broader browser compatibility without requiring compilation
 
   function parse(str) {
     var result = [];
-    // Create the element which will contain the style to parse
+    // Create the element that will contain the styles to parse
     var el = document.createElement('style');
     el.innerHTML = str;
     // We have to append the style to get its CSSOM
@@ -79,7 +79,7 @@ For this example, we'll use a simple rule, parse it, and print the CSSOM result 
   }
 
   function CSSOMToString(root) {
-    // For the sake of brevity we just print what we need
+    // For the sake of brevity, we just print what we need
     var styleStr = '';
     var rule = root.cssRules[0];
     var style = rule.style;
@@ -104,7 +104,7 @@ Here are some results (using the latest browser versions plus IE11).
 
 <img :src="$withBase('/cssom-result.jpg')">
 
-As you can see, this is what we get when asking for only 7 properties: some browsers add more properties, some convert colors to `rgba(...)`, and others change the order of values (eg. `box-shadow`). WebKit-based browsers also attach properties they don't even understand themselves.
+As you can see, this is what we get when asking for only seven properties: some browsers add more properties, some convert colors to `rgba(...)`, and others change the order of values (e.g., `box-shadow`). WebKit-based browsers also attach properties they don't even understand themselves.
 
 <img :src="$withBase('/cssom-devtools.png')">
 
@@ -117,7 +117,7 @@ This means that while `background-color: var(--my-var)` serializes correctly, `b
 
 ## Set CSS parser
 
-The custom parser is just a function that receives 2 arguments: `css`, the CSS string to parse, and `editor`, the current editor instance. It should return an array of valid rule objects. The syntax of those objects is explained below. This is how you can set the custom parser.
+The custom parser is just a function that receives two arguments: `css`, the CSS string to parse, and `editor`, the current editor instance. It should return an array of valid rule objects. The syntax of those objects is explained below. This is how you can set the custom parser:
 
 ```js
 const parserCss = (css, editor) => {
@@ -144,13 +144,15 @@ const editor = grapesjs.init({
 editor.setCustomParserCss(parserCss);
 ```
 
+The same parser is used for inline `style` attributes and declaration strings passed to `setStyle` and `editor.Parser.parseStyle`. Declaration strings are wrapped in a temporary CSS rule before being passed to the parser. The native parser normalizes values, discards unsupported declarations, and resolves repeated properties according to the browser's CSSOM. A custom parser can preserve unsupported properties and repeated values as arrays.
+
 ## Rule Objects
 
 The syntax of rule objects is pretty straightforward. Each object can contain the following keys.
 
 | Key         | Description                                                                                       | Example                         |
 | ----------- | ------------------------------------------------------------------------------------------------- | ------------------------------- |
-| `selectors` | Selectors of the rule. <br> **REQUIRED** return an empty string in case the rule has no selectors | `.class1, div > #someid`        |
+| `selectors` | Selectors of the rule. <br> **REQUIRED**: Return an empty string if the rule has no selectors | `.class1, div > #someid`        |
 | `style`     | Style declarations as an object                                                                   | `{ color: 'red' }`              |
 | `atRule`    | At-rule name                                                                                      | `media`                         |
 | `params`    | Parameters of the at-rule                                                                         | `screen and (min-width: 480px)` |
@@ -257,4 +259,4 @@ To make it clearer, let's look at a few examples.
 
 Below is the list of currently available CSS parser plugins. If you need to create your own, we highly recommend exploring their source code.
 
-- [grapesjs-parser-postcss](https://github.com/GrapesJS/parser-postcss) - Using [PostCSS](https://github.com/postcss/postcss) parser
+- [grapesjs-parser-postcss](https://github.com/GrapesJS/parser-postcss) - Uses the [PostCSS](https://github.com/postcss/postcss) parser

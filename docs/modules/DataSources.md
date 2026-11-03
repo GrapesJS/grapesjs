@@ -218,7 +218,7 @@ Remember that DataSources with `skipFromStorage: true` will not be available aft
 
 ## Record Mutability
 
-DataSource records are mutable by default, but can be set as immutable to prevent modifications. Use the mutable flag when creating records to control this behavior.
+DataSource records are mutable by default, but can be made immutable to prevent modifications. Use the `mutable` flag when creating records to control this behavior.
 
 ```ts
 const dataSource = {

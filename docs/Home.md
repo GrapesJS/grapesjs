@@ -1,8 +1,8 @@
 # Getting started
 
-This page will introduce you to the main options of GrapesJS and how it works, in the way to be able to create your custom editor.
+This page introduces you to the main options in GrapesJS and explains how it works so you can create your own custom editor.
 
-The pretty minimalistic way to instantiate the editor could be like this:
+Here's a minimal example of how to instantiate the editor:
 
 ```html
 <link rel="stylesheet" href="path/to/grapes.min.css" />
@@ -19,20 +19,20 @@ The pretty minimalistic way to instantiate the editor could be like this:
 </script>
 ```
 
-In just few lines, with the default configurations, you're already able to see something with which play around.
+With just a few lines and the default configuration, you already have something to experiment with.
 
 [[img/default-gjs.jpg]]
 
-You'll see components commands on top left position that come handy to create and manage your blocks, below there are options which need to highlight and export them. When you select components ('mouse pointer' icon), on the right side, you should see pop up Class Manager and Style Manager options which allow to customize the style of the components. There is also a Layer Manager/Navigator ('hamburger' icon) which helps to manage easily the structure.
+You'll see component commands at the top left that help you create and manage your blocks. Below them are options to highlight and export the blocks. When you select components using the 'mouse pointer' icon, you should see Class Manager and Style Manager options on the right, allowing you to customize the components' styles. There is also a Layer Manager/Navigator ('hamburger' icon) that helps you manage the structure easily.
 
-Of course all those stuff (panels, buttons, commands, etc.) are set just as default so you can overwrite them and add more other. Before you start to create things you should know that GrapesJS UI is composed basically by a canvas (where you will 'draw') and panels (which will contain buttons)
+All of these elements (panels, buttons, commands, etc.) are provided by default, so you can override them and add others. Before you start creating things, you should know that the GrapesJS UI consists of a canvas (where you will 'draw') and panels (which will contain buttons).
 
 [[img/canvas-panels.jpg]]
 
-If you'd like to extend the already instantiated editor you have to check [API Reference]. Check also [how to create plugins](./Creating-plugins) using the same API.
-In this guide we'll focus on how to initialize the editor with all custom UI from scratch.
+If you'd like to extend an already instantiated editor, check the [API Reference]. Also see [how to create plugins](./Creating-plugins) using the same API.
+In this guide, we'll focus on how to initialize the editor with a fully custom UI from scratch.
 
-Let's start the editor with some basic toolbar panel
+Let's start the editor with a basic toolbar panel:
 
 ```js
 ...
@@ -49,13 +49,13 @@ var editor = grapesjs.init({
 ...
 ```
 
-In this example we set a panel with 'commands' as an id and after the render we'll see nothing more than an empty div added to our panels. The new panel is already styled as the id 'commands' is one of the default but you can use whatever you like and place it wherever you want with CSS. With refresh we might see something like shown in the image below, with the new panel on the left:
+In this example, we create a panel with 'commands' as its ID. After rendering, we'll see an empty div added to our panels. The new panel is already styled because 'commands' is one of the default IDs, but you can use any ID you like and place the panel wherever you want with CSS. After refreshing, we should see something like the image below, with the new panel on the left:
 
 [[img/new-panel.png]]
 
 > Check [Editor API Reference] for more details about editor configurations
 
-Now let's put some button inside
+Now let's put a button inside:
 
 ```js
 ...
@@ -72,15 +72,15 @@ Now let's put some button inside
 ...
 ```
 
-On refresh the page might present some changes ('fa fa-smile-o' are from FontAwesome set, so be sure to have placed correctly the font directory)
+After refreshing the page, you should see some changes ('fa fa-smile-o' comes from the FontAwesome set, so be sure to place the font directory correctly).
 
 [[img/new-btn.png]]
 
-Yeah, the button is pretty nice and happy, but useless without any command assigned, if you click on it nothing gonna happen.
+The button looks nice, but it's useless without a command assigned to it. If you click it, nothing will happen.
 
 > Check [Panels API Reference] for more details about Panels and Buttons
 
-Assigning commands is pretty easy, but before you should define one or use one of defaults ([Built-in commands](./Built-in-commands)). So in this case we gonna create a new one.
+Assigning commands is easy, but first you should define one or use one of the defaults ([Built-in commands](./Built-in-commands)). In this case, we're going to create a new one.
 
 ```js
 ...
@@ -112,17 +112,17 @@ Assigning commands is pretty easy, but before you should define one or use one o
 ...
 ```
 
-As you see we added a new command `helloWorld` and used its `id` as an identifier inside `button.command`. In addition to this we've also implemented two required methods, `run` and `stop`, to make button execute commands.
+As you can see, we added a new command, `helloWorld`, and used its `id` as an identifier in `button.command`. We've also implemented the two required methods, `run` and `stop`, to let the button execute the command.
 
 [[img/btn-clicked.png]]
 
 > Check [Commands API Reference]
 
-Check the [demo](http://grapesjs.com/demo.html) for more complete usage of panels, buttons and built-in commands.
+Check the [demo](http://grapesjs.com/demo.html) for a more complete example of panels, buttons, and built-in commands.
 
 ## Components
 
-Components are elements inside the canvas, which can be drawn by commands or injected directly via configurations. In simple terms components represent the structure of our HTML document. You can init the editor with passing components as an HTML string
+Components are elements inside the canvas that can be drawn by commands or injected directly via configuration. In simple terms, components represent the structure of our HTML document. You can initialize the editor by passing components as an HTML string:
 
 ```js
 ...
@@ -135,8 +135,8 @@ Components are elements inside the canvas, which can be drawn by commands or inj
 ...
 ```
 
-We added 3 simple components with some basic style. If you refresh probably you'll see the same empty page but are actually there, you only need to highlight them.
-For this purpose already exists a command, so add it to your panel in this way
+We added three simple components with some basic styling. If you refresh, you'll probably see the same empty page, but the components are there; you only need to highlight them.
+A command already exists for this purpose, so add it to your panel like this:
 
 ```js
 ...
@@ -161,20 +161,20 @@ For this purpose already exists a command, so add it to your panel in this way
 ...
 ```
 
-Worth noting the use of `context` option (try to click 'smile' command without it) and `active` to enable it after the render.
-Now you should be able to see blocks inside canvas.
+Notice the use of the `context` option (try clicking the 'smile' command without it) and `active` to enable the button after rendering.
+Now you should be able to see blocks inside the canvas.
 
 [[img/blocks3.jpg]]
 
-You could add other commands to enable interactions with blocks. Check [Built-in commands](./Built-in-commands) to get more information
+You can add other commands to enable interactions with blocks. Check [Built-in commands](./Built-in-commands) for more information.
 
 > Check [Components API Reference]
 
 ## Style Manager
 
-Any HTML structure requires, at some point, a proper style, so to meet this need the Style Manager was added as a built-in feature in GrapesJS. Style manager is composed by sectors, which group inside different types of CSS properties. So you can add, for instance, a `Dimension` sector for `width` and `height`, and another one as `Typography` for `font-size` and `color`. So it's up to you to decide how to organize sectors.
+Any HTML structure will need styling at some point, so the Style Manager is included as a built-in feature in GrapesJS. The Style Manager consists of sectors that group different types of CSS properties. For instance, you can add a `Dimension` sector for `width` and `height`, and a `Typography` sector for `font-size` and `color`. It's up to you to decide how to organize sectors.
 
-To enable this module we rely on a built-in command `open-sm`, which shows up the Style Manager, which we gonna bind to another button in a separate panel
+To enable this module, we use the built-in command `open-sm`, which shows the Style Manager. We're going to bind it to another button in a separate panel:
 
 ```js
 ...
@@ -184,7 +184,7 @@ panels: {
         id      : 'commands',
         ...
       },{
-        // If you use this id the default CSS will place this panel on top right corner for you
+        // If you use this ID, the default CSS will place this panel in the top-right corner
         id      : 'views',
         buttons : [{
             id        : 'open-style-manager',
@@ -198,11 +198,11 @@ panels: {
 ...
 ```
 
-After this you'll be able to see something like in the image below
+After this, you'll see something like the image below:
 
 [[img/enabled-sm.jpg]]
 
-As you can see Style Manager is enabled but before using it you have to select an element in the canvas, for this purpose we can add another button with a built-in command `select-comp` in this way
+As you can see, the Style Manager is enabled, but before using it, you have to select an element in the canvas. For this purpose, we can add another button with the built-in command `select-comp`:
 
 ```js
 ...
@@ -224,13 +224,13 @@ As you can see Style Manager is enabled but before using it you have to select a
 ...
 ```
 
-Selecting one of the component will show up the Style Manager with default sectors, properties and an input where you can manage classes. The default class you see (cXX) was generated by extracting style from the component
+Selecting one of the components will show the Style Manager with default sectors, properties, and an input where you can manage classes. The default class you see (cXX) was generated by extracting styles from the component.
 
 [[img/default-sm.jpg]]
 
-As we explore different configurations inside GrapesJS we gonna overwrite all the default sectors to create some custom one
+As we explore different configurations in GrapesJS, we're going to override all the default sectors to create custom ones.
 
-Let's put a few sectors with use of `buildProps` which helps us building common properties
+Let's add a few sectors using `buildProps`, which helps us build common properties:
 
 ```js
 ...
@@ -246,12 +246,12 @@ Let's put a few sectors with use of `buildProps` which helps us building common 
 ...
 ```
 
-Now you should be able to style components
+Now you should be able to style components.
 
 [[img/style-comp.jpg]]
 
-You can check the list of usable properties inside `buildProps` here: [Built-in properties](./Built-in-properties)
-otherwise is possible to build them on your own, let's see how we'd have done the previous configuration without the `buildProps` helper
+You can check the list of properties available in `buildProps` here: [Built-in properties](./Built-in-properties).
+You can also build them yourself. Let's see how we'd create the previous configuration without the `buildProps` helper:
 
 ```js
 ...
@@ -294,7 +294,7 @@ styleManager : {
       ]
     },{
       name: 'Extra',
-      // Sectors are expanded by default so put this one closed
+      // Sectors are expanded by default, so start with this one closed
       open: false,
       properties:[
         {
@@ -310,8 +310,8 @@ styleManager : {
           // List of nested properties, available only for 'stack' and 'composite'  types
           properties  : [{
                   name:     'Shadow type',
-                  // Nested properties with stack/composite type don't require proper 'property' name
-                  // as all of them will be merged to parent property, eg. box-shadow: X Y ...;
+                  // Nested properties with the stack/composite type don't require a CSS 'property' name
+                  // as all of them will be merged into the parent property, e.g., box-shadow: X Y ...;
                   property:   'shadow-type',
                   type:     'select',
                   defaults:   '',
@@ -356,7 +356,7 @@ styleManager : {
 ...
 ```
 
-As you can see using `buildProps` actually will save you a lot of work. You could also mix these techniques to obtain custom properties in less time. For example, let's see how we can setup the same width but with a different value of `min`:
+As you can see, using `buildProps` will save you a lot of work. You can also combine these techniques to create custom properties in less time. For example, let's see how we can set up the same width property with a different value for `min`:
 
 ```js
 ...
@@ -378,8 +378,8 @@ As you can see using `buildProps` actually will save you a lot of work. You coul
 
 ## Store/load data
 
-In this last part we're gonna see how to store and load template data inside GrapesJS. You may already noticed that even if you refresh the page after changes on canvas your data are not lost and this because GrapesJS comes with some built-in storage implementation.
-The default one is the localStorage which is pretty simple and all the data are stored locally on your computer. Let's see the options available for this storage
+In this last part, we're going to see how to store and load template data in GrapesJS. You may have already noticed that even if you refresh the page after changing the canvas, your data is not lost. This is because GrapesJS comes with built-in storage implementations.
+The default implementation uses localStorage, which stores all the data locally on your computer. Let's see the options available for this storage type:
 
 ```js
 ...
@@ -392,7 +392,7 @@ var editor = grapesjs.init({
       type: 'local',          // Type of the storage
       autosave: true,         // Store data automatically
       autoload: true,         // Autoload stored data on init
-      stepsBeforeSave: 1,     // If autosave enabled, indicates how many changes are necessary before store method is triggered
+      stepsBeforeSave: 1,     // If autosave is enabled, indicates how many changes are necessary before the store method is triggered
       storeComponents: false, // Enable/Disable storing of components in JSON format
       storeStyles: false,     // Enable/Disable storing of rules/style in JSON format
       storeHtml: true,        // Enable/Disable storing of components as HTML string
@@ -402,9 +402,9 @@ var editor = grapesjs.init({
 ...
 ```
 
-Worth noting the default `id` parameter which adds a prefix for all keys to store. If you check the localStorage inside your DOM panel you'll see something like `{ 'gjs-components': '<div>....' ...}` in this way it prevents the risk of collisions, quite common with localStorage use in large applications.
+Notice the default `id` parameter, which adds a prefix to all stored keys. If you check localStorage in your DOM panel, you'll see something like `{ 'gjs-components': '<div>....' ...}`. This helps prevent key collisions, which are quite common when using localStorage in large applications.
 
-Storing data locally it's easy and fast but useless in some common cases. In the next example we'll see how to setup a remote storage, which is not far from the previous one
+Storing data locally is easy and fast, but it isn't suitable for every use case. In the next example, we'll see how to set up remote storage, which is similar to the previous configuration:
 
 ```js
 ...
@@ -422,9 +422,9 @@ var editor = grapesjs.init({
 ...
 ```
 
-As you can see we've left some default option unchanged, increased changes necessary for autosave triggering and passed remote endpoints.
+As you can see, we've left some default options unchanged, increased the number of changes necessary to trigger autosave, and provided remote endpoints.
 
-If you prefer you could also disable autosaving and do it by yourself using some custom command in this way:
+If you prefer, you can disable autosaving and save manually using a custom command like this:
 
 ```js
 ...

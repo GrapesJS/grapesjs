@@ -9,6 +9,15 @@ import { ProjectData } from '../../../src/storage_manager';
 import { CanMoveReason } from '../../../src/dom_components';
 import { wait } from '../../../src/utils/mixins';
 
+const paddingStyle = {
+  'padding-top': '50px',
+  'padding-right': '100px',
+  'padding-bottom': '50px',
+  'padding-left': '100px',
+  padding: '50px 100px',
+};
+const paddingCss = 'padding-top:50px;padding-right:100px;padding-bottom:50px;padding-left:100px;padding:50px 100px;';
+
 describe('DOM Components', () => {
   describe('Main', () => {
     var em: EditorModel;
@@ -135,7 +144,7 @@ describe('DOM Components', () => {
       expect(Css.getAll().length).toEqual(1);
       expect(Css.getIdRule(id)!.getStyle()).toEqual({
         color: 'red',
-        padding: '50px 100px',
+        ...paddingStyle,
         margin: '10px',
       });
     });
@@ -158,7 +167,7 @@ describe('DOM Components', () => {
       expect(cc.getIdRule(id)!.getStyle()).toEqual({
         color: 'red',
         'background-color': 'red',
-        padding: '50px 100px',
+        ...paddingStyle,
         margin: '10px',
         width: '100px',
       });
@@ -265,12 +274,12 @@ describe('DOM Components', () => {
         #${id} { background-color: red }
       </style>`) as Component;
       const rule = cc.getAll().at(0);
-      expect(rule.toCSS()).toEqual(`#${id}{color:red;padding:50px 100px;background-color:red;}`);
+      expect(rule.toCSS()).toEqual(`#${id}{color:red;${paddingCss}background-color:red;}`);
 
       await wait(); // flush noUndo inline-style move
 
       obj.getComponents().first().addStyle({ margin: '10px' });
-      const css = `#${id}{color:red;padding:50px 100px;background-color:red;margin:10px;}`;
+      const css = `#${id}{color:red;${paddingCss}background-color:red;margin:10px;}`;
       expect(rule.toCSS()).toEqual(css);
 
       await wait(); // separate style change from remove undo-group
@@ -537,7 +546,7 @@ describe('DOM Components', () => {
       expect(rule!.getStyle()).toEqual({
         color: 'red',
         'background-color': 'red',
-        padding: '50px 100px',
+        ...paddingStyle,
       });
       firstComp.addStyle({ margin: '10px' });
       firstComp.addStyle('width', '100px');
@@ -545,7 +554,7 @@ describe('DOM Components', () => {
       expect(rule!.getStyle()).toEqual({
         color: 'red',
         'background-color': 'red',
-        padding: '50px 100px',
+        ...paddingStyle,
         margin: '10px',
         width: '100px',
       });
