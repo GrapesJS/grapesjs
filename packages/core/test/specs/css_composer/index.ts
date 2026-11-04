@@ -166,6 +166,14 @@ describe('Css Composer', () => {
       expect(rule.styleToString({ important: ['color'] })).toEqual('color:red !important;');
     });
 
+    test('Avoid duplicating !important on values that already have it', () => {
+      const rule = obj.setRule('.test', { color: 'red !important', width: '10px' });
+      expect(rule.styleToString({ important: true })).toEqual('color:red !important;width:10px !important;');
+      expect(rule.styleToString({ important: ['color'] })).toEqual('color:red !important;width:10px;');
+      rule.set({ important: true });
+      expect(rule.toCSS()).toEqual('.test{color:red !important;width:10px !important;}');
+    });
+
     test('Create a rule with id selector and state by using setIdRule()', () => {
       const name = 'test';
       const state = 'hover';
