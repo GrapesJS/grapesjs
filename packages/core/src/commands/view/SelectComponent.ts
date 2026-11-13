@@ -72,6 +72,7 @@ export default class CommandSelectComponent extends CommandAbstract<
       this,
       'onHover',
       'onOut',
+      'onPointerDown',
       'onClick',
       'onCanvasScroll',
       'onFrameScroll',
@@ -125,6 +126,7 @@ export default class CommandSelectComponent extends CommandAbstract<
       methods[method](currentCanvasEl, 'scroll', this.onCanvasScroll, true);
       methods[method](body, 'mouseover', this.onHover);
       methods[method](body, 'mouseleave', this.onOut);
+      methods[method](body, 'pointerdown', this.onPointerDown, true);
       methods[method](body, 'click', this.onClick);
       methods[method](win, 'scroll', this.onFrameScroll, true);
       methods[method](win, 'resize', this.onFrameResize);
@@ -290,6 +292,11 @@ export default class CommandSelectComponent extends CommandAbstract<
 
   hideHighlighter(view: any) {
     this.canvas.getHighlighter(view).style.opacity = 0;
+  }
+
+  onPointerDown() {
+    // A new gesture must not consume the previous drag's pending drop-click guard.
+    this.em.set('_cmpDrag');
   }
 
   onClick(ev: Event): void {
