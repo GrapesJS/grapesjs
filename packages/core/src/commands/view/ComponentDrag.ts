@@ -308,10 +308,13 @@ export default class CommandComponentDrag extends CommandAbstract<ComponentDragO
   getPosition() {
     const { target, isTran } = this;
     const targetStyle = target.getStyle();
+    const el = target.getEl();
+    const computedStyle = !isTran && el ? el.ownerDocument.defaultView?.getComputedStyle(el) : undefined;
 
     const transform = targetStyle.transform as string | undefined;
-    const left = targetStyle.left as string | undefined;
-    const top = targetStyle.top as string | undefined;
+    // Drag deltas are pixels, so resolve relative units before applying them.
+    const left = (computedStyle?.left || targetStyle.left) as string | undefined;
+    const top = (computedStyle?.top || targetStyle.top) as string | undefined;
 
     let x = 0;
     let y = 0;
@@ -377,14 +380,18 @@ export default class CommandComponentDrag extends CommandAbstract<ComponentDragO
     opts.onStart?.(this._getDragData());
     if (isTran) return;
 
-    if (style.position !== position) {
-      let { left, top, width, height } = Canvas.offset(target.getEl()!);
+    const el = target.getEl()!;
+    const targetPosition = style.position ?? el.ownerDocument.defaultView?.getComputedStyle(el).position;
+    if (targetPosition !== position) {
+      let { left, top, width, height } = Canvas.offset(el);
       let parent = target.parent();
       let parentRel = null;
 
       do {
         const pStyle = parent?.getStyle();
-        const parentPosition = pStyle?.position as string | undefined;
+        const parentEl = parent?.getEl();
+        const parentPosition = (pStyle?.position ??
+          (parentEl && parentEl.ownerDocument.defaultView?.getComputedStyle(parentEl).position)) as string | undefined;
         if (parentPosition) {
           parentRel = relPos.indexOf(parentPosition) >= 0 ? parent : null;
         }
