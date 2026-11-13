@@ -331,7 +331,8 @@ export default class StyleableModel<T extends StyleableModelProperties = any> ex
     const values = isArray(value) ? (value as string[]) : [value];
 
     (values as string[]).forEach((val: string) => {
-      const value = `${val}${important ? ' !important' : ''}`;
+      const hasImportant = /!\s*important\s*$/i.test(`${val}`);
+      const value = `${val}${important && !hasImportant ? ' !important' : ''}`;
       value && result.push(`${prop}:${value};`);
     });
 
