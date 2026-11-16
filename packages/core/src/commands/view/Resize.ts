@@ -253,8 +253,8 @@ export default class CommandResize extends CommandAbstract<
 
         const { store, selectedHandler, config, resizer, event } = updateOptions;
         const { keyHeight, keyWidth, autoHeight, autoWidth, unitWidth, unitHeight } = config;
-        const onlyHeight = ['tc', 'bc'].indexOf(selectedHandler!) >= 0;
-        const onlyWidth = ['cl', 'cr'].indexOf(selectedHandler!) >= 0;
+        const onlyHeight = !options.ratioLock && ['tc', 'bc'].indexOf(selectedHandler!) >= 0;
+        const onlyWidth = !options.ratioLock && ['cl', 'cr'].indexOf(selectedHandler!) >= 0;
         const partial = !store;
         const style: StyleProps = {};
 
