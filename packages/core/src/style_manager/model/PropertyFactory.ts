@@ -81,7 +81,7 @@ export default class PropertyFactory {
     this.optsWrap = getOptions(['nowrap', 'wrap', 'wrap-reverse']);
     this.optsOverflow = getOptions(['visible', 'hidden', 'scroll', 'auto']);
     this.optsDir = getOptions(['row', 'row-reverse', 'column', 'column-reverse']);
-    this.opstDisplay = getOptions(['block', 'inline', 'inline-block', 'flex', 'none']);
+    this.opstDisplay = getOptions(['block', 'inline', 'inline-block', 'flex', 'none', 'initial']);
     this.optsTransitFn = getOptions(['linear', 'ease', 'ease-in', 'ease-out', 'ease-in-out']);
     this.optsCursor = getOptions(['auto', 'pointer', 'copy', 'crosshair', 'grab', 'grabbing', 'help', 'move', 'text']);
     this.optsFloat = getOptions(['none', 'left', 'right']);
@@ -264,7 +264,7 @@ export default class PropertyFactory {
       ['opacity', { type: this.typeSlider, default: '1', min: 0, max: 1, step: 0.01, full: true }],
 
       // Select types
-      ['display', { type: this.typeSelect, default: 'block', options: this.opstDisplay }],
+      ['display', { type: this.typeSelect, default: 'initial', options: this.opstDisplay }],
       ['flex-direction', { default: 'row', options: this.optsDir, requires: requireFlex }, 'display'],
       ['flex-wrap', { default: 'nowrap', options: this.optsWrap }, 'flex-direction'],
       ['justify-content', { default: 'flex-start', options: this.optsJustCont }, 'flex-wrap'],

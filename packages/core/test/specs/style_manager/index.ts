@@ -132,6 +132,27 @@ describe('StyleManager', () => {
       expect(obj.render()).toBeTruthy();
     });
 
+    test('can select block without changing another display value first', () => {
+      obj.addSector('general', { name: 'General', buildProps: ['display'] });
+      const [component] = domc.getWrapper()!.append('<span>Text</span>');
+      obj.select(obj.getModelToStyle(component));
+
+      const display = obj.render().querySelector<HTMLSelectElement>('.sm-property__display select')!;
+      expect(component.getStyle().display).toBeUndefined();
+      expect(display.value).toBe('initial');
+
+      display.value = 'block';
+      display.dispatchEvent(new Event('change', { bubbles: true }));
+
+      expect(component.getStyle().display).toBe('block');
+
+      const property = obj.getProperty('general', 'display')!;
+      property.clear();
+
+      expect(component.getStyle().display).toBeUndefined();
+      expect(property.getValue()).toBe('initial');
+    });
+
     describe('Parent rules', () => {
       test('No parents without selection', () => {
         expect(obj.getSelectedParents()).toEqual([]);

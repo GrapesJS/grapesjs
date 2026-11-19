@@ -27,8 +27,15 @@ describe('PropertyFactory', () => {
       {
         property: 'display',
         type: 'select',
-        default: 'block',
-        options: [{ id: 'block' }, { id: 'inline' }, { id: 'inline-block' }, { id: 'flex' }, { id: 'none' }],
+        default: 'initial',
+        options: [
+          { id: 'block' },
+          { id: 'inline' },
+          { id: 'inline-block' },
+          { id: 'flex' },
+          { id: 'none' },
+          { id: 'initial' },
+        ],
       },
     ]);
   });

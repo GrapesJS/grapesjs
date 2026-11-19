@@ -59,8 +59,15 @@ describe('Sector', () => {
     expect(res[0]).toEqual({
       property: 'display',
       type: 'select',
-      default: 'block',
-      options: [{ id: 'block' }, { id: 'inline' }, { id: 'inline-block' }, { id: 'flex' }, { id: 'none' }],
+      default: 'initial',
+      options: [
+        { id: 'block' },
+        { id: 'inline' },
+        { id: 'inline-block' },
+        { id: 'flex' },
+        { id: 'none' },
+        { id: 'initial' },
+      ],
     });
   });
 
@@ -69,7 +76,7 @@ describe('Sector', () => {
     expect(obj.getProperties().length).toEqual(3);
     var prop0 = obj.getProperties()[0];
     expect(prop0.get('type')).toEqual('radio');
-    expect(prop0.get('default')).toEqual('block');
+    expect(prop0.get('default')).toEqual('initial');
   });
 
   test('Do not extend properties', () => {
