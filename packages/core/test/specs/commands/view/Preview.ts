@@ -1,5 +1,6 @@
 import Panel from '../../../../src/panels/model/Panel';
 import Preview from '../../../../src/commands/view/Preview';
+import { setupTestEditor } from '../../../common';
 
 describe('Preview command', () => {
   let command: Preview;
@@ -118,4 +119,26 @@ describe('Preview command', () => {
       expect(command.shouldRunSwVisibility).toEqual(false);
     });
   });
+});
+
+test('Preview blocks toolbar moves until editing resumes', () => {
+  jest.useFakeTimers();
+  const { editor, cmpRoot } = setupTestEditor({ withCanvas: true, config: { panels: { defaults: [] } } });
+  jest.spyOn(editor, 'getEl').mockReturnValue(document.getElementById('editor')!);
+  const move = jest.spyOn(editor.Commands.get('tlb-move')!, 'run').mockImplementation(() => {});
+  const [target] = cmpRoot.append('<div>Move me</div>');
+  try {
+    editor.runCommand('core:preview');
+    editor.runCommand('tlb-move', { target });
+    expect(move).not.toHaveBeenCalled();
+
+    editor.stopCommand('core:preview');
+    editor.runCommand('tlb-move', { target });
+    expect(move).toHaveBeenCalledTimes(1);
+  } finally {
+    editor.destroy();
+    jest.restoreAllMocks();
+    jest.clearAllTimers();
+    jest.useRealTimers();
+  }
 });

@@ -1,6 +1,7 @@
 import { each } from 'underscore';
 import Editor from '../../editor';
 import type { CommandPublicFnFromHandler } from '../registryHelpers';
+import CommandsEvents, { type CommandEventBeforeData } from '../types';
 import CommandAbstract from './CommandAbstract';
 
 const cmdOutline = 'core:component-outline';
@@ -30,8 +31,8 @@ export default class CommandPreview extends CommandAbstract {
     return this.panels!;
   }
 
-  preventDrag(opts: any) {
-    opts.abort = 1;
+  preventDrag({ options }: CommandEventBeforeData) {
+    options.abort = true;
   }
 
   tglEffects(on = false) {
@@ -44,7 +45,7 @@ export default class CommandPreview extends CommandAbstract {
       tlb && (tlb.style.display = on ? 'none' : '');
       const elP = body.querySelectorAll(`.${this.ppfx}no-pointer`);
       each(elP, (item) => ((item as HTMLElement).style.pointerEvents = on ? 'all' : ''));
-      em[mthEv]('run:tlb-move:before', this.preventDrag);
+      em[mthEv](`${CommandsEvents.runBeforeCommand}tlb-move`, this.preventDrag);
     }
   }
 
