@@ -499,7 +499,7 @@ export default class StyleManager extends ItemManagerModule<
       const classes = model.get('classes');
       const valid = classes.getStyleable();
       const hasClasses = valid.length;
-      const useClasses = !smConf.componentFirst || options.useClasses;
+      const useClasses = options.useClasses ?? !smConf.componentFirst;
       const addOpts = { noCount: 1 };
       const opts = { state, addOpts };
 

@@ -166,7 +166,9 @@ export default class CommandResize extends CommandAbstract<
         const { el, config, resizer } = opts;
         const { keyHeight, keyWidth, currentUnit, keepAutoHeight, keepAutoWidth } = config;
         toggleBodyClass('add', ev, opts);
-        modelToStyle = em.Styles.getModelToStyle(component);
+        modelToStyle = em.Styles.getModelToStyle(component, {
+          useClasses: em.inAbsoluteMode(component) ? false : undefined,
+        });
         elComputedStyle = getComputedStyle(el);
         const modelStyle = modelToStyle.getStyle();
         const rectStart = { ...resizer.startDim! };
