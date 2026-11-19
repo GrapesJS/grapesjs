@@ -85,8 +85,8 @@ export default class ItemsView extends View {
   removeChildren(removed: Component) {
     const view = removed.viewLayer;
     if (!view) return;
+    this.items = this.items.filter((item) => item !== view);
     view.remove();
-    delete removed.viewLayer;
   }
 
   /**
