@@ -96,6 +96,53 @@ describe('GrapesJS', () => {
       expect(editor.getStyle().length).toEqual(0);
     });
 
+    test('Updating keyframes updates the canvas stylesheet', async () => {
+      const editor = initTestEditor({ ...config, panels: { defaults: [] } });
+      try {
+        await waitEditorEvent(editor, 'load');
+        editor.Css.addRules('@keyframes appear { 0% { opacity: 0; } 100% { opacity: 1; } }');
+        const stylesheet = Array.from(editor.Canvas.getBody().querySelectorAll('style')).find((style) =>
+          style.textContent?.startsWith('@keyframes appear{'),
+        )!;
+        expect(stylesheet.textContent).toBe('@keyframes appear{0%{opacity:0;}100%{opacity:1;}}');
+
+        editor.Css.addRules('@keyframes appear { 0% { opacity: 0; } 100% { opacity: 0.9; } }');
+        const updatedRule = '@keyframes appear{0%{opacity:0;}100%{opacity:0.9;}}';
+        expect(editor.getCss({ keepUnusedStyles: true })).toContain(updatedRule);
+        expect(stylesheet.textContent).toBe(updatedRule);
+        expect(stylesheet.sheet!.cssRules[0].cssText).toMatch(/opacity:\s*0\.9;/);
+      } finally {
+        editor.destroy();
+      }
+    });
+
+    test('Removing keyframe steps updates and removes the canvas stylesheet', async () => {
+      const editor = initTestEditor({ ...config, panels: { defaults: [] } });
+      try {
+        await waitEditorEvent(editor, 'load');
+        const keyframes = '@keyframes appear{0%{opacity:0;}100%{opacity:1;}}';
+        const [start, end] = editor.Css.addRules(keyframes);
+        const canvasStyles = () =>
+          Array.from(editor.Canvas.getBody().querySelectorAll('style')).filter((style) =>
+            style.textContent?.startsWith('@keyframes appear{'),
+          );
+        const [stylesheet] = canvasStyles();
+        expect(stylesheet.textContent).toBe(keyframes);
+
+        editor.Css.remove(end);
+        expect(stylesheet.textContent).toBe('@keyframes appear{0%{opacity:0;}}');
+        expect(stylesheet.sheet!.cssRules[0].cssText).not.toContain('100%');
+
+        editor.Css.remove(start);
+        expect(canvasStyles()).toHaveLength(0);
+
+        editor.Css.addRules(keyframes);
+        expect(canvasStyles().map((style) => style.textContent)).toEqual([keyframes]);
+      } finally {
+        editor.destroy();
+      }
+    });
+
     test('Editor canvas baseCSS can be overwritten', (done) => {
       config.components = htmlString;
       config.baseCss = '#wrapper { background-color: #eee; }';

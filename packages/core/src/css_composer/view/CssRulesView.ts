@@ -10,7 +10,7 @@ import CssRule from '../model/CssRule';
 const getBlockId = (pfx: string, order?: string | number) => `${pfx}${order ? `-${parseFloat(order as string)}` : ''}`;
 
 export default class CssRulesView extends View {
-  atRules: Record<string, any>;
+  atRules: Record<string, Text>;
   config: Record<string, any>;
   em: EditorModel;
   pfx: string;
@@ -30,7 +30,7 @@ export default class CssRulesView extends View {
     this.className = this.pfx + 'rules';
     const coll = this.collection;
     this.listenTo(coll, 'add', this.addTo);
-    this.listenTo(coll, 'remove', (model: CssRule) => this.ruleViews.delete(model.cid));
+    this.listenTo(coll, 'remove', this.removeFromCollection);
     this.listenTo(coll, 'reset', this.render);
   }
 
@@ -39,10 +39,24 @@ export default class CssRulesView extends View {
     this.ruleViews.clear();
   }
 
+  private removeFromCollection(model: CssRule) {
+    this.ruleViews.delete(model.cid);
+    if (model.get('atRuleType') !== 'keyframes') return;
+
+    const atRule = model.getAtRule();
+    const stylesheet = this.atRules[atRule]?.parentElement;
+    // The rule view has removed its step. If only the braces remain, remove the stylesheet.
+    if (stylesheet?.childNodes.length === 2) {
+      stylesheet.remove();
+      delete this.atRules[atRule];
+    }
+  }
+
   remove() {
     // Detach the whole rules tree before removing its individual stylesheets.
     super.remove();
     this.clearRuleViews();
+    this.atRules = {};
     this.ruleContainers = {};
     return this;
   }
@@ -73,25 +87,23 @@ export default class CssRulesView extends View {
     const opts = { model, config };
     let rendered, view;
 
-    // I have to render keyframes of the same name together
-    // Unfortunately at the moment I didn't find the way of appending them
-    // if not statically, via appendData
+    // Render keyframes of the same name together. Keep each view's text node
+    // in the stylesheet so subsequent edits update the canvas.
     if (model.get('atRuleType') === 'keyframes') {
       const atRule = model.getAtRule();
-      let atRuleEl = this.atRules[atRule];
+      let closingBrace = this.atRules[atRule];
 
-      if (!atRuleEl) {
+      if (!closingBrace) {
         const styleEl = document.createElement('style');
-        atRuleEl = document.createTextNode('');
+        closingBrace = document.createTextNode('}');
         styleEl.appendChild(document.createTextNode(`${atRule}{`));
-        styleEl.appendChild(atRuleEl);
-        styleEl.appendChild(document.createTextNode('}'));
-        this.atRules[atRule] = atRuleEl;
+        styleEl.appendChild(closingBrace);
+        this.atRules[atRule] = closingBrace;
         rendered = styleEl;
       }
 
       view = new CssGroupRuleView(opts);
-      atRuleEl.appendData(view.render().el.textContent);
+      closingBrace.before(view.render().el);
     } else {
       view = new CssRuleView(opts);
       rendered = view.render().el;
