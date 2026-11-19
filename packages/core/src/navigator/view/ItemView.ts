@@ -384,6 +384,8 @@ export default class ItemView extends View {
     const model = isString(cmp) ? this.em.getWrapper()?.find(cmp)[0]! : cmp;
     if (!model) return;
     this.stopListening();
+    this.__clearItems();
+    if (this.model.viewLayer === this) delete this.model.viewLayer;
     this.model = model;
     this.initComponent();
     this._rendered && this.render();
@@ -397,6 +399,7 @@ export default class ItemView extends View {
 
   __clearItems() {
     this.items?.remove();
+    this.items = undefined;
   }
 
   remove(...args: []) {
