@@ -71,6 +71,45 @@ describe('Layers sorter', () => {
     expect(getChildIds(wrapper)).toEqual(['visible-a', 'hidden-a', 'visible-b', 'hidden-b']);
   });
 
+  test('moves layers within an existing descendant after it becomes the layer root', () => {
+    editor.setComponents(`
+      <div id="section"><div id="source">A</div><div id="target">B</div></div>
+      <div id="outside">Outside the section</div>
+    `);
+
+    const wrapper = editor.getWrapper()!;
+    const section = wrapper.find('#section')[0];
+    const source = section.find('#source')[0];
+    editor.Layers.onLoad();
+    editor.Layers.setRoot(wrapper);
+    const rootLayer = editor.Layers.render();
+    fixtures.appendChild(rootLayer);
+
+    editor.Layers.setRoot(section);
+
+    expect(editor.Layers.getRoot()).toBe(section);
+    expect(section.viewLayer?.el === rootLayer).toBe(true);
+    expect(wrapper.viewLayer).toBeUndefined();
+    expect(source.viewLayer?.el.isConnected).toBe(true);
+
+    const sorter = source.viewLayer!.sorter;
+    sorter.startSort([{ element: source.viewLayer!.el }]);
+    sorter.dropLocationDeterminer.lastMoveData = {
+      targetNode: new LayersComponentNode(section),
+      index: 2,
+    };
+    sorter.endDrag();
+
+    expect(getChildIds(section)).toEqual(['target', 'source']);
+    expect(getChildIds(wrapper)).toEqual(['section', 'outside']);
+
+    editor.Layers.setRoot(wrapper);
+
+    expect(wrapper.viewLayer?.el === rootLayer).toBe(true);
+    expect(section.viewLayer?.el).not.toBe(rootLayer);
+    expect(section.viewLayer?.el.isConnected).toBe(true);
+  });
+
   test('escalates the drop target to the parent when a slow drag leaves the drop bounds without changing node or index', () => {
     editor.setComponents(`
       <div id="block-a">Block A</div>
