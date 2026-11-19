@@ -71,6 +71,37 @@ describe('Layers sorter', () => {
     expect(getChildIds(wrapper)).toEqual(['visible-a', 'hidden-a', 'visible-b', 'hidden-b']);
   });
 
+  test('moves layers repeatedly between a nested container and the wrapper', () => {
+    editor.setComponents('<div id="column"></div><div data-gjs-type="text" id="text">Text</div>');
+
+    const wrapper = editor.getWrapper()!;
+    const column = wrapper.find('#column')[0];
+    const text = wrapper.find('#text')[0];
+    editor.Layers.setRoot(wrapper);
+    fixtures.appendChild(editor.Layers.render());
+
+    const move = (source: Component, target: Component, index: number) => {
+      const layer = source.viewLayer!;
+      const sorter = layer.sorter;
+      sorter.startSort([{ element: layer.el }]);
+      sorter.dropLocationDeterminer.lastMoveData = {
+        targetNode: new LayersComponentNode(target),
+        index,
+      };
+      sorter.endDrag();
+      expect(source.parent()).toBe(target);
+      expect(source.viewLayer?.el.isConnected).toBe(true);
+    };
+
+    move(text, column, 0);
+    move(text, wrapper, 1);
+    move(column, wrapper, 2);
+    move(text, wrapper, 2);
+
+    expect(getChildIds(wrapper)).toEqual(['column', 'text']);
+    expect(getChildIds(column)).toEqual([]);
+  });
+
   test('escalates the drop target to the parent when a slow drag leaves the drop bounds without changing node or index', () => {
     editor.setComponents(`
       <div id="block-a">Block A</div>
