@@ -58,11 +58,15 @@ describe('Resize command', () => {
       skipPositionUpdate = false,
       dragMode = 'absolute' as DragMode,
       unitWidth = 'px',
+      avoidInlineStyle = false,
+      className = '',
     } = {}) => {
-      const { editor, cmpRoot, fixtures } = testEditor;
+      const { editor, em, cmpRoot, fixtures } = testEditor;
+      em.config.avoidInlineStyle = avoidInlineStyle;
       editor.setDragMode(dragMode);
       const parentComponent = cmpRoot.append({ style: { position: 'relative', width: '1000px', height: '500px' } })[0];
       const component = parentComponent.append({
+        classes: className ? [className] : [],
         style: {
           position: 'absolute',
           left: '450px',
@@ -83,11 +87,13 @@ describe('Resize command', () => {
       const getElementPos = (target: HTMLElement) => {
         if (target !== el) return { ...parentRect, zoom: 1, rect: parentRect };
         // jsdom has no layout engine. Model the browser's used bounds for translations.
-        const width = parseFloat(el.style.width) * (el.style.width.endsWith('%') ? parentRect.width / 100 : 1);
-        const height = parseFloat(el.style.height);
+        const modelStyle = component.getStyle();
+        const cssWidth = el.style.width || String(modelStyle.width);
+        const width = parseFloat(cssWidth) * (cssWidth.endsWith('%') ? parentRect.width / 100 : 1);
+        const height = parseFloat(el.style.height || String(modelStyle.height));
         const rect = {
-          left: parentRect.left + parseFloat(el.style.left) + width * ratioX + offsetX,
-          top: parentRect.top + parseFloat(el.style.top) + height * ratioY + offsetY,
+          left: parentRect.left + parseFloat(el.style.left || String(modelStyle.left)) + width * ratioX + offsetX,
+          top: parentRect.top + parseFloat(el.style.top || String(modelStyle.top)) + height * ratioY + offsetY,
           width,
           height,
         };
@@ -106,7 +112,7 @@ describe('Resize command', () => {
         target.dispatchEvent(new MouseEvent('pointerdown', { button: 0, bubbles: true }));
         document.body.dispatchEvent(new MouseEvent('pointermove', { clientX: x, clientY: y, bubbles: true }));
         if (store) document.body.dispatchEvent(new MouseEvent('pointerup', { bubbles: true }));
-        return addStyle.mock.calls.at(-1)![0];
+        return addStyle.mock.calls.at(-1)?.[0];
       };
       return { el, editor, component, resize, addStyle, trigger };
     };
@@ -194,6 +200,42 @@ describe('Resize command', () => {
     test('keeps untransformed positioning unchanged', () => {
       const { resize } = setup({ transform: 'none', ratioX: 0, ratioY: 0 });
       expect(resize('cl', -50, 0)).toMatchObject({ left: '400px', top: '150px', width: '470px' });
+    });
+
+    test('resizes only the selected component when it shares a class in absolute mode', () => {
+      const { editor, component, resize } = setup({
+        className: 'shared-box',
+        avoidInlineStyle: true,
+        transform: 'none',
+        ratioX: 0,
+        ratioY: 0,
+      });
+      const sharedStyle = { width: '420px', height: '60px' };
+      const sharedRule = editor.Css.setRule('.shared-box', sharedStyle);
+      const [other] = component.parent()!.append({ classes: ['shared-box'] });
+
+      resize('tl', -50, -20, true);
+
+      expect(component.getStyle()).toMatchObject({ width: '470px', height: '80px', left: '400px', top: '130px' });
+      expect(sharedRule.getStyle()).toEqual(sharedStyle);
+      expect(other.getStyle()).toEqual({});
+    });
+
+    test('keeps class-based resizing outside absolute mode', () => {
+      const { editor, component, resize } = setup({
+        className: 'shared-box',
+        avoidInlineStyle: true,
+        dragMode: '',
+        transform: 'none',
+        ratioX: 0,
+        ratioY: 0,
+      });
+      const sharedRule = editor.Css.setRule('.shared-box', { width: '420px', height: '60px' });
+
+      resize('tl', -50, -20, true);
+
+      expect(sharedRule.getStyle()).toMatchObject({ width: '470px', height: '80px' });
+      expect(component.getStyle()).toMatchObject({ width: '420px', height: '60px', left: '450px', top: '150px' });
     });
 
     test.each([{ skipPositionUpdate: true }, { dragMode: '' }] as const)(
