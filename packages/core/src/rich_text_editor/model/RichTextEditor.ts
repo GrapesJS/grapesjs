@@ -304,10 +304,13 @@ export default class RichTextEditor {
       return onKeydown({ ev, rte: this, editor: em.getEditor() });
     }
 
+    // The IME can finish composition before its final keydown, which still uses key code 229.
+    if (ev.key !== 'Enter' || ev.isComposing || ev.keyCode === 229) return;
+
     const { doc } = this;
     const cmdList = ['insertOrderedList', 'insertUnorderedList'];
 
-    if (ev.key === 'Enter' && !cmdList.some((cmd) => doc.queryCommandState(cmd))) {
+    if (!cmdList.some((cmd) => doc.queryCommandState(cmd))) {
       doc.execCommand('insertLineBreak');
       ev.preventDefault();
     }
