@@ -199,6 +199,53 @@ describe('Symbols', () => {
     expect(toHTML(comp2)).toBe(toHTML(symbol));
   });
 
+  describe('ID references inside symbols', () => {
+    const idRefComp = `<div id="root">
+      <input id="field" type="text"/>
+      <label for="field" aria-describedby="field hint">Name</label>
+      <label for="other">Other</label>
+    </div>`;
+    const getInput = (cmp: Component) => cmp.components().at(0);
+    const getLabel = (cmp: Component, i = 1) => cmp.components().at(i);
+
+    test('Symbol creation keeps `for` pointing to the ID of the cloned element', () => {
+      const comp = wrapper.append(idRefComp)[0];
+      const symbol = createSymbol(comp);
+
+      [comp, symbol].forEach((cmp) => {
+        const inputId = getInput(cmp).getAttributes().id;
+        const label = getLabel(cmp).getAttributes();
+        expect(label.for).toBe(inputId);
+        expect(label['aria-describedby']).toBe(`${inputId} hint`);
+        // Unrelated references are not touched
+        expect(getLabel(cmp, 2).getAttributes().for).toBe('other');
+      });
+      // The 2 trees keep unique IDs
+      expect(getInput(comp).getAttributes().id).not.toBe(getInput(symbol).getAttributes().id);
+    });
+
+    test('Duplicating a symbol instance keeps `for` pointing to its own element', () => {
+      const comp = wrapper.append(idRefComp)[0];
+      createSymbol(comp);
+      const originalFor = getLabel(comp).getAttributes().for;
+      const dup = duplicate(comp);
+
+      expect(getLabel(dup).getAttributes().for).toBe(getInput(dup).getAttributes().id);
+      expect(getInput(dup).getAttributes().id).not.toBe(getInput(comp).getAttributes().id);
+      // The source instance is left as it was
+      expect(getLabel(comp).getAttributes().for).toBe(originalFor);
+      expect(getLabel(comp).getAttributes().for).toBe(getInput(comp).getAttributes().id);
+    });
+
+    test('References to elements outside of the cloned tree are not changed', () => {
+      const outside = wrapper.append('<input id="outside"/>')[0];
+      const comp = wrapper.append('<div><label for="outside">X</label></div>')[0];
+      const cloned = comp.clone();
+      expect(getInput(wrapper).getId()).toBe(outside.getId());
+      expect(cloned.components().at(0).getAttributes().for).toBe('outside');
+    });
+  });
+
   test('When symbol is removed, all instances are detached', () => {
     const comp = wrapper.append(compMultipleNodes)[0];
     const symbol = createSymbol(comp);

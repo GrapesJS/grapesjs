@@ -96,6 +96,22 @@ export const eventDrag = ComponentsEvents.drag;
 export const keySymbols = '__symbols';
 export const keySymbol = '__symbol';
 export const keySymbolOvrd = '__symbol_ovrd';
+
+// Attributes containing references (space separated list) to element IDs
+const idRefAttributes = [
+  'for',
+  'form',
+  'list',
+  'headers',
+  'aria-activedescendant',
+  'aria-controls',
+  'aria-describedby',
+  'aria-details',
+  'aria-errormessage',
+  'aria-flowto',
+  'aria-labelledby',
+  'aria-owns',
+];
 export const keyUpdate = ComponentsEvents.update;
 export const keyUpdateInside = ComponentsEvents.updateInside;
 
@@ -1451,6 +1467,12 @@ export default class Component extends StyleableModel<ComponentProperties> {
     // @ts-ignore
     const cloned = new this.constructor(attr, opts);
 
+    // Keep ID references (eg. `<label for>`) pointing to the cloned elements
+    // when their IDs were changed to stay unique
+    if (!(opt as any)._inner) {
+      Component.updateIdRefs(this, cloned);
+    }
+
     // Clone component specific rules
     const newId = `#${cloned.getId()}`;
     const rulesToClone = cssc ? cssc.getRules(`#${id}`) : [];
@@ -2085,6 +2107,44 @@ export default class Component extends StyleableModel<ComponentProperties> {
 
   static isComponent(el: HTMLElement, opts?: any): ComponentDefinitionDefined | boolean | undefined {
     return { tagName: toLowerCase(el.tagName) };
+  }
+
+  /**
+   * Update the attributes referencing IDs (eg. `for`, `aria-labelledby`) inside the
+   * cloned tree, only if the referenced element was cloned too and got a new ID.
+   * @private
+   */
+  static updateIdRefs(source: Component, cloned: Component) {
+    const idMap: Record<string, string> = {};
+    const pairs: [Component, Component][] = [];
+    const collect = (from: Component, to: Component) => {
+      const fromComps = from.components();
+      const toComps = to.components();
+      if (fromComps.length !== toComps.length) return;
+      pairs.push([from, to]);
+      const oldId = (from.get('attributes') || {}).id as string | undefined;
+      const newId = (to.get('attributes') || {}).id as string | undefined;
+      if (oldId && newId && oldId !== newId) idMap[oldId] = newId;
+      fromComps.forEach((child, i) => collect(child, toComps.at(i)));
+    };
+    collect(source, cloned);
+    if (!Object.keys(idMap).length) return;
+
+    pairs.forEach(([, to]) => {
+      const attrs = to.get('attributes') || {};
+      let updated: ObjectAny | undefined;
+      idRefAttributes.forEach((name) => {
+        const value = attrs[name];
+        if (!isString(value) || !value) return;
+        const next = value
+          .split(/\s+/)
+          .map((token) => (has(idMap, token) ? idMap[token] : token))
+          .join(' ');
+        if (next !== value) updated = { ...(updated || attrs), [name]: next };
+      });
+      // Silent to avoid propagating the update to other symbol instances
+      updated && to.set('attributes', updated, { silent: true });
+    });
   }
 
   static ensureInList(model: Component) {
