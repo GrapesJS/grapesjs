@@ -244,6 +244,148 @@ describe('Symbols', () => {
       expect(getInput(wrapper).getId()).toBe(outside.getId());
       expect(cloned.components().at(0).getAttributes().for).toBe('outside');
     });
+
+    test('Repeated instances from the instance, the main symbol, and duplicate stay isolated', () => {
+      const comp = wrapper.append(idRefComp)[0];
+      const main = createSymbol(comp);
+      const fromInstance = createSymbol(comp);
+      const fromMain = createSymbol(main);
+      const dup = duplicate(fromInstance);
+      wrapper.append([fromInstance, fromMain, dup]);
+
+      const trees = [comp, main, fromInstance, fromMain, dup];
+      const inputIds = trees.map((tree) => getInput(tree).getAttributes().id);
+      expect(new Set(inputIds).size).toBe(trees.length);
+      trees.forEach((tree) => {
+        const inputId = getInput(tree).getAttributes().id;
+        const label = getLabel(tree).getAttributes();
+        expect(label.for).toBe(inputId);
+        expect(label['aria-describedby']).toBe(`${inputId} hint`);
+        expect(getLabel(tree, 2).getAttributes().for).toBe('other');
+      });
+    });
+
+    test('Representative ID reference attributes are retargeted and unrelated attributes stay', () => {
+      const source = wrapper.append(`<div id="card">
+        <input id="field" type="email" name="email" placeholder="Email"/>
+        <div id="hint">Hint</div>
+        <button id="go" type="submit" form="field" list="field" headers="field col-b"
+          aria-activedescendant="field" aria-controls="field outside" aria-labelledby="hint field"
+          aria-owns="field" aria-errormessage="hint" title="field" href="#field" data-ref="field">Go</button>
+      </div>`)[0];
+      const symbol = createSymbol(source);
+      const again = createSymbol(symbol);
+      wrapper.append(again);
+
+      [source, symbol, again].forEach((tree) => {
+        const inputId = tree.components().at(0).getAttributes().id;
+        const hintId = tree.components().at(1).getAttributes().id;
+        const button = tree.components().at(2).getAttributes();
+        expect(button.form).toBe(inputId);
+        expect(button.list).toBe(inputId);
+        expect(button.headers).toBe(`${inputId} col-b`);
+        expect(button['aria-activedescendant']).toBe(inputId);
+        expect(button['aria-controls']).toBe(`${inputId} outside`);
+        expect(button['aria-labelledby']).toBe(`${hintId} ${inputId}`);
+        expect(button['aria-owns']).toBe(inputId);
+        expect(button['aria-errormessage']).toBe(hintId);
+        expect(button['aria-details']).toBeUndefined();
+        expect(button['aria-flowto']).toBeUndefined();
+        expect(button.type).toBe('submit');
+        expect(button.name).toBeUndefined();
+        expect(tree.components().at(0).getAttributes().name).toBe('email');
+        expect(tree.components().at(0).getAttributes().placeholder).toBe('Email');
+        expect(tree.components().at(0).getAttributes().type).toBe('email');
+        expect(button.title).toBe('field');
+        expect(button.href).toBe('#field');
+        expect(button['data-ref']).toBe('field');
+      });
+      expect(source.components().at(0).getAttributes().id).not.toBe(symbol.components().at(0).getAttributes().id);
+    });
+
+    test('A plain clone, not only a symbol, retargets internal references', () => {
+      const comp = wrapper.append(idRefComp)[0];
+      const cloned = comp.clone();
+      wrapper.append(cloned);
+      expect(getLabel(cloned).getAttributes().for).toBe(getInput(cloned).getAttributes().id);
+      expect(getLabel(cloned).getAttributes()['aria-describedby']).toBe(`${getInput(cloned).getAttributes().id} hint`);
+      expect(getLabel(comp).getAttributes().for).toBe(getInput(comp).getAttributes().id);
+      expect(getLabel(cloned, 2).getAttributes().for).toBe('other');
+    });
+
+    test('Nested symbol instances keep their own ID references', () => {
+      const inner = wrapper.append(`<div id="inner">
+        <input id="in-field" type="text"/>
+        <label for="in-field" aria-labelledby="in-field">In</label>
+      </div>`)[0];
+      const innerMain = createSymbol(inner);
+      const outer = wrapper.append('<section id="outer"></section>')[0];
+      const outerMain = createSymbol(outer);
+      outerMain.append(inner);
+      const outerAgain = createSymbol(outerMain);
+      wrapper.append(outerAgain);
+
+      const roots = [outer, outerMain, outerAgain];
+      const inputIds = roots.map((root) => root.components().at(0).components().at(0).getAttributes().id);
+      expect(new Set(inputIds).size).toBe(roots.length);
+      roots.forEach((root) => {
+        const box = root.components().at(0);
+        const inputId = box.components().at(0).getAttributes().id;
+        const label = box.components().at(1).getAttributes();
+        expect(label.for).toBe(inputId);
+        expect(label['aria-labelledby']).toBe(inputId);
+        expect(getSymbolInfo(box).main).toBe(innerMain);
+        expect(isSymbolNested(box)).toBe(true);
+      });
+      expect(getLabel(inner).getAttributes().for).toBe(getInput(inner).getAttributes().id);
+    });
+  });
+
+  describe('ID styles across pages', () => {
+    const styledHtml = `<div id="root"><input id="field" type="text"/></div>`;
+    const ruleText = (selector: string) => editor.Css.getRules(selector).map((rule) => rule.toCSS());
+
+    test('A new instance copies its ID rule once, and a later edit stays on the edited instance', () => {
+      const comp = wrapper.append(styledHtml)[0];
+      const field = getInnerComp(comp);
+      field.addStyle({ color: 'red' });
+      const main = createSymbol(comp);
+      const page2 = editor.Pages.add({ id: 'page-b', component: '<div id="slot"></div>' })!;
+      const inst = createSymbol(main);
+      page2.getMainComponent().append(inst);
+
+      const instField = getInnerComp(inst);
+      expect(instField.getId()).not.toBe(field.getId());
+      expect(ruleText(`#${field.getId()}`)).toEqual(['#field{color:red;}']);
+      expect(ruleText(`#${instField.getId()}`)).toEqual([`#${instField.getId()}{color:red;}`]);
+      expect(ruleText(`#${getInnerComp(main).getId()}`)).toHaveLength(1);
+
+      field.addStyle({ color: 'blue' });
+      expect(field.getStyle()).toEqual({ color: 'blue' });
+      expect(instField.getStyle()).toEqual({ color: 'red' });
+      expect(ruleText(`#${instField.getId()}`)).toEqual([`#${instField.getId()}{color:red;}`]);
+    });
+
+    test('Shared cross-page IDs keep a single ID rule', () => {
+      editor.Components.config.keepAttributeIdsCrossPages = true;
+      const comp = wrapper.append(styledHtml)[0];
+      const field = getInnerComp(comp);
+      field.addStyle({ color: 'red' });
+      const main = createSymbol(comp);
+      const page2 = editor.Pages.add({ id: 'page-b', component: '<div id="slot"></div>' })!;
+      const inst = createSymbol(main);
+      page2.getMainComponent().append(inst);
+
+      expect(field.getId()).toBe('field');
+      expect(getInnerComp(main).getId()).toBe('field');
+      expect(getInnerComp(inst).getId()).toBe('field');
+      expect(ruleText('#field')).toEqual(['#field{color:red;}']);
+      expect(editor.getHtml({ component: page2.getMainComponent() })).toContain('id="field"');
+
+      field.addStyle({ color: 'blue' });
+      expect(ruleText('#field')).toEqual(['#field{color:blue;}']);
+      expect(getInnerComp(inst).getStyle()).toEqual({ color: 'blue' });
+    });
   });
 
   test('When symbol is removed, all instances are detached', () => {

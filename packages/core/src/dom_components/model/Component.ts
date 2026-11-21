@@ -1473,15 +1473,19 @@ export default class Component extends StyleableModel<ComponentProperties> {
       Component.updateIdRefs(this, cloned);
     }
 
-    // Clone component specific rules
-    const newId = `#${cloned.getId()}`;
-    const rulesToClone = cssc ? cssc.getRules(`#${id}`) : [];
-    rulesToClone.forEach((rule) => {
-      const newRule = rule.clone();
-      // @ts-ignore
-      newRule.set('selectors', [newId]);
-      cssc.getAll().add(newRule);
-    });
+    // Clone component specific rules only when this clone received a new ID.
+    // The same attribute ID is kept on purpose across pages, and copying the rule
+    // again would duplicate `#id` in the shared stylesheet.
+    const clonedId = cloned.getId();
+    if (cssc && clonedId !== id) {
+      const newId = `#${clonedId}`;
+      cssc.getRules(`#${id}`).forEach((rule) => {
+        const newRule = rule.clone();
+        // @ts-ignore
+        newRule.set('selectors', [newId]);
+        cssc.getAll().add(newRule);
+      });
+    }
 
     // Symbols
     // If I clone an inner symbol, I have to reset it
